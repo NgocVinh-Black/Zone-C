@@ -1,7 +1,7 @@
 # Zone-C — Thiết kế tổng thể
 
 - Ngày: 2026-09-17
-- Trạng thái: đã duyệt hướng (Core + Features + Slots), chờ duyệt tài liệu
+- Trạng thái: đã duyệt; giai đoạn 1–2 đã triển khai
 
 ## 1. Mục tiêu
 
@@ -56,57 +56,51 @@ Zone-C/
 ├── shell.qml                    # Điểm vào: nạp Config, FeatureLoader, Bar, PopupHost
 ├── core/
 │   ├── config/
-│   │   ├── qmldir
 │   │   ├── Config.qml           # singleton: đọc/theo dõi/ghi ~/.config/zone-c/shell.json
 │   │   ├── ConfigValidator.js   # hàm thuần: gộp mặc định + kiểm tra kiểu (có test)
 │   │   └── CoreSchema.js        # schema phần chung: general, theme, bar layout
 │   ├── theme/
-│   │   ├── qmldir
 │   │   ├── Tokens.qml           # singleton: khoảng cách, bo góc, font, độ trong, animation
 │   │   └── Colours.qml          # singleton: bảng màu (matugen → fallback Catppuccin Mocha)
 │   ├── state/
-│   │   ├── qmldir
 │   │   ├── ShellState.qml       # singleton: popup nào đang mở, trên màn hình nào
 │   │   ├── Scale.qml            # singleton: hệ số co giãn
 │   │   ├── ScaleMath.js         # hàm thuần (có test)
 │   │   └── Paths.qml            # singleton: đường dẫn config/cache/state
 │   ├── services/                # CHỈ service dùng bởi nhiều feature
-│   │   ├── qmldir
 │   │   └── Hypr.qml             # workspaces, cửa sổ focus, layout bàn phím, dispatch
 │   ├── ui/                      # component giao diện thuần, không biết hệ thống
-│   │   ├── qmldir
 │   │   ├── Block.qml            # khối nổi kiểu v1
+│   │   ├── Pill.qml             # pill trạng thái kiểu v1 (icon + chữ, nền gradient khi active)
 │   │   ├── StyledText.qml
 │   │   ├── Icon.qml
 │   │   ├── IconButton.qml
 │   │   ├── HoverArea.qml
-│   │   ├── Slider.qml
-│   │   └── Anim.qml
+│   │   ├── Anim.qml
+│   │   └── ColorAnim.qml
 │   ├── feature/
-│   │   ├── qmldir
 │   │   ├── Feature.qml          # kiểu dữ liệu của hợp đồng feature
 │   │   ├── FeatureLoader.qml    # singleton: nạp feature bật trong config
 │   │   └── FeatureContract.js   # hàm thuần: kiểm tra hợp đồng (có test)
 │   ├── bar/
-│   │   ├── qmldir
 │   │   ├── Bar.qml              # PanelWindow + 3 vùng trái/giữa/phải
 │   │   ├── BarZone.qml          # một vùng: danh sách nhóm
-│   │   └── BarGroup.qml         # một Block chứa 1..n widget của các feature
+│   │   ├── BarGroup.qml         # một Block chứa 1..n widget của các feature
+│   │   └── BarWidget.qml        # kiểu gốc cho widget bar của feature
 │   └── popup/
-│       ├── qmldir
 │       ├── PopupHost.qml        # một cửa sổ mỗi màn hình, morph giữa các popup
 │       └── PopupLayout.js       # hàm thuần tính toạ độ (có test)
 ├── features/
 │   ├── workspaces/  feature.qml  WorkspacesWidget.qml  WorkspaceButton.qml  schema.js
-│   ├── media/       feature.qml  MediaService.qml  MediaWidget.qml  MusicPopup.qml  schema.js
-│   ├── clock/       feature.qml  ClockService.qml  ClockWidget.qml  CalendarPopup.qml  schema.js
-│   ├── weather/     feature.qml  WeatherService.qml  WeatherWidget.qml  schema.js
+│   ├── media/       feature.qml  MediaService.qml  MediaWidget.qml  (+ MusicPopup.qml)
+│   ├── clock/       feature.qml  ClockService.qml  ClockWidget.qml  schema.js  (+ CalendarPopup.qml)
+│   ├── weather/     feature.qml  WeatherService.qml  WeatherWidget.qml  WeatherLogic.js  schema.js
 │   ├── tray/        feature.qml  TrayWidget.qml
-│   ├── keyboard/    feature.qml  KeyboardWidget.qml
-│   ├── network/     feature.qml  NetworkService.qml  NetworkWidget.qml  NetworkPopup.qml
-│   ├── bluetooth/   feature.qml  BluetoothService.qml  BluetoothWidget.qml
-│   ├── volume/      feature.qml  VolumeService.qml  VolumeWidget.qml  VolumePopup.qml  VolumeOsd.qml
-│   ├── battery/     feature.qml  BatteryService.qml  BatteryWidget.qml  BatteryPopup.qml
+│   ├── keyboard/    feature.qml  KeyboardWidget.qml  KeyboardLogic.js
+│   ├── network/     feature.qml  NetworkService.qml  NetworkWidget.qml  NetworkLogic.js  (+ NetworkPopup.qml)
+│   ├── bluetooth/   feature.qml  BluetoothService.qml  BluetoothWidget.qml  BluetoothLogic.js
+│   ├── volume/      feature.qml  VolumeService.qml  VolumeWidget.qml  VolumeLogic.js  (+ VolumePopup.qml, VolumeOsd.qml)
+│   ├── battery/     feature.qml  BatteryService.qml  BatteryWidget.qml  BatteryLogic.js  (+ BatteryPopup.qml)
 │   ├── launcher/    …
 │   ├── clipboard/   …
 │   ├── notifications/ …
@@ -115,15 +109,22 @@ Zone-C/
 │   └── settings/    …
 ├── tools/
 │   └── check.sh                 # kiểm tra quy tắc kiến trúc + qmllint + test
-└── tests/
-    ├── tst_configvalidator.qml
-    ├── tst_scalemath.qml
-    ├── tst_popuplayout.qml
-    ├── tst_featurecontract.qml
-    └── tst_features_load.qml    # mọi features/*/feature.qml hợp lệ và nạp được
+├── config/
+│   └── shell.example.json       # config mẫu
+└── tests/js/                    # node --test
+    ├── load.mjs                 # nạp file .pragma library vào Node
+    ├── configvalidator.test.mjs
+    ├── coreschema.test.mjs
+    ├── scalemath.test.mjs
+    ├── popuplayout.test.mjs
+    ├── featurecontract.test.mjs
+    ├── featurelogic.test.mjs    # các *Logic.js của feature
+    └── features.test.mjs        # mọi features/*/feature.qml hợp lệ
 ```
 
-Mỗi thư mục feature có `qmldir` riêng khai báo service của nó là singleton. Import dùng tên gốc Quickshell: `import qs.core.ui`, `import qs.core.theme`, `import qs.features.battery` (chỉ trong chính thư mục battery).
+Quickshell tự phân giải module `qs.*` theo thư mục, không cần `qmldir`; singleton khai báo bằng `pragma Singleton`. Import dùng tên gốc Quickshell: `import qs.core.ui`, `import qs.core.theme`, `import qs.features.battery` (chỉ trong chính thư mục battery).
+
+`(+ …)` là file của giai đoạn sau. Logic thuần của feature nằm trong `*Logic.js` để test được.
 
 Popup, service và widget của feature chỉ được tạo khi cần: service là singleton nên chỉ khởi tạo khi có người dùng, popup nạp bằng `Loader` khi mở.
 
@@ -143,14 +144,14 @@ Feature {
         width: 801,
         height: 760
     })
-    overlays: [Qt.resolvedUrl("…")]      // tuỳ chọn: cửa sổ luôn có (OSD, thông báo)
-    schema: "schema.js"                   // tuỳ chọn: config riêng, nằm dưới Config.features.<name>
 }
 ```
 
-`FeatureContract.js` kiểm tra: `name` khớp thư mục, `anchor` hợp lệ, `width`/`height` > 0, file được khai báo tồn tại. Hợp đồng sai: cảnh báo và bỏ qua feature đó, shell vẫn chạy.
+Config riêng của feature nằm trong `schema.js` cạnh nó (`var fields = {...}`), được đọc bằng `Config.feature("<tên>", Schema.fields)` và nằm dưới `features.<tên>` trong `shell.json`. Thuộc tính `overlays` (cửa sổ luôn có như OSD, thông báo) sẽ được thêm vào hợp đồng ở giai đoạn 4.
 
-Widget bar nhận các thuộc tính chuẩn từ core: `screen`, `vertical: false`, `openPopup()` (gọi `ShellState.toggle(name, screen)`).
+`FeatureContract.js` kiểm tra lúc chạy: `name` khớp thư mục, `anchor` hợp lệ, `width`/`height` > 0. `tests/js/features.test.mjs` kiểm tra thêm rằng file khai báo tồn tại. Hợp đồng sai: cảnh báo và bỏ qua feature đó, shell vẫn chạy.
+
+Widget bar kế thừa `core/bar/BarWidget.qml`, nhận `featureName`, `screen`, `barWindow`, `indexInGroup`, có `compact` (màn hình rộng dưới 1920) và `openPopup()`. Widget đặt `shown` (không đặt `visible`) để báo có dữ liệu hay không.
 
 ### 2.4 Slot trên bar
 
@@ -172,7 +173,7 @@ Config quyết định feature nào bật và nằm ở đâu. Mỗi phần tử
 
 - Một feature được nạp khi xuất hiện trong `bar` hoặc trong `enabled` (cho feature không có widget bar như `notifications`, `lock`).
 - Feature trong config mà không có thư mục: cảnh báo, bỏ qua.
-- Widget của feature tự ẩn (`visible: false`) khi dữ liệu không có; `BarGroup` ẩn khi mọi widget bên trong đều ẩn.
+- Widget đặt `shown: false` khi dữ liệu không có; `BarGroup` đếm số widget `shown` và ẩn khi bằng 0.
 
 ### 2.5 Quy tắc bắt buộc
 
@@ -185,8 +186,8 @@ Config quyết định feature nào bật và nằm ở đâu. Mỗi phần tử
 | R3 | Ngoài `core/config/` không đọc config thô (`JSON.parse`, `FileView` trỏ vào `shell.json`) | grep |
 | R4 | `core/` không import `qs.features`; `features/X` không import `qs.features.Y` | grep |
 | R5 | File QML ngoài `tests/` không quá 400 dòng | wc |
-| R6 | Mỗi `features/*/` có `feature.qml`, tên khớp thư mục | test `tst_features_load` |
-| R7 | `qmllint` không lỗi, toàn bộ test qua | qmllint, qmltestrunner |
+| R6 | Mỗi `features/*/` có `feature.qml`, tên khớp thư mục, file khai báo tồn tại; toàn bộ unit test qua | `tests/js/features.test.mjs` + `node --test` |
+| R7 | `qmllint` | chỉ báo, không chặn (qmllint không phải lúc nào cũng hiểu kiểu của Quickshell) |
 
 ## 3. Core
 
@@ -197,7 +198,8 @@ Config quyết định feature nào bật và nằm ở đâu. Mỗi phần tử
 - `ConfigValidator.js` gộp giá trị người dùng với mặc định. Sai kiểu hoặc ngoài giới hạn: cảnh báo, dùng mặc định. Key lạ: cảnh báo, bỏ qua.
 - Truy cập: `Config.general.uiScale`, `Config.bar.left`, `Config.feature("workspaces").count`.
 - Theo dõi file bằng `FileView`; sửa file là áp dụng ngay.
-- Ghi: file tạm rồi đổi tên (atomic), debounce 300ms. Không ghi đè khi file người dùng đang hỏng.
+- Giá trị `default: null` nghĩa là tuỳ chọn: không đặt thì là `null`, đặt thì vẫn được kiểm tra.
+- Ghi file (cho app settings, giai đoạn 5): file tạm rồi đổi tên (atomic), debounce 300ms. Không ghi đè khi file người dùng đang hỏng.
 
 ### 3.2 Tokens (giá trị từ v1)
 
@@ -209,8 +211,10 @@ Config quyết định feature nào bật và nằm ở đâu. Mỗi phần tử
 | `block.opacity` | 0.75 | `Qt.rgba(base, 0.75)` |
 | `block.borderWidth` / `block.borderAlpha` | 1 / 0.08 | viền `text` |
 | `block.gap` | 4 | khoảng cách giữa khối |
-| `block.paddingX` | 18 | `implicitWidth + s(36)` |
-| `workspace.size` / `workspace.radius` | 32 / 10 | nút workspace |
+| `block.paddingX` / `block.itemGap` | 10 / 8 | khối status `+ s(20)`, pill cách nhau 8 |
+| `pill.height` / `pill.radius` / `pill.paddingX` | 34 / 10 / 12 | pill bên phải |
+| `pill.alpha` / `pill.hoverAlpha` / `pill.hoverScale` | 0.4 / 0.6 / 1.05 | nền `surface0` / hover `surface1` |
+| `workspace.size` / `workspace.radius` / `workspace.spacing` | 32 / 10 / 6 | nút workspace |
 | `font.text` | "JetBrains Mono" | |
 | `font.icon` | "Iosevka Nerd Font" | |
 | `font.size.small` / `body` / `clock` / `icon` | 11 / 14 / 16 / 16 | |
@@ -240,7 +244,7 @@ Chỉ đưa service vào `core/services/` khi **từ hai feature trở lên** c�
 
 | Service | Nguồn | Thuộc tính | Hành động | Dùng bởi |
 |---|---|---|---|---|
-| Hypr | `Quickshell.Hyprland` | `workspaces`, `activeWorkspaceId`, `focusedTitle`, `keyboardLayout` | `focusWorkspace(id)`, `switchLayout()` | workspaces, keyboard, lock |
+| Hypr | `Quickshell.Hyprland` | `workspaces`, `activeWorkspaceId`, `keyboardLayout`, `isOccupied(id)` | `focusWorkspace(id)`, `switchLayout()` | workspaces, keyboard, lock |
 
 `ShellState` (`core/state/`): `activePopup`, `activeScreen`, `toggle(name, screen)`, `close()`.
 
@@ -305,8 +309,8 @@ Hyprland IPC ─► core/services/Hypr ─► WorkspacesWidget, KeyboardWidget
 
 ## 7. Kiểm thử
 
-- **Hàm thuần** (`ConfigValidator.js`, `ScaleMath.js`, `PopupLayout.js`, `FeatureContract.js`): test bằng `qmltestrunner`.
-- **Hợp đồng feature**: `tst_features_load` nạp mọi `features/*/feature.qml` và kiểm tra hợp lệ.
+- **Hàm thuần** (`ConfigValidator.js`, `CoreSchema.js`, `ScaleMath.js`, `PopupLayout.js`, `FeatureContract.js`, các `*Logic.js` của feature): test bằng `node --test` trong `tests/js/`. File JS dùng `.pragma library` nên chạy được cả trong QML lẫn Node.
+- **Hợp đồng feature**: `tests/js/features.test.mjs` kiểm tra mọi `features/*/feature.qml`.
 - **Quy tắc kiến trúc**: `tools/check.sh` chạy R1–R7.
 - **Chạy thật**: `qs -p shell.qml` trong phiên Hyprland; Quickshell tự reload khi sửa file.
 - Mỗi giai đoạn chỉ coi là xong khi `check.sh` qua và đã chạy thật trên Hyprland.

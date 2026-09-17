@@ -75,6 +75,15 @@ test("defaults are copied, not shared", () => {
     assert.deepEqual([...b.value.list], ["x"]);
 });
 
+test("a null default marks an optional value that is validated when set", () => {
+    const optional = { lat: { type: "number", default: null, min: -90, max: 90 } };
+    assert.equal(V.validateSection(optional, {}, "").value.lat, null);
+    assert.equal(V.validateSection(optional, { lat: 10 }, "").value.lat, 10);
+    const bad = V.validateSection(optional, { lat: 200 }, "");
+    assert.equal(bad.value.lat, null);
+    assert.equal(bad.warnings.length, 1);
+});
+
 test("parse reports invalid JSON instead of throwing", () => {
     assert.equal(V.parse('{"a":1}').ok, true);
     const bad = V.parse("{oops");
