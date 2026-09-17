@@ -1,0 +1,18 @@
+{
+  "general": {
+    "uiScale": 1
+  },
+  "theme": {
+    "matugen": false
+  },
+  "bar": {
+    "left": [["workspaces"], ["media"]],
+    "center": [["clock", "weather"]],
+    "right": [["tray"], ["keyboard", "network", "bluetooth", "volume", "battery"]]
+  },
+  "features": {
+    "workspaces": { "count": 8 },
+    "clock": { "timeFormat": "HH:mm:ss", "dateFormat": "dddd, MMMM dd" },
+    "weather": { "unit": "metric", "intervalMinutes": 30 }
+  }
+}
