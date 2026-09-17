@@ -1,0 +1,9 @@
+{
+  "name": "zone-c",
+  "private": true,
+  "description": "Personal Quickshell desktop shell for Hyprland",
+  "scripts": {
+    "test": "node --test \"tests/js/**/*.test.mjs\"",
+    "check": "bash tools/check.sh"
+  }
+}
