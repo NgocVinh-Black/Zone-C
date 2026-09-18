@@ -1,0 +1,9 @@
+* {
+    bg: #0b0f12d9;
+    surface: #1b2024;
+    surface-high: #252b2f;
+    fg: #dee3e8;
+    fg-dim: #c0c7ce;
+    accent: #8fcef3;
+    on-accent: #00344a;
+}

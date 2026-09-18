@@ -6,11 +6,15 @@ import Quickshell.Io
 import Quickshell.Hyprland
 
 // Hyprland state shared by several features. The only place that talks to Hyprland.
-// Dispatches use the Lua config syntax (hl.dsp.*).
 Singleton {
     id: root
 
     readonly property var workspaces: Hyprland.workspaces.values
+    // The Quickshell screen of the focused Hyprland monitor, for keyboard-driven popups.
+    readonly property var focusedScreen: {
+        const name = Hyprland.focusedMonitor?.name ?? "";
+        return Quickshell.screens.find(s => s.name === name) ?? Quickshell.screens[0] ?? null;
+    }
     readonly property int activeWorkspaceId: Hyprland.focusedWorkspace?.id ?? 1
     property string keyboardLayout: ""
 
@@ -22,7 +26,7 @@ Singleton {
     }
 
     function focusWorkspace(id: int): void {
-        Hyprland.dispatch(`hl.dsp.focus({ workspace = "${id}" })`);
+        Hyprland.dispatch(`workspace ${id}`);
     }
 
     function switchLayout(): void {

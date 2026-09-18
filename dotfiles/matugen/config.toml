@@ -1,0 +1,30 @@
+# Colours from the wallpaper for Zone-C and the apps around it.
+# Run by ~/.local/bin/zone-c-wallpaper; outputs land in ~/.cache/zone-c/.
+
+[config]
+
+[templates.zone-c]
+input_path = "~/.config/matugen/templates/zone-c-colors.json"
+output_path = "~/.cache/zone-c/colors.json"
+
+[templates.hypr]
+input_path = "~/.config/matugen/templates/hypr-colors.conf"
+output_path = "~/.cache/zone-c/hypr-colors.conf"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
+output_path = "~/.cache/zone-c/hyprlock-colors.conf"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.cache/zone-c/kitty-colors.conf"
+post_hook = "pkill -USR1 -x kitty || true"
+
+[templates.rofi]
+input_path = "~/.config/matugen/templates/rofi-colors.rasi"
+output_path = "~/.cache/zone-c/rofi-colors.rasi"
+
+[templates.swaync]
+input_path = "~/.config/matugen/templates/swaync-colors.css"
+output_path = "~/.cache/zone-c/swaync-colors.css"
+post_hook = "swaync-client -rs || true"
