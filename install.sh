@@ -72,6 +72,7 @@ official=(
     # Apps and tools used by the keybinds
     kitty zsh zsh-autosuggestions zsh-syntax-highlighting "rofi-wayland|rofi" swaync libnotify
     cliphist wl-clipboard grim slurp thunar firefox neovim git jq
+    hyprpicker wf-recorder pavucontrol btop rofi-emoji
     # Fonts and icons
     ttf-jetbrains-mono ttf-jetbrains-mono-nerd ttf-iosevka-nerd noto-fonts noto-fonts-emoji papirus-icon-theme
 )
@@ -164,6 +165,7 @@ link_configs() {
     link "$dots/swaync/config.json" "$config/swaync/config.json"
     link "$dots/zsh/.zshrc" "$HOME/.zshrc"
     link "$dots/bin/zone-c-wallpaper" "$HOME/.local/bin/zone-c-wallpaper"
+    link "$dots/bin/zone-c-session" "$HOME/.local/bin/zone-c-session"
 
     # swaync needs an absolute path to the colour file, so style.css is rendered.
     if [[ -e "$config/swaync/style.css" && ! -L "$config/swaync/style.css" ]] &&
@@ -240,6 +242,6 @@ fi
 
 step "Done"
 info "Log out and pick the Hyprland session (or reboot)."
-info "Put wallpapers in ~/Pictures/Wallpapers, then press SUPER+W to pick one;"
+info "Put wallpapers in ~/Pictures/Wallpapers, then press SUPER+SHIFT+W to pick one;"
 info "the bar, popups, borders, kitty, rofi and swaync take its colours."
 info "Shell logs: run 'qs -c zone-c' from a terminal."

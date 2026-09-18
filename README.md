@@ -35,7 +35,7 @@ cd ~/Projects/Zone-C
 3. Tạo `~/.config/zone-c/shell.json` và bảng màu mặc định trong `~/.cache/zone-c/`.
 4. Bật NetworkManager, bluetooth, power-profiles-daemon; hỏi bật SDDM và đổi shell sang zsh.
 
-Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Bỏ ảnh vào `~/Pictures/Wallpapers` rồi bấm `SUPER+W` để chọn hình nền: bar, popup, viền cửa sổ, kitty, rofi, swaync đổi màu theo ảnh (matugen).
+Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Bỏ ảnh vào `~/Pictures/Wallpapers` rồi bấm `SUPER+SHIFT+W` để chọn hình nền: bar, popup, viền cửa sổ, kitty, rofi, swaync đổi màu theo ảnh (matugen).
 
 Vì là symlink, `git pull` trong repo là cập nhật luôn cả shell lẫn dotfiles. Chỉnh riêng cho từng máy (màn hình, layout bàn phím) đặt trong `~/.config/hypr/local.conf`, file này không vào git.
 
@@ -43,15 +43,21 @@ Vì là symlink, `git pull` trong repo là cập nhật luôn cả shell lẫn d
 
 | Phím | Việc |
 |---|---|
-| `SUPER+Enter` / `SUPER+Space` | kitty / tìm ứng dụng (rofi) |
-| `SUPER+Q` / `SUPER+F` / `SUPER+SHIFT+F` | đóng / toàn màn hình / nổi cửa sổ |
-| `SUPER+1…8`, `SUPER+SHIFT+1…8` | chuyển / chuyển cửa sổ sang workspace |
-| `SUPER+M` / `C` / `A` / `P` | popup nhạc / lịch / âm lượng / pin |
+| nhấn thả `SUPER` | tìm ứng dụng (rofi) |
+| `SUPER+T` / `W` / `C` / `E` | terminal / trình duyệt / VS Code / Thunar |
+| `SUPER+Q` / `F` / `ALT+F` / `ALT+Space` / `P` | đóng / toàn màn hình / phóng to / nổi / ghim cửa sổ |
+| `SUPER+1…0`, `SUPER+ALT+1…0` | chuyển / chuyển cửa sổ sang workspace |
+| `CTRL+SUPER+←/→`, `SUPER+Page Up/Down` | workspace trước / sau |
+| `SUPER+S` / `M` / `D` / `R`, `CTRL+SHIFT+Esc` | workspace đặc biệt: chung / nhạc / chat / todo / btop |
+| `SUPER+ALT+mũi tên`, `SUPER+-/=` | đổi kích thước cửa sổ |
+| `ALT+Tab`, `SUPER+,` / `SUPER+U` | chuyển cửa sổ, gộp nhóm / tách khỏi nhóm |
+| `SUPER+K` / `ALT+M` / `A` / `B` | popup lịch / nhạc / âm lượng / pin |
 | `SUPER+SHIFT+N` / `SUPER+SHIFT+B` | popup mạng tab Wi-Fi / Bluetooth |
-| `SUPER+N` / `SUPER+V` / `SUPER+W` | thông báo / lịch sử clipboard / chọn hình nền |
-| `SUPER+L` / `SUPER+SHIFT+E` | khoá màn hình / thoát Hyprland |
-| `Print` / `SHIFT+Print` | chụp vùng vào clipboard / chụp cả màn hình vào `~/Pictures/Screenshots` |
-| `SUPER+SHIFT+R` | khởi động lại shell |
+| `SUPER+N` / `SUPER+V` / `SUPER+.` / `SUPER+SHIFT+W` | thông báo / clipboard / emoji / chọn hình nền |
+| `SUPER+L` / `SUPER+SHIFT+L` / `CTRL+ALT+Del` | khoá màn hình / ngủ / menu tắt máy |
+| `Print` / `SUPER+SHIFT+S` / `SUPER+SHIFT+C` | chụp cả màn hình / chụp vùng / lấy màu |
+| `SUPER+ALT+R` / `CTRL+ALT+R` | quay vùng / cả màn hình (bấm lại để dừng) |
+| `CTRL+SUPER+ALT+R` | khởi động lại shell |
 
 Toàn bộ ở `dotfiles/hypr/conf/keybindings.conf`.
 

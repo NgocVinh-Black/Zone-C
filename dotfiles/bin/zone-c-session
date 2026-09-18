@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Session menu (CTRL+ALT+Delete): lock, log out, suspend, reboot or shut down.
+set -euo pipefail
+
+pkill -x rofi && exit 0
+
+choice="$(printf '%s\n' Lock Logout Suspend Reboot Shutdown | rofi -dmenu -i -p Session)" || exit 0
+
+case "$choice" in
+Lock) loginctl lock-session ;;
+Logout) hyprctl dispatch exit ;;
+Suspend) systemctl suspend ;;
+Reboot) systemctl reboot ;;
+Shutdown) systemctl poweroff ;;
+esac
