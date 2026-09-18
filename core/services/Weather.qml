@@ -3,28 +3,32 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.core.config
-import "schema.js" as Schema
 import "WeatherLogic.js" as Logic
 
-// Current weather from Open-Meteo (no API key). Keeps the last good reading on errors.
+// Current weather and a five-day forecast from Open-Meteo (no API key), shared by
+// the weather bar widget and the calendar popup. Keeps the last good data on errors.
 Singleton {
     id: root
 
-    readonly property var settings: Config.feature("weather", Schema.fields)
+    readonly property var settings: Config.weather
     readonly property bool manualLocation: settings.latitude !== null && settings.longitude !== null
 
     property bool available: false
     property int code: -1
     property bool isDay: true
     property real temperature: 0
+    // See WeatherLogic.buildForecast.
+    property var forecast: []
+
     readonly property string icon: Logic.icon(code, isDay)
     readonly property string tone: Logic.tone(code)
-    readonly property string temperatureText: Logic.formatTemp(temperature)
+    readonly property string temperatureText: Math.round(temperature * 10) / 10 + "°" + (settings.unit === "imperial" ? "F" : "C")
 
     property var latitude: null
     property var longitude: null
 
-    onSettingsChanged: refresh()
+    // Startup and config reloads arrive close together; fetch once.
+    onSettingsChanged: pending.restart()
 
     function refresh(): void {
         if (manualLocation) {
@@ -36,6 +40,10 @@ Singleton {
         } else {
             locate();
         }
+    }
+
+    function nearestHour(hours: var, hour: int): int {
+        return Logic.nearestHour(hours, hour);
     }
 
     function request(url: string, onJson: var): void {
@@ -78,6 +86,7 @@ Singleton {
             code = current.weather_code;
             isDay = current.is_day === 1;
             temperature = current.temperature_2m;
+            forecast = Logic.buildForecast(data);
             available = true;
         });
     }
@@ -85,8 +94,15 @@ Singleton {
     Timer {
         running: true
         repeat: true
-        triggeredOnStart: true
         interval: root.settings.intervalMinutes * 60 * 1000
+        onTriggered: root.refresh()
+    }
+
+    Timer {
+        id: pending
+
+        running: true
+        interval: 300
         onTriggered: root.refresh()
     }
 

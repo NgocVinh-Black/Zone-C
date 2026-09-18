@@ -8,6 +8,8 @@ import "KeyboardLogic.js" as Logic
 BarWidget {
     id: root
 
+    blockBorderAlpha: Tokens.block.borderAlphaStatic
+
     shown: Hypr.keyboardLayout !== ""
     implicitWidth: pill.implicitWidth
     implicitHeight: pill.implicitHeight

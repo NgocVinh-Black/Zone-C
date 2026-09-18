@@ -38,34 +38,75 @@ function lines(text) {
     });
 }
 
-// devicesText: `nmcli -t -f TYPE,STATE,CONNECTION device status`
-// wifiText:    `nmcli -t -f ACTIVE,SIGNAL,SSID device wifi list --rescan no`
+// Strongest entry per SSID from `nmcli -t -f IN-USE,SIGNAL,SECURITY,FREQ,SSID device wifi list`,
+// sorted by name: { ssid, signal, security, freq, active }.
+function parseWifiList(text) {
+    const best = {};
+    lines(text).map(splitTerse).forEach(function (f) {
+        const ssid = f[4] || "";
+        if (ssid === "")
+            return;
+        const entry = {
+            ssid: ssid,
+            signal: parseInt(f[1], 10) || 0,
+            security: f[2] && f[2] !== "--" ? f[2] : "Open",
+            freq: f[3] || "",
+            active: f[0] === "*"
+        };
+        const seen = best[ssid];
+        if (!seen || entry.active || (!seen.active && entry.signal > seen.signal))
+            best[ssid] = entry;
+    });
+    return Object.keys(best).sort(function (a, b) {
+        return a.localeCompare(b);
+    }).map(function (k) {
+        return best[k];
+    });
+}
+
+// devicesText: `nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status`
+// wifiText:    `nmcli -t -f IN-USE,SIGNAL,SECURITY,FREQ,SSID device wifi list --rescan no`
 // radioText:   `nmcli radio wifi`
-function parseStatus(devicesText, wifiText, radioText) {
+// ipText:      `nmcli -g IP4.ADDRESS device show <wifi device>`
+function parseStatus(devicesText, wifiText, radioText, ipText) {
     const devices = lines(devicesText).map(splitTerse);
     const connected = function (type) {
         return devices.find(function (d) {
-            return d[0] === type && d[1] === "connected";
+            return d[1] === type && d[2] === "connected";
         });
     };
+    const wifiDevice = devices.find(function (d) {
+        return d[1] === "wifi";
+    });
 
-    const wifiEnabled = (radioText || "").trim() === "enabled";
+    const networks = parseWifiList(wifiText);
+    const active = networks.find(function (n) {
+        return n.active;
+    });
+    const result = {
+        kind: "none",
+        name: "",
+        strength: 0,
+        security: "",
+        freq: "",
+        ip: (ipText || "").trim().split("\n")[0].split("/")[0],
+        wifiEnabled: (radioText || "").trim() === "enabled",
+        wifiDevice: wifiDevice ? wifiDevice[0] : "",
+        networks: networks
+    };
+
     const ethernet = connected("ethernet");
-    if (ethernet)
-        return { kind: "ethernet", name: ethernet[2] || "", strength: 100, wifiEnabled: wifiEnabled };
-
     const wifi = connected("wifi");
-    if (wifi) {
-        const active = lines(wifiText).map(splitTerse).find(function (w) {
-            return w[0] === "yes";
-        });
-        return {
-            kind: "wifi",
-            name: active ? active[2] : (wifi[2] || ""),
-            strength: active ? (parseInt(active[1], 10) || 0) : 0,
-            wifiEnabled: wifiEnabled
-        };
+    if (ethernet) {
+        result.kind = "ethernet";
+        result.name = ethernet[3] || "";
+        result.strength = 100;
+    } else if (wifi) {
+        result.kind = "wifi";
+        result.name = active ? active.ssid : (wifi[3] || "");
+        result.strength = active ? active.signal : 0;
+        result.security = active ? active.security : "";
+        result.freq = active ? active.freq : "";
     }
-
-    return { kind: "none", name: "", strength: 0, wifiEnabled: wifiEnabled };
+    return result;
 }

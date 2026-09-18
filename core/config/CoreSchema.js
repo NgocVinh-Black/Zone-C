@@ -35,13 +35,24 @@ var fields = {
     bar: {
         type: "section",
         fields: {
-            left: { type: "array", default: [["workspaces"], ["media"]], check: isGroupList },
+            left: { type: "array", default: [["launcher"], ["notifications"], ["workspaces"], ["media"]], check: isGroupList },
             center: { type: "array", default: [["clock", "weather"]], check: isGroupList },
             right: {
                 type: "array",
                 default: [["tray"], ["keyboard", "network", "bluetooth", "volume", "battery"]],
                 check: isGroupList
             }
+        }
+    },
+    // Shared by the weather bar widget and the calendar popup (core/services/Weather).
+    // Leave latitude/longitude out to locate by IP address.
+    weather: {
+        type: "section",
+        fields: {
+            unit: { type: "string", default: "metric", enum: ["metric", "imperial"] },
+            latitude: { type: "number", default: null, min: -90, max: 90 },
+            longitude: { type: "number", default: null, min: -180, max: 180 },
+            intervalMinutes: { type: "number", int: true, default: 30, min: 5, max: 720 }
         }
     },
     enabled: { type: "array", default: [], check: isStringList },

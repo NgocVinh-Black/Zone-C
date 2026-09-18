@@ -3,9 +3,9 @@
 Shell desktop cá nhân cho **Hyprland**, viết bằng **Quickshell**.
 
 - Kiến trúc: **Core + Features + Slots**. Mỗi tính năng là một thư mục khép kín trong `features/`.
-- Giao diện: theo Serpantinum v1, gồm thanh bar là các khối nổi và bảng màu Catppuccin Mocha.
+- Giao diện: theo Serpantinum v1 (ảnh chụp ngày 07/04/2026), gồm thanh bar là các khối nổi, các popup nhạc, lịch, mạng, âm lượng, pin, và bảng màu tối lấy từ ảnh v1.
 
-Thiết kế đầy đủ: [docs/superpowers/specs/2026-09-17-zone-c-design.md](docs/superpowers/specs/2026-09-17-zone-c-design.md)
+Thiết kế đầy đủ: [2026-09-17-zone-c-design.md](2026-09-17-zone-c-design.md)
 
 ## Trạng thái
 
@@ -13,7 +13,7 @@ Thiết kế đầy đủ: [docs/superpowers/specs/2026-09-17-zone-c-design.md](
 |---|---|---|
 | 1. Core | config, theme, scale, Hypr, ui, feature loader, bar, popup host, check, tests | ✅ |
 | 2. Bar | workspaces, media, clock, weather, tray, keyboard, network, bluetooth, volume, battery | ✅ |
-| 3. Popup phải + music | battery, network, volume, music, calendar | ⏳ |
+| 3. Giao diện v1 + popup | nút tìm kiếm/chuông, popup nhạc (+ equalizer), lịch, mạng, âm lượng, pin | 🧪 code xong, chưa chạy thử |
 | 4. Popup giữa + hệ thống | launcher, clipboard, notifications, OSD | ⏳ |
 | 5. Hoàn thiện | lock, wallpaper + matugen, settings | ⏳ |
 
@@ -21,8 +21,9 @@ Thiết kế đầy đủ: [docs/superpowers/specs/2026-09-17-zone-c-design.md](
 
 ```bash
 sudo pacman -S quickshell hyprland networkmanager bluez bluez-utils upower \
-    pipewire wireplumber ttf-jetbrains-mono ttf-iosevka-nerd nodejs
-sudo systemctl enable --now NetworkManager bluetooth upower
+    pipewire wireplumber ttf-jetbrains-mono ttf-iosevka-nerd nodejs \
+    power-profiles-daemon brightnessctl easyeffects rofi swaync
+sudo systemctl enable --now NetworkManager bluetooth upower power-profiles-daemon
 ```
 
 ## Chạy
@@ -51,7 +52,9 @@ cp config/shell.example.json ~/.config/zone-c/shell.json
 ```
 
 - `bar.left` / `bar.center` / `bar.right`: danh sách **nhóm**. Mỗi nhóm là một khối nổi, gồm tên các feature.
-- `features.<tên>`: cấu hình riêng của từng feature (xem `features/<tên>/schema.js`).
+- `features.<tên>`: cấu hình riêng của từng feature (xem `features/<tên>/schema.js`), ví dụ lệnh của nút tìm kiếm, chuông, khoá máy, tắt máy.
+- `weather`: đơn vị và toạ độ (bỏ trống thì định vị theo IP). Dùng chung cho widget thời tiết và popup lịch.
+- `features.clock.scheduleCommand`: lệnh tuỳ chọn in lịch học dạng JSON để hiện ở đáy popup lịch (xem `features/clock/schema.js`).
 - `theme.matugen: true`: đọc màu từ `~/.cache/zone-c/colors.json`, dạng `{ "base": "#1e1e2e", ... }`.
 
 ## Kiểm tra

@@ -19,11 +19,51 @@ function icon(percent, charging) {
     return glyph(levels[index]);
 }
 
-// Palette colour name for the pill gradient.
+// Palette colour name for the battery level: green while charging, then blue,
+// yellow and red as it drains.
 function tone(percent, charging) {
     if (charging)
         return "green";
-    if (percent <= 20)
+    if (percent >= 70)
+        return "blue";
+    if (percent >= 30)
+        return "yellow";
+    return "red";
+}
+
+// The bar pill is filled only when charging or low; otherwise just its content is tinted.
+function filled(percent, charging) {
+    return charging || percent <= 20;
+}
+
+// Second ambient colour paired with `tone`.
+function secondaryTone(percent, charging) {
+    if (charging)
+        return "sapphire";
+    if (percent >= 70)
+        return "mauve";
+    if (percent >= 30)
+        return "peach";
+    return "maroon";
+}
+
+// Palette colour name for a power profile.
+function profileTone(profile) {
+    if (profile === "performance")
         return "red";
-    return "text";
+    if (profile === "power-saver")
+        return "green";
+    return "blue";
+}
+
+// "/proc/uptime" contents → { hours, minutes }.
+function parseUptime(text) {
+    const seconds = parseFloat(String(text || "").split(" ")[0]);
+    if (isNaN(seconds))
+        return { hours: 0, minutes: 0 };
+    return { hours: Math.floor(seconds / 3600), minutes: Math.floor(seconds % 3600 / 60) };
+}
+
+function twoDigits(n) {
+    return (n < 10 ? "0" : "") + n;
 }

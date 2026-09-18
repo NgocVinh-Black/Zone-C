@@ -21,6 +21,7 @@ Singleton {
     readonly property var general: core.general
     readonly property var theme: core.theme
     readonly property var bar: core.bar
+    readonly property var weather: core.weather
     readonly property var enabled: core.enabled
 
     // Validated settings of one feature, stored under "features.<name>".
