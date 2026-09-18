@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Sets the wallpaper and regenerates every Zone-C colour file from it with matugen.
+#
+#   zone-c-wallpaper <image>   use this image
+#   zone-c-wallpaper --pick    choose from ~/Pictures/Wallpapers with rofi
+#   zone-c-wallpaper --restore re-apply the last wallpaper (used at login)
+set -euo pipefail
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/zone-c"
+dir="${ZONE_C_WALLPAPERS:-$HOME/Pictures/Wallpapers}"
+link="$cache/wallpaper"
+mkdir -p "$cache"
+
+case "${1:-}" in
+--restore)
+    [[ -e "$link" ]] || exit 0
+    image="$(readlink -f "$link")"
+    ;;
+--pick)
+    [[ -d "$dir" ]] || { notify-send "Wallpaper" "Put images in $dir"; exit 1; }
+    choice="$(find "$dir" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) -printf '%f\n' | sort | rofi -dmenu -i -p Wallpaper)" || exit 0
+    [[ -n "$choice" ]] || exit 0
+    image="$dir/$choice"
+    ;;
+"")
+    echo "usage: zone-c-wallpaper <image> | --pick | --restore" >&2
+    exit 1
+    ;;
+*)
+    image="$(readlink -f "$1")"
+    ;;
+esac
+
+[[ -f "$image" ]] || { echo "zone-c-wallpaper: $image not found" >&2; exit 1; }
+ln -sfn "$image" "$link"
+
+# hyprpaper may still be starting at login.
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+    hyprctl hyprpaper listloaded >/dev/null 2>&1 && break
+    sleep 0.5
+done
+hyprctl hyprpaper preload "$image" >/dev/null
+hyprctl hyprpaper wallpaper ",$image" >/dev/null
+hyprctl hyprpaper unload unused >/dev/null || true
+
+matugen image "$image" --mode dark
+# Pick up the new border colours.
+hyprctl reload >/dev/null

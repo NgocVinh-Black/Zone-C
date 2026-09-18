@@ -15,7 +15,7 @@ Zone-C là một desktop shell cá nhân viết bằng Quickshell cho Hyprland, 
 | Hạng mục | Chọn |
 |---|---|
 | Hệ điều hành | Arch Linux |
-| Compositor | Chỉ Hyprland (config dạng Lua) |
+| Compositor | Chỉ Hyprland (config dạng hyprlang `.conf`) |
 | Toolkit | Quickshell bản chính thức trong repo Arch (`quickshell`), Qt 6 |
 | Ngôn ngữ | QML + JavaScript. Không C++, không cần build |
 | Script ngoài | Chỉ khi Quickshell không có API tương ứng, và chỉ được gọi từ file `*Service.qml` |
@@ -115,6 +115,11 @@ Zone-C/
 │   ├── battery/       feature.qml  BatteryService.qml  BatteryLogic.js  BatteryWidget.qml  schema.js
 │   │                  BatteryPopup.qml  BatteryCore.qml  ActionCapsule.qml  ProfileDock.qml
 │   └── clipboard/ …  lock/ …  wallpaper/ …  settings/ …   (giai đoạn 4–5)
+├── dotfiles/                    # phần còn lại của desktop, xem mục 2.6
+│   ├── hypr/  kitty/  zsh/  rofi/  swaync/  matugen/
+│   ├── defaults/                # màu mặc định, chép vào ~/.cache/zone-c/ khi cài
+│   └── bin/zone-c-wallpaper     # đặt hình nền + chạy matugen
+├── install.sh                   # cài gói, tạo symlink, bật service trên Arch mới
 ├── tools/
 │   └── check.sh                 # kiểm tra quy tắc kiến trúc + qmllint + test
 ├── config/
@@ -202,6 +207,17 @@ Config quyết định feature nào bật và nằm ở đâu. Mỗi phần tử
 | R5 | File QML ngoài `tests/` không quá 400 dòng | wc |
 | R6 | Mỗi `features/*/` có `feature.qml`, tên khớp thư mục, file khai báo tồn tại; toàn bộ unit test qua | `tests/js/features.test.mjs` + `node --test` |
 | R7 | `qmllint` | chỉ báo, không chặn (qmllint không phải lúc nào cũng hiểu kiểu của Quickshell) |
+
+### 2.6 Dotfiles và cài đặt
+
+Repo là một bộ desktop dùng được ngay sau khi cài Arch: `git clone` rồi `./install.sh`.
+
+- **Shell không phụ thuộc dotfiles.** `core/` và `features/` không đọc file nào trong `dotfiles/`; dotfiles chỉ gọi shell qua lệnh (`qs -c zone-c`, `qs -c zone-c ipc call popup toggle <tên> <arg>`). Quy tắc R1–R7 chỉ áp dụng cho QML.
+- **Cài bằng symlink**: repo → `~/.config/quickshell/zone-c` (nên chạy bằng `qs -c zone-c`); `dotfiles/<app>` → `~/.config/<app>`. `git pull` là cập nhật. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`. Chạy lại `install.sh` an toàn.
+- **Màu một nguồn**: `zone-c-wallpaper` đặt hình nền (hyprpaper) rồi chạy matugen; matugen sinh vào `~/.cache/zone-c/` các file `colors.json` (Zone-C), `hypr-colors.conf`, `hyprlock-colors.conf`, `kitty-colors.conf`, `rofi-colors.rasi`, `swaync-colors.css`. File sinh ra không nằm trong repo; `dotfiles/defaults/` là bản mặc định cùng bảng màu với `Colours.qml`.
+- **Hyprland**: `hyprland.conf` chỉ `source` các file trong `conf/` (variables, monitors, env, autostart, settings, rules, keybindings) và `local.conf` riêng từng máy (không vào git). Autostart chạy hyprpaper, hypridle, swaync, cliphist, polkit agent và Zone-C.
+- **Khoá và nghỉ**: hypridle giảm sáng 4 phút, khoá 5 phút (hyprlock), tắt màn 6 phút, ngủ 20 phút. Nút khoá trong popup pin gọi `loginctl lock-session`, nên cũng đi qua hyprlock.
+- **Popup từ phím tắt**: `shell.qml` có `IpcHandler` tên `popup` (`toggle(name, arg)`, `close()`), mở trên màn hình đang focus (`Hypr.focusedScreen`).
 
 ## 3. Core
 
@@ -352,7 +368,8 @@ Open-Meteo ─► core/services/Weather ─► WeatherWidget, CalendarPopup
 - **Hàm thuần** (`ConfigValidator.js`, `CoreSchema.js`, `ScaleMath.js`, `PopupLayout.js`, `FeatureContract.js`, `WeatherLogic.js`, các `*Logic.js` của feature): test bằng `node --test` trong `tests/js/`. File JS dùng `.pragma library` nên chạy được cả trong QML lẫn Node.
 - **Hợp đồng feature**: `tests/js/features.test.mjs` kiểm tra mọi `features/*/feature.qml`.
 - **Quy tắc kiến trúc**: `tools/check.sh` chạy R1–R7.
-- **Chạy thật**: `qs -p shell.qml` trong phiên Hyprland; Quickshell tự reload khi sửa file.
+- **Chạy thật**: `qs -c zone-c` trong phiên Hyprland; Quickshell tự reload khi sửa file.
+- **Installer**: `bash -n`, và chạy `./install.sh --no-packages --yes` trong một `HOME` giả để kiểm tra symlink, sao lưu và chạy lại lần hai.
 - Mỗi giai đoạn chỉ coi là xong khi `check.sh` qua và đã chạy thật trên Hyprland.
 
 ## 8. Lộ trình
@@ -374,5 +391,5 @@ Mỗi giai đoạn có kế hoạch triển khai riêng.
 - Âm thanh hiệu ứng của popup mạng v1 (file wav).
 - Lấy màu chủ đạo từ ảnh bìa cho khung popup nhạc (v1 dùng ImageMagick); Zone-C dùng màu theme.
 - Nhập mật khẩu wifi trong popup.
-- Installer tự động, gói AUR, Nix. Giai đoạn đầu chạy trực tiếp bằng `qs -p`.
+- Gói AUR, Nix; bản phân phối khác Arch.
 - Telemetry.

@@ -1,3 +1,5 @@
 node_modules/
 *.qmlc
 .qmlls.ini
+# Per-machine Hyprland overrides created by install.sh.
+dotfiles/hypr/local.conf
