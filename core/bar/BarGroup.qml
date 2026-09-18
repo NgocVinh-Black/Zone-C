@@ -16,7 +16,29 @@ Block {
     // so a hidden group can become visible again.
     property int shownCount: 0
 
+    // Bumped when slots load, so the widget scans below re-run.
+    property int revision: 0
+
+    // Block styling comes from the widgets: the first one decides padding and border,
+    // and a block with an interactive widget lightens and grows while hovered.
+    readonly property var widgets: {
+        revision;
+        const list = [];
+        for (let i = 0; i < slots.count; i++) {
+            const item = slots.itemAt(i)?.item;
+            if (item)
+                list.push(item);
+        }
+        return list;
+    }
+    readonly property var lead: widgets.length > 0 ? widgets[0] : null
+    readonly property var interactiveWidget: widgets.find(w => w.blockInteractive) ?? null
+    readonly property bool interactive: interactiveWidget !== null
+    readonly property bool hovered: interactive && blockHover.hovered
+    readonly property int padding: lead ? lead.blockPadding : Tokens.block.paddingX
+
     function recount(): void {
+        revision++;
         let count = 0;
         for (let i = 0; i < slots.count; i++) {
             if (slots.itemAt(i)?.slotShown)
@@ -25,18 +47,39 @@ Block {
         shownCount = count;
     }
 
-    implicitWidth: row.implicitWidth + Tokens.block.paddingX * 2
+    implicitWidth: row.implicitWidth + padding * 2
     implicitHeight: Tokens.bar.height
     width: implicitWidth
     height: implicitHeight
     visible: shownCount > 0
-    clip: true
+    clip: !interactive
+
+    color: hovered ? Colours.alpha(Colours.surface1, Tokens.block.hoverOpacity) : Colours.alpha(Colours.base, Tokens.block.opacity)
+    border.color: Colours.alpha(Colours.text, hovered ? Tokens.block.borderAlphaHover : (lead ? lead.blockBorderAlpha : Tokens.block.borderAlphaStatic))
+    scale: hovered ? interactiveWidget.blockHoverScale : 1
 
     Behavior on implicitWidth {
         Anim {
-            duration: Tokens.anim.slow
+            duration: Tokens.anim.medium
             easing.type: Easing.OutExpo
         }
+    }
+
+    Behavior on scale {
+        Anim {
+            duration: 300
+            easing.type: Easing.OutExpo
+        }
+    }
+
+    Behavior on color {
+        ColorAnim {
+            duration: 200
+        }
+    }
+
+    HoverHandler {
+        id: blockHover
     }
 
     Row {
@@ -65,6 +108,7 @@ Block {
                 visible: slotShown
 
                 onSlotShownChanged: root.recount()
+                onLoaded: Qt.callLater(root.recount)
                 onWidgetUrlChanged: load()
                 Component.onCompleted: load()
 

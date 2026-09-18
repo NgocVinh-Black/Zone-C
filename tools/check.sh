@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Enforces the Zone-C architecture rules (see docs/superpowers/specs/2026-09-17-zone-c-design.md, section 2.5).
+# Enforces the Zone-C architecture rules (see 2026-09-17-zone-c-design.md, section 2.5).
 set -uo pipefail
 
 cd "$(dirname "$0")/.."

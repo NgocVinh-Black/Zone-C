@@ -37,6 +37,8 @@ PanelWindow {
             groups: Config.bar.left
             screen: bar.screen
             barWindow: bar
+            enterX: -Tokens.bar.enterOffset
+            enterDelay: Tokens.bar.enterLeftDelay
         }
 
         BarZone {
@@ -47,6 +49,8 @@ PanelWindow {
             groups: Config.bar.right
             screen: bar.screen
             barWindow: bar
+            enterX: Tokens.bar.enterOffset
+            enterDelay: Tokens.bar.enterRightDelay
         }
 
         // Centered on the screen, but pushed aside instead of overlapping the other zones.
@@ -54,13 +58,15 @@ PanelWindow {
             anchors.verticalCenter: parent.verticalCenter
             x: {
                 const centered = (parent.width - width) / 2;
-                const minX = left.width > 0 ? left.width + Tokens.block.gap : 0;
-                const maxX = right.width > 0 ? right.x - width - Tokens.block.gap : parent.width - width;
+                const minX = left.width > 0 ? left.width + Tokens.bar.zoneGap : 0;
+                const maxX = right.width > 0 ? right.x - width - Tokens.bar.zoneGap : parent.width - width;
                 return Math.max(minX, Math.min(centered, maxX));
             }
             groups: Config.bar.center
             screen: bar.screen
             barWindow: bar
+            enterY: -Tokens.bar.enterOffset
+            enterDelay: Tokens.bar.enterCenterDelay
         }
     }
 }

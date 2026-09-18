@@ -5,14 +5,20 @@
   "theme": {
     "matugen": false
   },
+  "weather": {
+    "unit": "metric",
+    "intervalMinutes": 30
+  },
   "bar": {
-    "left": [["workspaces"], ["media"]],
+    "left": [["launcher"], ["notifications"], ["workspaces"], ["media"]],
     "center": [["clock", "weather"]],
     "right": [["tray"], ["keyboard", "network", "bluetooth", "volume", "battery"]]
   },
   "features": {
     "workspaces": { "count": 8 },
-    "clock": { "timeFormat": "HH:mm:ss", "dateFormat": "dddd, MMMM dd" },
-    "weather": { "unit": "metric", "intervalMinutes": 30 }
+    "clock": { "timeFormat": "hh:mm:ss AP", "dateFormat": "dddd, MMMM dd" },
+    "launcher": { "command": ["rofi", "-show", "drun"] },
+    "notifications": { "toggleCommand": ["swaync-client", "-t", "-sw"], "dndCommand": ["swaync-client", "-d", "-sw"] },
+    "battery": { "lockCommand": ["loginctl", "lock-session"] }
   }
 }

@@ -1,21 +1,21 @@
 .pragma library
 
 // Computes where a popup sits on a screen. All values are in pixels,
-// already scaled. `marginTop` keeps top-anchored popups below the bar and
-// `edge` is the gap to the left/right screen border.
+// already scaled. `marginTop` keeps top-anchored popups below the bar;
+// `edgeLeft` / `edgeRight` are the gaps to the left and right screen borders.
 
-function place(anchor, width, height, screenWidth, screenHeight, marginTop, edge) {
-    const w = Math.min(width, screenWidth - edge * 2);
-    const h = Math.min(height, screenHeight - marginTop - edge);
+function place(anchor, width, height, screenWidth, screenHeight, marginTop, edgeLeft, edgeRight) {
+    const w = Math.min(width, screenWidth - edgeLeft - edgeRight);
+    const h = Math.min(height, screenHeight - marginTop - edgeRight);
     let x;
     let y = marginTop;
 
     switch (anchor) {
     case "top-left":
-        x = edge;
+        x = edgeLeft;
         break;
     case "top-right":
-        x = screenWidth - w - edge;
+        x = screenWidth - w - edgeRight;
         break;
     case "top-center":
         x = (screenWidth - w) / 2;

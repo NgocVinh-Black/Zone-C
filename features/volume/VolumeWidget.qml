@@ -1,31 +1,34 @@
 import QtQuick
 import qs.core.bar
+import qs.core.services
 import qs.core.theme
 import qs.core.ui
-import qs.features.volume
+import "VolumeLogic.js" as Logic
 
-// Scroll to change volume, right click to mute.
+// Default output volume. Click opens the mixer, scroll changes volume, right click mutes.
 BarWidget {
     id: root
 
-    shown: VolumeService.available
+    readonly property bool active: !Audio.muted && Audio.volume > 0
+
+    shown: Audio.ready && Audio.sink !== null
     implicitWidth: pill.implicitWidth
     implicitHeight: pill.implicitHeight
 
     Pill {
         id: pill
 
-        icon: VolumeService.icon
-        text: VolumeService.percentText
-        active: !VolumeService.muted && VolumeService.volume > 0
+        icon: Logic.icon(Audio.volume, Audio.muted)
+        text: Math.round(Audio.volume * 100) + "%"
+        active: root.active
         accent: Colours.peach
         startDelay: root.indexInGroup * Tokens.pill.enterStagger
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton)
-                VolumeService.toggleMute();
+                Audio.toggleMute(Audio.sink);
             else
                 root.openPopup();
         }
-        onScrolled: wheel => VolumeService.stepVolume(wheel.angleDelta.y > 0 ? 1 : -1)
+        onScrolled: wheel => Audio.setVolume(Audio.sink, Logic.step(Audio.volume, wheel.angleDelta.y > 0 ? 1 : -1, 0.05))
     }
 }

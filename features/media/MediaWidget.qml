@@ -4,7 +4,7 @@ import qs.core.theme
 import qs.core.ui
 import qs.features.media
 
-// Album art, title/artist and previous / play-pause / next controls.
+// Album art, title and play time, then previous / play-pause / next.
 BarWidget {
     id: root
 
@@ -14,7 +14,7 @@ BarWidget {
     readonly property string nextIcon: String.fromCodePoint(0xF04AD)
 
     shown: MediaService.available
-    implicitWidth: content.implicitWidth + Tokens.media.padding * 2 - Tokens.block.paddingX * 2
+    implicitWidth: content.implicitWidth + (Tokens.media.padding - Tokens.block.paddingX) * 2
     implicitHeight: content.implicitHeight
 
     Row {
@@ -28,7 +28,7 @@ BarWidget {
 
             anchors.verticalCenter: parent.verticalCenter
             implicitWidth: infoRow.implicitWidth
-            implicitHeight: infoRow.implicitHeight
+            implicitHeight: Tokens.bar.height
             scale: infoArea.containsMouse ? 1.02 : 1
 
             Behavior on scale {
@@ -40,6 +40,7 @@ BarWidget {
             Row {
                 id: infoRow
 
+                anchors.verticalCenter: parent.verticalCenter
                 spacing: Tokens.media.infoSpacing
 
                 Rectangle {
@@ -68,6 +69,7 @@ BarWidget {
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
                     width: root.compact ? Tokens.media.titleWidthCompact : Tokens.media.titleWidth
+                    spacing: -2
 
                     StyledText {
                         width: parent.width
@@ -79,8 +81,7 @@ BarWidget {
 
                     StyledText {
                         width: parent.width
-                        visible: text !== ""
-                        text: MediaService.artist
+                        text: MediaService.timeText
                         elide: Text.ElideRight
                         font.pixelSize: Tokens.font.size.tiny
                         font.weight: Font.Black

@@ -11,6 +11,8 @@ Item {
     property bool active: false
     property color accent: Colours.blue
     property int startDelay: 0
+    // Overrides the icon and text colour when set (e.g. the battery's level tint).
+    property var contentColour: null
 
     signal clicked(var mouse)
     signal scrolled(var wheel)
@@ -103,7 +105,7 @@ Item {
         Icon {
             anchors.verticalCenter: parent.verticalCenter
             text: root.icon
-            color: root.active ? Colours.base : (root.hovered ? Colours.text : Colours.subtext0)
+            color: root.contentColour ?? (root.active ? Colours.base : (root.hovered ? Colours.text : Colours.subtext0))
 
             Behavior on color {
                 ColorAnim {}
@@ -118,7 +120,7 @@ Item {
             elide: Text.ElideRight
             font.pixelSize: Tokens.font.size.pill
             font.weight: Font.Black
-            color: root.active ? Colours.base : Colours.text
+            color: root.contentColour ?? (root.active ? Colours.base : Colours.text)
 
             Behavior on color {
                 ColorAnim {}

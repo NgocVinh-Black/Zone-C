@@ -10,6 +10,8 @@ import qs.core.ui
 BarWidget {
     id: root
 
+    blockBorderAlpha: Tokens.block.borderAlphaStatic
+
     shown: repeater.count > 0
     implicitWidth: row.implicitWidth + Tokens.tray.paddingX * 2
     implicitHeight: Tokens.tray.icon

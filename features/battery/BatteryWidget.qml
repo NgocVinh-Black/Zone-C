@@ -3,8 +3,9 @@ import qs.core.bar
 import qs.core.theme
 import qs.core.ui
 import qs.features.battery
+import "BatteryLogic.js" as Logic
 
-// Always filled; green while charging, red at 20% or less.
+// Tinted by level (blue, yellow, red); filled while charging (green) or low.
 BarWidget {
     id: root
 
@@ -17,8 +18,9 @@ BarWidget {
 
         icon: BatteryService.icon
         text: BatteryService.percent + "%"
-        active: true
+        active: Logic.filled(BatteryService.percent, BatteryService.charging)
         accent: Colours[BatteryService.tone]
+        contentColour: active ? Colours.base : Colours[BatteryService.tone]
         startDelay: root.indexInGroup * Tokens.pill.enterStagger
         onClicked: root.openPopup()
     }

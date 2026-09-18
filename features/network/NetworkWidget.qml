@@ -4,6 +4,7 @@ import qs.core.theme
 import qs.core.ui
 import qs.features.network
 
+// Wifi or ethernet state. Click opens the network popup on its Wi-Fi tab.
 BarWidget {
     id: root
 
@@ -19,12 +20,12 @@ BarWidget {
             if (NetworkService.kind === "ethernet")
                 return "Ethernet";
             if (NetworkService.kind === "wifi")
-                return NetworkService.name || "On";
+                return NetworkService.ssid || "On";
             return NetworkService.wifiEnabled ? "On" : "Off";
         }
-        active: NetworkService.connected
+        active: NetworkService.connected || NetworkService.wifiEnabled
         accent: Colours.blue
         startDelay: root.indexInGroup * Tokens.pill.enterStagger
-        onClicked: root.openPopup()
+        onClicked: root.openPopup("network", "wifi")
     }
 }
