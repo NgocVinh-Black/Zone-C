@@ -6,20 +6,24 @@ import Quickshell
 import Quickshell.Io
 import qs.core.bar
 import qs.core.feature
+import qs.core.overlay
 import qs.core.popup
 import qs.core.services
 import qs.core.state
 // Quickshell only registers a qs.<dir> module for directories reached through the
 // static import graph. Every feature file is loaded by URL (FeatureLoader, Bar,
-// PopupHost), so without these imports none of them can resolve their own module.
+// PopupHost, OverlayHost), so without these imports none of them can resolve
+// their own module.
 import qs.features.battery
 import qs.features.bluetooth
+import qs.features.clipboard
 import qs.features.clock
 import qs.features.keyboard
 import qs.features.launcher
 import qs.features.media
 import qs.features.network
 import qs.features.notifications
+import qs.features.osd
 import qs.features.tray
 import qs.features.volume
 import qs.features.weather
@@ -58,6 +62,10 @@ ShellRoot {
                 }
 
                 PopupHost {
+                    targetScreen: perScreen.modelData
+                }
+
+                OverlayHost {
                     screen: perScreen.modelData
                 }
             }

@@ -55,7 +55,7 @@ Một widget được mở popup của feature khác **theo tên** (`openPopup("
 
 ```
 Zone-C/
-├── shell.qml                    # Điểm vào: mỗi màn hình một Bar và một PopupHost
+├── shell.qml                    # Điểm vào: mỗi màn hình một Bar, một PopupHost, một OverlayHost
 ├── core/
 │   ├── config/
 │   │   ├── Config.qml           # singleton: đọc/theo dõi ~/.config/zone-c/shell.json
@@ -66,7 +66,7 @@ Zone-C/
 │   │   └── Colours.qml          # singleton: bảng màu (matugen → bảng mặc định lấy từ ảnh v1)
 │   ├── state/
 │   │   ├── ShellState.qml       # singleton: popup nào đang mở, trên màn hình nào, với tham số gì
-│   │   ├── Scale.qml            # singleton: hệ số co giãn
+│   │   ├── UiScale.qml          # singleton: hệ số co giãn (không đặt tên Scale: QtQuick đã có)
 │   │   ├── ScaleMath.js         # hàm thuần (có test)
 │   │   └── Paths.qml            # singleton: configDir, cacheDir, stateDir (theo XDG)
 │   ├── services/                # CHỈ service dùng bởi từ hai feature trở lên
@@ -82,6 +82,7 @@ Zone-C/
 │   │   ├── WaveFill.qml         # lớp chất lỏng có sóng (giữ để xác nhận, gauge tròn)
 │   │   ├── HoldArea.qml         # nhấn giữ để xác nhận
 │   │   ├── Reveal.qml           # giá trị 0→1 có trễ, cho animation xuất hiện lần lượt
+│   │   ├── SearchField.qml      # ô tìm kiếm dùng chung (launcher, clipboard)
 │   │   └── StyledText, Icon, IconButton, HoverArea, Anim, ColorAnim
 │   ├── feature/
 │   │   ├── Feature.qml          # kiểu dữ liệu của hợp đồng feature
@@ -93,13 +94,20 @@ Zone-C/
 │   │   ├── BarGroup.qml         # một Block chứa 1..n widget của các feature
 │   │   ├── BarWidget.qml        # kiểu gốc cho widget bar của feature
 │   │   └── IconBlockWidget.qml  # widget là một khối vuông có icon (tìm kiếm, chuông)
-│   └── popup/
-│       ├── PopupHost.qml        # một cửa sổ overlay mỗi màn hình
-│       ├── PopupBase.qml        # kiểu gốc cho popup: nền bo góc, đốm màu trôi, animation mở
-│       └── PopupLayout.js       # hàm thuần tính toạ độ (có test)
+│   ├── popup/
+│   │   ├── PopupHost.qml        # một cửa sổ overlay mỗi màn hình
+│   │   ├── PopupBase.qml        # kiểu gốc cho popup: nền bo góc, đốm màu trôi, animation mở
+│   │   └── PopupLayout.js       # hàm thuần tính toạ độ (có test)
+│   └── overlay/
+│       └── OverlayHost.qml      # nạp overlay của mọi feature, mỗi màn hình một lần
 ├── features/
-│   ├── launcher/      feature.qml  LauncherService.qml  LauncherWidget.qml  schema.js
-│   ├── notifications/ feature.qml  NotificationsService.qml  NotificationsWidget.qml  schema.js
+│   ├── launcher/      feature.qml  LauncherService.qml  LauncherLogic.js  LauncherWidget.qml  schema.js
+│   │                  LauncherPopup.qml  AppRow.qml
+│   ├── notifications/ feature.qml  NotificationsService.qml  NotificationsLogic.js  NotificationsWidget.qml  schema.js
+│   │                  NotificationsPopup.qml  NotificationToasts.qml  NotificationCard.qml
+│   ├── clipboard/     feature.qml  ClipboardService.qml  ClipboardLogic.js  schema.js
+│   │                  ClipboardPopup.qml  ClipRow.qml
+│   ├── osd/           feature.qml  OsdService.qml  OsdLogic.js  OsdOverlay.qml  schema.js
 │   ├── workspaces/    feature.qml  WorkspacesWidget.qml  WorkspaceButton.qml  schema.js
 │   ├── media/         feature.qml  MediaService.qml  EqualizerService.qml  MediaLogic.js  MediaWidget.qml
 │   │                  MusicPopup.qml  MusicCover.qml  MusicControls.qml  EqualizerPanel.qml  EqSlider.qml  EqLightning.qml
@@ -114,9 +122,9 @@ Zone-C/
 │   ├── volume/        feature.qml  VolumeWidget.qml  VolumeLogic.js  VolumePopup.qml  VolumeHero.qml  AudioNodeCard.qml
 │   ├── battery/       feature.qml  BatteryService.qml  BatteryLogic.js  BatteryWidget.qml  schema.js
 │   │                  BatteryPopup.qml  BatteryCore.qml  ActionCapsule.qml  ProfileDock.qml
-│   └── clipboard/ …  lock/ …  wallpaper/ …  settings/ …   (giai đoạn 4–5)
+│   └── lock/ …  settings/ …                                  (giai đoạn 5)
 ├── dotfiles/                    # phần còn lại của desktop, xem mục 2.6
-│   ├── hypr/  kitty/  zsh/  rofi/  swaync/  matugen/
+│   ├── hypr/  kitty/  zsh/  rofi/  matugen/
 │   ├── defaults/                # màu mặc định, chép vào ~/.cache/zone-c/ khi cài
 │   └── bin/zone-c-wallpaper     # đặt hình nền + chạy matugen
 ├── install.sh                   # cài gói, tạo symlink, bật service trên Arch mới
@@ -153,14 +161,20 @@ Feature {
         component: Qt.resolvedUrl("BatteryPopup.qml"),
         anchor: "top-right",              // top-left | top-right | top-center | center
         width: 480,                       // pixel ở 1920×1080, được scale
-        height: 760                       // có thể là binding (calendar: 510 hoặc 750)
+        height: 760,                      // có thể là binding (calendar: 510 hoặc 750)
+        keyboard: "ondemand"              // "exclusive" nếu popup có ô gõ chữ
     })
+    overlay: Qt.resolvedUrl("Toasts.qml") // tuỳ chọn: cửa sổ luôn có, tự vẽ lấy
 }
 ```
 
-Config riêng của feature nằm trong `schema.js` cạnh nó (`var fields = {...}`), được đọc bằng `Config.feature("<tên>", Schema.fields)` và nằm dưới `features.<tên>` trong `shell.json`. Thuộc tính `overlays` (cửa sổ luôn có như OSD, thông báo) sẽ được thêm vào hợp đồng ở giai đoạn 4.
+Config riêng của feature nằm trong `schema.js` cạnh nó (`var fields = {...}`), được đọc bằng `Config.feature("<tên>", Schema.fields)` và nằm dưới `features.<tên>` trong file config.
 
-`FeatureContract.js` kiểm tra lúc chạy: `name` khớp thư mục, `anchor` hợp lệ, `width`/`height` > 0. `tests/js/features.test.mjs` kiểm tra thêm rằng file khai báo tồn tại. Hợp đồng sai: cảnh báo và bỏ qua feature đó, shell vẫn chạy.
+**Overlay** là cửa sổ luôn tồn tại, không phải widget bar cũng không phải popup: toast thông báo, OSD âm lượng. `OverlayHost` nạp nó một lần cho mỗi màn hình và đặt `screen`; phần còn lại do chính overlay quyết định, kể cả kích thước và vùng nhận chuột. Feature chỉ có overlay (như `osd`) thì đưa tên vào `enabled` để được nạp.
+
+**Bàn phím**: `PopupHost` chỉ xin `WlrKeyboardFocus.Exclusive` cho popup khai báo `keyboard: "exclusive"`, để phím tắt mở launcher là gõ được ngay. Popup còn lại giữ `OnDemand`.
+
+`FeatureContract.js` kiểm tra lúc chạy: `name` khớp thư mục, `anchor` hợp lệ, `width`/`height` > 0, `keyboard` thuộc danh sách. `tests/js/features.test.mjs` kiểm tra thêm rằng file khai báo tồn tại. Hợp đồng sai: cảnh báo và bỏ qua feature đó, shell vẫn chạy.
 
 **Widget bar** kế thừa `core/bar/BarWidget.qml`:
 - Nhận `featureName`, `screen`, `barWindow`, `indexInGroup`; có `compact` (màn hình rộng dưới 1920).
@@ -332,9 +346,16 @@ Chỉ đưa service vào `core/services/` khi **từ hai feature trở lên** c�
 
 Nếu API Quickshell khác tên trên phiên bản đang cài, chỉ sửa trong service tương ứng.
 
-### 4.3 Giai đoạn sau
+### 4.3 Popup giữa và hệ thống, giai đoạn 4
 
-`launcher` (center, 800×700), `clipboard` (center, 800×700), `notifications` (overlay + trung tâm thông báo), OSD âm lượng, `lock`, `wallpaper` (+ matugen), `settings`. Thiết kế chi tiết từng popup bổ sung khi tới giai đoạn tương ứng, dựa trên popup v1.
+| Thành phần | Vị trí, kích thước | Nội dung |
+|---|---|---|
+| Launcher | center, 800×700, giữ bàn phím | Ô tìm kiếm trên danh sách ứng dụng xếp hạng từ `DesktopEntries`. Thứ tự: trùng khít, tiền tố, đầu từ, chứa chuỗi, từ khoá, phân loại, mô tả, rồi khớp rời rạc (gõ "fox" ra Firefox). Icon lấy theo icon theme; mục `Terminal=true` chạy qua `features.launcher.terminal`. Mũi tên chọn, Enter mở, con trỏ không rời ô gõ |
+| Clipboard | center, 800×700, giữ bàn phím | Lịch sử từ `cliphist list`, đọc lại mỗi lần mở chứ không hỏi vòng. Ảnh hiện định dạng và kích thước thay vì chữ. Enter chép lại, Shift+Delete xoá một mục, nút thùng rác xoá cả lịch sử. `cliphist` nhận lại đúng dòng nó in ra, nên dòng được giữ nguyên qua khâu phân tích |
+| Notifications | overlay top-right + popup top-left 520×760 | Shell **chính là** daemon thông báo (`NotificationServer`), nên không được chạy daemon khác cùng lúc. Toast xếp chồng dưới bar, tự ẩn sau `timeoutMs`, mức critical thì ở lại; ẩn toast không xoá khỏi trung tâm. Trung tâm: mới nhất trước, critical lên đầu, mỗi thẻ có vạch màu theo mức, nguồn, tuổi, nút hành động của ứng dụng. Header có Không làm phiền và Xoá tất cả |
+| OSD âm lượng | overlay, giữa cạnh dưới | Hiện khi âm lượng hoặc trạng thái tắt tiếng đổi, không nhận chuột. Im lặng 1.5 giây đầu (PipeWire báo giá trị khởi tạo muộn) và khi popup âm lượng đang mở |
+
+Giai đoạn sau: `lock`, `settings`. Hình nền + matugen đã chạy qua `bin/zone-c-wallpaper`.
 
 ## 5. Luồng dữ liệu
 
@@ -379,8 +400,8 @@ Open-Meteo ─► core/services/Weather ─► WeatherWidget, CalendarPopup
 | 1. Core | config + validator, theme, state, `Hypr`, ui, feature loader + hợp đồng, bar khung (slot rỗng), popup host (chưa có popup), `check.sh`, tests | ✅ Shell khởi động với bar rỗng, test qua |
 | 2. Bar | features: workspaces, media, clock, weather, tray, keyboard, network, bluetooth, volume, battery (chỉ widget + service) | ✅ Bar dùng được hằng ngày |
 | 3. Giao diện v1 + popup | nút launcher/notifications, bảng màu v1, popup nhạc (+ equalizer), lịch, mạng, âm lượng, pin | Code xong, test qua; **chưa chạy thật trên Hyprland** |
-| 4. Popup giữa + hệ thống | launcher, clipboard, notifications, OSD volume | |
-| 5. Hoàn thiện | lock, wallpaper + matugen, settings | |
+| 4. Popup giữa + hệ thống | launcher, clipboard, notifications (toast + trung tâm), OSD âm lượng | ✅ Đã chạy thật trên Hyprland |
+| 5. Hoàn thiện | lock, settings (hình nền + matugen đã xong) | |
 
 Mỗi giai đoạn có kế hoạch triển khai riêng.
 

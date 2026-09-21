@@ -70,7 +70,7 @@ official=(
     pipewire pipewire-pulse wireplumber networkmanager bluez bluez-utils upower
     power-profiles-daemon brightnessctl playerctl easyeffects
     # Apps and tools used by the keybinds
-    kitty zsh zsh-autosuggestions zsh-syntax-highlighting "rofi-wayland|rofi" swaync libnotify
+    kitty zsh zsh-autosuggestions zsh-syntax-highlighting "rofi-wayland|rofi" libnotify
     cliphist wl-clipboard grim slurp thunar firefox neovim git jq
     hyprpicker wf-recorder pavucontrol btop rofi-emoji flameshot
     # Desktop essentials: Vietnamese input, keyring, Thunar mounts and thumbnails,
@@ -81,7 +81,7 @@ official=(
     # Office suite (Vietnamese UI) with fonts metric-compatible with Word documents
     libreoffice-fresh libreoffice-fresh-vi ttf-liberation
     # Archives, from the file manager as well as the shell
-    zip unzip p7zip unrar thunar-archive-plugin file-roller
+    zip unzip "7zip|p7zip" unrar thunar-archive-plugin file-roller
     # Viewers and codecs
     "eog|loupe" mpv "papers|evince" ffmpeg gst-libav
     gst-plugins-good gst-plugins-bad gst-plugins-ugly
@@ -103,6 +103,9 @@ in_repos() { pacman -Si "$1" >/dev/null 2>&1; }
 
 install_packages() {
     step "Updating the system and installing packages"
+    # in_repos below reads the sync database; on a fresh install it can be stale
+    # enough that every package would look missing.
+    run sudo pacman -Sy
     local repo_pkgs=() aur_pkgs=() entry choice alt
     for entry in "${official[@]}"; do
         choice=""
@@ -157,9 +160,12 @@ make_room() {
         return 1
     fi
     if [[ -e "$target" || -L "$target" ]]; then
-        run mkdir -p "$backup"
-        run mv "$target" "$backup/"
-        info "backed up $(basename "$target") to $backup"
+        # Keep the path inside the backup, so gtk-3.0/settings.ini and
+        # gtk-4.0/settings.ini do not land on top of each other.
+        local relative="${target/#$HOME\//}"
+        run mkdir -p "$backup/$(dirname "$relative")"
+        run mv "$target" "$backup/$relative"
+        info "backed up ${target/#$HOME/\~} to $backup"
     fi
     return 0
 }
@@ -182,7 +188,6 @@ link_configs() {
     link "$dots/kitty" "$config/kitty"
     link "$dots/rofi" "$config/rofi"
     link "$dots/matugen" "$config/matugen"
-    link "$dots/swaync/config.json" "$config/swaync/config.json"
     link "$dots/zsh/.zshrc" "$HOME/.zshrc"
     link "$dots/bin/zone-c-wallpaper" "$HOME/.local/bin/zone-c-wallpaper"
     link "$dots/bin/zone-c-session" "$HOME/.local/bin/zone-c-session"
@@ -192,18 +197,6 @@ link_configs() {
     link "$dots/gtk-3.0/settings.ini" "$config/gtk-3.0/settings.ini"
     link "$dots/gtk-4.0/settings.ini" "$config/gtk-4.0/settings.ini"
     link "$dots/mimeapps.list" "$config/mimeapps.list"
-
-    # swaync needs an absolute path to the colour file, so style.css is rendered.
-    if [[ -e "$config/swaync/style.css" && ! -L "$config/swaync/style.css" ]] &&
-        ! grep -q "zone-c" "$config/swaync/style.css"; then
-        run mkdir -p "$backup"
-        run mv "$config/swaync/style.css" "$backup/"
-    fi
-    if $dry; then
-        info "render $config/swaync/style.css"
-    else
-        sed "s|@HOME@|$HOME|g" "$dots/swaync/style.css" >"$config/swaync/style.css"
-    fi
 
     # Per-machine Hyprland overrides, ignored by git.
     [[ -e "$dots/hypr/local.conf" ]] || run touch "$dots/hypr/local.conf"
@@ -304,5 +297,5 @@ fi
 step "Done"
 info "Log out and pick the Hyprland session (or reboot)."
 info "Put wallpapers in ~/Pictures/Wallpapers, then press SUPER+SHIFT+W to pick one;"
-info "the bar, popups, borders, kitty, rofi and swaync take its colours."
+info "the bar, popups, borders, kitty and rofi take its colours."
 info "Shell logs: run 'qs -c zone-c' from a terminal."

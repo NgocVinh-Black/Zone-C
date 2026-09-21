@@ -19,6 +19,19 @@ test("popup needs component, valid anchor and positive size", () => {
     assert.equal(errors.length, 3);
 });
 
+test("popup keyboard mode is optional but must be known when given", () => {
+    const popup = { component: "file:///x.qml", anchor: "center", width: 10, height: 10 };
+    assert.equal(C.check({ name: "a", popup }, "a").length, 0);
+    assert.equal(C.check({ name: "a", popup: { ...popup, keyboard: "exclusive" } }, "a").length, 0);
+    assert.equal(C.check({ name: "a", popup: { ...popup, keyboard: "sometimes" } }, "a").length, 1);
+});
+
+test("only popups asking for it take the keyboard outright", () => {
+    assert.equal(C.wantsExclusiveKeyboard(null), false);
+    assert.equal(C.wantsExclusiveKeyboard({ keyboard: "ondemand" }), false);
+    assert.equal(C.wantsExclusiveKeyboard({ keyboard: "exclusive" }), true);
+});
+
 test("feature names must be simple identifiers", () => {
     assert.equal(C.isValidName("battery"), true);
     assert.equal(C.isValidName("my_widget2"), true);

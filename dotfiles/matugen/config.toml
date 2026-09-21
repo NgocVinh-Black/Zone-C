@@ -23,8 +23,3 @@ post_hook = "pkill -USR1 -x kitty || true"
 [templates.rofi]
 input_path = "~/.config/matugen/templates/rofi-colors.rasi"
 output_path = "~/.cache/zone-c/rofi-colors.rasi"
-
-[templates.swaync]
-input_path = "~/.config/matugen/templates/swaync-colors.css"
-output_path = "~/.cache/zone-c/swaync-colors.css"
-post_hook = "swaync-client -rs || true"

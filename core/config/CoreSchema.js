@@ -55,6 +55,8 @@ var fields = {
             intervalMinutes: { type: "number", int: true, default: 30, min: 5, max: 720 }
         }
     },
-    enabled: { type: "array", default: [], check: isStringList },
+    // Features with no bar widget: they are loaded because they are named here.
+    // "clipboard" is a popup opened by keybind, "osd" an overlay that appears on its own.
+    enabled: { type: "array", default: ["clipboard", "osd"], check: isStringList },
     features: { type: "object", default: {} }
 };

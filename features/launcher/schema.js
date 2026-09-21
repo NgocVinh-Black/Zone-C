@@ -1,9 +1,11 @@
 .pragma library
 
 // Settings under features.launcher in shell.json.
-// The built-in launcher popup comes in a later stage; until then an external one runs.
 var fields = {
-    command: { type: "array", default: ["rofi", "-show", "drun"], check: isCommand }
+    maxResults: { type: "number", int: true, default: 40, min: 1, max: 200 },
+    // Used for desktop entries that ask to run in a terminal.
+    terminal: { type: "array", default: ["kitty", "-e"], check: isCommand },
+    placeholder: { type: "string", default: "Search applications" }
 };
 
 function isCommand(value) {

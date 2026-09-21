@@ -248,3 +248,98 @@ test("time of day tones and relative day names", () => {
     assert.equal(C.relativeDay(new Date(2026, 3, 7), today), "Today");
     assert.equal(C.relativeDay(new Date(2026, 3, 12), today), "");
 });
+
+test("launcher ranks exact, prefix, word and fuzzy matches in that order", () => {
+    const L = loadQmlJs("features/launcher/LauncherLogic.js");
+    const entries = [
+        { name: "Files", comment: "Browse the file system", keywords: ["manager"], categories: ["Utility"] },
+        { name: "Recent Files", comment: "", keywords: [], categories: [] },
+        { name: "Firefox", comment: "Browse the web", keywords: ["www"], categories: ["Network"] },
+        { name: "Text Editor", comment: "", keywords: [], categories: ["Development"] }
+    ];
+
+    assert.deepEqual([...L.search(entries, "files", 0)].map(e => e.name), ["Files", "Recent Files"]);
+    // "fox" matches Firefox only as a subsequence, and still finds it.
+    assert.deepEqual([...L.search(entries, "fox", 0)].map(e => e.name), ["Firefox"]);
+    // Keywords and categories match when the name does not.
+    assert.deepEqual([...L.search(entries, "www", 0)].map(e => e.name), ["Firefox"]);
+    assert.deepEqual([...L.search(entries, "development", 0)].map(e => e.name), ["Text Editor"]);
+    assert.deepEqual([...L.search(entries, "zzz", 0)], []);
+    // An empty query keeps everything, alphabetically.
+    assert.deepEqual([...L.search(entries, "", 0)].map(e => e.name), ["Files", "Firefox", "Recent Files", "Text Editor"]);
+    assert.equal(L.search(entries, "", 2).length, 2);
+});
+
+test("launcher index wraps at both ends and survives an empty list", () => {
+    const L = loadQmlJs("features/launcher/LauncherLogic.js");
+    assert.equal(L.clampIndex(0, 3), 0);
+    assert.equal(L.clampIndex(3, 3), 0);
+    assert.equal(L.clampIndex(-1, 3), 2);
+    assert.equal(L.clampIndex(5, 0), 0);
+});
+
+test("clipboard parses cliphist lines and recognises images", () => {
+    const C = loadQmlJs("features/clipboard/ClipboardLogic.js");
+    const entries = C.parse("3\thello  world\n2\t[[ binary data 12 KiB png 300x200 ]]\n1\tline\n\n");
+    assert.equal(entries.length, 3);
+    assert.deepEqual({ ...entries[0] }, {
+        id: "3",
+        line: "3\thello  world",
+        preview: "hello  world",
+        image: false,
+        label: "hello world"
+    });
+    assert.equal(entries[1].image, true);
+    assert.equal(entries[1].label, "png 300x200 · 12 KiB");
+    // The whole line goes back to cliphist, so it must survive parsing untouched.
+    assert.equal(entries[1].line, "2\t[[ binary data 12 KiB png 300x200 ]]");
+});
+
+test("clipboard search is a case-insensitive substring match", () => {
+    const C = loadQmlJs("features/clipboard/ClipboardLogic.js");
+    const entries = C.parse("2\tpacman -Syu\n1\tHello There");
+    assert.deepEqual([...C.filter(entries, "HELLO")].map(e => e.id), ["1"]);
+    assert.deepEqual([...C.filter(entries, "")].map(e => e.id), ["2", "1"]);
+    assert.deepEqual([...C.filter(entries, "nope")], []);
+});
+
+test("notification urgency picks a tone and critical sorts to the top", () => {
+    const N = loadQmlJs("features/notifications/NotificationsLogic.js");
+    assert.equal(N.tone(0), "subtext0");
+    assert.equal(N.tone(1), "blue");
+    assert.equal(N.tone(2), "red");
+    const ordered = N.order([
+        { id: "old", urgency: 1, time: 100 },
+        { id: "new", urgency: 1, time: 300 },
+        { id: "crit", urgency: 2, time: 200 }
+    ]);
+    assert.deepEqual([...ordered].map(e => e.id), ["crit", "new", "old"]);
+});
+
+test("notification age, markup stripping and source fallback", () => {
+    const N = loadQmlJs("features/notifications/NotificationsLogic.js");
+    const now = 1_000_000_000;
+    assert.equal(N.age(now, now - 10_000), "now");
+    assert.equal(N.age(now, now - 5 * 60_000), "5m");
+    assert.equal(N.age(now, now - 3 * 3_600_000), "3h");
+    assert.equal(N.age(now, now - 2 * 86_400_000), "2d");
+    assert.equal(N.plain("<b>Bold</b><br/>next &amp; last"), "Bold\nnext & last");
+    assert.equal(N.source("Firefox", "org.mozilla.firefox"), "Firefox");
+    assert.equal(N.source("", "org.mozilla.firefox"), "Firefox");
+    assert.equal(N.source("", ""), "Notification");
+    assert.equal(N.countLabel(7), "7");
+    assert.equal(N.countLabel(120), "99+");
+});
+
+test("osd volume glyphs, percentage and clamped fill", () => {
+    const O = loadQmlJs("features/osd/OsdLogic.js");
+    assert.equal(cp(O.icon(0.5, true)), "f075f");
+    assert.equal(cp(O.icon(0, false)), "f075f");
+    assert.equal(cp(O.icon(0.2, false)), "f057f");
+    assert.equal(cp(O.icon(0.5, false)), "f0580");
+    assert.equal(cp(O.icon(0.9, false)), "f057e");
+    assert.equal(O.percent(0.925), 93);
+    assert.equal(O.percent(1.4), 100);
+    assert.equal(O.fill(1.4), 1);
+    assert.equal(O.fill(-1), 0);
+});

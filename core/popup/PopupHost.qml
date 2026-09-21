@@ -5,6 +5,7 @@ import qs.core.feature
 import qs.core.state
 import qs.core.theme
 import "PopupLayout.js" as PopupLayout
+import "../feature/FeatureContract.js" as Contract
 
 // One overlay per screen that shows the active feature's popup, like Serpantinum v1:
 // a clipping box grows to the popup's size, and the popup draws its own surface.
@@ -12,11 +13,16 @@ import "PopupLayout.js" as PopupLayout
 PanelWindow {
     id: host
 
-    readonly property bool isActive: ShellState.activePopup !== "" && ShellState.activeScreen === screen
+    // The screen this host belongs to, handed in by the shell. Deliberately not the
+    // window's own `screen`: that one is written back when the window maps, and
+    // mapping is what isActive decides, so reading it here is a binding loop.
+    property var targetScreen: null
+
+    readonly property bool isActive: ShellState.activePopup !== "" && ShellState.activeScreen === targetScreen
     readonly property var decl: isActive ? (FeatureLoader.features[ShellState.activePopup]?.popup ?? null) : null
     // The screen size is known before this window is mapped; the window's own size isn't.
-    readonly property real areaWidth: screen?.width ?? width
-    readonly property real areaHeight: screen?.height ?? height
+    readonly property real areaWidth: targetScreen?.width ?? width
+    readonly property real areaHeight: targetScreen?.height ?? height
     readonly property var target: decl ? PopupLayout.place(decl.anchor, UiScale.s(decl.width), UiScale.s(decl.height), areaWidth, areaHeight, Tokens.popup.marginTop, Tokens.popup.edgeLeft, Tokens.popup.edgeRight) : null
 
     property bool mapped: false
@@ -27,6 +33,7 @@ PanelWindow {
     // Last placed geometry; content keeps this size while the box shrinks away.
     property var lastTarget: null
 
+    screen: targetScreen
     visible: mapped
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -40,7 +47,13 @@ PanelWindow {
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "zone-c-popup"
-    WlrLayershell.keyboardFocus: isActive ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    // Popups that are typed into ask for the keyboard outright, so a keybind can
+    // open one and the first keystroke already lands in its search box.
+    WlrLayershell.keyboardFocus: {
+        if (!isActive)
+            return WlrKeyboardFocus.None;
+        return Contract.wantsExclusiveKeyboard(decl) ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand;
+    }
 
     // Punch the bar out of the input region so bar widgets keep working while a popup is open.
     mask: Region {
@@ -76,7 +89,7 @@ PanelWindow {
         if (loadedPopup !== ShellState.activePopup) {
             loadedPopup = ShellState.activePopup;
             content.setSource(decl.component, {
-                screen: host.screen
+                screen: host.targetScreen
             });
         }
 

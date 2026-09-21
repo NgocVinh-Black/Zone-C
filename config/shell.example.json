@@ -14,11 +14,14 @@
     "center": [["clock", "weather"]],
     "right": [["tray"], ["keyboard", "network", "bluetooth", "volume", "battery"]]
   },
+  "enabled": ["clipboard", "osd"],
   "features": {
     "workspaces": { "count": 8 },
     "clock": { "timeFormat": "hh:mm:ss AP", "dateFormat": "dddd, MMMM dd" },
-    "launcher": { "command": ["rofi", "-show", "drun"] },
-    "notifications": { "toggleCommand": ["swaync-client", "-t", "-sw"], "dndCommand": ["swaync-client", "-d", "-sw"] },
+    "launcher": { "terminal": ["kitty", "-e"], "placeholder": "Search applications" },
+    "clipboard": { "maxEntries": 200 },
+    "notifications": { "maxToasts": 4, "timeoutMs": 6000, "keepCritical": true },
+    "osd": { "timeoutMs": 1600 },
     "battery": { "lockCommand": ["loginctl", "lock-session"] }
   }
 }
