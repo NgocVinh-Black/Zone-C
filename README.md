@@ -30,12 +30,28 @@ cd ~/Projects/Zone-C
 
 `install.sh` hỏi trước mỗi bước (thêm `--yes` để bỏ hỏi, `--dry-run` để xem trước):
 
-1. Cài gói từ repo Arch; `quickshell`, `matugen` lấy từ AUR nếu repo không có (tự cài `yay` khi cần).
-2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,swaync}`, `~/.zshrc`, `~/.local/bin/zone-c-wallpaper`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
-3. Tạo `~/.config/zone-c/shell.json` và bảng màu mặc định trong `~/.cache/zone-c/`.
-4. Bật NetworkManager, bluetooth, power-profiles-daemon; hỏi bật SDDM và đổi shell sang zsh.
+1. Cài gói từ repo Arch: Hyprland và phiên làm việc, âm thanh, mạng, Bluetooth, gõ tiếng Việt (fcitx5 + Unikey), LibreOffice, Flameshot, nén/giải nén, xem ảnh/video/PDF, hỗ trợ ổ NTFS/exFAT, và nhóm lệnh cơ bản. `quickshell`, `matugen`, VS Code, Notion lấy từ AUR nếu repo không có (tự cài `yay` khi cần).
+2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,swaync,gtk-3.0,gtk-4.0}`, `mimeapps.list`, `code-flags.conf`, `electron-flags.conf`, `~/.zshrc`, `~/.local/bin/{zone-c-wallpaper,zone-c-session}`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
+3. Tạo `~/.config/zone-c/shell.json`, bảng màu mặc định trong `~/.cache/zone-c/`, cấu hình lần đầu cho fcitx5, Flameshot, qt6ct, và chép ảnh nền mặc định vào `~/Pictures/Wallpapers/`.
+4. Bật NetworkManager, bluetooth, power-profiles-daemon, đồng bộ giờ, fstrim; hỏi bật SDDM và đổi shell sang zsh.
 
-Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Bỏ ảnh vào `~/Pictures/Wallpapers` rồi bấm `SUPER+SHIFT+W` để chọn hình nền: bar, popup, viền cửa sổ, kitty, rofi, swaync đổi màu theo ảnh (matugen).
+Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Lần đầu vào sẽ dùng ảnh nền mặc định của Zone-C. Bỏ ảnh của bạn vào `~/Pictures/Wallpapers` rồi bấm `SUPER+SHIFT+W` để đổi: bar, popup, viền cửa sổ, kitty, rofi, swaync đổi màu theo ảnh (matugen).
+
+### Hai việc phải tự làm sau khi cài
+
+**Gõ tiếng Việt:** bộ gõ mặc định là Unikey, chuyển bằng `CTRL+Space`. Nếu bảng chọn bộ gõ trống thì mở `fcitx5-configtool` và thêm Unikey.
+
+**Cho keyring tự mở khoá** (không làm thì Chrome, VS Code, Notion hỏi mật khẩu keyring mỗi lần đăng nhập). Installer không tự sửa vì đây là file xác thực của hệ thống. Thêm 2 dòng vào cuối `/etc/pam.d/sddm`:
+
+```bash
+sudo cp /etc/pam.d/sddm /etc/pam.d/sddm.backup
+sudo tee -a /etc/pam.d/sddm >/dev/null <<'EOF'
+auth     optional  pam_gnome_keyring.so
+session  optional  pam_gnome_keyring.so auto_start
+EOF
+```
+
+Mật khẩu keyring phải trùng mật khẩu đăng nhập thì mới tự mở được.
 
 Vì là symlink, `git pull` trong repo là cập nhật luôn cả shell lẫn dotfiles. Chỉnh riêng cho từng máy (màn hình, layout bàn phím) đặt trong `~/.config/hypr/local.conf`, file này không vào git.
 
@@ -48,14 +64,15 @@ Vì là symlink, `git pull` trong repo là cập nhật luôn cả shell lẫn d
 | `SUPER+Q` / `F` / `ALT+F` / `ALT+Space` / `P` | đóng / toàn màn hình / phóng to / nổi / ghim cửa sổ |
 | `SUPER+1…0`, `SUPER+ALT+1…0` | chuyển / chuyển cửa sổ sang workspace |
 | `CTRL+SUPER+←/→`, `SUPER+Page Up/Down` | workspace trước / sau |
-| `SUPER+S` / `M` / `D` / `R`, `CTRL+SHIFT+Esc` | workspace đặc biệt: chung / nhạc / chat / todo / btop |
+| `SUPER+S` / `M` / `D` / `R`, `CTRL+SHIFT+Esc` | workspace đặc biệt: chung / nhạc / chat / ghi chú (Notion) / btop |
 | `SUPER+ALT+mũi tên`, `SUPER+-/=` | đổi kích thước cửa sổ |
 | `ALT+Tab`, `SUPER+,` / `SUPER+U` | chuyển cửa sổ, gộp nhóm / tách khỏi nhóm |
 | `SUPER+K` / `ALT+M` / `A` / `B` | popup lịch / nhạc / âm lượng / pin |
 | `SUPER+SHIFT+N` / `SUPER+SHIFT+B` | popup mạng tab Wi-Fi / Bluetooth |
 | `SUPER+N` / `SUPER+V` / `SUPER+.` / `SUPER+SHIFT+W` | thông báo / clipboard / emoji / chọn hình nền |
 | `SUPER+L` / `SUPER+SHIFT+L` / `CTRL+ALT+Del` | khoá màn hình / ngủ / menu tắt máy |
-| `Print` / `SUPER+SHIFT+S` / `SUPER+SHIFT+C` | chụp cả màn hình / chụp vùng / lấy màu |
+| `Print` / `SUPER+SHIFT+S` / `SUPER+SHIFT+ALT+S` | Flameshot: chụp cả màn hình / chọn vùng và vẽ chú thích / chọn vùng sau 3 giây |
+| `SUPER+SHIFT+C` | lấy màu |
 | `SUPER+ALT+R` / `CTRL+ALT+R` | quay vùng / cả màn hình (bấm lại để dừng) |
 | `CTRL+SUPER+ALT+R` | khởi động lại shell |
 

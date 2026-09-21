@@ -1,0 +1,18 @@
+[Default Applications]
+inode/directory=thunar.desktop
+text/plain=code.desktop
+text/html=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+application/pdf=org.gnome.Papers.desktop;org.gnome.Evince.desktop
+image/png=org.gnome.eog.desktop;org.gnome.Loupe.desktop
+image/jpeg=org.gnome.eog.desktop;org.gnome.Loupe.desktop
+image/gif=org.gnome.eog.desktop;org.gnome.Loupe.desktop
+image/webp=org.gnome.eog.desktop;org.gnome.Loupe.desktop
+video/mp4=mpv.desktop
+video/x-matroska=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/flac=mpv.desktop
+application/zip=org.gnome.FileRoller.desktop
+application/x-7z-compressed=org.gnome.FileRoller.desktop
+application/vnd.rar=org.gnome.FileRoller.desktop

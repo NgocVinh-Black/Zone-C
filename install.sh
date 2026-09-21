@@ -72,12 +72,32 @@ official=(
     # Apps and tools used by the keybinds
     kitty zsh zsh-autosuggestions zsh-syntax-highlighting "rofi-wayland|rofi" swaync libnotify
     cliphist wl-clipboard grim slurp thunar firefox neovim git jq
-    hyprpicker wf-recorder pavucontrol btop rofi-emoji
+    hyprpicker wf-recorder pavucontrol btop rofi-emoji flameshot
+    # Desktop essentials: Vietnamese input, keyring, Thunar mounts and thumbnails,
+    # user folders, trash, night light, CJK fonts
+    fcitx5 fcitx5-unikey fcitx5-gtk fcitx5-qt fcitx5-configtool gnome-keyring
+    gvfs gvfs-mtp tumbler ffmpegthumbnailer xdg-user-dirs xdg-utils pipewire-alsa
+    trash-cli gammastep geoclue noto-fonts-cjk
+    # Office suite (Vietnamese UI) with fonts metric-compatible with Word documents
+    libreoffice-fresh libreoffice-fresh-vi ttf-liberation
+    # Archives, from the file manager as well as the shell
+    zip unzip p7zip unrar thunar-archive-plugin file-roller
+    # Viewers and codecs
+    "eog|loupe" mpv "papers|evince" ffmpeg gst-libav
+    gst-plugins-good gst-plugins-bad gst-plugins-ugly
+    # USB sticks and Windows drives: NTFS, exFAT, FAT32, automounting, formatting
+    ntfs-3g exfatprogs dosfstools udisks2 thunar-volman gnome-disk-utility
+    # VPN, static IP and enterprise Wi-Fi (nm-connection-editor), calculator
+    network-manager-applet gnome-calculator
+    # Everyday command line
+    man-db man-pages less rsync openssh wget curl usbutils pciutils lsof
+    # GTK and Qt theming, so apps match the shell
+    adw-gtk-theme adwaita-icon-theme
     # Fonts and icons
     ttf-jetbrains-mono ttf-jetbrains-mono-nerd ttf-iosevka-nerd noto-fonts noto-fonts-emoji papirus-icon-theme
 )
 # Installed from the repos when available, otherwise from the AUR.
-either=(quickshell matugen)
+either=(quickshell matugen visual-studio-code-bin notion-app-electron)
 
 in_repos() { pacman -Si "$1" >/dev/null 2>&1; }
 
@@ -166,6 +186,12 @@ link_configs() {
     link "$dots/zsh/.zshrc" "$HOME/.zshrc"
     link "$dots/bin/zone-c-wallpaper" "$HOME/.local/bin/zone-c-wallpaper"
     link "$dots/bin/zone-c-session" "$HOME/.local/bin/zone-c-session"
+    link "$dots/code/code-flags.conf" "$config/code-flags.conf"
+    # Wayland and Vietnamese input for Electron apps (Notion and friends).
+    link "$dots/electron/electron-flags.conf" "$config/electron-flags.conf"
+    link "$dots/gtk-3.0/settings.ini" "$config/gtk-3.0/settings.ini"
+    link "$dots/gtk-4.0/settings.ini" "$config/gtk-4.0/settings.ini"
+    link "$dots/mimeapps.list" "$config/mimeapps.list"
 
     # swaync needs an absolute path to the colour file, so style.css is rendered.
     if [[ -e "$config/swaync/style.css" && ! -L "$config/swaync/style.css" ]] &&
@@ -186,6 +212,13 @@ link_configs() {
 seed_defaults() {
     step "Default colours and settings"
     run mkdir -p "$cache" "$config/zone-c" "$HOME/Pictures/Wallpapers" "$HOME/Pictures/Screenshots"
+
+    # A wallpaper to start from, so the first login is not a blank screen.
+    if [[ -e "$HOME/Pictures/Wallpapers/zone-c-default.png" ]]; then
+        info "kept ~/Pictures/Wallpapers/zone-c-default.png"
+    else
+        run cp "$dots/wallpapers/zone-c-default.png" "$HOME/Pictures/Wallpapers/"
+    fi
     local file
     for file in "$dots"/defaults/*; do
         if [[ -e "$cache/$(basename "$file")" ]]; then
@@ -194,6 +227,32 @@ seed_defaults() {
             run cp "$file" "$cache/"
         fi
     done
+
+    # Flameshot rewrites its config and needs an absolute save path, so it is rendered once.
+    if [[ -e "$config/flameshot/flameshot.ini" ]]; then
+        info "kept ~/.config/flameshot/flameshot.ini"
+    elif $dry; then
+        info "render $config/flameshot/flameshot.ini"
+    else
+        mkdir -p "$config/flameshot"
+        sed "s|@HOME@|$HOME|g" "$dots/flameshot/flameshot.ini" >"$config/flameshot/flameshot.ini"
+    fi
+
+    # qt6ct rewrites its config when its GUI is used, so it is copied, not linked.
+    if [[ -e "$config/qt6ct/qt6ct.conf" ]]; then
+        info "kept ~/.config/qt6ct/qt6ct.conf"
+    else
+        run mkdir -p "$config/qt6ct"
+        run cp "$dots/qt6ct/qt6ct.conf" "$config/qt6ct/qt6ct.conf"
+    fi
+
+    # fcitx5 rewrites its profile, so it is copied (not linked) and only once.
+    if [[ -e "$config/fcitx5/profile" ]]; then
+        info "kept ~/.config/fcitx5/profile"
+    else
+        run mkdir -p "$config/fcitx5"
+        run cp "$dots/fcitx5/profile" "$config/fcitx5/profile"
+    fi
 
     if [[ -e "$config/zone-c/shell.json" ]]; then
         info "kept ~/.config/zone-c/shell.json"
@@ -208,6 +267,8 @@ seed_defaults() {
 enable_services() {
     step "Enabling services"
     run sudo systemctl enable --now NetworkManager.service bluetooth.service power-profiles-daemon.service
+    # Clock accuracy (the bar shows it) and periodic SSD trim.
+    run sudo systemctl enable --now systemd-timesyncd.service fstrim.timer
     if systemctl list-unit-files display-manager.service >/dev/null 2>&1 &&
         systemctl is-enabled display-manager.service >/dev/null 2>&1; then
         info "a display manager is already enabled, SDDM left alone"

@@ -13,8 +13,14 @@ mkdir -p "$cache"
 
 case "${1:-}" in
 --restore)
-    [[ -e "$link" ]] || exit 0
-    image="$(readlink -f "$link")"
+    # No wallpaper chosen yet (fresh install): fall back to the one shipped with Zone-C.
+    if [[ ! -e "$link" ]]; then
+        default="$dir/zone-c-default.png"
+        [[ -f "$default" ]] || exit 0
+        image="$default"
+    else
+        image="$(readlink -f "$link")"
+    fi
     ;;
 --pick)
     [[ -d "$dir" ]] || { notify-send "Wallpaper" "Put images in $dir"; exit 1; }
