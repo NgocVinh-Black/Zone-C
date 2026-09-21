@@ -40,6 +40,10 @@ PopupBase {
 
         VolumeHero {
             Layout.fillWidth: true
+            // A layout nested in a layout defaults to Layout.fillHeight, and the
+            // hero's own spacer leaves its maximum height unbounded, so without
+            // this it eats the popup and the device list gets a few pixels.
+            Layout.fillHeight: false
             Layout.preferredHeight: UiScale.s(150)
             node: root.hero
             accent: root.tabColour
