@@ -63,8 +63,8 @@ Item {
                 width: parent.width * 0.8
                 height: width
                 radius: width / 2
-                x: (parent.width - width) / 2 + Math.cos(root.orbitAngle * 2) * Scale.s(150)
-                y: (parent.height - height) / 2 + Math.sin(root.orbitAngle * 2) * Scale.s(100)
+                x: (parent.width - width) / 2 + Math.cos(root.orbitAngle * 2) * UiScale.s(150)
+                y: (parent.height - height) / 2 + Math.sin(root.orbitAngle * 2) * UiScale.s(100)
                 color: root.blobPrimary
                 opacity: root.blobPrimaryOpacity
 
@@ -80,8 +80,8 @@ Item {
                 width: parent.width * 0.9
                 height: width
                 radius: width / 2
-                x: (parent.width - width) / 2 - Math.sin(root.orbitAngle * 1.5) * Scale.s(150)
-                y: (parent.height - height) / 2 - Math.cos(root.orbitAngle * 1.5) * Scale.s(100)
+                x: (parent.width - width) / 2 - Math.sin(root.orbitAngle * 1.5) * UiScale.s(150)
+                y: (parent.height - height) / 2 - Math.cos(root.orbitAngle * 1.5) * UiScale.s(100)
                 color: root.blobSecondary
                 opacity: root.blobSecondaryOpacity
 

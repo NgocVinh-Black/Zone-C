@@ -27,12 +27,12 @@ Item {
     // Pulsing outline, shown while connected.
     Rectangle {
         anchors.centerIn: parent
-        width: parent.width + Scale.s(15)
+        width: parent.width + UiScale.s(15)
         height: width
         radius: width / 2
         color: "transparent"
         border.color: root.danger ? Colours.red : root.accent
-        border.width: Scale.s(3)
+        border.width: UiScale.s(3)
         opacity: root.online ? 0.35 : 0
 
         SequentialAnimation on scale {
@@ -46,7 +46,7 @@ Item {
     // Glow.
     Rectangle {
         anchors.centerIn: parent
-        width: parent.width + Scale.s(40)
+        width: parent.width + UiScale.s(40)
         height: width
         radius: width / 2
         color: root.danger ? Colours.red : root.accent
@@ -69,7 +69,7 @@ Item {
 
         anchors.fill: parent
         radius: width / 2
-        border.width: Scale.s(2)
+        border.width: UiScale.s(2)
         border.color: !root.powered ? Colours.crust : (root.danger ? Colours.maroon : (root.online ? Qt.lighter(root.accent, 1.1) : Colours.surface1))
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -77,7 +77,7 @@ Item {
             shadowColor: Colours.black
             shadowOpacity: root.powered ? 0.5 : 0
             shadowBlur: 1
-            shadowVerticalOffset: Scale.s(6)
+            shadowVerticalOffset: UiScale.s(6)
         }
 
         gradient: Gradient {
@@ -109,42 +109,42 @@ Item {
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: Scale.s(6)
+            spacing: UiScale.s(6)
             visible: !root.online
 
             Icon {
                 Layout.alignment: Qt.AlignHCenter
                 text: root.mode === "wifi" ? String.fromCodePoint(0xF092E) : String.fromCodePoint(0xF00B2)
-                font.pixelSize: Scale.s(48) - Scale.s(16) * root.crowd
+                font.pixelSize: UiScale.s(48) - UiScale.s(16) * root.crowd
                 color: root.powered ? Colours.overlay0 : Colours.surface2
             }
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
                 text: root.pending ? (root.powered ? "Powering On..." : "Powering Off...") : (root.powered ? "Scanning..." : "Radio Offline")
-                font.pixelSize: Tokens.font.size.body - Scale.s(3) * root.crowd
+                font.pixelSize: Tokens.font.size.body - UiScale.s(3) * root.crowd
                 color: Colours.overlay0
             }
         }
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: Scale.s(4)
+            spacing: UiScale.s(4)
             visible: root.online
 
             Icon {
                 Layout.alignment: Qt.AlignHCenter
                 text: hold.containsMouse ? (root.mode === "wifi" ? String.fromCodePoint(0xF05AA) : String.fromCodePoint(0xF00B2)) : (root.device?.icon ?? "")
-                font.pixelSize: Scale.s(48) - Scale.s(16) * root.crowd
+                font.pixelSize: UiScale.s(48) - UiScale.s(16) * root.crowd
                 color: hold.level > 0.5 ? Colours.text : Colours.crust
             }
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.maximumWidth: Scale.s(150) - Scale.s(50) * root.crowd
+                Layout.maximumWidth: UiScale.s(150) - UiScale.s(50) * root.crowd
                 horizontalAlignment: Text.AlignHCenter
                 text: root.device?.name ?? ""
-                font.pixelSize: Tokens.font.size.clock - Scale.s(4) * root.crowd
+                font.pixelSize: Tokens.font.size.clock - UiScale.s(4) * root.crowd
                 font.weight: Font.Black
                 color: hold.level > 0.5 ? Colours.text : Colours.crust
                 elide: Text.ElideRight

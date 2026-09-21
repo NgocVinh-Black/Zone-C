@@ -63,7 +63,7 @@ Item {
         // Gradient frame: a rotating gradient seen through a 3px gap around the inner surface.
         Rectangle {
             anchors.fill: parent
-            radius: Scale.s(14)
+            radius: UiScale.s(14)
             color: Colours.base
             clip: true
 
@@ -104,8 +104,8 @@ Item {
             id: inner
 
             anchors.fill: parent
-            anchors.margins: Scale.s(3)
-            radius: Scale.s(10)
+            anchors.margins: UiScale.s(3)
+            radius: UiScale.s(10)
             color: Colours.base
             clip: true
             layer.enabled: true
@@ -141,8 +141,8 @@ Item {
                 width: parent.width * 0.8
                 height: width
                 radius: width / 2
-                x: (parent.width - width) / 2 + Math.cos(root.orbitAngle * 2) * Scale.s(150)
-                y: (parent.height - height) / 2 + Math.sin(root.orbitAngle * 2) * Scale.s(100)
+                x: (parent.width - width) / 2 + Math.cos(root.orbitAngle * 2) * UiScale.s(150)
+                y: (parent.height - height) / 2 + Math.sin(root.orbitAngle * 2) * UiScale.s(100)
                 color: root.status === "Playing" ? Colours.mauve : Colours.surface2
                 opacity: root.status === "Playing" ? 0.08 : (root.status === "Paused" ? 0.04 : 0)
 
@@ -155,8 +155,8 @@ Item {
                 width: parent.width * 0.9
                 height: width
                 radius: width / 2
-                x: (parent.width - width) / 2 - Math.sin(root.orbitAngle * 1.5) * Scale.s(150)
-                y: (parent.height - height) / 2 - Math.cos(root.orbitAngle * 1.5) * Scale.s(100)
+                x: (parent.width - width) / 2 - Math.sin(root.orbitAngle * 1.5) * UiScale.s(150)
+                y: (parent.height - height) / 2 - Math.cos(root.orbitAngle * 1.5) * UiScale.s(100)
                 color: root.status === "Playing" ? Colours.blue : Colours.surface1
                 opacity: root.status === "Playing" ? 0.08 : (root.status === "Paused" ? 0.02 : 0)
 
@@ -167,24 +167,24 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Scale.s(20)
+                anchors.margins: UiScale.s(20)
                 spacing: 0
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Scale.s(220)
-                    spacing: Scale.s(25)
+                    Layout.preferredHeight: UiScale.s(220)
+                    spacing: UiScale.s(25)
 
                     MusicCover {
-                        Layout.preferredWidth: Scale.s(220)
-                        Layout.preferredHeight: Scale.s(220)
+                        Layout.preferredWidth: UiScale.s(220)
+                        Layout.preferredHeight: UiScale.s(220)
                         Layout.alignment: Qt.AlignVCenter
                         playing: root.status === "Playing"
                         opacity: introCover.value
 
                         transform: Translate {
-                            x: Scale.s(-40) * (1 - introCover.value)
-                            y: Scale.s(10) * (1 - introCover.value)
+                            x: UiScale.s(-40) * (1 - introCover.value)
+                            y: UiScale.s(10) * (1 - introCover.value)
                         }
                     }
 
@@ -198,15 +198,15 @@ Item {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Scale.s(2)
-                    Layout.topMargin: Scale.s(20)
-                    Layout.bottomMargin: Scale.s(20)
-                    radius: Scale.s(1)
+                    Layout.preferredHeight: UiScale.s(2)
+                    Layout.topMargin: UiScale.s(20)
+                    Layout.bottomMargin: UiScale.s(20)
+                    radius: UiScale.s(1)
                     color: Colours.alpha(Colours.white, 0.1)
                     opacity: introSeparator.value
 
                     transform: Translate {
-                        y: Scale.s(15) * (1 - introSeparator.value)
+                        y: UiScale.s(15) * (1 - introSeparator.value)
                     }
                 }
 

@@ -38,9 +38,9 @@ Rectangle {
         slide.start();
     }
 
-    width: Scale.s(320)
-    height: Scale.s(420)
-    radius: Scale.s(14)
+    width: UiScale.s(320)
+    height: UiScale.s(420)
+    radius: UiScale.s(14)
     color: Colours.alpha(Colours.surface0, 0.2)
     border.color: Colours.alpha(Colours.surface1, 0.4)
     border.width: 1
@@ -54,12 +54,12 @@ Rectangle {
 
         ParallelAnimation {
             NumberAnimation { target: root; property: "contentOpacity"; to: 0; duration: 200; easing.type: Easing.InSine }
-            NumberAnimation { target: root; property: "contentOffset"; to: Scale.s(-20) * root.direction; duration: 200; easing.type: Easing.InSine }
+            NumberAnimation { target: root; property: "contentOffset"; to: UiScale.s(-20) * root.direction; duration: 200; easing.type: Easing.InSine }
         }
         ScriptAction {
             script: {
                 root.monthOffset = root.targetOffset;
-                root.contentOffset = Scale.s(20) * root.direction;
+                root.contentOffset = UiScale.s(20) * root.direction;
             }
         }
         ParallelAnimation {
@@ -70,8 +70,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Scale.s(25)
-        spacing: Scale.s(15)
+        anchors.margins: UiScale.s(25)
+        spacing: UiScale.s(15)
 
         RowLayout {
             Layout.fillWidth: true
@@ -133,8 +133,8 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
             columns: 7
-            rowSpacing: Scale.s(6)
-            columnSpacing: Scale.s(6)
+            rowSpacing: UiScale.s(6)
+            columnSpacing: UiScale.s(6)
             opacity: root.contentOpacity
 
             transform: Translate {
@@ -151,7 +151,7 @@ Rectangle {
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    radius: Scale.s(10)
+                    radius: UiScale.s(10)
                     color: modelData.today ? root.popup.textAccent : (dayArea.containsMouse ? Colours.alpha(Colours.surface2, 0.4) : "transparent")
                     border.color: modelData.today ? Colours.surface0 : (dayArea.containsMouse ? Colours.overlay0 : "transparent")
                     border.width: modelData.today || dayArea.containsMouse ? 1 : 0
@@ -192,8 +192,8 @@ Rectangle {
 
         signal activated
 
-        Layout.preferredWidth: Scale.s(32)
-        Layout.preferredHeight: Scale.s(32)
+        Layout.preferredWidth: UiScale.s(32)
+        Layout.preferredHeight: UiScale.s(32)
         radius: width / 2
         color: buttonArea.containsMouse ? Colours.surface1 : "transparent"
 

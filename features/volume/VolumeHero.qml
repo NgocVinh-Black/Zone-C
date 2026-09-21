@@ -16,16 +16,16 @@ RowLayout {
     readonly property int volume: Math.round((node?.audio?.volume ?? 0) * 100)
     readonly property bool muted: node?.audio?.muted ?? false
 
-    spacing: Scale.s(25)
+    spacing: UiScale.s(25)
 
     Item {
-        Layout.preferredWidth: Scale.s(130)
-        Layout.preferredHeight: Scale.s(130)
+        Layout.preferredWidth: UiScale.s(130)
+        Layout.preferredHeight: UiScale.s(130)
 
         // Soft halo and a breathing ring.
         Rectangle {
             anchors.centerIn: parent
-            width: parent.width + Scale.s(40)
+            width: parent.width + UiScale.s(40)
             height: width
             radius: width / 2
             color: root.muted ? Colours.red : root.accent
@@ -40,12 +40,12 @@ RowLayout {
             id: ring
 
             anchors.centerIn: parent
-            width: parent.width + Scale.s(15)
+            width: parent.width + UiScale.s(15)
             height: width
             radius: width / 2
             color: "transparent"
             border.color: root.accent
-            border.width: Scale.s(3)
+            border.width: UiScale.s(3)
             opacity: root.muted ? 0 : 0.3
 
             SequentialAnimation on scale {
@@ -72,7 +72,7 @@ RowLayout {
                 colorStart: Qt.lighter(root.accent, 1.15)
                 colorEnd: root.accent
                 // Keep the surface moving even at a steady volume.
-                waveAmplitude: Scale.s(6)
+                waveAmplitude: UiScale.s(6)
 
                 Behavior on level {
                     NumberAnimation {
@@ -85,7 +85,7 @@ RowLayout {
             StyledText {
                 anchors.centerIn: parent
                 text: root.muted ? "MUTE" : root.volume + "%"
-                font.pixelSize: Scale.s(32)
+                font.pixelSize: UiScale.s(32)
                 font.weight: Font.Black
                 color: root.muted ? Colours.red : (root.volume > 50 ? Colours.crust : Colours.text)
             }
@@ -99,10 +99,10 @@ RowLayout {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: Scale.s(10)
+        spacing: UiScale.s(10)
 
         ColumnLayout {
-            spacing: Scale.s(2)
+            spacing: UiScale.s(2)
 
             StyledText {
                 Layout.fillWidth: true
@@ -128,7 +128,7 @@ RowLayout {
 
         FillSlider {
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(24)
+            Layout.preferredHeight: UiScale.s(24)
             value: root.volume
             dimmed: root.muted
             colorStart: root.muted ? Colours.surface2 : root.accent

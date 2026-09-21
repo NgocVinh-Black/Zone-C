@@ -32,7 +32,7 @@ Item {
 
     transform: [
         Translate {
-            y: Scale.s(25) * (1 - root.reveal) + root.levitation
+            y: UiScale.s(25) * (1 - root.reveal) + root.levitation
         },
         Rotation {
             axis { x: 1; y: 0; z: 0 }
@@ -50,7 +50,7 @@ Item {
 
     SequentialAnimation on levitation {
         loops: Animation.Infinite
-        NumberAnimation { to: Scale.s(-15); duration: 4000; easing.type: Easing.InOutSine }
+        NumberAnimation { to: UiScale.s(-15); duration: 4000; easing.type: Easing.InOutSine }
         NumberAnimation { to: 0; duration: 4000; easing.type: Easing.InOutSine }
     }
     SequentialAnimation on breath {
@@ -98,11 +98,11 @@ Item {
 
         property real breath: root.breath
 
-        x: Scale.s(-400)
-        y: Scale.s(-200)
+        x: UiScale.s(-400)
+        y: UiScale.s(-200)
         z: -10
-        width: Scale.s(800)
-        height: Scale.s(400)
+        width: UiScale.s(800)
+        height: UiScale.s(400)
         opacity: 0.25
 
         onBreathChanged: requestPaint()
@@ -111,8 +111,8 @@ Item {
             const ctx = getContext("2d");
             ctx.reset();
             ctx.beginPath();
-            const rx = Scale.s(320) * breath;
-            const ry = Scale.s(140) * breath;
+            const rx = UiScale.s(320) * breath;
+            const ry = UiScale.s(140) * breath;
             for (let a = 0; a <= Math.PI * 2; a += 0.05) {
                 const px = width / 2 + Math.cos(a) * rx;
                 const py = height / 2 + Math.sin(a) * ry;
@@ -122,8 +122,8 @@ Item {
                     ctx.lineTo(px, py);
             }
             ctx.strokeStyle = root.popup.textAccent.toString();
-            ctx.lineWidth = Scale.s(1.5);
-            ctx.setLineDash([Scale.s(4), Scale.s(10)]);
+            ctx.lineWidth = UiScale.s(1.5);
+            ctx.setLineDash([UiScale.s(4), UiScale.s(10)]);
             ctx.stroke();
         }
     }
@@ -135,11 +135,11 @@ Item {
 
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: Scale.s(2)
+            spacing: UiScale.s(2)
 
             StyledText {
                 text: Qt.formatTime(ClockService.now, "HH:mm")
-                font.pixelSize: Scale.s(84)
+                font.pixelSize: UiScale.s(84)
                 font.weight: Font.Black
                 style: Text.Outline
                 styleColor: Colours.alpha(Colours.crust, 0.4)
@@ -147,9 +147,9 @@ Item {
 
             StyledText {
                 Layout.alignment: Qt.AlignBottom
-                Layout.bottomMargin: Scale.s(15)
+                Layout.bottomMargin: UiScale.s(15)
                 text: Qt.formatTime(ClockService.now, ":ss")
-                font.pixelSize: Scale.s(32)
+                font.pixelSize: UiScale.s(32)
                 color: root.popup.textAccent
                 opacity: root.secondPulse > 1.02 ? 1 : 0.6
                 style: Text.Outline
@@ -189,10 +189,10 @@ Item {
                 readonly property real rad: (angleDeg + drift + root.popup.spin) * Math.PI / 180
                 readonly property real depth: Math.sin(rad)
 
-                width: Scale.s(56)
-                height: Scale.s(95)
-                x: Math.cos(rad) * Scale.s(320) * root.breath - width / 2
-                y: depth * Scale.s(140) * root.breath - height / 2
+                width: UiScale.s(56)
+                height: UiScale.s(95)
+                x: Math.cos(rad) * UiScale.s(320) * root.breath - width / 2
+                y: depth * UiScale.s(140) * root.breath - height / 2
                 z: depth * 100
                 scale: highlighted ? 1.4 : (root.isToday ? 0.95 + 0.2 * depth : 0.9 + 0.25 * depth)
                 opacity: highlighted ? 1 : (root.isToday ? 0.7 + 0.15 * (depth + 1) : 0.65 + 0.175 * (depth + 1))
@@ -210,7 +210,7 @@ Item {
 
                     ColumnLayout {
                         anchors.centerIn: parent
-                        spacing: Scale.s(4)
+                        spacing: UiScale.s(4)
 
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter

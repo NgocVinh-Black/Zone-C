@@ -24,11 +24,11 @@ Rectangle {
     border.width: 1
 
     Rectangle {
-        width: (parent.width - Scale.s(2)) / 3
-        height: parent.height - Scale.s(2)
-        y: Scale.s(1)
-        x: Scale.s(1) + width * root.selected
-        radius: Scale.s(10)
+        width: (parent.width - UiScale.s(2)) / 3
+        height: parent.height - UiScale.s(2)
+        y: UiScale.s(1)
+        x: UiScale.s(1) + width * root.selected
+        radius: UiScale.s(10)
 
         gradient: Gradient {
             orientation: Gradient.Horizontal
@@ -78,7 +78,7 @@ Rectangle {
 
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: Scale.s(8)
+                    spacing: UiScale.s(8)
 
                     Icon {
                         text: option.modelData.glyph

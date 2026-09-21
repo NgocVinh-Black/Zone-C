@@ -45,7 +45,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Scale.s(5)
+        spacing: UiScale.s(5)
 
         Item {
             id: column
@@ -61,10 +61,10 @@ Item {
                 id: track
 
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Scale.s(9)
-                width: Scale.s(10)
-                height: parent.height - Scale.s(18)
-                radius: Scale.s(4)
+                y: UiScale.s(9)
+                width: UiScale.s(10)
+                height: parent.height - UiScale.s(18)
+                radius: UiScale.s(4)
                 color: Colours.alpha(Colours.surface0, 0.7)
                 clip: true
 
@@ -100,12 +100,12 @@ Item {
             // Shockwave ring as the strike passes.
             Rectangle {
                 anchors.centerIn: track
-                width: track.width + Scale.s(20) + root.surge * Scale.s(40)
-                height: track.height + Scale.s(20) + root.surge * Scale.s(60)
-                radius: Scale.s(14) + root.surge * Scale.s(20)
+                width: track.width + UiScale.s(20) + root.surge * UiScale.s(40)
+                height: track.height + UiScale.s(20) + root.surge * UiScale.s(60)
+                radius: UiScale.s(14) + root.surge * UiScale.s(20)
                 color: "transparent"
                 border.color: Colours.mauve
-                border.width: Scale.s(2) + root.surge * Scale.s(4)
+                border.width: UiScale.s(2) + root.surge * UiScale.s(4)
                 opacity: root.surge * 0.8 * root.energy
                 visible: opacity > 0.01
             }
@@ -115,7 +115,7 @@ Item {
 
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: track.y + column.position * track.height - height / 2
-                width: Scale.s(18)
+                width: UiScale.s(18)
                 height: width
                 radius: width / 2
                 color: Colours.text
@@ -132,7 +132,7 @@ Item {
                 Rectangle {
                     z: -1
                     anchors.centerIn: parent
-                    width: parent.width + Scale.s(36) * root.hit
+                    width: parent.width + UiScale.s(36) * root.hit
                     height: width
                     radius: width / 2
                     color: [Colours.mauve, Colours.pink, Colours.lavender, Colours.mauve, Colours.blue][root.band % 5]

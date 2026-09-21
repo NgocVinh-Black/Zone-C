@@ -34,7 +34,9 @@ r3=$(grep -nE 'shell\.json|Config\.raw\b' $(qml_files) | grep -v '^core/config/'
 [ -z "$r3" ] && pass "R3 typed config access" || fail "R3 typed config access" "$r3"
 
 # R4: core never imports features; a feature never imports another feature.
-r4a=$(grep -rnE 'import\s+qs\.features' core shell.qml 2>/dev/null)
+# shell.qml is exempt: it has to import every feature module so that Quickshell
+# registers them for the files it later loads by URL (see the comment there).
+r4a=$(grep -rnE 'import\s+qs\.features' core 2>/dev/null)
 r4b=""
 for dir in features/*/; do
     name=$(basename "$dir")

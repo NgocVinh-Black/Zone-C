@@ -28,8 +28,8 @@ Rectangle {
         return String.fromCodePoint(0xF04C3);
     }
 
-    implicitHeight: isDefault ? Scale.s(60) : Scale.s(100)
-    radius: Scale.s(14)
+    implicitHeight: isDefault ? UiScale.s(60) : UiScale.s(100)
+    radius: UiScale.s(14)
     color: isDefault ? accent : (cardArea.containsMouse ? Colours.alpha(Colours.white, 0.04) : Colours.alpha(Colours.white, 0.02))
     border.color: isDefault ? accent : Colours.alpha(Colours.white, 0.1)
     border.width: isDefault ? 2 : 1
@@ -59,12 +59,12 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Scale.s(15)
-        spacing: Scale.s(12)
+        anchors.margins: UiScale.s(15)
+        spacing: UiScale.s(12)
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Scale.s(12)
+            spacing: UiScale.s(12)
 
             Icon {
                 text: root.glyph
@@ -74,7 +74,7 @@ Rectangle {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Scale.s(2)
+                spacing: UiScale.s(2)
 
                 StyledText {
                     Layout.fillWidth: true
@@ -97,11 +97,11 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             visible: !root.isDefault
-            spacing: Scale.s(15)
+            spacing: UiScale.s(15)
 
             Rectangle {
-                Layout.preferredWidth: Scale.s(32)
-                Layout.preferredHeight: Scale.s(32)
+                Layout.preferredWidth: UiScale.s(32)
+                Layout.preferredHeight: UiScale.s(32)
                 radius: width / 2
                 color: muteArea.containsMouse ? Colours.alpha(Colours.white, 0.1) : "transparent"
                 border.color: muteArea.containsMouse ? (root.muted ? Colours.overlay0 : root.accent) : "transparent"
@@ -122,7 +122,7 @@ Rectangle {
 
             FillSlider {
                 Layout.fillWidth: true
-                Layout.preferredHeight: Scale.s(14)
+                Layout.preferredHeight: UiScale.s(14)
                 value: root.volume
                 dimmed: root.muted
                 colorStart: root.muted ? Colours.surface2 : root.accent
@@ -131,7 +131,7 @@ Rectangle {
             }
 
             StyledText {
-                Layout.preferredWidth: Scale.s(40)
+                Layout.preferredWidth: UiScale.s(40)
                 horizontalAlignment: Text.AlignRight
                 text: root.volume + "%"
                 font.pixelSize: Tokens.font.size.label

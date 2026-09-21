@@ -14,7 +14,7 @@ ColumnLayout {
     property real strike: 0
     property real strikeFade: 1
 
-    spacing: Scale.s(15)
+    spacing: UiScale.s(15)
 
     Reveal {
         id: introHeader
@@ -80,7 +80,7 @@ ColumnLayout {
         opacity: introHeader.value
 
         transform: Translate {
-            y: Scale.s(15) * (1 - introHeader.value)
+            y: UiScale.s(15) * (1 - introHeader.value)
         }
 
         StyledText {
@@ -91,9 +91,9 @@ ColumnLayout {
         }
 
         Rectangle {
-            Layout.preferredHeight: Scale.s(28)
-            Layout.preferredWidth: applyText.implicitWidth + Scale.s(30)
-            radius: Scale.s(10)
+            Layout.preferredHeight: UiScale.s(28)
+            Layout.preferredWidth: applyText.implicitWidth + UiScale.s(30)
+            radius: UiScale.s(10)
             color: EqualizerService.pending ? Colours.mauve : Colours.surface1
             border.color: EqualizerService.pending ? Colours.mauve : Colours.surface2
             border.width: 1
@@ -122,7 +122,7 @@ ColumnLayout {
         }
 
         StyledText {
-            Layout.leftMargin: Scale.s(15)
+            Layout.leftMargin: UiScale.s(15)
             text: EqualizerService.preset
             color: Colours.subtext0
         }
@@ -130,7 +130,7 @@ ColumnLayout {
 
     Item {
         Layout.fillWidth: true
-        Layout.preferredHeight: Scale.s(180)
+        Layout.preferredHeight: UiScale.s(180)
 
         EqLightning {
             anchors.fill: parent
@@ -155,7 +155,7 @@ ColumnLayout {
                     opacity: introSliders.value
 
                     transform: Translate {
-                        y: (Scale.s(30) + index * Scale.s(8)) * (1 - introSliders.value)
+                        y: (UiScale.s(30) + index * UiScale.s(8)) * (1 - introSliders.value)
                     }
                 }
             }
@@ -165,12 +165,12 @@ ColumnLayout {
     GridLayout {
         Layout.fillWidth: true
         columns: 4
-        rowSpacing: Scale.s(8)
-        columnSpacing: Scale.s(10)
+        rowSpacing: UiScale.s(8)
+        columnSpacing: UiScale.s(10)
         opacity: introPresets.value
 
         transform: Translate {
-            y: Scale.s(20) * (1 - introPresets.value)
+            y: UiScale.s(20) * (1 - introPresets.value)
         }
 
         Repeater {
@@ -183,8 +183,8 @@ ColumnLayout {
                 readonly property bool active: EqualizerService.preset === modelData
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: Scale.s(32)
-                radius: Scale.s(8)
+                Layout.preferredHeight: UiScale.s(32)
+                radius: UiScale.s(8)
                 color: active ? Colours.mauve : (presetArea.containsMouse ? Colours.surface1 : Colours.alpha(Colours.base, 0.75))
                 scale: presetArea.containsMouse && !active ? 1.05 : 1
 

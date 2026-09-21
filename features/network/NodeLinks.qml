@@ -43,16 +43,16 @@ Canvas {
             const dx = b.x - a.x;
             const dy = b.y - a.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const start = link.from.width / 2 + Scale.s(5);
-            const reach = dist - start - Scale.s(30);
-            if (reach < Scale.s(10))
+            const start = link.from.width / 2 + UiScale.s(5);
+            const reach = dist - start - UiScale.s(30);
+            if (reach < UiScale.s(10))
                 continue;
 
             const cos = dx / dist;
             const sin = dy / dist;
             const sx = a.x + cos * start;
             const sy = a.y + sin * start;
-            const steps = Math.max(6, Math.round(reach / Scale.s(12)));
+            const steps = Math.max(6, Math.round(reach / UiScale.s(12)));
 
             // Two strands: a wide soft wave and a thin jittery core.
             for (let strand = 0; strand < 2; strand++) {
@@ -61,12 +61,12 @@ Canvas {
                 for (let k = 1; k <= steps; k++) {
                     const t = k / steps;
                     const envelope = Math.sin(t * Math.PI);
-                    const wave = strand === 0 ? Math.sin(time * 2.5 + t * 6) * Scale.s(10) : Math.cos(-time * 1.5 + t * 8) * Scale.s(6);
-                    const jitter = strand === 1 ? (Math.random() - 0.5) * Scale.s(3) : 0;
+                    const wave = strand === 0 ? Math.sin(time * 2.5 + t * 6) * UiScale.s(10) : Math.cos(-time * 1.5 + t * 8) * UiScale.s(6);
+                    const jitter = strand === 1 ? (Math.random() - 0.5) * UiScale.s(3) : 0;
                     const offset = (wave + jitter) * envelope;
                     ctx.lineTo(sx + cos * reach * t - sin * offset, sy + sin * reach * t + cos * offset);
                 }
-                ctx.lineWidth = strand === 0 ? Scale.s(3) : Scale.s(1.5);
+                ctx.lineWidth = strand === 0 ? UiScale.s(3) : UiScale.s(1.5);
                 ctx.globalAlpha = strand === 0 ? 0.15 : 0.45;
                 ctx.stroke();
             }

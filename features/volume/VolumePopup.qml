@@ -36,18 +36,18 @@ PopupBase {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Tokens.popup.padding
-        spacing: Scale.s(20)
+        spacing: UiScale.s(20)
 
         VolumeHero {
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(150)
+            Layout.preferredHeight: UiScale.s(150)
             node: root.hero
             accent: root.tabColour
             subtitle: root.tab === "streams" ? "Master Output Volume" : Audio.detail(root.hero)
             opacity: introHeader.value
 
             transform: Translate {
-                y: Scale.s(-20) * (1 - introHeader.value)
+                y: UiScale.s(-20) * (1 - introHeader.value)
             }
         }
 
@@ -61,8 +61,8 @@ PopupBase {
             ]
 
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(54)
-            radius: Scale.s(14)
+            Layout.preferredHeight: UiScale.s(54)
+            radius: UiScale.s(14)
             color: Colours.alpha(Colours.white, 0.05)
             border.color: Colours.alpha(Colours.white, 0.1)
             border.width: 1
@@ -73,7 +73,7 @@ PopupBase {
                 height: parent.height - 2
                 y: 1
                 x: 1 + width * tabBar.tabs.findIndex(t => t.id === root.tab)
-                radius: Scale.s(10)
+                radius: UiScale.s(10)
 
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
@@ -108,7 +108,7 @@ PopupBase {
 
                         RowLayout {
                             anchors.centerIn: parent
-                            spacing: Scale.s(8)
+                            spacing: UiScale.s(8)
 
                             Icon {
                                 text: tabItem.modelData.icon
@@ -140,18 +140,18 @@ PopupBase {
             opacity: introContent.value
 
             transform: Translate {
-                y: Scale.s(20) * (1 - introContent.value)
+                y: UiScale.s(20) * (1 - introContent.value)
             }
 
             ColumnLayout {
                 anchors.centerIn: parent
                 visible: root.nodes.length === 0
-                spacing: Scale.s(10)
+                spacing: UiScale.s(10)
 
                 Icon {
                     Layout.alignment: Qt.AlignHCenter
                     text: String.fromCodePoint(0xF075F)
-                    font.pixelSize: Scale.s(32)
+                    font.pixelSize: UiScale.s(32)
                     color: Colours.surface2
                 }
 
@@ -166,7 +166,7 @@ PopupBase {
             ListView {
                 anchors.fill: parent
                 clip: true
-                spacing: Scale.s(12)
+                spacing: UiScale.s(12)
                 model: root.nodes
 
                 delegate: AudioNodeCard {

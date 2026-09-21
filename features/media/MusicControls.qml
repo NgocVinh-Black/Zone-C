@@ -15,7 +15,7 @@ ColumnLayout {
     property real controlsReveal: 1
     property real flow: 0
 
-    spacing: Scale.s(15)
+    spacing: UiScale.s(15)
 
     NumberAnimation on flow {
         from: 0
@@ -25,21 +25,21 @@ ColumnLayout {
     }
 
     ColumnLayout {
-        spacing: Scale.s(6)
+        spacing: UiScale.s(6)
         opacity: root.textReveal
 
         transform: Translate {
-            x: Scale.s(30) * (1 - root.textReveal)
+            x: UiScale.s(30) * (1 - root.textReveal)
         }
 
         Item {
             id: titleClip
 
-            readonly property int gap: Scale.s(60)
+            readonly property int gap: UiScale.s(60)
             readonly property bool overflow: title.implicitWidth > width
 
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(28)
+            Layout.preferredHeight: UiScale.s(28)
             clip: true
 
             Row {
@@ -86,19 +86,19 @@ ColumnLayout {
         }
 
         RowLayout {
-            spacing: Scale.s(10)
+            spacing: UiScale.s(10)
 
             Rectangle {
-                Layout.preferredHeight: Scale.s(24)
-                Layout.preferredWidth: device.implicitWidth + Scale.s(20)
-                radius: Scale.s(4)
+                Layout.preferredHeight: UiScale.s(24)
+                Layout.preferredWidth: device.implicitWidth + UiScale.s(20)
+                radius: UiScale.s(4)
                 color: Colours.alpha(Colours.white, 0.1)
 
                 RowLayout {
                     id: device
 
                     anchors.centerIn: parent
-                    spacing: Scale.s(6)
+                    spacing: UiScale.s(6)
 
                     Icon {
                         text: String.fromCodePoint(0xF04C3)
@@ -125,12 +125,12 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: Scale.s(5)
+        spacing: UiScale.s(5)
         opacity: root.controlsReveal
 
         transform: Translate {
-            x: Scale.s(20) * (1 - root.controlsReveal)
-            y: Scale.s(10) * (1 - root.controlsReveal)
+            x: UiScale.s(20) * (1 - root.controlsReveal)
+            y: UiScale.s(10) * (1 - root.controlsReveal)
         }
 
         Item {
@@ -139,14 +139,14 @@ ColumnLayout {
             readonly property real shown: area.pressed ? area.dragValue : MediaService.percent
 
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(20)
+            Layout.preferredHeight: UiScale.s(20)
 
             Rectangle {
                 id: track
 
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
-                height: Scale.s(12)
+                height: UiScale.s(12)
                 radius: height / 2
                 color: Colours.alpha(Colours.surface0, 0.7)
                 clip: true
@@ -158,9 +158,9 @@ ColumnLayout {
                     clip: true
 
                     Rectangle {
-                        width: Scale.s(2000)
+                        width: UiScale.s(2000)
                         height: parent.height
-                        x: -root.flow * Scale.s(1000)
+                        x: -root.flow * UiScale.s(1000)
 
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
@@ -178,7 +178,7 @@ ColumnLayout {
             }
 
             Rectangle {
-                width: Scale.s(18)
+                width: UiScale.s(18)
                 height: width
                 radius: width / 2
                 color: Colours.text
@@ -230,11 +230,11 @@ ColumnLayout {
 
     RowLayout {
         Layout.alignment: Qt.AlignHCenter
-        spacing: Scale.s(30)
+        spacing: UiScale.s(30)
         opacity: root.controlsReveal
 
         transform: Translate {
-            y: Scale.s(20) * (1 - root.controlsReveal)
+            y: UiScale.s(20) * (1 - root.controlsReveal)
         }
 
         TransportButton {
@@ -243,8 +243,8 @@ ColumnLayout {
         }
 
         Item {
-            Layout.preferredWidth: Scale.s(50)
-            Layout.preferredHeight: Scale.s(50)
+            Layout.preferredWidth: UiScale.s(50)
+            Layout.preferredHeight: UiScale.s(50)
 
             Rectangle {
                 id: pulse
@@ -288,7 +288,7 @@ ColumnLayout {
             Icon {
                 anchors.centerIn: parent
                 text: MediaService.playing ? String.fromCodePoint(0xF04C) : String.fromCodePoint(0xF04B)
-                font.pixelSize: Scale.s(42)
+                font.pixelSize: UiScale.s(42)
                 color: playArea.pressed ? Colours.pink : Colours.mauve
                 scale: playArea.pressed ? 0.8 : 1
 
@@ -320,8 +320,8 @@ ColumnLayout {
 
         signal activated
 
-        Layout.preferredWidth: Scale.s(30)
-        Layout.preferredHeight: Scale.s(30)
+        Layout.preferredWidth: UiScale.s(30)
+        Layout.preferredHeight: UiScale.s(30)
 
         Icon {
             anchors.centerIn: parent

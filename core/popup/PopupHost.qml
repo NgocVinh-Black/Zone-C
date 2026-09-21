@@ -17,7 +17,7 @@ PanelWindow {
     // The screen size is known before this window is mapped; the window's own size isn't.
     readonly property real areaWidth: screen?.width ?? width
     readonly property real areaHeight: screen?.height ?? height
-    readonly property var target: decl ? PopupLayout.place(decl.anchor, Scale.s(decl.width), Scale.s(decl.height), areaWidth, areaHeight, Tokens.popup.marginTop, Tokens.popup.edgeLeft, Tokens.popup.edgeRight) : null
+    readonly property var target: decl ? PopupLayout.place(decl.anchor, UiScale.s(decl.width), UiScale.s(decl.height), areaWidth, areaHeight, Tokens.popup.marginTop, Tokens.popup.edgeLeft, Tokens.popup.edgeRight) : null
 
     property bool mapped: false
     property bool shown: false

@@ -22,7 +22,7 @@ Item {
 
     Rectangle {
         anchors.centerIn: disc
-        width: disc.width + Scale.s(20)
+        width: disc.width + UiScale.s(20)
         height: width
         radius: width / 2
         color: Colours.mauve
@@ -45,7 +45,7 @@ Item {
         anchors.fill: parent
         radius: width / 2
         color: Colours.surface1
-        border.width: Scale.s(4)
+        border.width: UiScale.s(4)
         border.color: root.playing ? Colours.mauve : Colours.overlay0
 
         Behavior on border.color {
@@ -62,7 +62,7 @@ Item {
 
         Item {
             anchors.fill: parent
-            anchors.margins: Scale.s(4)
+            anchors.margins: UiScale.s(4)
 
             Image {
                 id: art
@@ -105,7 +105,7 @@ Item {
             // Spindle hole.
             Rectangle {
                 anchors.centerIn: parent
-                width: Scale.s(40)
+                width: UiScale.s(40)
                 height: width
                 radius: width / 2
                 color: Colours.black

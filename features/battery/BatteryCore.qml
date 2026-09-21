@@ -21,7 +21,7 @@ Item {
     property real pump: 0
     property real drain: 1
 
-    width: Scale.s(260)
+    width: UiScale.s(260)
     height: width
 
     Behavior on shownPercent {
@@ -58,7 +58,7 @@ Item {
     // Glow halo.
     Rectangle {
         anchors.centerIn: parent
-        width: parent.width + Scale.s(45)
+        width: parent.width + UiScale.s(45)
         height: width
         radius: width / 2
         color: root.danger ? Colours.red : root.colourStart
@@ -134,13 +134,13 @@ Item {
                 ctx.reset();
                 const cx = width / 2;
                 const cy = height / 2;
-                const r = width / 2 - Scale.s(18);
+                const r = width / 2 - UiScale.s(18);
                 const end = root.shownPercent / 100 * 2 * Math.PI;
                 const start = root.colourStart.toString();
                 const finish = root.colourEnd.toString();
 
                 ctx.lineCap = "round";
-                ctx.lineWidth = Scale.s(8);
+                ctx.lineWidth = UiScale.s(8);
                 ctx.beginPath();
                 ctx.arc(cx, cy, r, 0, 2 * Math.PI);
                 ctx.strokeStyle = Colours.alpha(Colours.white, 0.05).toString();
@@ -149,7 +149,7 @@ Item {
                 const grad = ctx.createLinearGradient(0, height, width, 0);
                 grad.addColorStop(0, start);
                 grad.addColorStop(1, finish);
-                ctx.lineWidth = Scale.s(14);
+                ctx.lineWidth = UiScale.s(14);
                 ctx.beginPath();
                 ctx.arc(cx, cy, r, 0, end);
                 ctx.strokeStyle = grad;
@@ -162,14 +162,14 @@ Item {
                     const surge = root.pump * (end + 0.6) - 0.3;
                     if (surge > 0 && surge < end) {
                         ctx.globalAlpha = 0.5 * Math.sin(root.pump * Math.PI);
-                        ctx.lineWidth = Scale.s(22);
+                        ctx.lineWidth = UiScale.s(22);
                         ctx.strokeStyle = start;
                         ctx.beginPath();
                         ctx.arc(cx, cy, r, Math.max(0, surge - 0.4), Math.min(end, surge + 0.4));
                         ctx.stroke();
 
                         ctx.globalAlpha = 0.8 * Math.sin(root.pump * Math.PI);
-                        ctx.lineWidth = Scale.s(28);
+                        ctx.lineWidth = UiScale.s(28);
                         ctx.strokeStyle = finish;
                         ctx.beginPath();
                         ctx.arc(cx, cy, r, Math.max(0, surge - 0.2), Math.min(end, surge + 0.2));
@@ -180,7 +180,7 @@ Item {
                         ctx.globalAlpha = (1 - flare) * 0.6;
                         ctx.fillStyle = finish;
                         ctx.beginPath();
-                        ctx.arc(cx + Math.cos(end) * r, cy + Math.sin(end) * r, Scale.s(7) + flare * Scale.s(15), 0, 2 * Math.PI);
+                        ctx.arc(cx + Math.cos(end) * r, cy + Math.sin(end) * r, UiScale.s(7) + flare * UiScale.s(15), 0, 2 * Math.PI);
                         ctx.fill();
                     }
                 } else {
@@ -192,7 +192,7 @@ Item {
                         if (a >= b)
                             continue;
                         ctx.globalAlpha = 0.2 * Math.sin(root.drain * Math.PI);
-                        ctx.lineWidth = Scale.s(14) + (1 - d) * Scale.s(2);
+                        ctx.lineWidth = UiScale.s(14) + (1 - d) * UiScale.s(2);
                         ctx.strokeStyle = finish;
                         ctx.beginPath();
                         ctx.arc(cx, cy, r, a, b);
@@ -204,21 +204,21 @@ Item {
 
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: Scale.s(-2)
+            spacing: UiScale.s(-2)
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: Scale.s(8)
+                spacing: UiScale.s(8)
 
                 Icon {
                     text: BatteryService.charging ? String.fromCodePoint(0xF0084) : (BatteryService.percent > 20 ? String.fromCodePoint(0xF0079) : String.fromCodePoint(0xF0083))
-                    font.pixelSize: Scale.s(28)
+                    font.pixelSize: UiScale.s(28)
                     color: root.colourStart
                 }
 
                 StyledText {
                     text: Math.round(root.shownPercent) + "%"
-                    font.pixelSize: Scale.s(54)
+                    font.pixelSize: UiScale.s(54)
                     font.weight: Font.Black
                 }
             }

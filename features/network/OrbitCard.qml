@@ -22,8 +22,8 @@ Item {
     readonly property bool engaged: interactive && (hold.containsMouse || hold.pressed)
     readonly property real fill: connected ? 1 : hold.level
 
-    width: Scale.s(170)
-    height: Scale.s(60)
+    width: UiScale.s(170)
+    height: UiScale.s(60)
 
     Rectangle {
         id: card
@@ -31,7 +31,7 @@ Item {
         anchors.fill: parent
         radius: Tokens.block.radius
         color: root.engaged ? Colours.alpha(Colours.white, 0.16) : Colours.alpha(Colours.white, 0.05)
-        border.width: root.engaged ? Scale.s(2) : 1
+        border.width: root.engaged ? UiScale.s(2) : 1
         border.color: root.engaged || root.node.highlight ? root.accent : Colours.surface2
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -39,7 +39,7 @@ Item {
             shadowColor: Colours.black
             shadowOpacity: 0.3
             shadowBlur: 0.8
-            shadowVerticalOffset: Scale.s(4)
+            shadowVerticalOffset: UiScale.s(4)
         }
 
         Behavior on color {
@@ -53,7 +53,7 @@ Item {
             radius: card.radius
             colorStart: Qt.lighter(root.accent, 1.15)
             colorEnd: root.accent
-            waveAmplitude: Scale.s(12)
+            waveAmplitude: UiScale.s(12)
         }
 
         Rectangle {
@@ -61,7 +61,7 @@ Item {
             radius: parent.radius
             color: "transparent"
             border.color: root.accent
-            border.width: Scale.s(2)
+            border.width: UiScale.s(2)
             visible: root.node.highlight && !root.busy && !root.connected
 
             SequentialAnimation on scale {
@@ -80,8 +80,8 @@ Item {
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: Scale.s(12)
-            spacing: Scale.s(10)
+            anchors.margins: UiScale.s(12)
+            spacing: UiScale.s(10)
 
             Icon {
                 text: root.node.icon
@@ -91,7 +91,7 @@ Item {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Scale.s(2)
+                spacing: UiScale.s(2)
 
                 StyledText {
                     Layout.fillWidth: true

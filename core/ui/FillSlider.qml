@@ -20,7 +20,7 @@ Item {
 
     signal moved(int value)
 
-    implicitHeight: Scale.s(18)
+    implicitHeight: UiScale.s(18)
 
     property real shownValue: value
 

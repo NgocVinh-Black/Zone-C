@@ -54,8 +54,8 @@ PopupBase {
             required property int index
 
             anchors.centerIn: parent
-            anchors.verticalCenterOffset: Scale.s(-70)
-            width: Scale.s(320) + index * Scale.s(170)
+            anchors.verticalCenterOffset: UiScale.s(-70)
+            width: UiScale.s(320) + index * UiScale.s(170)
             height: width
             radius: width / 2
             color: "transparent"
@@ -70,11 +70,11 @@ PopupBase {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: Tokens.popup.padding
-        spacing: Scale.s(6)
+        spacing: UiScale.s(6)
         opacity: introTop.value
 
         transform: Translate {
-            y: Scale.s(-20) * (1 - introTop.value)
+            y: UiScale.s(-20) * (1 - introTop.value)
         }
 
         UptimeBox {
@@ -111,8 +111,8 @@ PopupBase {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.margins: Tokens.popup.padding
-        width: logoutArea.containsMouse ? Scale.s(56) + userName.implicitWidth : Scale.s(44)
-        height: Scale.s(44)
+        width: logoutArea.containsMouse ? UiScale.s(56) + userName.implicitWidth : UiScale.s(44)
+        height: UiScale.s(44)
         radius: Tokens.block.radius
         color: logoutArea.containsMouse ? Colours.alpha(Colours.white, 0.1) : "transparent"
         border.color: logoutArea.containsMouse ? Colours.alpha(Colours.white, 0.2) : "transparent"
@@ -128,9 +128,9 @@ PopupBase {
 
         Row {
             anchors.right: parent.right
-            anchors.rightMargin: Scale.s(13)
+            anchors.rightMargin: UiScale.s(13)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Scale.s(12)
+            spacing: UiScale.s(12)
 
             StyledText {
                 id: userName
@@ -157,7 +157,7 @@ PopupBase {
 
     BatteryCore {
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: Scale.s(-70)
+        anchors.verticalCenterOffset: UiScale.s(-70)
         z: 1
         colourStart: root.batteryColour
         opacity: introCore.value
@@ -169,12 +169,12 @@ PopupBase {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: Tokens.popup.padding
-        spacing: Scale.s(15)
+        spacing: UiScale.s(15)
         z: 2
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(96)
+            Layout.preferredHeight: UiScale.s(96)
             radius: Tokens.block.radius
             color: Colours.surface0
             border.color: Colours.surface1
@@ -182,13 +182,13 @@ PopupBase {
             opacity: introSliders.value
 
             transform: Translate {
-                y: Scale.s(20) * (1 - introSliders.value)
+                y: UiScale.s(20) * (1 - introSliders.value)
             }
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Scale.s(14)
-                spacing: Scale.s(12)
+                anchors.margins: UiScale.s(14)
+                spacing: UiScale.s(12)
 
                 SliderRow {
                     glyph: BatteryService.brightness > 66 ? String.fromCodePoint(0xF00E0) : (BatteryService.brightness > 33 ? String.fromCodePoint(0xF00DF) : String.fromCodePoint(0xF00DE))
@@ -212,8 +212,8 @@ PopupBase {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(75)
-            spacing: Scale.s(12)
+            Layout.preferredHeight: UiScale.s(75)
+            spacing: UiScale.s(12)
 
             Repeater {
                 model: [
@@ -236,7 +236,7 @@ PopupBase {
                     onConfirmed: BatteryService.run(modelData.action)
 
                     transform: Translate {
-                        y: (Scale.s(30) + index * Scale.s(12)) * (1 - introActions.value)
+                        y: (UiScale.s(30) + index * UiScale.s(12)) * (1 - introActions.value)
                     }
                 }
             }
@@ -244,12 +244,12 @@ PopupBase {
 
         ProfileDock {
             Layout.fillWidth: true
-            Layout.preferredHeight: Scale.s(54)
+            Layout.preferredHeight: UiScale.s(54)
             accent: root.profileColour
             opacity: introProfiles.value
 
             transform: Translate {
-                y: Scale.s(20) * (1 - introProfiles.value)
+                y: UiScale.s(20) * (1 - introProfiles.value)
             }
         }
     }
@@ -261,9 +261,9 @@ PopupBase {
         property string unit: ""
         property color tint: Colours.blue
 
-        width: Scale.s(44)
-        height: Scale.s(48)
-        radius: Scale.s(10)
+        width: UiScale.s(44)
+        height: UiScale.s(48)
+        radius: UiScale.s(10)
         color: Colours.alpha(Colours.white, 0.05)
         border.color: Colours.alpha(Colours.white, 0.1)
         border.width: 1
@@ -289,7 +289,7 @@ PopupBase {
             StyledText {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: box.unit
-                font.pixelSize: Scale.s(8)
+                font.pixelSize: UiScale.s(8)
                 color: Colours.subtext0
             }
         }
@@ -308,11 +308,11 @@ PopupBase {
         signal glyphClicked
 
         Layout.fillWidth: true
-        spacing: Scale.s(15)
+        spacing: UiScale.s(15)
 
         Item {
-            Layout.preferredWidth: Scale.s(32)
-            Layout.preferredHeight: Scale.s(32)
+            Layout.preferredWidth: UiScale.s(32)
+            Layout.preferredHeight: UiScale.s(32)
 
             Icon {
                 anchors.centerIn: parent

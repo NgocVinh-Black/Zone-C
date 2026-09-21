@@ -171,7 +171,7 @@ PopupBase {
         id: stage
 
         anchors.fill: parent
-        anchors.bottomMargin: Scale.s(80)
+        anchors.bottomMargin: UiScale.s(80)
 
         readonly property real cx: width / 2
         readonly property real cy: height / 2
@@ -185,7 +185,7 @@ PopupBase {
                 required property int index
 
                 anchors.centerIn: parent
-                width: Scale.s(280) + index * Scale.s(170)
+                width: UiScale.s(280) + index * UiScale.s(170)
                 height: width
                 radius: width / 2
                 color: "transparent"
@@ -226,12 +226,12 @@ PopupBase {
                 required property int index
 
                 readonly property real angle: stage.spin + index / Math.max(1, root.cores.length) * Math.PI * 2
-                readonly property real size: root.powered ? Scale.s(200) - Scale.s(30) * root.multiShift - Scale.s(15) * Math.max(0, root.cores.length - 2) : Scale.s(160)
+                readonly property real size: root.powered ? UiScale.s(200) - UiScale.s(30) * root.multiShift - UiScale.s(15) * Math.max(0, root.cores.length - 2) : UiScale.s(160)
 
                 width: size
                 height: size
-                x: stage.cx - width / 2 + Math.cos(angle) * (Scale.s(180) + (root.cores.length > 2 ? Scale.s(20) : 0)) * root.multiShift
-                y: stage.cy - height / 2 + Math.sin(angle) * (Scale.s(110) + (root.cores.length > 2 ? Scale.s(15) : 0)) * root.multiShift
+                x: stage.cx - width / 2 + Math.cos(angle) * (UiScale.s(180) + (root.cores.length > 2 ? UiScale.s(20) : 0)) * root.multiShift
+                y: stage.cy - height / 2 + Math.sin(angle) * (UiScale.s(110) + (root.cores.length > 2 ? UiScale.s(15) : 0)) * root.multiShift
                 z: 1
                 accent: root.accent
                 powered: root.powered
@@ -280,16 +280,16 @@ PopupBase {
                 readonly property real crowdScale: count > 10 ? Math.max(0.6, 12 / count) : (root.multiShift > 0.5 ? (root.cores.length > 2 ? 0.7 : 0.8) : 1)
 
                 readonly property real singleAngle: stage.spin + index / Math.max(1, count) * Math.PI * 2
-                readonly property real ring: info ? 0 : (index % 2) * Scale.s(40)
+                readonly property real ring: info ? 0 : (index % 2) * UiScale.s(40)
                 readonly property real parentAngle: parentCore ? parentCore.angle : 0
                 readonly property real spread: siblings.length > 1 ? (localIndex / (siblings.length - 1) - 0.5) * Math.PI * 0.8 : 0
                 readonly property bool attached: root.multiShift > 0.5 && info && owner >= 0
                 readonly property real angle: attached ? parentAngle + spread : singleAngle
-                readonly property real radiusX: attached ? Scale.s(root.cores.length > 2 ? 180 : 160) : (info ? (actionable && root.multiShift > 0.5 ? 0 : Scale.s(280)) : Scale.s(320) + ring)
-                readonly property real radiusY: attached ? Scale.s(root.cores.length > 2 ? 180 : 160) : (info ? (actionable && root.multiShift > 0.5 ? 0 : Scale.s(180)) : Scale.s(200) + ring)
+                readonly property real radiusX: attached ? UiScale.s(root.cores.length > 2 ? 180 : 160) : (info ? (actionable && root.multiShift > 0.5 ? 0 : UiScale.s(280)) : UiScale.s(320) + ring)
+                readonly property real radiusY: attached ? UiScale.s(root.cores.length > 2 ? 180 : 160) : (info ? (actionable && root.multiShift > 0.5 ? 0 : UiScale.s(180)) : UiScale.s(200) + ring)
                 readonly property real originX: attached ? parentCore.x + parentCore.width / 2 : stage.cx
                 readonly property real originY: attached ? parentCore.y + parentCore.height / 2 : stage.cy
-                readonly property real bob: info && !attached ? Math.sin(root.orbitAngle * 6) * Scale.s(12) : 0
+                readonly property real bob: info && !attached ? Math.sin(root.orbitAngle * 6) * UiScale.s(12) : 0
 
                 node: ({
                         key: key,

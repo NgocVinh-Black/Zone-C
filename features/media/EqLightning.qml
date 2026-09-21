@@ -35,8 +35,8 @@ Canvas {
             const gain = EqualizerService.gains[i] ?? 0;
             const t = (12 - gain) / 24;
             // Matches the handle position inside EqSlider.
-            const top = Scale.s(9);
-            const trackHeight = height - Scale.s(18) - Scale.s(20);
+            const top = UiScale.s(9);
+            const trackHeight = height - UiScale.s(18) - UiScale.s(20);
             points.push({
                 x: (i + 0.5) * width / count,
                 y: top + t * trackHeight
@@ -55,10 +55,10 @@ Canvas {
         const points = handlePoints();
         const energy = 1 - strikeFade;
         const strands = [
-            { width: Scale.s(20), colour: Colours.mauve, alpha: 0.2 },
-            { width: Scale.s(8), colour: Colours.pink, alpha: 0.45 },
-            { width: Scale.s(3.5), colour: Colours.lavender, alpha: 0.85 },
-            { width: Scale.s(1), colour: Colours.white, alpha: 0.1 }
+            { width: UiScale.s(20), colour: Colours.mauve, alpha: 0.2 },
+            { width: UiScale.s(8), colour: Colours.pink, alpha: 0.45 },
+            { width: UiScale.s(3.5), colour: Colours.lavender, alpha: 0.85 },
+            { width: UiScale.s(1), colour: Colours.white, alpha: 0.1 }
         ];
 
         ctx.lineJoin = "round";
@@ -78,8 +78,8 @@ Canvas {
                     const t = Math.min(j / steps, reach);
                     const envelope = Math.sin(t * Math.PI);
                     const noise = s === 3 ? 1 : (4 - s) * 4;
-                    const sweepX = s < 2 ? Math.sin(time * 3 + i + j + s) * Scale.s(10) * envelope : 0;
-                    const sweepY = s < 2 ? Math.cos(time * 2.5 + i - j - s) * Scale.s(15) * envelope : 0;
+                    const sweepX = s < 2 ? Math.sin(time * 3 + i + j + s) * UiScale.s(10) * envelope : 0;
+                    const sweepY = s < 2 ? Math.cos(time * 2.5 + i - j - s) * UiScale.s(15) * envelope : 0;
                     const crackX = Math.sin(time * (10 + s) + i + j) * Math.cos(time * 8 - i + j) * noise * envelope * energy;
                     const crackY = Math.cos(time * (9 - s) + i - j) * Math.sin(time * 7 + i - j) * noise * 1.25 * envelope * energy;
 

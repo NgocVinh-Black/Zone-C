@@ -93,14 +93,14 @@ Item {
 
         ParallelAnimation {
             NumberAnimation { target: root; property: "contentOpacity"; to: 0; duration: 250; easing.type: Easing.InSine }
-            NumberAnimation { target: root; property: "contentOffset"; to: Scale.s(-40) * root.direction; duration: 250; easing.type: Easing.InSine }
+            NumberAnimation { target: root; property: "contentOffset"; to: UiScale.s(-40) * root.direction; duration: 250; easing.type: Easing.InSine }
             NumberAnimation { target: root; property: "spin"; to: 180 * root.direction; duration: 300; easing.type: Easing.InBack }
             NumberAnimation { target: root; property: "spinScale"; to: 0.8; duration: 300; easing.type: Easing.InCubic }
         }
         ScriptAction {
             script: {
                 root.weatherView = root.targetView;
-                root.contentOffset = Scale.s(40) * root.direction;
+                root.contentOffset = UiScale.s(40) * root.direction;
                 root.spin = -180 * root.direction;
             }
         }
@@ -127,24 +127,24 @@ Item {
 
             Blob {
                 size: parent.width * 0.5
-                centerX: parent.width * 0.75 + Math.cos(root.orbitAngle * 1.5) * Scale.s(350)
-                centerY: parent.height * 0.3 + Math.sin(root.orbitAngle * 1.5) * Scale.s(200)
+                centerX: parent.width * 0.75 + Math.cos(root.orbitAngle * 1.5) * UiScale.s(350)
+                centerY: parent.height * 0.3 + Math.sin(root.orbitAngle * 1.5) * UiScale.s(200)
                 opacity: 0.025 * introAmbient.value
                 color: root.weatherTone
             }
 
             Blob {
                 size: parent.width * 0.6
-                centerX: parent.width * 0.25 - Math.sin(root.orbitAngle * 1.2) * Scale.s(300)
-                centerY: parent.height * 0.7 - Math.cos(root.orbitAngle * 1.2) * Scale.s(250)
+                centerX: parent.width * 0.25 - Math.sin(root.orbitAngle * 1.2) * UiScale.s(300)
+                centerY: parent.height * 0.7 - Math.cos(root.orbitAngle * 1.2) * UiScale.s(250)
                 opacity: 0.02 * introAmbient.value
                 color: root.timeColor
             }
 
             Blob {
                 size: parent.width * 0.45
-                centerX: parent.width * 0.5 + Math.cos(-root.orbitAngle * 1.8) * Scale.s(400)
-                centerY: parent.height * 0.5 - Math.sin(-root.orbitAngle * 1.8) * Scale.s(350)
+                centerX: parent.width * 0.5 + Math.cos(-root.orbitAngle * 1.8) * UiScale.s(400)
+                centerY: parent.height * 0.5 - Math.sin(-root.orbitAngle * 1.8) * UiScale.s(350)
                 opacity: 0.015 * introAmbient.value
                 color: root.timeAccent
             }
@@ -156,9 +156,9 @@ Item {
                 property real drift: 0
 
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: ClockService.hasSchedule ? Scale.s(-100) : 0
+                anchors.verticalCenterOffset: ClockService.hasSchedule ? UiScale.s(-100) : 0
                 text: root.day ? root.day.icon : ""
-                font.pixelSize: Scale.s(800)
+                font.pixelSize: UiScale.s(800)
                 color: root.weatherTone
                 opacity: (0.03 + 0.01 * Math.sin(root.orbitAngle * 4)) * introAmbient.value * root.contentOpacity
 
@@ -173,14 +173,14 @@ Item {
 
                 SequentialAnimation on drift {
                     loops: Animation.Infinite
-                    NumberAnimation { to: Scale.s(-20); duration: 6000; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: UiScale.s(-20); duration: 6000; easing.type: Easing.InOutSine }
                     NumberAnimation { to: 0; duration: 6000; easing.type: Easing.InOutSine }
                 }
             }
 
             TimeHub {
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: ClockService.hasSchedule ? Scale.s(-100) : 0
+                anchors.verticalCenterOffset: ClockService.hasSchedule ? UiScale.s(-100) : 0
                 z: 5
                 popup: root
                 reveal: introClock.value
@@ -191,26 +191,26 @@ Item {
 
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.margins: Scale.s(40)
+                anchors.margins: UiScale.s(40)
                 z: 10
                 popup: root
                 opacity: introCalendar.value
 
                 transform: Translate {
-                    x: Scale.s(-40) * (1 - introCalendar.value)
+                    x: UiScale.s(-40) * (1 - introCalendar.value)
                 }
             }
 
             WeatherStats {
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: Scale.s(40)
+                anchors.margins: UiScale.s(40)
                 z: 10
                 popup: root
                 opacity: introWeather.value
 
                 transform: Translate {
-                    x: Scale.s(40) * (1 - introWeather.value)
+                    x: UiScale.s(40) * (1 - introWeather.value)
                 }
             }
 
@@ -218,7 +218,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                height: Scale.s(240)
+                height: UiScale.s(240)
                 z: 20
                 active: ClockService.hasSchedule
                 sourceComponent: ScheduleStrip {

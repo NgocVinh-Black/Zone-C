@@ -36,23 +36,23 @@ Item {
         opacity: 0.15
         clip: true
 
-        Wave { period: Scale.s(100); amplitude: Scale.s(30); colour: Colours.mauve; duration: 4000 }
-        Wave { period: Scale.s(120); amplitude: Scale.s(40); colour: Colours.sapphire; duration: 5500; reverse: true }
-        Wave { period: Scale.s(80); amplitude: Scale.s(20); colour: Colours.peach; duration: 7000 }
+        Wave { period: UiScale.s(100); amplitude: UiScale.s(30); colour: Colours.mauve; duration: 4000 }
+        Wave { period: UiScale.s(120); amplitude: UiScale.s(40); colour: Colours.sapphire; duration: 5500; reverse: true }
+        Wave { period: UiScale.s(80); amplitude: UiScale.s(20); colour: Colours.peach; duration: 7000 }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Scale.s(25)
-        spacing: Scale.s(15)
+        anchors.margins: UiScale.s(25)
+        spacing: UiScale.s(15)
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Scale.s(15)
+            spacing: UiScale.s(15)
 
             Rectangle {
-                Layout.preferredWidth: Scale.s(40)
-                Layout.preferredHeight: Scale.s(40)
+                Layout.preferredWidth: UiScale.s(40)
+                Layout.preferredHeight: UiScale.s(40)
                 radius: width / 2
                 color: Colours.surface0
 
@@ -73,9 +73,9 @@ Item {
             }
 
             Rectangle {
-                Layout.preferredWidth: Scale.s(120)
-                Layout.preferredHeight: Scale.s(36)
-                radius: Scale.s(10)
+                Layout.preferredWidth: UiScale.s(120)
+                Layout.preferredHeight: UiScale.s(36)
+                radius: UiScale.s(10)
                 visible: root.schedule.link !== ""
                 color: linkArea.containsMouse ? Colours.mauve : Colours.alpha(Colours.surface1, 0.5)
                 border.color: Colours.mauve
@@ -83,7 +83,7 @@ Item {
 
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: Scale.s(6)
+                    spacing: UiScale.s(6)
 
                     StyledText {
                         text: "Open Web"
@@ -152,18 +152,18 @@ Item {
                             anchors.left: parent.left
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            anchors.topMargin: Scale.s(10)
-                            anchors.bottomMargin: Scale.s(10)
+                            anchors.topMargin: UiScale.s(10)
+                            anchors.bottomMargin: UiScale.s(10)
                             width: 1
                             color: Colours.alpha(Colours.surface1, 0.6)
                         }
 
                         ColumnLayout {
                             anchors.left: parent.left
-                            anchors.leftMargin: Scale.s(12)
+                            anchors.leftMargin: UiScale.s(12)
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            spacing: Scale.s(4)
+                            spacing: UiScale.s(4)
 
                             StyledText {
                                 Layout.fillWidth: true
@@ -223,10 +223,10 @@ Item {
             const cy = height / 2;
             ctx.beginPath();
             ctx.moveTo(0, cy);
-            for (let i = 0; i <= width + Scale.s(20); i += Scale.s(10))
+            for (let i = 0; i <= width + UiScale.s(20); i += UiScale.s(10))
                 ctx.lineTo(i, cy + Math.sin(i / period) * amplitude);
             ctx.strokeStyle = colour.toString();
-            ctx.lineWidth = Scale.s(2);
+            ctx.lineWidth = UiScale.s(2);
             ctx.stroke();
         }
     }

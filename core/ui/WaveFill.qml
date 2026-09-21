@@ -12,10 +12,10 @@ Canvas {
     property string direction: "up"
     // "rect" uses `radius`; "circle" clips to a circle.
     property string shape: "rect"
-    property real radius: Scale.s(14)
+    property real radius: UiScale.s(14)
     property color colorStart: "white"
     property color colorEnd: colorStart
-    property real waveAmplitude: Scale.s(10)
+    property real waveAmplitude: UiScale.s(10)
 
     property real phase: 0
 

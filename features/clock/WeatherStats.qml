@@ -16,8 +16,8 @@ Item {
     property real shownTemp: target ? target.max : 0
     readonly property bool counting: tempAnim.running
 
-    width: Scale.s(320)
-    height: Scale.s(420)
+    width: UiScale.s(320)
+    height: UiScale.s(420)
 
     Behavior on shownTemp {
         NumberAnimation {
@@ -40,11 +40,11 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Scale.s(20)
+        spacing: UiScale.s(20)
 
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            spacing: Scale.s(20)
+            spacing: UiScale.s(20)
 
             NudgeArrow {
                 glyph: String.fromCodePoint(0xF053)
@@ -53,7 +53,7 @@ Item {
             }
 
             StyledText {
-                Layout.preferredWidth: Scale.s(110)
+                Layout.preferredWidth: UiScale.s(110)
                 horizontalAlignment: Text.AlignHCenter
                 text: root.target ? Qt.formatDate(new Date(root.target.date + "T12:00:00"), "dddd").toUpperCase() : "LOADING..."
                 font.pixelSize: Tokens.font.size.clock
@@ -69,12 +69,12 @@ Item {
 
         ColumnLayout {
             Layout.alignment: Qt.AlignRight
-            spacing: Scale.s(-5)
+            spacing: UiScale.s(-5)
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
                 text: Math.round(root.shownTemp) + "°"
-                font.pixelSize: Scale.s(84)
+                font.pixelSize: UiScale.s(84)
                 font.weight: Font.Black
                 color: root.tempColour
                 style: Text.Outline
@@ -104,8 +104,8 @@ Item {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
-            Layout.rightMargin: Scale.s(10)
-            spacing: Scale.s(20)
+            Layout.rightMargin: UiScale.s(10)
+            spacing: UiScale.s(20)
 
             Gauge {
                 glyph: String.fromCodePoint(0xF059D)
@@ -143,15 +143,15 @@ Item {
 
         signal activated
 
-        width: Scale.s(30)
-        height: Scale.s(30)
+        width: UiScale.s(30)
+        height: UiScale.s(30)
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: activated()
 
         SequentialAnimation on pulse {
             loops: Animation.Infinite
-            NumberAnimation { to: Scale.s(3) * arrow.nudge; duration: 1000; easing.type: Easing.InOutSine }
+            NumberAnimation { to: UiScale.s(3) * arrow.nudge; duration: 1000; easing.type: Easing.InOutSine }
             NumberAnimation { to: 0; duration: 1000; easing.type: Easing.InOutSine }
         }
 
@@ -162,7 +162,7 @@ Item {
             color: arrow.containsMouse ? root.popup.textAccent : Colours.overlay1
 
             transform: Translate {
-                x: arrow.containsMouse ? Scale.s(5) * arrow.nudge : arrow.pulse
+                x: arrow.containsMouse ? UiScale.s(5) * arrow.nudge : arrow.pulse
             }
         }
     }
@@ -176,8 +176,8 @@ Item {
         property real fill: 0
         property real shownFill: fill
 
-        width: Scale.s(68)
-        height: Scale.s(100)
+        width: UiScale.s(68)
+        height: UiScale.s(100)
         scale: gaugeArea.containsMouse ? 1.15 : 1
 
         Behavior on scale {
@@ -195,7 +195,7 @@ Item {
         }
 
         Rectangle {
-            width: Scale.s(68)
+            width: UiScale.s(68)
             height: width
             radius: width / 2
             anchors.horizontalCenter: parent.horizontalCenter
@@ -212,7 +212,7 @@ Item {
 
             property real progress: gauge.shownFill
 
-            width: Scale.s(68)
+            width: UiScale.s(68)
             height: width
             anchors.horizontalCenter: parent.horizontalCenter
             rotation: -90
@@ -223,18 +223,18 @@ Item {
                 ctx.reset();
                 const r = width / 2;
                 ctx.beginPath();
-                ctx.arc(r, r, r - Scale.s(4), 0, 2 * Math.PI);
+                ctx.arc(r, r, r - UiScale.s(4), 0, 2 * Math.PI);
                 ctx.strokeStyle = Colours.alpha(Colours.text, 0.1).toString();
-                ctx.lineWidth = Scale.s(3);
+                ctx.lineWidth = UiScale.s(3);
                 ctx.stroke();
                 if (progress > 0) {
                     ctx.beginPath();
-                    ctx.arc(r, r, r - Scale.s(4), 0, progress * 2 * Math.PI);
+                    ctx.arc(r, r, r - UiScale.s(4), 0, progress * 2 * Math.PI);
                     const grad = ctx.createLinearGradient(0, 0, width, height);
                     grad.addColorStop(0, root.popup.timeAccent.toString());
                     grad.addColorStop(1, Colours.sapphire.toString());
                     ctx.strokeStyle = grad;
-                    ctx.lineWidth = Scale.s(4);
+                    ctx.lineWidth = UiScale.s(4);
                     ctx.lineCap = "round";
                     ctx.stroke();
                 }
@@ -250,7 +250,7 @@ Item {
         RowLayout {
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Scale.s(4)
+            spacing: UiScale.s(4)
 
             Icon {
                 text: gauge.glyph

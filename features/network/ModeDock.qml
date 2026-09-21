@@ -23,8 +23,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: Tokens.popup.padding
-        width: Scale.s(360)
-        height: Scale.s(54)
+        width: UiScale.s(360)
+        height: UiScale.s(54)
         radius: Tokens.block.radius
         color: Colours.alpha(Colours.white, 0.1)
         border.color: Colours.alpha(Colours.white, 0.1)
@@ -32,8 +32,8 @@ Item {
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: Scale.s(6)
-            spacing: Scale.s(6)
+            anchors.margins: UiScale.s(6)
+            spacing: UiScale.s(6)
 
             Tab {
                 name: "wifi"
@@ -45,7 +45,7 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 1
                 Layout.fillHeight: true
-                Layout.margins: Scale.s(5)
+                Layout.margins: UiScale.s(5)
                 color: Colours.alpha(Colours.white, 0.2)
             }
 
@@ -61,13 +61,13 @@ Item {
     Rectangle {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.margins: Scale.s(30)
-        width: Scale.s(48)
+        anchors.margins: UiScale.s(30)
+        width: UiScale.s(48)
         height: width
         radius: width / 2
         color: "transparent"
         border.color: root.pending ? root.accent : (root.powered ? "transparent" : Colours.surface2)
-        border.width: Scale.s(2)
+        border.width: UiScale.s(2)
         scale: powerArea.pressed ? 0.9 : (powerArea.containsMouse ? 1.1 : 1)
 
         Behavior on scale {
@@ -132,7 +132,7 @@ Item {
 
         Layout.fillWidth: true
         Layout.fillHeight: true
-        radius: Scale.s(10)
+        radius: UiScale.s(10)
         color: !selected && tabArea.containsMouse ? Colours.surface1 : "transparent"
 
         Rectangle {
@@ -153,7 +153,7 @@ Item {
 
         RowLayout {
             anchors.centerIn: parent
-            spacing: Scale.s(8)
+            spacing: UiScale.s(8)
 
             Icon {
                 text: tab.glyph

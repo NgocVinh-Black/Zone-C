@@ -49,6 +49,8 @@ hyprctl hyprpaper preload "$image" >/dev/null
 hyprctl hyprpaper wallpaper ",$image" >/dev/null
 hyprctl hyprpaper unload unused >/dev/null || true
 
-matugen image "$image" --mode dark
+# --prefer is required: since matugen 4 an image with several candidate source
+# colours asks the terminal to pick, and there is no terminal under exec-once.
+matugen image "$image" --mode dark --prefer saturation
 # Pick up the new border colours.
 hyprctl reload >/dev/null
