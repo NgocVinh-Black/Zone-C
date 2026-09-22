@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# The Zone-C command. Everything the desktop needs from a terminal lives here.
+#
+#   zone-c install [options]   install or re-apply Zone-C (see zone-c install --help)
+#   zone-c update              pull the repo, re-apply configs, restart the shell
+#   zone-c shell [action]      start | restart | stop | status | log  (default: status)
+#   zone-c wallpaper <args>    set the wallpaper and regenerate every colour file
+#   zone-c session             the session menu (lock, log out, suspend, reboot…)
+#   zone-c check               run the repo's own checks and unit tests
+#   zone-c path                print where the repo lives
+#   zone-c help                this text
+set -euo pipefail
+
+# This script is linked into ~/.local/bin, so follow the link back to the repo.
+self="$(readlink -f "${BASH_SOURCE[0]}")"
+bindir="$(dirname "$self")"
+repo="$(cd "$bindir/../.." && pwd)"
+
+bold=$'\e[1m' red=$'\e[31m' reset=$'\e[0m'
+die() { printf '%szone-c:%s %s\n' "$red" "$reset" "$*" >&2; exit 1; }
+# The comment block at the top of this file, minus the shebang.
+usage() { sed -n '2,/^[^#]/p' "$self" | grep '^#' | sed 's/^# \{0,1\}//'; }
+
+[[ -f "$repo/install.sh" && -f "$repo/shell.qml" ]] ||
+    die "cannot find the Zone-C repo (looked in $repo)"
+
+running() { pgrep -x qs >/dev/null 2>&1; }
+
+shell_cmd() {
+    case "${1:-status}" in
+    start)
+        running && { echo "already running"; return 0; }
+        qs -c zone-c -d
+        echo "started"
+        ;;
+    restart)
+        qs -c zone-c kill >/dev/null 2>&1 || true
+        sleep 0.2
+        qs -c zone-c -d
+        echo "restarted"
+        ;;
+    stop)
+        qs -c zone-c kill >/dev/null 2>&1 || true
+        echo "stopped"
+        ;;
+    status)
+        if running; then echo "running"; else echo "not running"; fi
+        ;;
+    log)
+        qs -c zone-c log
+        ;;
+    *)
+        die "unknown shell action: $1 (start, restart, stop, status, log)"
+        ;;
+    esac
+}
+
+update_cmd() {
+    git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 ||
+        die "$repo is not a git clone, so there is nothing to pull"
+    [[ -z "$(git -C "$repo" status --porcelain)" ]] ||
+        die "the repo has uncommitted changes; commit or stash them first"
+
+    printf '%s==>%s pulling\n' "$bold" "$reset"
+    git -C "$repo" pull --ff-only
+
+    printf '%s==>%s re-applying configs\n' "$bold" "$reset"
+    "$repo/install.sh" --no-packages --yes
+
+    if running; then
+        printf '%s==>%s restarting the shell\n' "$bold" "$reset"
+        shell_cmd restart
+    fi
+}
+
+case "${1:-help}" in
+install) shift; exec "$repo/install.sh" "$@" ;;
+update) shift; [[ $# -eq 0 ]] || die "update takes no arguments"; update_cmd ;;
+shell) shift; shell_cmd "${1:-status}" ;;
+wallpaper) shift; exec "$bindir/zone-c-wallpaper" "$@" ;;
+session) shift; exec "$bindir/zone-c-session" "$@" ;;
+check) shift; exec bash "$repo/tools/check.sh" "$@" ;;
+path) echo "$repo" ;;
+help | -h | --help) usage ;;
+*) die "unknown command: $1 (run 'zone-c help')" ;;
+esac

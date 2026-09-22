@@ -31,7 +31,7 @@ cd ~/Projects/Zone-C
 `install.sh` hỏi trước mỗi bước (thêm `--yes` để bỏ hỏi, `--dry-run` để xem trước):
 
 1. Cài gói từ repo Arch: Hyprland và phiên làm việc, âm thanh, mạng, Bluetooth, gõ tiếng Việt (fcitx5 + Unikey), LibreOffice, Flameshot, nén/giải nén, xem ảnh/video/PDF, hỗ trợ ổ NTFS/exFAT, và nhóm lệnh cơ bản. `quickshell`, `matugen`, VS Code, Notion lấy từ AUR nếu repo không có (tự cài `yay` khi cần).
-2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,gtk-3.0,gtk-4.0}`, `mimeapps.list`, `code-flags.conf`, `electron-flags.conf`, `~/.zshrc`, `~/.local/bin/{zone-c-wallpaper,zone-c-session}`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
+2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,gtk-3.0,gtk-4.0}`, `mimeapps.list`, `code-flags.conf`, `electron-flags.conf`, `~/.zshrc`, `~/.local/bin/{zone-c,zone-c-wallpaper,zone-c-session}`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
 3. Tạo `~/.config/zone-c/shell.json`, bảng màu mặc định trong `~/.cache/zone-c/`, cấu hình lần đầu cho fcitx5, Flameshot, qt6ct, và chép ảnh nền mặc định vào `~/Pictures/Wallpapers/`.
 4. Bật NetworkManager, bluetooth, power-profiles-daemon, đồng bộ giờ, fstrim; hỏi bật SDDM và đổi shell sang zsh.
 
@@ -68,6 +68,22 @@ EOF
 ```
 
 Hoặc bỏ qua định vị và ghi thẳng toạ độ: đổi `exec-once = sleep 1 && gammastep` trong `dotfiles/hypr/conf/autostart.conf` thành `gammastep -l 21.03:105.85`.
+
+## Lệnh `zone-c`
+
+Sau khi cài, mọi việc gõ qua một lệnh duy nhất:
+
+| Lệnh | Việc |
+|---|---|
+| `zone-c install` | cài hoặc áp lại từ đầu (chính là `./install.sh`) |
+| `zone-c update` | `git pull`, áp lại config, khởi động lại shell |
+| `zone-c shell [start\|restart\|stop\|status\|log]` | điều khiển shell; không ghi gì thì báo trạng thái |
+| `zone-c wallpaper --pick` | chọn hình nền và sinh lại toàn bộ bảng màu |
+| `zone-c session` | menu khoá / đăng xuất / ngủ / khởi động lại / tắt máy |
+| `zone-c check` | chạy bộ kiểm tra và unit test của repo |
+| `zone-c path` | in ra chỗ repo đang nằm |
+
+`zone-c update` dừng lại nếu repo còn thay đổi chưa commit, để không nuốt mất việc đang làm dở.
 
 Vì là symlink, `git pull` trong repo là cập nhật luôn cả shell lẫn dotfiles. Chỉnh riêng cho từng máy (màn hình, layout bàn phím) đặt trong `~/.config/hypr/local.conf`, file này không vào git.
 

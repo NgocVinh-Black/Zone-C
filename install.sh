@@ -189,6 +189,7 @@ link_configs() {
     link "$dots/rofi" "$config/rofi"
     link "$dots/matugen" "$config/matugen"
     link "$dots/zsh/.zshrc" "$HOME/.zshrc"
+    link "$dots/bin/zone-c" "$HOME/.local/bin/zone-c"
     link "$dots/bin/zone-c-wallpaper" "$HOME/.local/bin/zone-c-wallpaper"
     link "$dots/bin/zone-c-session" "$HOME/.local/bin/zone-c-session"
     link "$dots/code/code-flags.conf" "$config/code-flags.conf"

@@ -35,8 +35,8 @@ export PATH="$HOME/.local/bin:$PATH"
 alias ls='ls --color=auto'
 alias ll='ls -lah'
 alias grep='grep --color=auto'
-alias zc-log='qs -c zone-c log'
-alias zc-restart='pkill -x qs; (qs -c zone-c >/dev/null 2>&1 &)'
+alias zc-log='zone-c shell log'
+alias zc-restart='zone-c shell restart'
 
 # Machine-specific additions that are not tracked in git.
 [[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
