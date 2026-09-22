@@ -189,6 +189,10 @@ link_configs() {
     link "$dots/rofi" "$config/rofi"
     link "$dots/matugen" "$config/matugen"
     link "$dots/zsh/.zshrc" "$HOME/.zshrc"
+    # Login-shell PATH for ~/.local/bin, whichever shell was kept. SDDM sources
+    # these (not .zshrc / .bashrc) when it starts the Hyprland session.
+    link "$dots/zsh/.zprofile" "$HOME/.zprofile"
+    link "$dots/bash/.bash_profile" "$HOME/.bash_profile"
     link "$dots/bin/zone-c" "$HOME/.local/bin/zone-c"
     link "$dots/bin/zone-c-wallpaper" "$HOME/.local/bin/zone-c-wallpaper"
     link "$dots/bin/zone-c-session" "$HOME/.local/bin/zone-c-session"

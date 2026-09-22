@@ -19,11 +19,21 @@ Thiết kế đầy đủ: [2026-09-17-zone-c-design.md](2026-09-17-zone-c-desig
 
 ## Cài đặt trên Arch mới
 
-Sau khi cài Arch (có mạng, có user thường dùng được `sudo`):
+Khi chạy `archinstall`: chọn profile **Minimal** (không desktop), tạo user thường có `sudo`, và ở *Network configuration* chọn **NetworkManager** để `nmtui` nối Wi-Fi ngay trong TTY và không đụng độ với `iwd`.
+
+Vào TTY, nối mạng, rồi một lệnh:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/NgocVinh-Black/Zone-C/main/bootstrap.sh)
+```
+
+`bootstrap.sh` cài `git`, clone repo vào `~/Projects/Zone-C` rồi chạy `install.sh`. Tuỳ chọn viết sau lệnh được chuyển cho `install.sh` (ví dụ `--yes`); `ZONE_C_DIR` và `ZONE_C_BRANCH` đổi chỗ clone và nhánh. Chữ TTY quá nhỏ thì `sudo pacman -S terminus-font && setfont ter-132n` trước cho dễ đọc.
+
+Làm tay thì tương đương:
 
 ```bash
 sudo pacman -S --needed git
-git clone <url-repo-của-bạn> ~/Projects/Zone-C
+git clone https://github.com/NgocVinh-Black/Zone-C.git ~/Projects/Zone-C
 cd ~/Projects/Zone-C
 ./install.sh
 ```
@@ -31,13 +41,13 @@ cd ~/Projects/Zone-C
 `install.sh` hỏi trước mỗi bước (thêm `--yes` để bỏ hỏi, `--dry-run` để xem trước):
 
 1. Cài gói từ repo Arch: Hyprland và phiên làm việc, âm thanh, mạng, Bluetooth, gõ tiếng Việt (fcitx5 + Unikey), LibreOffice, Flameshot, nén/giải nén, xem ảnh/video/PDF, hỗ trợ ổ NTFS/exFAT, và nhóm lệnh cơ bản. `quickshell`, `matugen`, VS Code, Notion lấy từ AUR nếu repo không có (tự cài `yay` khi cần).
-2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,gtk-3.0,gtk-4.0}`, `mimeapps.list`, `code-flags.conf`, `electron-flags.conf`, `~/.zshrc`, `~/.local/bin/{zone-c,zone-c-wallpaper,zone-c-session}`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
+2. Tạo symlink: repo → `~/.config/quickshell/zone-c`, và `dotfiles/` → `~/.config/{hypr,kitty,rofi,matugen,gtk-3.0,gtk-4.0}`, `mimeapps.list`, `code-flags.conf`, `electron-flags.conf`, `~/.zshrc`, `~/.zprofile`, `~/.bash_profile` (PATH cho `~/.local/bin` dù giữ bash hay zsh), `~/.local/bin/{zone-c,zone-c-wallpaper,zone-c-session}`. Config cũ được chuyển vào `~/.local/state/zone-c/backup-<thời gian>/`.
 3. Tạo `~/.config/zone-c/shell.json`, bảng màu mặc định trong `~/.cache/zone-c/`, cấu hình lần đầu cho fcitx5, Flameshot, qt6ct, và chép ảnh nền mặc định vào `~/Pictures/Wallpapers/`.
 4. Bật NetworkManager, bluetooth, power-profiles-daemon, đồng bộ giờ, fstrim; hỏi bật SDDM và đổi shell sang zsh.
 
 Shell **chính là** daemon thông báo, nên đừng chạy thêm swaync/dunst/mako: chỉ một chương trình được giữ `org.freedesktop.Notifications`.
 
-Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Lần đầu vào sẽ dùng ảnh nền mặc định của Zone-C. Bỏ ảnh của bạn vào `~/Pictures/Wallpapers` rồi bấm `SUPER+SHIFT+W` để đổi: bar, popup, viền cửa sổ, kitty, rofi, swaync đổi màu theo ảnh (matugen).
+Xong thì đăng xuất (hoặc khởi động lại) và chọn phiên **Hyprland**. Lần đầu vào sẽ dùng ảnh nền mặc định của Zone-C. Bỏ ảnh của bạn vào `~/Pictures/Wallpapers` rồi bấm `SUPER+SHIFT+W` để đổi: bar, popup, viền cửa sổ, hyprlock, kitty, rofi đổi màu theo ảnh (matugen).
 
 ### Ba việc phải tự làm sau khi cài
 
@@ -76,6 +86,7 @@ Sau khi cài, mọi việc gõ qua một lệnh duy nhất:
 | Lệnh | Việc |
 |---|---|
 | `zone-c install` | cài hoặc áp lại từ đầu (chính là `./install.sh`) |
+| `bash bootstrap.sh` | trên máy mới: cài git, clone, rồi gọi `install.sh` |
 | `zone-c update` | `git pull`, áp lại config, khởi động lại shell |
 | `zone-c shell [start\|restart\|stop\|status\|log]` | điều khiển shell; không ghi gì thì báo trạng thái |
 | `zone-c wallpaper --pick` | chọn hình nền và sinh lại toàn bộ bảng màu |
