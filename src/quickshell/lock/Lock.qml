@@ -3,6 +3,7 @@ import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import QtMultimedia
 import QtCore
 import Quickshell
 import Quickshell.Io
@@ -192,6 +193,7 @@ Scope {
         lockUI.authenticating = false;
         lockUI.statusText = I18n.t("lock.status.locked");
         rootLock.locked = true;
+        Wallpaper.setPlayback("all", "pause");
         pamActionTimer.start();
         kbPollerRestartTimer.restart();
     }
@@ -204,6 +206,7 @@ Scope {
     function completeUnlock() {
         if (!rootLock.locked) return;
         rootLock.locked = false;
+        Wallpaper.setPlayback("all", "play");
         root.isUnlocking = false;
         kbWaiter.running = false;
         kbPoller.running = false;
@@ -816,7 +819,7 @@ Scope {
                             asynchronous: false
                             cache: true
                             sourceSize: Qt.size(parent.width, parent.height)
-                            opacity: (status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
+                            opacity: (screenRoot.isPlayingIntro && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
 
                             onStatusChanged: {
                                 if (status === Image.Ready && screenRoot.isPlayingIntro && !introSequence.running) {
@@ -864,7 +867,9 @@ Scope {
                             asynchronous: false
                             cache: true
                             sourceSize: Qt.size(parent.width, parent.height)
-                            opacity: (screenRoot.inputActive && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
+                            // never show the desktop screenshot behind the lock UI
+                            visible: false
+                            opacity: 0.0
 
                             Behavior on opacity {
                                 enabled: !screenRoot.isUnlocking
@@ -888,9 +893,9 @@ Scope {
                         anchors.fill: parent
                         z: 1
                         autoPaddingEnabled: false
-                        blurEnabled: true
-                        blurMax: screenRoot.s(48)
-                        blur: screenRoot.inputActive ? 1.0 : 0.55
+                        blurEnabled: false
+                        blurMax: 0
+                        blur: 0.0
                         Behavior on blur {
                             enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
                             NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
@@ -899,12 +904,70 @@ Scope {
                         visible: opacity > 0.01
                     }
 
+                    FileView {
+                        id: wpPathFile
+                        path: Caching.getCacheDir("wallpaper") + "/current_" + ((screenRoot.safeScreenName !== "" && screenRoot.safeScreenName !== "default") ? screenRoot.safeScreenName : "default")
+                        blockLoading: true
+                        printErrors: false
+                    }
+
+                    property string lockVideoPath: {
+                        let map = Wallpaper.screenWallpaperPaths || {};
+                        let p = (screenRoot.safeScreenName !== "" && map[screenRoot.safeScreenName]) ? map[screenRoot.safeScreenName] : "";
+                        if (p === "") {
+                            let keys = Object.keys(map);
+                            if (keys.length > 0) p = map[keys[0]] || "";
+                        }
+                        if (p === "") p = wpPathFile.text().trim();
+                        p = p.replace(/^file:\/\//, "");
+                        let lp = p.toLowerCase();
+                        return (lp.endsWith(".mp4") || lp.endsWith(".mkv") || lp.endsWith(".webm") || lp.endsWith(".mov")) ? p : "";
+                    }
+
+                    Item {
+                        id: lockVideoLayer
+                        anchors.fill: parent
+                        z: 1
+                        readonly property bool useLockVideo: true
+                        visible: useLockVideo && screenRoot.lockVideoPath !== "" && opacity > 0.01
+                        opacity: lockVideoOutput.isReady ? screenRoot.panelReveal : 0.0
+
+                        MediaPlayer {
+                            id: lockVideoPlayer
+                            source: screenRoot.lockVideoPath !== "" ? ("file://" + screenRoot.lockVideoPath) : ""
+                            videoOutput: lockVideoOutput
+                            loops: MediaPlayer.Infinite
+                            onPlaybackStateChanged: if (playbackState === MediaPlayer.PlayingState) lockVideoOutput.isReady = true
+                            onMediaStatusChanged: {
+                                if ((mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia) && rootLock.locked && lockVideoLayer.useLockVideo && playbackState !== MediaPlayer.PlayingState) play();
+                            }
+                            onSourceChanged: if (source.toString() !== "" && rootLock.locked && lockVideoLayer.useLockVideo) play()
+                        }
+
+                        VideoOutput {
+                            id: lockVideoOutput
+                            property bool isReady: false
+                            anchors.fill: parent
+                            fillMode: VideoOutput.PreserveAspectCrop
+                        }
+
+                        Connections {
+                            target: rootLock
+                            function onLockedChanged() {
+                                if (rootLock.locked && screenRoot.lockVideoPath !== "" && lockVideoLayer.useLockVideo) lockVideoPlayer.play();
+                                else lockVideoPlayer.stop();
+                            }
+                        }
+
+                        Component.onCompleted: if (rootLock.locked && screenRoot.lockVideoPath !== "" && useLockVideo) lockVideoPlayer.play()
+                    }
+
                     Rectangle {
                         id: dimmer
                         anchors.fill: parent
                         z: 2
                         color: ThemeBackend.crust
-                        opacity: (screenRoot.inputActive ? 0.72 : 0.32) * screenRoot.panelReveal
+                        opacity: 0.45 * screenRoot.panelReveal
                         Behavior on opacity {
                             enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
                             NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
@@ -1058,251 +1121,272 @@ Scope {
                             }
                         }
 
+                        // SDDM-style layout (matches /usr/share/sddm/themes/zone-thunder)
                         Item {
+                            id: sddmLayer
                             anchors.fill: parent
                             opacity: screenRoot.contentReveal
-                            transform: Translate { y: screenRoot.s(20) * (1.0 - screenRoot.contentReveal) }
+                            transform: Translate { y: screenRoot.s(30) * (1.0 - screenRoot.contentReveal) }
 
-                            ColumnLayout {
-                                id: clockModule
-                                anchors.centerIn: parent
-                                anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(-280) : screenRoot.s(-130)
-                                spacing: screenRoot.s(8)
+                            readonly property real u: screenRoot.height / 768
+                            readonly property color glass: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.72)
+                            readonly property color edge: Qt.rgba(ThemeBackend.blue.r, ThemeBackend.blue.g, ThemeBackend.blue.b, 0.35)
+                            readonly property color glow: Qt.rgba(ThemeBackend.blue.r, ThemeBackend.blue.g, ThemeBackend.blue.b, 0.6)
 
-                                opacity: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.0 : 1.0
-                                scale: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.92 : 1.0
-                                visible: opacity > 0.01
+                            function runTile(key) {
+                                if (key === "power") poweroffProcess.running = true;
+                                else if (key === "reboot") reloadProcess.running = true;
+                                else if (key === "sleep") suspendProcess.running = true;
+                                else if (key === "layout") root.switchKbLayout();
+                            }
 
-                                Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
-                                Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                                Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-
-                                RowLayout {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: screenRoot.s(4)
-
-                                    Text {
-                                        id: clockHours
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(120)
-                                        font.weight: Font.Normal
-                                        color: "#ffffff"
-                                        style: Text.Raised
-                                        styleColor: Qt.rgba(0, 0, 0, 0.25)
-                                    }
-
-                                    Text {
-                                        id: clockColon
-                                        text: ":"
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(80)
-                                        font.weight: Font.Light
-                                        Layout.alignment: Qt.AlignVCenter
-                                        opacity: colonPulse.running ? colonOpacity : 0.6
-                                        color: "#ffffff"
-                                        style: Text.Raised
-                                        styleColor: Qt.rgba(0, 0, 0, 0.25)
-
-                                        property real colonOpacity: 0.6
-                                        SequentialAnimation on colonOpacity {
-                                            id: colonPulse
-                                            running: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
-                                            loops: Animation.Infinite
-                                            NumberAnimation { to: 1.0; duration: 500; easing.type: Easing.OutCubic }
-                                            NumberAnimation { to: 0.35; duration: 500; easing.type: Easing.InCubic }
-                                        }
-                                    }
-
-                                    Text {
-                                        id: clockMinutes
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(120)
-                                        font.weight: Font.Normal
-                                        color: "#ffffff"
-                                        style: Text.Raised
-                                        styleColor: Qt.rgba(0, 0, 0, 0.25)
-                                    }
-
-                                    Text {
-                                        id: clockAmPm
-                                        visible: text !== ""
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(28)
-                                        font.weight: Font.Bold
-                                        color: "#ffffff"
-                                        opacity: 0.8
-                                        Layout.alignment: Qt.AlignBottom
-                                        Layout.bottomMargin: screenRoot.s(24)
-                                        style: Text.Raised
-                                        styleColor: Qt.rgba(0, 0, 0, 0.25)
-                                    }
-                                }
-
-                                Text {
-                                    id: dateText
-                                    Layout.alignment: Qt.AlignHCenter
-                                    font.family: ThemeBackend.fontFamily
-                                    font.pixelSize: screenRoot.s(14)
-                                    font.weight: Font.Bold
-                                    font.letterSpacing: 1.4
-                                    color: "#ffffff"
-                                    opacity: 0.85
-                                }
-
-                                Timer {
-                                    id: clockTimer
-                                    interval: 1000; running: true; repeat: true; triggeredOnStart: true
-                                    onTriggered: {
-                                        let d = new Date();
-                                        let fmt = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) ? Config.rawSettings.bar.time.format : "HH:mm:ss";
-                                        let is12h = fmt.includes("h") || fmt.toLowerCase().includes("ap");
-                                        let hourFmt = is12h ? (fmt.includes("hh") ? "hh" : "h") : (fmt.includes("H") && !fmt.includes("HH") ? "H" : "HH");
-                                        clockHours.text = Qt.formatDateTime(d, hourFmt);
-                                        clockMinutes.text = Qt.formatDateTime(d, "mm");
-                                        clockAmPm.text = is12h ? Qt.formatDateTime(d, "AP") : "";
-                                        dateText.text = Qt.formatDateTime(d, "dddd, d MMMM").toUpperCase();
-                                    }
+                            function submitPassword(txt) {
+                                if (txt.length > 0 && pam.responseRequired && !lockUI.authenticating) {
+                                    lockUI.authenticating = true;
+                                    lockUI.statusText = I18n.t("lock.status.authenticating");
+                                    lockUI.failed = false;
+                                    pam.respond(txt);
                                 }
                             }
 
-                            Rectangle {
-                                id: mainDashboardShell
+                            Row {
+                                id: sddmRow
                                 anchors.centerIn: parent
-                                anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(0) : screenRoot.s(90)
-                                width: Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
-                                height: screenRoot.s(540)
-                                radius: ThemeBackend.borderRadius * 1.5
-                                color: ThemeBackend.surface0
-                                border.width: 1.5
-                                border.color: ThemeBackend.surface1
-                                clip: true
-
-                                opacity: screenRoot.centerReveal
-                                scale: 0.92 + (screenRoot.centerReveal * 0.08)
-                                visible: opacity > 0.01
+                                spacing: 96 * sddmLayer.u
 
                                 transform: Scale {
-                                    origin.x: mainDashboardShell.width / 2
-                                    origin.y: mainDashboardShell.height / 2
+                                    origin.x: sddmRow.width / 2
+                                    origin.y: sddmRow.height / 2
                                     xScale: screenRoot.isUnlocking ? screenRoot.foldScaleX : 1.0
                                     yScale: screenRoot.isUnlocking ? screenRoot.foldScaleY : 1.0
                                 }
 
-                                Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+                                // ---------- clock ----------
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 24 * sddmLayer.u
 
-                                readonly property real leftWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
-                                readonly property real centerWidth: screenRoot.s(440)
-                                readonly property real rightWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
+                                    Column {
+                                        spacing: -24 * sddmLayer.u
 
-                                Item {
-                                    id: leftWingContainer
-                                    x: 0
-                                    y: 0
-                                    width: mainDashboardShell.leftWingWidth
-                                    height: parent.height
-                                    clip: true
-                                    opacity: screenRoot.wingsReveal
-                                    visible: width > 0.5
+                                        Text {
+                                            id: clockHours
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: 140 * sddmLayer.u
+                                            font.weight: Font.Bold
+                                            color: ThemeBackend.text
+                                        }
 
-                                    Loader {
-                                        id: leftWingLoader
-                                        width: screenRoot.s(390)
-                                        height: leftWingContainer.height
-                                        active: screenRoot.wingsEverNeeded
-                                        asynchronous: true
-                                        sourceComponent: leftWingContent
+                                        Text {
+                                            id: clockMinutes
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: 140 * sddmLayer.u
+                                            font.weight: Font.Bold
+                                            color: ThemeBackend.blue
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        width: dateText.implicitWidth + 32 * sddmLayer.u
+                                        height: 44 * sddmLayer.u
+                                        radius: height / 2
+                                        color: sddmLayer.glass
+                                        border.width: 1
+                                        border.color: sddmLayer.edge
+
+                                        Text {
+                                            id: dateText
+                                            anchors.centerIn: parent
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: 11 * sddmLayer.u
+                                            font.bold: true
+                                            font.letterSpacing: 1 * sddmLayer.u
+                                            color: ThemeBackend.mauve
+                                        }
+                                    }
+
+                                    Timer {
+                                        id: clockTimer
+                                        interval: 1000; running: true; repeat: true; triggeredOnStart: true
+                                        onTriggered: {
+                                            let d = new Date();
+                                            let fmt = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) ? Config.rawSettings.bar.time.format : "HH:mm:ss";
+                                            let is12h = fmt.includes("h") || fmt.toLowerCase().includes("ap");
+                                            clockHours.text = Qt.formatDateTime(d, is12h ? "hh" : "HH");
+                                            clockMinutes.text = Qt.formatDateTime(d, "mm");
+                                            dateText.text = Qt.formatDateTime(d, "dddd, MMM d").toUpperCase();
+                                        }
                                     }
                                 }
 
-                                Item {
-                                    id: centerUserPanel
-                                    x: mainDashboardShell.leftWingWidth
-                                    y: 0
-                                    width: mainDashboardShell.centerWidth
-                                    height: parent.height
+                                // ---------- quick settings + login ----------
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 24 * sddmLayer.u
 
-                                    ColumnLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: screenRoot.s(24)
-                                        spacing: 0
+                                    Text {
+                                        text: "QUICK SETTINGS"
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: 11 * sddmLayer.u
+                                        font.bold: true
+                                        font.letterSpacing: 1.5 * sddmLayer.u
+                                        color: ThemeBackend.subtext0
+                                    }
 
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(22) }
+                                    Grid {
+                                        columns: 2
+                                        spacing: 16 * sddmLayer.u
 
-                                        ImageBox {
-                                            Layout.alignment: Qt.AlignHCenter
-                                            Layout.preferredWidth: screenRoot.s(190)
-                                            Layout.preferredHeight: screenRoot.s(190)
-                                            size: screenRoot.s(190)
-                                            cornerRadius: screenRoot.s(95)
-                                            imageRadius: screenRoot.s(95)
-                                            source: screenRoot.faceIconPath !== "" ? screenRoot.faceIconPath : (SystemInfo.avatarPath !== "" ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : "")
-                                            backgroundColor: (screenRoot.faceIconPath === "" && SystemInfo.avatarPath === "") ? ThemeBackend.surface1 : "transparent"
+                                        Repeater {
+                                            model: [
+                                                { key: "power", title: "POWER", sub: "SHUT DOWN", glyph: "󰐥", accent: ThemeBackend.red },
+                                                { key: "layout", title: "LAYOUT", sub: "KEYBOARD " + root.kbLayout, glyph: "󰌌", accent: ThemeBackend.blue },
+                                                { key: "reboot", title: "REBOOT", sub: "RESTART", glyph: "󰑓", accent: ThemeBackend.blue },
+                                                { key: "sleep", title: "SLEEP", sub: root.isDesktop ? "SUSPEND" : ("SUSPEND · " + root.batPercent), glyph: "󰒲", accent: ThemeBackend.mauve }
+                                            ]
+                                            delegate: Rectangle {
+                                            id: tile
+                                            required property var modelData
+                                            readonly property string title: modelData.title
+                                            readonly property string subtitle: modelData.sub
+                                            readonly property string glyph: modelData.glyph
+                                            readonly property color accent: modelData.accent
 
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: ""
-                                                font.family: "Iosevka Nerd Font"
-                                                font.pixelSize: screenRoot.s(95)
-                                                color: ThemeBackend.text
-                                                visible: screenRoot.faceIconPath === "" && SystemInfo.avatarPath === ""
+                                            width: 180 * sddmLayer.u; height: 76 * sddmLayer.u; radius: height / 2
+                                            color: tileMouse.pressed ? ThemeBackend.surface2 : (tileMouse.containsMouse ? tile.accent : sddmLayer.glass)
+                                            border.width: 1
+                                            border.color: tileMouse.containsMouse ? Qt.lighter(tile.accent, 1.2) : sddmLayer.edge
+                                            scale: tileMouse.pressed ? 0.95 : (tileMouse.containsMouse ? 1.03 : 1.0)
+                                            Behavior on color { ColorAnimation { duration: 150 } }
+                                            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+
+
+                                            Row {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: 16 * sddmLayer.u
+                                                anchors.rightMargin: 16 * sddmLayer.u
+                                                spacing: 12 * sddmLayer.u
+
+                                                Rectangle {
+                                                    width: 48 * sddmLayer.u; height: width; radius: width / 2
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    color: tileMouse.containsMouse ? ThemeBackend.crust : ThemeBackend.surface0
+                                                    border.width: tileMouse.containsMouse ? 0 : 1
+                                                    border.color: ThemeBackend.surface2
+                                                    Behavior on color { ColorAnimation { duration: 150 } }
+
+                                                    Text {
+                                                        anchors.centerIn: parent
+                                                        text: tile.glyph
+                                                        font.family: "Iosevka Nerd Font"
+                                                        font.pixelSize: 20 * sddmLayer.u
+                                                        color: tileMouse.containsMouse ? ThemeBackend.teal : ThemeBackend.mauve
+                                                    }
+                                                }
+
+                                                Column {
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    spacing: 2 * sddmLayer.u
+
+                                                    Text {
+                                                        text: tile.title
+                                                        font.family: ThemeBackend.fontFamily
+                                                        font.pixelSize: 12 * sddmLayer.u
+                                                        font.bold: true
+                                                        color: tileMouse.containsMouse ? ThemeBackend.crust : ThemeBackend.text
+                                                    }
+                                                    Text {
+                                                        text: tile.subtitle
+                                                        font.family: ThemeBackend.fontFamily
+                                                        font.pixelSize: 9 * sddmLayer.u
+                                                        color: tileMouse.containsMouse ? ThemeBackend.base : ThemeBackend.subtext0
+                                                        elide: Text.ElideRight
+                                                        width: 90 * sddmLayer.u
+                                                    }
+                                                }
+                                            }
+
+                                            MouseArea {
+                                                id: tileMouse
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: sddmLayer.runTile(tile.modelData.key)
+                                            }
                                             }
                                         }
+                                    }
 
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(20) }
+                                    Rectangle {
+                                        id: loginCard
+                                        width: 376 * sddmLayer.u
+                                        height: 180 * sddmLayer.u
+                                        radius: 32 * sddmLayer.u
+                                        color: sddmLayer.glass
+                                        border.width: 1
+                                        border.color: sddmLayer.edge
 
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignHCenter
-                                            spacing: screenRoot.s(14)
+                                        Column {
+                                            anchors.fill: parent
+                                            anchors.margins: 20 * sddmLayer.u
+                                            spacing: 12 * sddmLayer.u
 
-                                            ClickButton {
-                                                Layout.alignment: Qt.AlignHCenter
-                                                Layout.preferredHeight: screenRoot.s(38)
-                                                cornerRadius: ThemeBackend.borderRadius
-                                                horizontalPadding: screenRoot.s(16)
-                                                buttonIcon: ""
-                                                iconFontSize: screenRoot.s(15)
-                                                buttonText: screenRoot.currentUser + " • " + lockUI.statusText
-                                                textFontSize: screenRoot.s(13)
-                                                accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                textColor: lockUI.failed ? ThemeBackend.red : (lockUI.authenticating ? ThemeBackend.peach : ThemeBackend.text)
+                                            Row {
+                                                spacing: 8 * sddmLayer.u
+                                                Text {
+                                                    text: "󰌾"
+                                                    font.family: "Iosevka Nerd Font"
+                                                    font.pixelSize: 12 * sddmLayer.u
+                                                    color: ThemeBackend.blue
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                }
+                                                Text {
+                                                    text: "ZONE-C"
+                                                    font.family: ThemeBackend.fontFamily
+                                                    font.pixelSize: 10 * sddmLayer.u
+                                                    font.bold: true
+                                                    font.letterSpacing: 1 * sddmLayer.u
+                                                    color: ThemeBackend.subtext0
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                }
+                                                Text {
+                                                    text: "•  " + lockUI.statusText
+                                                    font.family: ThemeBackend.fontFamily
+                                                    font.pixelSize: 10 * sddmLayer.u
+                                                    color: lockUI.failed ? ThemeBackend.red : (lockUI.authenticating ? ThemeBackend.peach : ThemeBackend.subtext0)
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                }
                                             }
 
                                             PasswordInput {
                                                 id: passwordInput
-                                                Layout.alignment: Qt.AlignHCenter
-                                                Layout.fillWidth: true
-                                                Layout.preferredHeight: screenRoot.s(44)
-                                                lockBoxColor: Qt.lighter(ThemeBackend.surface0, 1.55)
-                                                baseColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                hoverColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                focusColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                activeColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                accentColor: ThemeBackend.mauve
-                                                textColor: ThemeBackend.text
+                                                width: parent.width
+                                                height: 52 * sddmLayer.u
+                                                lockBoxColor: ThemeBackend.surface0
+                                                baseColor: ThemeBackend.mantle
+                                                hoverColor: ThemeBackend.mantle
+                                                focusColor: ThemeBackend.mantle
+                                                activeColor: ThemeBackend.mantle
+                                                accentColor: ThemeBackend.blue
+                                                textColor: ThemeBackend.teal
                                                 subTextColor: ThemeBackend.subtext0
                                                 errorColor: ThemeBackend.red
                                                 busyColor: ThemeBackend.peach
-                                                cornerRadius: ThemeBackend.borderRadius
-                                                horizontalPadding: screenRoot.s(12)
+                                                cornerRadius: height / 2
+                                                horizontalPadding: 20 * sddmLayer.u
                                                 fontFamily: ThemeBackend.fontFamily
-                                                fontPixelSize: screenRoot.s(14)
+                                                fontPixelSize: 16 * sddmLayer.u
                                                 horizontalAlignment: TextInput.AlignHCenter
-                                                placeholderText: I18n.t("lock.status.enter_pin")
+                                                placeholderText: "PASSWORD REQUIRED"
+                                                showLockIcon: false
+                                                showSubmitButton: false
                                                 enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
                                                 hasError: lockUI.failed
                                                 isBusy: lockUI.authenticating
                                                 isWidgetVisible: rootLock.locked && screenRoot.inputActive
                                                 isRevealed: !lockSettings.hidePassword
 
-                                                onAccepted: (finalText) => {
-                                                    if (finalText.length > 0 && pam.responseRequired && !lockUI.authenticating) {
-                                                        lockUI.authenticating = true;
-                                                        lockUI.statusText = I18n.t("lock.status.authenticating");
-                                                        lockUI.failed = false;
-                                                        pam.respond(finalText);
-                                                    }
-                                                }
+                                                onAccepted: (finalText) => sddmLayer.submitPassword(finalText)
 
                                                 onTextEdited: (newText) => {
                                                     if (lockUI.authenticating || screenRoot.isUnlocking) return;
@@ -1320,11 +1404,7 @@ Scope {
 
                                                 Keys.onPressed: (event) => {
                                                     if (event.key === Qt.Key_Escape) {
-                                                        if (screenRoot.powerMenuOpen) {
-                                                            screenRoot.powerMenuOpen = false;
-                                                        } else {
-                                                            screenRoot.inputActive = false;
-                                                        }
+                                                        screenRoot.inputActive = false;
                                                         passwordInput.clear();
                                                         screenRoot.restoreFocus();
                                                         event.accepted = true;
@@ -1332,61 +1412,86 @@ Scope {
                                                 }
                                             }
 
-                                            RowLayout {
-                                                Layout.alignment: Qt.AlignHCenter
-                                                spacing: screenRoot.s(10)
+                                            Row {
+                                                width: parent.width
+                                                spacing: 12 * sddmLayer.u
 
-                                                ClickButton {
-                                                    id: kbPill
-                                                    Layout.preferredHeight: screenRoot.s(32)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(12)
-                                                    buttonIcon: "󰌌"
-                                                    iconFontSize: screenRoot.s(14)
-                                                    buttonText: root.kbLayout
-                                                    textFontSize: screenRoot.s(12)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: ThemeBackend.text
-                                                    onClicked: root.switchKbLayout()
+                                                Rectangle {
+                                                    id: userChip
+                                                    width: userText.implicitWidth + 32 * sddmLayer.u
+                                                    height: 38 * sddmLayer.u
+                                                    radius: height / 2
+                                                    color: ThemeBackend.surface0
+                                                    border.width: 1
+                                                    border.color: ThemeBackend.surface1
+
+                                                    Text {
+                                                        id: userText
+                                                        anchors.centerIn: parent
+                                                        text: screenRoot.currentUser.toUpperCase()
+                                                        font.family: ThemeBackend.fontFamily
+                                                        font.pixelSize: 10 * sddmLayer.u
+                                                        font.bold: true
+                                                        font.letterSpacing: 1 * sddmLayer.u
+                                                        color: ThemeBackend.subtext1
+                                                    }
                                                 }
 
-                                                ClickButton {
-                                                    id: batPill
-                                                    visible: !root.isDesktop
-                                                    Layout.preferredHeight: screenRoot.s(32)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(12)
-                                                    buttonIcon: root.batIcon
-                                                    iconFontSize: screenRoot.s(14)
-                                                    buttonText: root.batPercent
-                                                    textFontSize: screenRoot.s(12)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: root.batDynamicColor
+                                                Rectangle {
+                                                    width: parent.width - userChip.width - parent.spacing
+                                                    height: 38 * sddmLayer.u
+                                                    radius: height / 2
+                                                    color: unlockMouse.pressed ? ThemeBackend.surface2 : (unlockMouse.containsMouse ? ThemeBackend.sapphire : ThemeBackend.blue)
+                                                    scale: unlockMouse.pressed ? 0.95 : (unlockMouse.containsMouse ? 1.02 : 1.0)
+                                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+
+
+                                                    Row {
+                                                        anchors.centerIn: parent
+                                                        spacing: 6 * sddmLayer.u
+                                                        Text {
+                                                            text: lockUI.authenticating ? "CHECKING" : "UNLOCK"
+                                                            font.family: ThemeBackend.fontFamily
+                                                            font.pixelSize: 10 * sddmLayer.u
+                                                            font.bold: true
+                                                            font.letterSpacing: 1.5 * sddmLayer.u
+                                                            color: ThemeBackend.crust
+                                                            anchors.verticalCenter: parent.verticalCenter
+                                                        }
+                                                        Text {
+                                                            text: "➔"
+                                                            font.family: ThemeBackend.fontFamily
+                                                            font.pixelSize: 11 * sddmLayer.u
+                                                            color: ThemeBackend.crust
+                                                            anchors.verticalCenter: parent.verticalCenter
+                                                            transform: Translate {
+                                                                x: unlockMouse.containsMouse ? 3 * sddmLayer.u : 0
+                                                                Behavior on x { NumberAnimation { duration: 150 } }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    MouseArea {
+                                                        id: unlockMouse
+                                                        anchors.fill: parent
+                                                        hoverEnabled: true
+                                                        cursorShape: Qt.PointingHandCursor
+                                                        onClicked: sddmLayer.submitPassword(passwordInput.text)
+                                                    }
                                                 }
                                             }
                                         }
 
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(16) }
-                                    }
-                                }
-
-                                Item {
-                                    id: rightWingContainer
-                                    x: mainDashboardShell.leftWingWidth + mainDashboardShell.centerWidth
-                                    y: 0
-                                    width: mainDashboardShell.rightWingWidth
-                                    height: parent.height
-                                    clip: true
-                                    opacity: screenRoot.wingsReveal
-                                    visible: width > 0.5
-
-                                    Loader {
-                                        id: rightWingLoader
-                                        width: screenRoot.s(390)
-                                        height: rightWingContainer.height
-                                        active: screenRoot.wingsEverNeeded
-                                        asynchronous: true
-                                        sourceComponent: rightWingContent
+                                        transform: Translate { id: cardShake }
+                                        SequentialAnimation {
+                                            id: cardShakeAnim
+                                            NumberAnimation { target: cardShake; property: "x"; to: 15 * sddmLayer.u; duration: 50 }
+                                            NumberAnimation { target: cardShake; property: "x"; to: -15 * sddmLayer.u; duration: 50 }
+                                            NumberAnimation { target: cardShake; property: "x"; to: 15 * sddmLayer.u; duration: 50 }
+                                            NumberAnimation { target: cardShake; property: "x"; to: -15 * sddmLayer.u; duration: 50 }
+                                            NumberAnimation { target: cardShake; property: "x"; to: 0; duration: 50 }
+                                        }
                                     }
                                 }
                             }
@@ -1395,125 +1500,10 @@ Scope {
                                 target: lockUI
                                 function onFailedChanged() {
                                     if (lockUI.failed) {
+                                        cardShakeAnim.restart();
                                         passwordInput.triggerShake();
                                         passwordInput.clear();
                                         screenRoot.restoreFocus();
-                                    }
-                                }
-                            }
-
-                            Item {
-                                id: bottomInfoTray
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: screenRoot.s(16)
-                                anchors.left: parent.left
-                                anchors.leftMargin: screenRoot.s(20)
-                                anchors.right: parent.right
-                                anchors.rightMargin: screenRoot.s(20)
-                                height: screenRoot.s(48)
-
-                                opacity: screenRoot.inputActive ? 1.0 : 0.0
-                                visible: opacity > 0.01
-                                Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.OutCubic } }
-
-                                IconButton {
-                                    id: powerControlToggle
-                                    anchors.right: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    size: screenRoot.s(48)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonIcon: screenRoot.powerMenuOpen ? "󰅖" : "󰐥"
-                                    iconFontSize: screenRoot.s(20)
-                                    accentColor: screenRoot.powerMenuOpen ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    textColor: screenRoot.powerMenuOpen ? ThemeBackend.text : ThemeBackend.red
-                                    onClicked: screenRoot.powerMenuOpen = !screenRoot.powerMenuOpen
-                                }
-                            }
-
-                            Rectangle {
-                                id: powerContainer
-                                z: 100
-
-                                Shortcut {
-                                    sequence: "Escape"
-                                    enabled: screenRoot.powerMenuOpen
-                                    onActivated: {
-                                        screenRoot.powerMenuOpen = false;
-                                        screenRoot.restoreFocus();
-                                    }
-                                }
-
-                                anchors.bottom: bottomInfoTray.top
-                                anchors.bottomMargin: screenRoot.s(16)
-                                anchors.right: bottomInfoTray.right
-
-                                width: screenRoot.s(320)
-                                height: screenRoot.powerMenuOpen ? (menuLayout.implicitHeight + screenRoot.s(24)) : 0
-                                radius: ThemeBackend.borderRadius
-
-                                clip: true
-                                visible: height > 0 || opacity > 0
-                                opacity: screenRoot.powerMenuOpen ? 1.0 : 0.0
-
-                                color: Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.45)
-                                border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.4)
-                                border.width: 1
-
-                                Behavior on height {
-                                    NumberAnimation {
-                                        duration: 340
-                                        easing.type: Easing.OutBack
-                                        easing.overshoot: 1.15
-                                    }
-                                }
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 220
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    id: menuLayout
-                                    anchors.top: parent.top
-                                    anchors.topMargin: screenRoot.s(12)
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: screenRoot.s(12)
-                                    anchors.rightMargin: screenRoot.s(12)
-                                    spacing: screenRoot.s(8)
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰒲"
-                                        buttonText: I18n.t("lock.power.suspend")
-                                        accentColor: ThemeBackend.mauve
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; suspendProcess.running = true; }
-                                    }
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰑓"
-                                        buttonText: I18n.t("lock.power.reboot")
-                                        accentColor: ThemeBackend.blue
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; reloadProcess.running = true; }
-                                    }
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰐥"
-                                        buttonText: I18n.t("lock.power.power_off")
-                                        accentColor: ThemeBackend.red
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; poweroffProcess.running = true; }
                                     }
                                 }
                             }
@@ -1936,11 +1926,6 @@ Scope {
 
                                     Item {
                                         anchors.fill: parent
-                                        layer.enabled: true
-                                        layer.effect: MultiEffect {
-                                            maskEnabled: true
-                                            maskSource: mediaBgMask
-                                        }
 
                                         Row {
                                             anchors.left: parent.left
