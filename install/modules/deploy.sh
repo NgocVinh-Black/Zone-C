@@ -302,7 +302,19 @@ deploy_package() {
 
         if [ -d "$REPO_ROOT/config/local-bin" ]; then
             cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
-            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close 2>/dev/null || true
+            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/zonec-banner 2>/dev/null || true
+        fi
+
+        local bashrc="$HOME/.bashrc"
+        if [ -f "$BIN_DIR/zonec-banner" ] && ! grep -q 'zonec-banner' "$bashrc" 2>/dev/null; then
+            {
+                echo ''
+                echo '# Zone-C: banner + fastfetch khi mo terminal'
+                echo 'if [[ $- == *i* ]]; then'
+                echo '    "$HOME/.local/bin/zonec-banner"'
+                echo '    command -v fastfetch >/dev/null && fastfetch'
+                echo 'fi'
+            } >> "$bashrc"
         fi
 
         if [ "$is_update" != "true" ]; then
