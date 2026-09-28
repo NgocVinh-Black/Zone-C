@@ -331,10 +331,9 @@ Item {
         wallpaperDirScanner.running = true;
         wallFetcher.running = false;
         wallFetcher.running = true;
-        if (themeTabRoot._needsReload) {
-            themeTabRoot._needsReload = false;
-            themeTabRoot.reloadThemes();
-        }
+        // always rescan so theme files added outside the UI show up
+        themeTabRoot._needsReload = false;
+        themeTabRoot.reloadThemes();
     }
 
     onVisibleChanged: {
