@@ -1,15 +1,14 @@
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
   "logo": {
-    "source": "small",
-    "color": {
-      "1": "#89b4fa",
-      "2": "#74c7ec"
-    },
+    "type": "sixel",
+    "source": "~/.local/share/zone-c/src/assets/logo.png",
+    "width": 14,
+    "height": 7,
     "padding": {
       "top": 1,
       "left": 2,
-      "right": 3
+      "right": 13
     }
   },
   "display": {
@@ -35,6 +34,7 @@
     },
     {
       "type": "cpu",
+      "format": "{1}",
       "key": " cpu",
       "keyColor": "#74c7ec"
     },
