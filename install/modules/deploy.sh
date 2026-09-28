@@ -305,6 +305,17 @@ deploy_package() {
             chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/zonec-banner 2>/dev/null || true
         fi
 
+        if [ -d "$REPO_ROOT/config/icons" ]; then
+            mkdir -p "$HOME/.local/share/icons/hicolor/scalable/apps"
+            cp -r "$REPO_ROOT/config/icons/." "$HOME/.local/share/icons/hicolor/scalable/apps/"
+        fi
+
+        if [ -d "$REPO_ROOT/config/applications" ]; then
+            mkdir -p "$HOME/.local/share/applications"
+            cp -r "$REPO_ROOT/config/applications/." "$HOME/.local/share/applications/"
+            update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+        fi
+
         local bashrc="$HOME/.bashrc"
         if [ -f "$BIN_DIR/zonec-banner" ] && ! grep -q 'zonec-banner' "$bashrc" 2>/dev/null; then
             {
