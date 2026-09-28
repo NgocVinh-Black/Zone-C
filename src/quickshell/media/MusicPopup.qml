@@ -1523,6 +1523,24 @@ Item {
                                                         }
                                                     }
                                                 }
+
+                                                // Zone-C: cot sang nhay theo nhac (cava) cho tung dai tan
+                                                Rectangle {
+                                                    property real liveLevel: {
+                                                        let lv = root.barLevels;
+                                                        if (!lv || lv.length === 0) return 0.0;
+                                                        return lv[Math.round(index * (lv.length - 1) / 9)] || 0.0;
+                                                    }
+                                                    anchors.bottom: parent.bottom
+                                                    anchors.horizontalCenter: parent.horizontalCenter
+                                                    width: parent.width
+                                                    height: Math.max(0, Math.pow(liveLevel, 0.7) * parent.height)
+                                                    radius: ThemeBackend.borderRadius
+                                                    color: Qt.lighter(root.eqAccentColor, 1.6)
+                                                    opacity: 0.7 * root.introEqSliders
+                                                    visible: height > 1
+                                                    Behavior on height { NumberAnimation { duration: 90; easing.type: Easing.OutQuad } }
+                                                }
                                             }
 
                                             handle: Rectangle {
