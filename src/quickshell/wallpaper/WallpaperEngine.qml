@@ -138,7 +138,7 @@ ShellRoot {
                                     ]);
                                 }
                             } else if (Caching.zoneCDir) {
-                                barWindow.changeWallpaper(Caching.zoneCDir + "/assets/wallpapers/zone-c-thunder.mp4", 0);
+                                barWindow.changeWallpaper(Caching.zoneCDir + "/assets/wallpapers/zone-c-natural-thunder.mp4", 0);
                             }
                         }
                     }
