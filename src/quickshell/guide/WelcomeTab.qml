@@ -147,7 +147,7 @@ Item {
                     anchors.centerIn: parent
                     width: rootObj.s(210)
                     height: rootObj.s(210)
-                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.svg"
+                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
                     sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
                     smooth: true
@@ -250,6 +250,18 @@ Item {
                 shadowBlur: 1.0
                 shadowOpacity: 0.45
                 shadowVerticalOffset: 0
+            }
+
+            Image {
+                anchors.centerIn: parent
+                width: rootObj.s(210)
+                height: rootObj.s(210)
+                source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
+                sourceSize: Qt.size(512, 512)
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                antialiasing: true
+                opacity: Math.max(0.0, Math.min(1.0, (welcomeTabRoot.logoFillLevel - 0.75) / 0.35))
             }
         }
 

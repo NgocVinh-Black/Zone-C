@@ -94,38 +94,15 @@ Item {
                             Item {
                                 id: aboutLogoMask
                                 anchors.fill: parent
-                                visible: false
-                                layer.enabled: true
 
                                 Image {
                                     anchors.fill: parent
-                                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.svg"
+                                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
                                     sourceSize: Qt.size(512, 512)
                                     fillMode: Image.PreserveAspectFit
                                     smooth: true
                                     antialiasing: true
                                 }
-                            }
-
-                            Item {
-                                id: aboutLogoColor
-                                anchors.fill: parent
-                                visible: false
-                                layer.enabled: true
-                                layer.smooth: true
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: ThemeBackend.mauve
-                                }
-                            }
-
-                            MultiEffect {
-                                anchors.fill: parent
-                                source: aboutLogoColor
-                                maskEnabled: true
-                                maskSource: aboutLogoMask
-                                autoPaddingEnabled: false
                             }
                         }
 

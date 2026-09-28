@@ -59,6 +59,10 @@ install_wallpapers() {
 
     mkdir -p "$wallpaper_dir"
 
+    if [ -n "$PROJECT_ROOT" ] && [ -d "$PROJECT_ROOT/src/assets/wallpapers" ]; then
+        cp -f "$PROJECT_ROOT/src/assets/wallpapers/"* "$wallpaper_dir/" 2>/dev/null || true
+    fi
+
     local sync_success=false
     if [ -d "$clone_dir/.git" ]; then
         if git -C "$clone_dir" fetch --depth 1 origin 2>/dev/null; then

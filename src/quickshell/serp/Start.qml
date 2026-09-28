@@ -438,7 +438,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             width: window.s(360)
                             height: window.s(360)
-                            source: "file://" + Caching.zoneCDir + "/assets/logo.svg"
+                            source: "file://" + Caching.zoneCDir + "/assets/logo.png"
                             sourceSize: Qt.size(width, height)
                             fillMode: Image.PreserveAspectFit
                             smooth: true
@@ -566,6 +566,18 @@ PanelWindow {
                         Behavior on shadowBlur { NumberAnimation { duration: 800; easing.type: Easing.InOutCubic } }
                         Behavior on shadowOpacity { NumberAnimation { duration: 800; easing.type: Easing.InOutCubic } }
                         Behavior on shadowVerticalOffset { NumberAnimation { duration: 800; easing.type: Easing.InOutCubic } }
+                    }
+
+                    Image {
+                        anchors.centerIn: parent
+                        width: window.s(360)
+                        height: window.s(360)
+                        source: "file://" + Caching.zoneCDir + "/assets/logo.png"
+                        sourceSize: Qt.size(512, 512)
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        antialiasing: true
+                        opacity: Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.9) / 0.5))
                     }
                 }
 

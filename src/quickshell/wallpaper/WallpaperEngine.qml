@@ -137,6 +137,8 @@ ShellRoot {
                                         "HIST='" + histFile + "'; if [ -f \"$HIST\" ]; then if [ \"$(head -n 1 \"$HIST\" 2>/dev/null)\" != '" + savedName + "' ]; then grep -v -F -x '" + savedName + "' \"$HIST\" > \"$HIST.tmp\" 2>/dev/null || true; printf '%s\n' '" + savedName + "' | cat - \"$HIST.tmp\" > \"$HIST\"; rm -f \"$HIST.tmp\"; fi; else printf '%s\n' '" + savedName + "' > \"$HIST\"; fi"
                                     ]);
                                 }
+                            } else if (Caching.zoneCDir) {
+                                barWindow.changeWallpaper(Caching.zoneCDir + "/assets/wallpapers/zone-c-thunder.mp4", 0);
                             }
                         }
                     }
