@@ -3,12 +3,12 @@
   "logo": {
     "type": "sixel",
     "source": "~/.local/share/zone-c/src/assets/logo.png",
-    "width": 14,
-    "height": 7,
+    "width": 19,
+    "height": 8,
     "padding": {
       "top": 1,
       "left": 2,
-      "right": 13
+      "right": 3
     }
   },
   "display": {
