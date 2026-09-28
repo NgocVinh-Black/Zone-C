@@ -10,3 +10,7 @@ hl.env("SDL_IM_MODULE", "fcitx")
 -- Qt icon theme (Papirus-Dark qua qt6ct) - sua icon o den hong trong shell
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("QS_ICON_THEME", "Papirus-Dark")
+
+-- Con tro chuot: logo Arch (bo ZoneC-Arch, cac con tro khac lay tu Adwaita)
+hl.env("XCURSOR_THEME", "ZoneC-Arch")
+hl.env("XCURSOR_SIZE", "24")

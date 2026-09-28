@@ -301,7 +301,12 @@ deploy_package() {
 
         if [ -d "$REPO_ROOT/config/local-bin" ]; then
             cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
-            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close 2>/dev/null || true
+            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/zonec-banner 2>/dev/null || true
+        fi
+
+        if [ -f "$REPO_ROOT/config/cursor/build-cursor.py" ]; then
+            python3 "$REPO_ROOT/config/cursor/build-cursor.py" >/dev/null 2>&1 || true
+            gsettings set org.gnome.desktop.interface cursor-theme ZoneC-Arch 2>/dev/null || true
         fi
 
         if [ "$is_update" != "true" ]; then
