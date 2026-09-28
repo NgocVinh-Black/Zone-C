@@ -902,6 +902,8 @@ FocusScope {
                 id: innerInput
                 anchors.fill: parent
                 focus: true
+                // mark as a password field so input methods (fcitx5/ibus) commit keys directly instead of holding a preedit
+                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
                 opacity: 0
                 color: "transparent"
                 selectionColor: "transparent"
