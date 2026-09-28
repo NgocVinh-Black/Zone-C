@@ -1,0 +1,27 @@
+{
+  "name": "Zone Thunder",
+  "colors": {
+    "base": "#0a1633",
+    "mantle": "#06102a",
+    "crust": "#030817",
+    "text": "#e6efff",
+    "subtext0": "#8199cc",
+    "subtext1": "#b7c9ee",
+    "surface0": "#112552",
+    "surface1": "#183368",
+    "surface2": "#22448a",
+    "overlay0": "#4f6aa3",
+    "overlay1": "#7089c0",
+    "overlay2": "#97acdb",
+    "blue": "#3d9bff",
+    "sapphire": "#5cc0ff",
+    "peach": "#ffa66e",
+    "green": "#42e8b4",
+    "red": "#ff5a74",
+    "mauve": "#86b4ff",
+    "pink": "#ff72c6",
+    "yellow": "#ffd76e",
+    "maroon": "#e46585",
+    "teal": "#62e3ff"
+  }
+}

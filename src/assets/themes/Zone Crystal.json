@@ -1,0 +1,27 @@
+{
+  "name": "Zone Crystal",
+  "colors": {
+    "base": "#0b1c36",
+    "mantle": "#07142a",
+    "crust": "#030a18",
+    "text": "#e8f6ff",
+    "subtext0": "#7ea4c4",
+    "subtext1": "#b8d6ee",
+    "surface0": "#122b4d",
+    "surface1": "#193b66",
+    "surface2": "#234e85",
+    "overlay0": "#4f76a0",
+    "overlay1": "#7196bd",
+    "overlay2": "#98badb",
+    "blue": "#38b6ff",
+    "sapphire": "#6fd0ff",
+    "peach": "#ffb070",
+    "green": "#4df0c0",
+    "red": "#ff5c7a",
+    "mauve": "#8fe3ff",
+    "pink": "#ff7ad9",
+    "yellow": "#ffe07a",
+    "maroon": "#e56b8a",
+    "teal": "#7ff0ff"
+  }
+}
