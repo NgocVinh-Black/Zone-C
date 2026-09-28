@@ -178,8 +178,8 @@ setup_sddm() {
         sudo rm -f /etc/sddm.conf
     fi
 
-    local sddm_theme_src="$project_root/config/sddm/themes/material-you"
-    local sddm_theme_dest="/usr/share/sddm/themes/material-you"
+    local sddm_theme_src="$project_root/config/sddm/themes/zone-thunder"
+    local sddm_theme_dest="/usr/share/sddm/themes/zone-thunder"
 
     if [ -d "$sddm_theme_src" ]; then
         sudo mkdir -p "$sddm_theme_dest"
@@ -197,7 +197,7 @@ setup_sddm() {
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=material-you
+Current=zone-thunder
 ThemeDir=/usr/share/sddm/themes
 
 [General]
@@ -208,7 +208,7 @@ EOF
     else
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=material-you
+Current=zone-thunder
 ThemeDir=/usr/share/sddm/themes
 
 [General]

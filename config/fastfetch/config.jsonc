@@ -6,7 +6,7 @@
   "display": {
     "separator": "  ",
     "color": {
-      "separator": "#cdd6f4"
+      "separator": "#e6efff"
     }
   },
   "modules": [
@@ -15,30 +15,30 @@
       "type": "title",
       "format": "{1}",
       "color": {
-        "user": "#89b4fa"
+        "user": "#3d9bff"
       }
     },
     "break",
     {
       "type": "os",
       "key": "󱄅 os ",
-      "keyColor": "#89b4fa"
+      "keyColor": "#3d9bff"
     },
     {
       "type": "cpu",
       "format": "{1}",
       "key": " cpu",
-      "keyColor": "#74c7ec"
+      "keyColor": "#ffa66e"
     },
     {
       "type": "memory",
       "key": "󰘚 ram",
-      "keyColor": "#94e2d5"
+      "keyColor": "#42e8b4"
     },
     {
       "type": "shell",
       "key": " sh ",
-      "keyColor": "#cba6f7"
+      "keyColor": "#86b4ff"
     },
     "break",
     {
