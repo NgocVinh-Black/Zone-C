@@ -1,6 +1,11 @@
 hl.config({
   general = {
-    border_size = 0,
+    border_size = 3,
+    -- Vien dien (electric) cho cua so dang chon, chay vong quanh nho animation borderangle
+    col = {
+      active_border = { colors = { "rgba(8fe3ffff)", "rgba(1e6fffff)", "rgba(ffffffff)", "rgba(1e6fffff)", "rgba(8fe3ffff)" }, angle = 45 },
+      inactive_border = "rgba(00000000)",
+    },
     gaps_in = 4,
     gaps_out = 6,
     float_gaps = 6,
@@ -18,8 +23,13 @@ hl.config({
       passes = 2,
       new_optimizations = true,
     },
+    -- Phat sang xanh quanh cua so dang chon
     shadow = {
-      enabled = false,
+      enabled = true,
+      range = 18,
+      render_power = 3,
+      color = "rgba(1e8fffcc)",
+      color_inactive = "rgba(00000000)",
     },
   },
 
@@ -52,3 +62,7 @@ hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "myBezier" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "myBezier", style = "slide" })
 hl.animation({ leaf = "specialWorkspaceIn", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
 hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
+
+-- Vien dien chay vong lien tuc
+hl.curve("zcLinear", { type = "bezier", points = { {0, 0}, {1, 1} } })
+hl.animation({ leaf = "borderangle", enabled = true, speed = 20, bezier = "zcLinear", style = "loop" })
