@@ -1,12 +1,9 @@
-<div align="center">
-  <a href="https://ko-fi.com/ilyamiro">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" />
-  </a>
-</div>
+# Zone-C
 
-<div align="center">
-  <img src="docs/assets/banner.png" alt="Serpantinum" width="850" />
-</div>
+Desktop shell cho Hyprland (Quickshell) — bản tùy biến của **NgocVinh-Black**.
+
+> Zone-C được phát triển dựa trên [Serpantinum](https://github.com/ilyamiro/serpantinum) của **ilyamiro**,
+> phát hành theo giấy phép [GNU AGPL-3.0](LICENSE.md). Toàn bộ lịch sử commit của dự án gốc được giữ nguyên trong repo này.
 
 ## Previews
 
@@ -15,177 +12,34 @@
 | ![Preview 1](docs/assets/previews/preview_1.png) | ![Preview 2](docs/assets/previews/preview_2.png) |
 | ![Preview 3](docs/assets/previews/preview_3.png) | ![Preview 4](docs/assets/previews/preview_4.png) |
 
----
+## Khác biệt so với Serpantinum
 
-## Installation
+- Đổi tên toàn bộ thành **Zone-C** (`zone-c`, `zone-cd`, `~/.local/share/zone-c`, `~/.config/zone-c`).
+- Gõ tiếng Việt bằng **fcitx5 + Unikey**: nút bàn phím trên bar bật/tắt Unikey (hiện `VI` / `US`),
+  launcher tự tắt Unikey khi mở để ô tìm kiếm nhận chữ.
+- Bộ phím tắt Hyprland riêng (`Super+/` để xem bảng phím tắt), `Super+Q` đóng panel trước rồi mới đóng cửa sổ.
+- Icon Papirus-Dark qua qt6ct, màn hình laptop scale 2.
+- Tắt telemetry của installer.
 
-> [!IMPORTANT]
-> **Migrating from v1:** All previous configuration will be backed up and unused. Configuration of compositor settings such as monitors, keybinds, and autostart is now up to you, as the project migrated from being dotfiles to being a shell.
-
-### Arch Linux and its derivatives
-
-For Arch-based distributions (including systemd, OpenRC, and other init systems), run the automated installation script.:
-
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"
-
-```
-
-> [!NOTE]
-> To update, when or if you recieve a notification about the new version being available, just run the script again and choose "update"
-
----
-
-### NixOS
-
-Serpantinum provides flake outputs, a NixOS module for system dependencies, and a Home Manager module for user configuration and service management.
-
-#### 1. Add Flake Input
-
-Add Serpantinum to your `flake.nix`:
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    serpantinum.url = "github:ilyamiro/serpantinum";
-  };
-
-  outputs = { self, nixpkgs, serpantinum, ... }: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit serpantinum; };
-      modules = [
-        ./configuration.nix
-        serpantinum.nixosModules.default
-      ];
-    };
-  };
-}
-
-```
-
-#### 2. configuration.nix
-
-Enable the NixOS module to configure system prerequisites:
-
-```nix
-{
-  programs.serpantinum.enable = true;
-}
-
-```
-
-If you prefer installing the package directly without the system module:
-
-```nix
-{ pkgs, serpantinum, ... }:
-
-{
-  environment.systemPackages = [
-    serpantinum.packages.${pkgs.stdenv.hostPlatform.system}.default
-  ];
-}
-
-```
-
-#### 3. Home Manager Configuration
-
-```nix
-{ serpantinum, ... }:
-
-{
-  imports = [
-    serpantinum.homeManagerModules.default
-  ];
-
-  programs.serpantinum = {
-    enable = true;
-    systemd.enable = true;
-
-    settings = {
-      wallpaperDir = "/home/username/Pictures/Wallpapers";
-
-      general = {
-        language = "en";
-        weatherUnit = "metric";
-        weatherInterval = 30;
-      };
-
-      bar = {
-        position = "top";
-        style = "solid";
-        width = 40;
-        workspaceCount = 10;
-        modules = {
-          left = [ "workspaces" ];
-          center = [ "time" ];
-          right = [ "tray" [ "kb" "wifi" "bt" "vol" "bat" ] ];
-        };
-      };
-
-      theme = {
-        fontFamily = "Adwaita Mono";
-        borderRadius = 12;
-        matugen = true;
-      };
-
-      notifications = {
-        dnd = false;
-        position = "top right";
-        sound = true;
-      };
-    };
-  };
-}
-
-```
-
-#### 4. Updating
-
-Update the flake lockfile and rebuild your system:
+## Cài đặt (Arch Linux và các bản dựa trên Arch)
 
 ```bash
-nix flake update serpantinum
-sudo nixos-rebuild switch --flake .
-
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/NgocVinh-Black/Zone-C/main/install/install.sh)"
 ```
 
-> **Note:** The automatic installer handles compositor integration on standard distributions. On NixOS / Home Manager, you must manually integrate compositor configs.
-> Sample configs, autostart entries, and keybindings for supported window managers and compositors are available in the [compositors](https://github.com/ilyamiro/serpantinum/tree/master/compositors) directory.
+Hoặc clone về rồi chạy:
 
-
-#### Required autostart
-
-Remember to add clipboard listeners and required services to your compositor's autostart configuration for the clipboard and the equalizer to work properly.
-
-Example on Hyprland:
-
-```lua
-hl.on("hyprland.start", function()
-  hl.exec_cmd("wl-paste --type text --watch cliphist store")
-  hl.exec_cmd("wl-paste --type image --watch cliphist store")
-  hl.exec_cmd("systemctl --user enable --now easyeffects")
-end)
-
+```bash
+git clone https://github.com/NgocVinh-Black/Zone-C.git
+cd Zone-C
+./install/install.sh
 ```
----
 
-## Running
+Để cập nhật, chạy lại script và chọn "update".
 
-To run the shell, launch `serpantinumd start`
+Cấu hình mẫu cho các compositor khác (niri, sway) nằm trong thư mục [compositors](compositors).
 
----
+## Giấy phép
 
-## Credits
-
-* Special thanks to Darkall44/Qylock for providing a gorgeous material SDDM theme!
-
----
-
-## License
-
-Copyright (C) 2026 Illia Miroshnichenko
-
-This project is licensed under the GNU Affero General Public License version 3, or (at your option) any later version. See the [LICENSE.md](LICENSE.md) file for the full license text.
-
+Zone-C là tác phẩm phái sinh của Serpantinum © ilyamiro, phân phối theo [GNU AGPL-3.0](LICENSE.md).
+Mọi bản phân phối lại hoặc chỉnh sửa tiếp theo cũng phải giữ giấy phép AGPL-3.0 và ghi công các tác giả.

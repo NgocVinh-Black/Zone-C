@@ -11,7 +11,8 @@ import "../reusables"
 PanelWindow {
     id: popupWindow
 
-    readonly property real sf: Scaler.baseScale
+    // Hyprland da scale man hinh roi, khong nhan them uiScale (bi to gap doi)
+    readonly property real sf: 1.0
 
     function s(val) {
         return Math.round(val * popupWindow.sf);

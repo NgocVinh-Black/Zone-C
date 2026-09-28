@@ -55,6 +55,7 @@ REQUIRED_PKGS=(
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
     "qt5ct" "qt6ct" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
+    "fcitx5" "fcitx5-unikey" "fcitx5-gtk" "fcitx5-qt" "fcitx5-configtool" "papirus-icon-theme"
 )
 
 FAILED_PKGS=()
@@ -113,7 +114,7 @@ bootstrap_installer_deps() {
     fi
 
     if ! command -v yay &>/dev/null && ! command -v paru &>/dev/null; then
-        local cache_build="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-yay-bin"
+        local cache_build="${XDG_CACHE_HOME:-"$HOME/.cache"}/zone-c-yay-bin"
         rm -rf "$cache_build"
         mkdir -p "$cache_build"
         git clone https://aur.archlinux.org/yay-bin.git "$cache_build"
@@ -140,7 +141,7 @@ install_pkg() {
 install_fonts() {
     local target_fonts_dir="$HOME/.local/share/fonts/IosevkaNerdFont"
     if [ ! -d "$target_fonts_dir" ] || [ -z "$(ls -A "$target_fonts_dir" 2>/dev/null | grep -i "\.ttf")" ]; then
-        local font_cache="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-fonts"
+        local font_cache="${XDG_CACHE_HOME:-"$HOME/.cache"}/zone-c-fonts"
         mkdir -p "$font_cache" "$target_fonts_dir"
         echo -e "\n\e[36m[ INFO ]\e[0m Downloading Iosevka Nerd Font..."
         if curl -# -L --connect-timeout 15 --retry 3 "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Iosevka.zip" -o "$font_cache/Iosevka.zip"; then

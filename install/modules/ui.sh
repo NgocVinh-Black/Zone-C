@@ -102,9 +102,9 @@ init_compositor_detection() {
     if [ -n "$running" ]; then
         SELECTED_COMPOSITORS=("$running")
         DETECTED_COMPOSITOR_LABEL="$running"
-    elif [ -f "$HOME/.local/state/serpantinum/version" ]; then
+    elif [ -f "$HOME/.local/state/zone-c/version" ]; then
         local saved_comps
-        saved_comps=$(awk -F= '/^SELECTED_COMPOSITORS=/{gsub(/"/, "", $2); print $2}' "$HOME/.local/state/serpantinum/version" 2>/dev/null || true)
+        saved_comps=$(awk -F= '/^SELECTED_COMPOSITORS=/{gsub(/"/, "", $2); print $2}' "$HOME/.local/state/zone-c/version" 2>/dev/null || true)
         if [ -n "$saved_comps" ]; then
             read -r -a SELECTED_COMPOSITORS <<< "$saved_comps"
             DETECTED_COMPOSITOR_LABEL="$(IFS=, ; echo "${SELECTED_COMPOSITORS[*]}")"
@@ -130,27 +130,22 @@ draw_banner() {
     clear
     printf "%s%s" "$BOLD" "$C_CYAN"
     cat << "EOF"
-███████╗███████╗██████╗ ██████╗  █████╗ ███╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗███╗   ███╗
-██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗████╗  ██║╚══██╔══╝██║████╗  ██║██║   ██║████╗ ████║
-███████╗█████╗  ██████╔╝██████╔╝███████║██╔██╗ ██║   ██║   ██║██╔██╗ ██║██║   ██║██╔████╔██║
-╚════██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██║██║╚██╗██║   ██║   ██║██║╚██╗██║██║   ██║██║╚██╔╝██║
-███████║███████╗██║  ██║██║     ██║  ██║██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝██║ ╚═╝ ██║
-╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝
+███████╗ ██████╗ ███╗   ██╗███████╗       ██████╗
+╚══███╔╝██╔═══██╗████╗  ██║██╔════╝      ██╔════╝
+  ███╔╝ ██║   ██║██╔██╗ ██║█████╗  █████╗██║     
+ ███╔╝  ██║   ██║██║╚██╗██║██╔══╝  ╚════╝██║     
+███████╗╚██████╔╝██║ ╚████║███████╗      ╚██████╗
+╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝       ╚═════╝
 EOF
     printf "%s\n" "$RESET"
 
     local OSC8_GH=$'\e]8;;https://github.com/'"${REPO_SLUG}"$'\a'
-    local OSC8_TW=$'\e]8;;https://twitter.com/ilyamirox\a'
-    local OSC8_RD=$'\e]8;;https://reddit.com/u/ilyamiro1\a'
-    local OSC8_TG=$'\e]8;;https://t.me/stewart_github\a'
-    local OSC8_KF=$'\e]8;;https://ko-fi.com/ilyamiro\a'
+    local OSC8_UP=$'\e]8;;https://github.com/ilyamiro/serpantinum\a'
     local OSC8_END=$'\e]8;;\a'
 
     printf "\033[K%s--------------------------------------------------------------------------------%s\n" "$C_BLUE" "$RESET"
     printf "\033[K%s%s $(t "installer.ui.github")%s   %shttps://github.com/%s%s\n" "$BOLD" "$C_GREEN" "$RESET" "$OSC8_GH" "$REPO_SLUG" "$OSC8_END"
-    printf "\033[K%s%s $(t "installer.ui.twitter")%s  %s@ilyamirox%s  |  %s%s$(t "installer.ui.reddit")%s %su/ilyamiro1%s\n" "$BOLD" "$C_CYAN" "$RESET" "$OSC8_TW" "$OSC8_END" "$BOLD" "$C_RED" "$RESET" "$OSC8_RD" "$OSC8_END"
-    printf "\033[K%s%s $(t "installer.ui.telegram")%s %shttps://t.me/stewart_github%s\n" "$BOLD" "$C_BLUE" "$RESET" "$OSC8_TG" "$OSC8_END"
-    printf "\033[K%s%s $(t "installer.ui.donate")%s   %shttps://ko-fi.com/ilyamiro $(t "installer.ui.donate_sub")%s\n" "$BOLD" "$C_MAGENTA" "$RESET" "$OSC8_KF" "$OSC8_END"
+    printf "\033[K%s%s Based on:%s %sSerpantinum by ilyamiro (AGPL-3.0)%s\n" "$BOLD" "$C_CYAN" "$RESET" "$OSC8_UP" "$OSC8_END"
     printf "\033[K%s--------------------------------------------------------------------------------%s\n" "$C_BLUE" "$RESET"
     printf "\033[K%s $(t "installer.ui.user")%s %-25s | %s$(t "installer.ui.os")%s %s\n" "$BOLD" "$RESET" "$USER_NAME" "$BOLD" "$RESET" "$OS_NAME"
     printf "\033[K%s $(t "installer.ui.cpu")%s  %-25s | %s$(t "installer.ui.gpu")%s %s\n" "$BOLD" "$RESET" "$CPU_INFO" "$BOLD" "$RESET" "$GPU_INFO"
@@ -653,9 +648,8 @@ EOF
     printf "%s\n\n" "$RESET"
     printf "%s%s  %s%s\n\n" "$BOLD" "$C_CYAN" "$(t "installer.ui.tagline")" "$RESET"
     printf "%s%s================================================================================%s\n" "$BOLD" "$C_MAGENTA" "$RESET"
-    printf "%s%s $(t "installer.ui.support_creator")%s\n" "$BOLD" "$C_YELLOW" "$RESET"
-    printf " $(t "installer.ui.buy_coffee")\n"
-    printf " %s%sKo-fi:%s https://ko-fi.com/ilyamiro\n" "$BOLD" "$C_CYAN" "$RESET"
+    printf " %s%sZone-C%s by NgocVinh-Black — based on Serpantinum by ilyamiro\n" "$BOLD" "$C_CYAN" "$RESET"
+    printf " https://github.com/NgocVinh-Black/Zone-C\n"
     printf "%s%s================================================================================%s\n\n" "$BOLD" "$C_MAGENTA" "$RESET"
     printf "%s%s%s\n" "$C_GREEN" "$(t "installer.ui.installed_success" "ver=$target_ver" "commit=$target_commit")" "$RESET"
     if [ ${#FAILED_PKGS[@]} -gt 0 ]; then

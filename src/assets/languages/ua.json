@@ -1,7 +1,7 @@
 {
   "guide": {
     "about": {
-      "title": "Serpantinum",
+      "title": "Zone-C",
       "loading": "Завантаження...",
       "unknown": "Невідомо",
       "version_by": "v{version} • від {author}",
@@ -21,7 +21,7 @@
         "uptime": "Час роботи",
         "default_os": "Linux"
       },
-      "github_repo": "ArseniiTkachuk/Serpantinum-UA"
+      "github_repo": "ArseniiTkachuk/Zone-C-UA"
     },
     "tabs": {
       "welcome": "Ласкаво просимо",
@@ -351,7 +351,7 @@
     "theme": {
       "font": {
         "title": "Шрифт",
-        "desc": "Оберіть типовий шрифт для serpantinum",
+        "desc": "Оберіть типовий шрифт для zone-c",
         "select": "Обрати..."
       },
       "radius": {
@@ -868,7 +868,7 @@
     }
   },
   "start": {
-    "title": "Serpantinum",
+    "title": "Zone-C",
     "made_by": "Створено @{author}",
     "welcome": "Ласкаво просимо",
     "tagline": "Оболонка робочого столу, створена для",
@@ -1003,7 +1003,7 @@
     },
     "guide": {
       "name": "Налаштування",
-      "desc": "Налаштування serpantinum"
+      "desc": "Налаштування zone-c"
     },
     "calendar": {
       "name": "Календар і годинник",
@@ -1072,7 +1072,7 @@
     }
   },
   "cli": {
-    "usage": "Використання: serpantinum [команда] [опції...]",
+    "usage": "Використання: zone-c [команда] [опції...]",
     "description": "Оболонка робочого столу для композиторів wayland.",
     "commands": "Команди:",
     "script_commands": "Команди скриптів:",
@@ -1085,23 +1085,23 @@
     "version_desc": "Показати інформацію про версію і вийти",
     "help_desc": "Показати цю довідку і вийти",
     "examples": "Приклади:",
-    "daemon_stopped": "Службу serpantinum зупинено.",
-    "starting_daemon": "Службу не запущено. Запуск serpantinumd у фоновому режимі...",
+    "daemon_stopped": "Службу zone-c зупинено.",
+    "starting_daemon": "Службу не запущено. Запуск zone-cd у фоновому режимі...",
     "error_missing_qml": "Помилка: не вказано ціль для запуску.",
-    "launch_usage": "Використання: serpantinum launch <start|widgetredactor> [аргументи...]",
+    "launch_usage": "Використання: zone-c launch <start|widgetredactor> [аргументи...]",
     "error_qml_not_found": "Помилка: не вдалося знайти {NAME}.qml у {DIR}",
     "error_shell_qml_not_found": "Помилка: не вдалося визначити шлях до shell.qml у {DIR}",
     "error_unknown_command": "Помилка: невідома команда '{CMD}'.",
     "error_unknown_target": "Помилка: невідома ціль '{TARGET}'.",
     "launch_help": {
-      "usage": "Використання: serpantinum launch <start|widgetredactor> [аргументи...]",
+      "usage": "Використання: zone-c launch <start|widgetredactor> [аргументи...]",
       "description": "Запуск автономних компонентів напряму в режимі runner.",
       "available_targets": "Доступні цілі:",
       "target_start": "Запустити інтерфейс початкового налаштування",
       "target_widgetredactor": "Запустити інтерфейс редактора віджетів робочого столу"
     },
     "msg_help": {
-      "usage": "Використання: serpantinum msg <команда|робочийпростір> [аргументи...]",
+      "usage": "Використання: zone-c msg <команда|робочийпростір> [аргументи...]",
       "description": "Надсилання повідомлень розмітки, робочих просторів і керування вікнами напряму.",
       "available_commands": "Доступні повідомлення:",
       "cmd_workspace": "Перемкнутися на робочий простір <номер> (додайте 'move', щоб перемістити активне вікно)",
@@ -1110,7 +1110,7 @@
       "cmd_close": "Закрити будь-який активний оверлей оболонки"
     },
     "ipc_help": {
-      "usage": "Використання: serpantinum ipc call <ціль> <метод> [аргументи...]",
+      "usage": "Використання: zone-c ipc call <ціль> <метод> [аргументи...]",
       "description": "Надіслати виклик IPC напряму запущеному екземпляру quickshell."
     },
     "scripts": {
@@ -1131,11 +1131,11 @@
   },
   "daemon": {
     "already_running": "Службу вже запущено. Вихід...",
-    "shutting_down": "Завершення роботи служби serpantinum...",
-    "launching": "Запуск служби serpantinum...",
+    "shutting_down": "Завершення роботи служби zone-c...",
+    "launching": "Запуск служби zone-c...",
     "cli": {
-      "usage": "Використання: serpantinumd <команда> [опції...]",
-      "description": "Фонова служба для оболонки робочого столу serpantinum.",
+      "usage": "Використання: zone-cd <команда> [опції...]",
+      "description": "Фонова служба для оболонки робочого столу zone-c.",
       "commands": "Команди:",
       "cmd_start": "Запустити службу та фонові процеси",
       "cmd_stop": "Зупинити запущену службу",
@@ -1144,9 +1144,9 @@
       "opt_verbose": "Увімкнути докладний вивід логів",
       "opt_version": "Показати інформацію про версію і вийти",
       "opt_help": "Показати цю довідку і вийти",
-      "stopped": "Службу serpantinum зупинено.",
-      "status_running": "Службу serpantinum запущено (PID: {PID}).",
-      "status_stopped": "Службу serpantinum не запущено.",
+      "stopped": "Службу zone-c зупинено.",
+      "status_running": "Службу zone-c запущено (PID: {PID}).",
+      "status_stopped": "Службу zone-c не запущено.",
       "unknown_arg": "Невідомий аргумент: {ARG}"
     }
   },
@@ -1161,7 +1161,7 @@
     },
     "os": {
       "error_root": "Помилка: не запускайте цей скрипт від root/sudo. Запустіть від звичайного користувача.",
-      "error_unsupported": "Непідтримувана ОС ({os}). Serpantinum підтримує лише arch linux та його похідні.",
+      "error_unsupported": "Непідтримувана ОС ({os}). Zone-C підтримує лише arch linux та його похідні.",
       "error_not_found": "Не вдалося визначити ОС. /etc/os-release не знайдено.",
       "unknown_cpu": "Невідомий процесор",
       "unknown_gpu": "Невідомо / віртуальна машина",
@@ -1217,9 +1217,9 @@
       "tagline": "Оболонка робочого столу, створена для вас",
       "support_creator": "Підтримати автора:",
       "buy_coffee": "Якщо вам подобається цей проєкт, пригостіть автора кавою!",
-      "installed_success": "✔ Serpantinum {ver} ({commit}) успішно встановлено.",
+      "installed_success": "✔ Zone-C {ver} ({commit}) успішно встановлено.",
       "failed_packages": "Під час встановлення таких пакетів виникли помилки:",
-      "restart_prompt": "Перезапустіть композитор або виконайте 'serpantinumd start' для початку роботи.",
+      "restart_prompt": "Перезапустіть композитор або виконайте 'zone-cd start' для початку роботи.",
       "ask_reboot": "Перезавантажити систему зараз? [y/n] "
     },
     "deps": {

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-if [ -z "$SERPANTINUM_DIR" ]; then
+if [ -z "$ZONE_C_DIR" ]; then
     SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-    export SERPANTINUM_DIR="$(dirname "$SCRIPT_DIR")"
+    export ZONE_C_DIR="$(dirname "$SCRIPT_DIR")"
 fi
 
-export QS_DIR="$SERPANTINUM_DIR/quickshell"
+export QS_DIR="$ZONE_C_DIR/quickshell"
 export MAIN_QML="$QS_DIR/Shell.qml"
-export IPC_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/serpantinum.sock"
+export IPC_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/zone-c.sock"
 
-export QS_CACHE_DIR="$HOME/.cache/serpantinum"
-export QS_STATE_DIR="$HOME/.local/state/serpantinum"
-export QS_RUN_DIR="${XDG_RUNTIME_DIR:-/tmp}/serpantinum"
+export QS_CACHE_DIR="$HOME/.cache/zone-c"
+export QS_STATE_DIR="$HOME/.local/state/zone-c"
+export QS_RUN_DIR="${XDG_RUNTIME_DIR:-/tmp}/zone-c"
 export QS_LOG_DIR="$QS_RUN_DIR/logs"
-export QS_SETTINGS="$HOME/.config/serpantinum/settings.json"
+export QS_SETTINGS="$HOME/.config/zone-c/settings.json"
 
 [[ -d "$QS_LOG_DIR" && -d "$QS_CACHE_DIR" && -d "$QS_STATE_DIR" ]] || mkdir -p "$QS_CACHE_DIR" "$QS_STATE_DIR" "$QS_RUN_DIR" "$QS_LOG_DIR"
 

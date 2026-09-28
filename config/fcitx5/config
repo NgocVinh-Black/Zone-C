@@ -1,0 +1,6 @@
+[Behavior]
+# Dung chung trang thai go (VI/EN) cho moi cua so
+ShareInputState=All
+
+[Behavior/DisabledAddons]
+0=notificationitem

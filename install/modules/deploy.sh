@@ -4,6 +4,8 @@ EXTRA_CONFIGS=(
     "kitty"
     "cava"
     "fastfetch"
+    "fcitx5"
+    "qt6ct"
 )
 
 render_wallpaper_progress() {
@@ -53,7 +55,7 @@ install_wallpapers() {
     local wallpaper_dir
     wallpaper_dir=$(get_wallpaper_dir)
     local wallpaper_repo="https://github.com/ilyamiro/shell-wallpapers.git"
-    local clone_dir="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-wallpapers"
+    local clone_dir="${XDG_CACHE_HOME:-"$HOME/.cache"}/zone-c-wallpapers"
 
     mkdir -p "$wallpaper_dir"
 
@@ -249,7 +251,7 @@ deploy_package() {
     shift 5
     local COMPOSITORS=("$@")
 
-    local TARGET_BASE="$HOME/.local/share/serpantinum"
+    local TARGET_BASE="$HOME/.local/share/zone-c"
     local BIN_DIR="$HOME/.local/bin"
 
     local is_update=false
@@ -291,6 +293,11 @@ deploy_package() {
                     cp "$src_cfg" "$dest_cfg"
                 fi
             done
+        fi
+
+        if [ -d "$REPO_ROOT/config/local-bin" ]; then
+            cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
+            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close 2>/dev/null || true
         fi
 
         if [ "$is_update" != "true" ]; then
@@ -432,13 +439,13 @@ deploy_package() {
         fi
     fi
 
-    if [ -f "$TARGET_BASE/bin/serpantinum" ]; then
-        ln -sf "$TARGET_BASE/bin/serpantinum" "$BIN_DIR/serpantinum"
-        sudo ln -sf "$TARGET_BASE/bin/serpantinum" /usr/local/bin/serpantinum 2>/dev/null || true
+    if [ -f "$TARGET_BASE/bin/zone-c" ]; then
+        ln -sf "$TARGET_BASE/bin/zone-c" "$BIN_DIR/zone-c"
+        sudo ln -sf "$TARGET_BASE/bin/zone-c" /usr/local/bin/zone-c 2>/dev/null || true
     fi
 
-    if [ -f "$TARGET_BASE/bin/serpantinumd" ]; then
-        ln -sf "$TARGET_BASE/bin/serpantinumd" "$BIN_DIR/serpantinumd"
-        sudo ln -sf "$TARGET_BASE/bin/serpantinumd" /usr/local/bin/serpantinumd 2>/dev/null || true
+    if [ -f "$TARGET_BASE/bin/zone-cd" ]; then
+        ln -sf "$TARGET_BASE/bin/zone-cd" "$BIN_DIR/zone-cd"
+        sudo ln -sf "$TARGET_BASE/bin/zone-cd" /usr/local/bin/zone-cd 2>/dev/null || true
     fi
 }

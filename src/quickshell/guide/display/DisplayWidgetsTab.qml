@@ -201,8 +201,8 @@ Item {
         id: presetsLoader
         running: false
         command: {
-            let assetsDir = Caching.serpantinumDir ? (Caching.serpantinumDir + "/assets/widgets") : "";
-            let userDir = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+            let assetsDir = Caching.zoneCDir ? (Caching.zoneCDir + "/assets/widgets") : "";
+            let userDir = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/zone-c/widgets/presets");
             let pyScript =
                 "import os, json, glob, sys\n" +
                 "assets_d = sys.argv[1]\n" +
@@ -363,7 +363,7 @@ Item {
 
     function deleteCustomPreset(presetName) {
         if (!presetName) return;
-        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/zone-c/widgets/presets");
         let sanitizeName = String(presetName).replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
         let filePath = userPath + "/" + sanitizeName + ".json";
         let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
@@ -375,7 +375,7 @@ Item {
     }
 
     function saveCustomPreset(presetName, monName, widgetsList) {
-        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/zone-c/widgets/presets");
         let sanitizeName = presetName.replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
         if (sanitizeName === "") sanitizeName = "CustomPreset";
 
@@ -512,14 +512,14 @@ Item {
     }
 
     function openRedactor(mon) {
-        let runnerTarget = Caching.serpantinumDir ? (Caching.serpantinumDir + "/quickshell/Runner.qml") : "";
-        let redactorTarget = Caching.widgetRedactor || (Caching.serpantinumDir ? Caching.serpantinumDir + "/quickshell/widgets/WidgetRedactor.qml" : Caching.mainQml);
-        let launchCmd = "{ mkdir -p '" + Caching.runDir + "' && printf '%s' '" + mon + "' > '" + Caching.runDir + "/redactor_target_monitor' && QS_WIDGET_MONITOR='" + mon + "' SERPANTINUM_TARGET_FILE='" + redactorTarget + "' quickshell -p '" + runnerTarget + "'; } >> /tmp/redactor_debug.log 2>&1";
+        let runnerTarget = Caching.zoneCDir ? (Caching.zoneCDir + "/quickshell/Runner.qml") : "";
+        let redactorTarget = Caching.widgetRedactor || (Caching.zoneCDir ? Caching.zoneCDir + "/quickshell/widgets/WidgetRedactor.qml" : Caching.mainQml);
+        let launchCmd = "{ mkdir -p '" + Caching.runDir + "' && printf '%s' '" + mon + "' > '" + Caching.runDir + "/redactor_target_monitor' && QS_WIDGET_MONITOR='" + mon + "' ZONE_C_TARGET_FILE='" + redactorTarget + "' quickshell -p '" + runnerTarget + "'; } >> /tmp/redactor_debug.log 2>&1";
         Quickshell.execDetached(["bash", "-c", launchCmd]);
         if (rootObj && typeof rootObj.closePopup === "function") {
             rootObj.closePopup();
         } else {
-            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+            Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "close"]);
         }
     }
 

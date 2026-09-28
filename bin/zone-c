@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
 BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-if [ -z "$SERPANTINUM_DIR" ]; then
-    export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
+if [ -z "$ZONE_C_DIR" ]; then
+    export ZONE_C_DIR="$(dirname "$BIN_DIR")/src"
 fi
 
-source "$SERPANTINUM_DIR/scripts/caching.sh"
-source "$SERPANTINUM_DIR/scripts/config.sh"
-source "$SERPANTINUM_DIR/scripts/i18n.sh"
+source "$ZONE_C_DIR/scripts/caching.sh"
+source "$ZONE_C_DIR/scripts/config.sh"
+source "$ZONE_C_DIR/scripts/i18n.sh"
 
 if [ -z "$MAIN_QML" ]; then
-    export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+    export MAIN_QML="$(find "$ZONE_C_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
 fi
 
 is_alive() {
@@ -57,21 +57,21 @@ terminate_and_wait() {
 }
 
 get_installed_version() {
-    local version_file="${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum/version"
+    local version_file="${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/version"
     local ver=""
     if [ -f "$version_file" ]; then
-        ver=$(awk -F= '/^SERPANTINUM_VERSION=/{gsub(/["'\'' ]/, "", $2); print $2}' "$version_file")
+        ver=$(awk -F= '/^ZONE_C_VERSION=/{gsub(/["'\'' ]/, "", $2); print $2}' "$version_file")
     fi
-    if [ -z "$ver" ] && [ -n "$SERPANTINUM_VERSION" ]; then
-        ver="$SERPANTINUM_VERSION"
+    if [ -z "$ver" ] && [ -n "$ZONE_C_VERSION" ]; then
+        ver="$ZONE_C_VERSION"
     fi
     if [ -z "$ver" ]; then
-        if [ -n "$SERPANTINUM_DIR" ] && [ -f "$SERPANTINUM_DIR/version.txt" ]; then
-            ver=$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)
+        if [ -n "$ZONE_C_DIR" ] && [ -f "$ZONE_C_DIR/version.txt" ]; then
+            ver=$(cat "$ZONE_C_DIR/version.txt" 2>/dev/null | xargs)
         elif [ -f "$(dirname "$BIN_DIR")/version.txt" ]; then
             ver=$(cat "$(dirname "$BIN_DIR")/version.txt" 2>/dev/null | xargs)
-        elif [ -n "$SERPANTINUM_DIR" ] && [ -f "$(dirname "$SERPANTINUM_DIR")/version.txt" ]; then
-            ver=$(cat "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null | xargs)
+        elif [ -n "$ZONE_C_DIR" ] && [ -f "$(dirname "$ZONE_C_DIR")/version.txt" ]; then
+            ver=$(cat "$(dirname "$ZONE_C_DIR")/version.txt" 2>/dev/null | xargs)
         fi
     fi
     if [ -z "$ver" ]; then
@@ -120,15 +120,15 @@ show_help() {
     echo "  -h, --help                   $(t "cli.help_desc")"
     echo ""
     echo "$(t "cli.examples")"
-    echo "  serpantinum launch start"
-    echo "  serpantinum launch widgetredactor"
-    echo "  serpantinum msg workspace 1"
-    echo "  serpantinum msg workspace 2 move"
-    echo "  serpantinum msg open network wifi"
-    echo "  serpantinum msg toggle launcher"
-    echo "  serpantinum msg toggle clipboard"
-    echo "  serpantinum weather --current-temp"
-    echo "  serpantinum kill"
+    echo "  zone-c launch start"
+    echo "  zone-c launch widgetredactor"
+    echo "  zone-c msg workspace 1"
+    echo "  zone-c msg workspace 2 move"
+    echo "  zone-c msg open network wifi"
+    echo "  zone-c msg toggle launcher"
+    echo "  zone-c msg toggle clipboard"
+    echo "  zone-c weather --current-temp"
+    echo "  zone-c kill"
     echo ""
 }
 
@@ -174,20 +174,20 @@ show_ipc_help() {
 
 ensure_daemon() {
     local pid=""
-    if [ -f "/tmp/serpantinumd.pid" ]; then
-        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+    if [ -f "/tmp/zone-cd.pid" ]; then
+        pid="$(cat "/tmp/zone-cd.pid" 2>/dev/null)"
     fi
 
     if [ -z "$pid" ] || ! is_alive "$pid"; then
-        rm -f "/tmp/serpantinumd.pid" 2>/dev/null
-        rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+        rm -f "/tmp/zone-cd.pid" 2>/dev/null
+        rm -f "/tmp/zone-cd.lock" 2>/dev/null
 
         [ "$VERBOSE" = true ] && echo "$(t "cli.starting_daemon")"
-        "$BIN_DIR/serpantinumd" start > /dev/null 2>&1 &
+        "$BIN_DIR/zone-cd" start > /dev/null 2>&1 &
 
         local count=0
         while [ "$count" -lt 15 ]; do
-            if [ -f "/tmp/serpantinumd.pid" ] && is_alive "$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"; then
+            if [ -f "/tmp/zone-cd.pid" ] && is_alive "$(cat "/tmp/zone-cd.pid" 2>/dev/null)"; then
                 break
             fi
             sleep 0.1
@@ -202,11 +202,11 @@ while [[ "$1" == -* ]]; do
     case "$1" in
         -v|--verbose)
             VERBOSE=true
-            export SERPANTINUM_VERBOSE=true
+            export ZONE_C_VERBOSE=true
             shift
             ;;
         -V|--version)
-            echo "serpantinum v$(get_installed_version)"
+            echo "zone-c v$(get_installed_version)"
             exit 0
             ;;
         -h|--help)
@@ -226,8 +226,8 @@ fi
 
 if [[ "$1" == "kill" ]]; then
     pid=""
-    if [ -f "/tmp/serpantinumd.pid" ]; then
-        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+    if [ -f "/tmp/zone-cd.pid" ]; then
+        pid="$(cat "/tmp/zone-cd.pid" 2>/dev/null)"
     fi
 
     pkill -TERM -f "focus_daemon.py" 2>/dev/null
@@ -238,9 +238,9 @@ if [[ "$1" == "kill" ]]; then
     if [ -n "$pid" ] && is_alive "$pid"; then
         terminate_and_wait "$pid" 2
     else
-        pkill -TERM -f "serpantinumd" 2>/dev/null
+        pkill -TERM -f "zone-cd" 2>/dev/null
         sleep 0.2
-        pkill -KILL -f "serpantinumd" 2>/dev/null
+        pkill -KILL -f "zone-cd" 2>/dev/null
     fi
 
     pkill -KILL -f "focus_daemon.py" 2>/dev/null
@@ -248,8 +248,8 @@ if [[ "$1" == "kill" ]]; then
         pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
     fi
 
-    rm -f "/tmp/serpantinumd.pid" 2>/dev/null
-    rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+    rm -f "/tmp/zone-cd.pid" 2>/dev/null
+    rm -f "/tmp/zone-cd.lock" 2>/dev/null
     echo "$(t "cli.daemon_stopped")"
     exit 0
 fi
@@ -281,16 +281,16 @@ if [[ "$1" == "launch" ]]; then
     esac
 
     shift 2
-    export SERPANTINUM_LAUNCH_ARGS="$*"
+    export ZONE_C_LAUNCH_ARGS="$*"
 
-    QML_FILE=$(find "$SERPANTINUM_DIR/quickshell" -type f -name "${QML_NAME}.qml" 2>/dev/null | head -n 1)
+    QML_FILE=$(find "$ZONE_C_DIR/quickshell" -type f -name "${QML_NAME}.qml" 2>/dev/null | head -n 1)
 
     if [ -n "$QML_FILE" ]; then
         ensure_daemon
-        export SERPANTINUM_TARGET_FILE="$QML_FILE"
-        exec quickshell -p "$SERPANTINUM_DIR/quickshell/Runner.qml"
+        export ZONE_C_TARGET_FILE="$QML_FILE"
+        exec quickshell -p "$ZONE_C_DIR/quickshell/Runner.qml"
     else
-        echo "$(t "cli.error_qml_not_found" NAME="${QML_NAME}" DIR="$SERPANTINUM_DIR/quickshell/")"
+        echo "$(t "cli.error_qml_not_found" NAME="${QML_NAME}" DIR="$ZONE_C_DIR/quickshell/")"
         exit 1
     fi
 fi
@@ -305,7 +305,7 @@ if [[ "$1" == "msg" ]]; then
     if [[ "$1" == "workspace" ]]; then
         shift
     fi
-    exec "$SERPANTINUM_DIR/scripts/qs_manager.sh" "$@"
+    exec "$ZONE_C_DIR/scripts/qs_manager.sh" "$@"
 fi
 
 if [[ "$1" == "ipc" ]]; then
@@ -316,14 +316,14 @@ if [[ "$1" == "ipc" ]]; then
 
     ensure_daemon
 
-    SHELL_QML=$(find "$SERPANTINUM_DIR/quickshell" -type f -name "Shell.qml" 2>/dev/null | head -n 1)
+    SHELL_QML=$(find "$ZONE_C_DIR/quickshell" -type f -name "Shell.qml" 2>/dev/null | head -n 1)
 
     if [ -z "$SHELL_QML" ] && [ -n "$MAIN_QML" ]; then
         SHELL_QML="$MAIN_QML"
     fi
 
     if [ -z "$SHELL_QML" ]; then
-        echo "$(t "cli.error_shell_qml_not_found" DIR="$SERPANTINUM_DIR/quickshell/")"
+        echo "$(t "cli.error_shell_qml_not_found" DIR="$ZONE_C_DIR/quickshell/")"
         exit 1
     fi
 
@@ -355,7 +355,7 @@ for s in "${ALLOWED_SCRIPTS[@]}"; do
     fi
 done
 
-SCRIPT_PATH="$SERPANTINUM_DIR/scripts/${COMMAND}.sh"
+SCRIPT_PATH="$ZONE_C_DIR/scripts/${COMMAND}.sh"
 
 if [ "$IS_ALLOWED" = true ] && [ -f "$SCRIPT_PATH" ]; then
     shift

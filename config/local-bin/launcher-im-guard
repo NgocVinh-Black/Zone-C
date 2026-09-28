@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Nhan nha SUPER: tam tat Unikey de o search cua launcher nhan duoc chu,
+# dong launcher xong thi bat lai Unikey neu truoc do dang o VI.
+
+# 2 = Unikey dang bat (VI), 1 = dang tat (EN)
+[ "$(fcitx5-remote)" = "2" ] || exit 0
+
+fcitx5-remote -c
+
+launcher_open() { hyprctl layers 2>/dev/null | grep -q 'namespace: qs-applauncher'; }
+
+# Doi launcher hien ra (toi da 2s); khong thay thi bat lai luon
+for _ in $(seq 20); do
+    launcher_open && break
+    sleep 0.1
+done
+
+# Doi launcher dong (toi da 30 phut)
+for _ in $(seq 6000); do
+    launcher_open || break
+    sleep 0.3
+done
+
+fcitx5-remote -o

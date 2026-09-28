@@ -3,11 +3,11 @@
 with lib;
 
 let
-  cfg = config.programs.serpantinum;
+  cfg = config.programs.zone-c;
 in
 {
-  options.programs.serpantinum = {
-    enable = mkEnableOption "system-level support for the Serpantinum desktop shell";
+  options.programs.zone-c = {
+    enable = mkEnableOption "system-level support for the Zone-C desktop shell";
   };
 
   config = mkIf cfg.enable {

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SUPER+Q: dong panel cua zone-c neu dang mo, neu khong thi dong cua so dang focus.
+layers=$(hyprctl layers 2>/dev/null)
+if grep -q 'namespace: qs-applauncher' <<<"$layers"; then
+  zone-c msg toggle launcher
+elif grep -q 'namespace: qs-clipboard' <<<"$layers"; then
+  zone-c msg toggle clipboard
+elif grep -q 'namespace: qs-master' <<<"$layers"; then
+  zone-c msg close
+else
+  hyprctl dispatch 'hl.dsp.window.close()' >/dev/null
+fi

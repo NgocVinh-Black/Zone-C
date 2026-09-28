@@ -16,6 +16,8 @@ case "$COMPOSITOR" in
     *)
         if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
             LC_ALL=C socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock 2>/dev/null | grep --line-buffered "activelayout>>" > "$PIPE" &
+            # Bao khi fcitx5 doi bo go (EN <-> VI Unikey)
+            (prev=$(fcitx5-remote -n 2>/dev/null); while sleep 0.3; do cur=$(fcitx5-remote -n 2>/dev/null); [ "$cur" != "$prev" ] && { echo fcitx > "$PIPE"; break; }; done) &
         else
             sleep 10 > "$PIPE" &
         fi
