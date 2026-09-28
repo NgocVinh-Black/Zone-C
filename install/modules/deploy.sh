@@ -6,6 +6,7 @@ EXTRA_CONFIGS=(
     "fastfetch"
     "fcitx5"
     "qt6ct"
+    "foot"
 )
 
 render_wallpaper_progress() {
