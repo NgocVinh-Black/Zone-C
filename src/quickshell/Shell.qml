@@ -45,6 +45,10 @@ ShellRoot {
         sourceComponent: WallpaperEngine {}
     }
     Loader {
+        active: !performanceMode
+        sourceComponent: ElectricBorder {}
+    }
+    Loader {
         active: !performanceMode && quickactionsEnabled
         sourceComponent: Floating {}
     }
