@@ -306,6 +306,24 @@ Item {
         ScriptAction { script: { root.eqLightningProgress = 0.0; } }
     }
 
+    // Zone-C: luong dien chay qua cac thanh EQ theo nhip nhac (khong phat am thanh swoosh)
+    property bool beatArmed: true
+    property real bassAvg: 0.0
+    Timer {
+        interval: 30
+        repeat: true
+        running: root.visible && root.hasTargetPlayer && root.targetPlayer.isPlaying && root.introEqSliders >= 1.0
+        onTriggered: {
+            let b = root.bassLevel;
+            root.bassAvg = root.bassAvg * 0.93 + b * 0.07;
+            if (b < root.bassAvg * 1.05) root.beatArmed = true;
+            if (root.beatArmed && b > 0.08 && b > root.bassAvg * 1.3 && !eqLightningAnim.running) {
+                root.beatArmed = false;
+                eqLightningAnim.restart();
+            }
+        }
+    }
+
     function triggerEqLightning() {
         Sounds.playSfx("musicpopup/swoosh.wav", 0.75);
         eqLightningAnim.restart();
@@ -1522,24 +1540,6 @@ Item {
                                                             }
                                                         }
                                                     }
-                                                }
-
-                                                // Zone-C: cot sang nhay theo nhac (cava) cho tung dai tan
-                                                Rectangle {
-                                                    property real liveLevel: {
-                                                        let lv = root.barLevels;
-                                                        if (!lv || lv.length === 0) return 0.0;
-                                                        return lv[Math.round(index * (lv.length - 1) / 9)] || 0.0;
-                                                    }
-                                                    anchors.bottom: parent.bottom
-                                                    anchors.horizontalCenter: parent.horizontalCenter
-                                                    width: parent.width
-                                                    height: Math.max(0, Math.pow(liveLevel, 0.7) * parent.height)
-                                                    radius: ThemeBackend.borderRadius
-                                                    color: Qt.lighter(root.eqAccentColor, 1.6)
-                                                    opacity: 0.7 * root.introEqSliders
-                                                    visible: height > 1
-                                                    Behavior on height { NumberAnimation { duration: 90; easing.type: Easing.OutQuad } }
                                                 }
                                             }
 
