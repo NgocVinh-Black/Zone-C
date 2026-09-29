@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Bang phim tat (Super+/). Bam lai Super+/ hoac phim bat ky de dong.
+# Bang phim tat (Super+/): mo bang QML cua zone-c; neu shell khong chay thi mo ban terminal.
+# Bam lai Super+/ (hoac Esc) de dong.
 
 APP_ID="keybinds-help"
 
@@ -32,7 +33,7 @@ if [ "$1" = "--show" ]; then
     row "Super+A  /  Super+R" "Tự ẩn bar  /  Tải lại shell"
 
     head "CỬA SỔ"
-    row "Super+Q" "Đóng cửa sổ"
+    row "Super+Q  /  Super+Shift+Q" "Đóng (hỏi Yes/No)  /  Đóng ngay"
     row "Super+F  /  Super+Alt+F" "Toàn màn hình  /  Phóng to"
     row "Super+Shift+F, Super+Alt+Space" "Cửa sổ nổi"
     row "Super+P" "Ghim (hiện ở mọi workspace)"
@@ -40,36 +41,47 @@ if [ "$1" = "--show" ]; then
     row "Ctrl+Super+\\  /  +Alt" "Ra giữa  /  cỡ 55×70% + giữa"
     row "Super+mũi tên" "Chuyển sang cửa sổ bên cạnh"
     row "Super+Shift+mũi tên" "Di chuyển cửa sổ"
-    row "Super+Alt+mũi tên, Super+= / -" "Đổi kích thước"
+    row "Super+Alt+mũi tên" "Đổi kích thước"
+    row "Super+=  /  Super+-" "Rộng ra  /  hẹp lại"
+    row "Super+Shift+=  /  Super+Shift+-" "Cao lên  /  thấp xuống"
     row "Super+chuột trái (giữ Super+Z)" "Kéo cửa sổ"
     row "Super+chuột phải (giữ Super+X)" "Kéo đổi kích thước"
 
     cur=RR
-    head "CỬA SỔ (tiếp)"
+    head "NHÓM CỬA SỔ (TAB)"
     row "Alt+Tab  /  Shift+Alt+Tab" "Chuyển cửa sổ"
-    row "Super+,  /  Super+U" "Gộp nhóm (tab)  /  Tách nhóm"
-    row "Super+Shift+,  /  Ctrl+Alt+Tab" "Khoá nhóm  /  Chuyển tab nhóm"
+    row "Super+,  /  Super+U" "Gộp nhóm  /  Tách khỏi nhóm"
+    row "Super+Shift+," "Khoá nhóm"
+    row "Ctrl+Alt+Tab  /  +Shift" "Tab kế tiếp  /  tab trước"
 
     head "WORKSPACE"
     row "Super+1…0" "Sang workspace 1–10"
-    row "Super+Shift+1…0" "Chuyển cửa sổ sang đó"
-    row "Ctrl+Super+←/→, Super+cuộn" "Workspace trước / sau"
+    row "Super+Shift+1…0 (hoặc Alt)" "Chuyển cửa sổ sang đó"
+    row "Ctrl+Super+1…0  /  +Alt" "Nhóm workspace: sang / chuyển"
+    row "Ctrl+Super+←/→" "Workspace trước / sau"
+    row "Super+PgUp/PgDn, Super+cuộn" "Workspace trước / sau"
+    row "Ctrl+Super+cuộn" "Nhảy 10 workspace"
+    row "Vuốt ngang 3 ngón" "Đổi workspace (touchpad)"
     row "Ctrl+Super+Shift+←/→" "Mang cửa sổ sang trước / sau"
-    row "Super+Alt+S" "Cất vào workspace ẩn"
+    row "Super+Alt+PgUp/PgDn, +cuộn" "Mang cửa sổ sang trước / sau"
+    row "Super+Alt+S, Ctrl+Super+Shift+↑" "Cất vào workspace ẩn"
     row "Ctrl+Super+Shift+↓" "Lấy ra từ workspace ẩn"
 
     head "CHỤP & QUAY MÀN HÌNH"
     row "Print  /  Shift+Print" "Chụp  /  Chụp rồi chỉnh sửa"
     row "Super+Print  /  +Shift" "Toàn màn hình  /  rồi chỉnh sửa"
     row "Super+Shift+S" "Flameshot"
+    row "Super+Shift+Alt+S" "Chụp vùng (zone-c)"
     row "Super+Alt+R" "Quay màn hình"
 
     head "HỆ THỐNG & MEDIA"
     row "Super+L  /  nút nguồn" "Khoá màn hình"
     row "Super+Shift+L" "Ngủ"
-    row "Super+Space" "Phát / dừng nhạc"
+    row "Super+Space, Ctrl+Super+Space" "Phát / dừng nhạc"
     row "Ctrl+Super+ =  /  -" "Bài tiếp  /  bài trước"
-    row "Super+Shift+M" "Tắt tiếng"
+    row "Super+Shift+M  /  phím Mute" "Tắt tiếng loa"
+    row "Phím âm lượng  /  độ sáng" "Tăng giảm âm lượng / độ sáng"
+    row "Phím Mic" "Tắt / bật micro"
 
     printf "\e[1;35m  PHÍM TẮT  —  Super = phím Windows\e[0m\n"
     n=$(( ${#L[@]} > ${#RR[@]} ? ${#L[@]} : ${#RR[@]} ))
@@ -80,6 +92,11 @@ if [ "$1" = "--show" ]; then
     done
     printf "\n  ${D}Bấm phím bất kỳ (hoặc Super+/) để đóng${R}"
     read -rsn1
+    exit 0
+fi
+
+# Uu tien bang QML cua zone-c (cung theme); shell khong chay thi dung ban terminal ben duoi.
+if zone-c ipc call keybinds toggle >/dev/null 2>&1; then
     exit 0
 fi
 

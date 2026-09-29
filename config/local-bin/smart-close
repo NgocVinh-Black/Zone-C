@@ -8,6 +8,8 @@ layers=$(hyprctl layers 2>/dev/null)
 if grep -q 'namespace: qs-closeconfirm' <<<"$layers"; then
   # Hop thoai dang mo: SUPER+Q lan nua thi huy, SUPER+SHIFT+Q thi van dong luon.
   [[ $force -eq 0 ]] && exit 0
+elif grep -q 'namespace: qs-keybinds' <<<"$layers"; then
+  zone-c ipc call keybinds close; exit 0
 elif grep -q 'namespace: qs-applauncher' <<<"$layers"; then
   zone-c msg toggle launcher; exit 0
 elif grep -q 'namespace: qs-clipboard' <<<"$layers"; then

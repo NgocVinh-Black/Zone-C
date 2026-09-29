@@ -5,6 +5,7 @@ ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general", {}).performance)
     readonly property bool quickactionsEnabled: Config.getSetting("general", {}).quickactions !== false
     readonly property bool dockEnabled: Config.getSetting("dock", {}).enabled !== false
+    readonly property bool zoneAnimated: ZoneStyle.animated
 
     Connections {
         target: Quickshell
@@ -22,6 +23,7 @@ ShellRoot {
 
     Polkit {}
     CloseConfirm {}
+    KeybindsHelp {}
     PopoutManager {}
 
     Loader {

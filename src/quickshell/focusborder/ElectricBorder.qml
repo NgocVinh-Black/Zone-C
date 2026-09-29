@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Io
+import "../"
 
 // Zone-C: vien dien (electric border) quanh cua so dang duoc chon.
 // Lop phu trong suot, khong nhan chuot; vien duoc ve tren GPU bang shader
@@ -16,13 +17,14 @@ Scope {
     property real cornerRadius: 12
     property real outset: 2          // khoang cach tu mep cua so ra vien
     property real glowMargin: 40     // cho de ve quang sang
-    property real amplitude: 7       // do rung cua tia dien (px)
+    property real amplitude: ZoneStyle.borderAmplitude // do rung cua tia dien (px), theo preset
     property real surgeSpeed: 0.45   // luong dien chay: vong / giay
 
     // Mau: quang sang -> tia -> loi
-    property color glowColor: "#1e8fff"
-    property color boltColor: "#4cc3ff"
-    property color coreColor: "#e8fbff"
+    // (theo preset: Zone Thunder / Zone Crystal, xem singletons/theme/ZoneStyle.qml)
+    property color glowColor: ZoneStyle.borderGlow
+    property color boltColor: ZoneStyle.borderBolt
+    property color coreColor: ZoneStyle.borderCore
 
     // {x, y, w, h} theo toa do layout cua Hyprland, null neu khong co cua so
     property var win: null
@@ -137,8 +139,9 @@ Scope {
 
                 fragmentShader: Qt.resolvedUrl("electric.frag.qsb")
 
+                // Preset tinh (Zone Crystal): vien dung yen, khong ve lai moi khung hinh
                 FrameAnimation {
-                    running: bolt.visible
+                    running: bolt.visible && ZoneStyle.animated
                     onTriggered: bolt.time += frameTime
                 }
             }
