@@ -120,6 +120,7 @@ hl.bind("SUPER + ALT + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind("SUPER + ALT + Space", hl.dsp.window.float())
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/smart-close"))
+hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/smart-close --force"))
 
 -- Apps
 hl.bind("SUPER + T", hl.dsp.exec_cmd(terminal))

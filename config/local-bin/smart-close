@@ -1,12 +1,32 @@
 #!/usr/bin/env bash
-# SUPER+Q: dong panel cua zone-c neu dang mo, neu khong thi dong cua so dang focus.
+# SUPER+Q: dong panel cua zone-c neu dang mo, neu khong thi hien hop thoai xac nhan (zone-c CloseConfirm).
+# SUPER+SHIFT+Q (--force): dong ngay, khong hoi.
+force=0
+[[ $1 == --force ]] && force=1
+
 layers=$(hyprctl layers 2>/dev/null)
-if grep -q 'namespace: qs-applauncher' <<<"$layers"; then
-  zone-c msg toggle launcher
+if grep -q 'namespace: qs-closeconfirm' <<<"$layers"; then
+  # Hop thoai dang mo: SUPER+Q lan nua thi huy, SUPER+SHIFT+Q thi van dong luon.
+  [[ $force -eq 0 ]] && exit 0
+elif grep -q 'namespace: qs-applauncher' <<<"$layers"; then
+  zone-c msg toggle launcher; exit 0
 elif grep -q 'namespace: qs-clipboard' <<<"$layers"; then
-  zone-c msg toggle clipboard
+  zone-c msg toggle clipboard; exit 0
 elif grep -q 'namespace: qs-master' <<<"$layers"; then
-  zone-c msg close
-else
-  hyprctl dispatch 'hl.dsp.window.close()' >/dev/null
+  zone-c msg close; exit 0
 fi
+
+win=$(hyprctl activewindow -j 2>/dev/null)
+addr=$(jq -r '.address // empty' <<<"$win")
+[[ -z $addr ]] && exit 0
+
+if [[ $force -eq 1 ]]; then
+  hyprctl dispatch "hl.dsp.window.close({ window = \"address:$addr\" })" >/dev/null
+  exit 0
+fi
+
+class=$(jq -r '.class // ""' <<<"$win")
+title=$(jq -r '.title // ""' <<<"$win")
+# Neu shell zone-c khong phan hoi thi dong luon de khong bi ket.
+zone-c ipc call closeconfirm ask "$addr" "$title" "$class" >/dev/null 2>&1 \
+  || hyprctl dispatch "hl.dsp.window.close({ window = \"address:$addr\" })" >/dev/null

@@ -21,6 +21,7 @@ ShellRoot {
     Clipboard {}    
 
     Polkit {}
+    CloseConfirm {}
     PopoutManager {}
 
     Loader {
