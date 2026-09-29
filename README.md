@@ -2,6 +2,23 @@
 
 Desktop shell cho Hyprland, viết bằng Quickshell, theo chủ đề **sấm sét xanh** — của **NgocVinh-Black**.
 
+## Demo
+
+[![Zone-C demo](docs/assets/screenshots/desktop.jpg)](docs/assets/demo.mp4)
+
+▶ Bấm vào ảnh để xem video demo ([demo.mp4](docs/assets/demo.mp4)).
+
+## Ảnh chụp
+
+| | |
+|---|---|
+| ![Launcher](docs/assets/screenshots/launcher.jpg) | ![Trình phát nhạc](docs/assets/screenshots/music.jpg) |
+| **Launcher** | **Trình phát nhạc + equalizer** |
+| ![Lịch và thời tiết](docs/assets/screenshots/calendar.jpg) | ![Bảng hệ thống](docs/assets/screenshots/system.jpg) |
+| **Lịch và thời tiết** | **Bảng hệ thống / thông báo** |
+| ![Chọn hình nền](docs/assets/screenshots/wallpaper.jpg) | |
+| **Chọn hình nền** | |
+
 ## Giao diện
 
 - **Hình nền video sấm sét** động, logo và mascot mèo sấm Zone-C.
