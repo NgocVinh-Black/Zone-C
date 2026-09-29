@@ -316,6 +316,11 @@ Rectangle {
                             mainAction.invoke();
                         }
                     }
+                    // Nhay toi cua so cua app gui thong bao (ke ca khi thong bao khong co action)
+                    if (n && Caching.zoneCDir) {
+                        Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/focus_app.sh",
+                                                 n.desktopEntry || "", n.appName || ""]);
+                    }
                 }
             }
         }

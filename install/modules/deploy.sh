@@ -302,7 +302,7 @@ deploy_package() {
 
         if [ -d "$REPO_ROOT/config/local-bin" ]; then
             cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
-            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/zonec-banner 2>/dev/null || true
+            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/flameshot-gui "$BIN_DIR"/zonec-banner 2>/dev/null || true
         fi
 
         if [ -d "$REPO_ROOT/config/icons" ]; then

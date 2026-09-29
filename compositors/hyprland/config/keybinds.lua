@@ -136,7 +136,7 @@ hl.bind("Print", hl.dsp.exec_cmd("zone-c screenshot"), { locked = true })
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("zone-c screenshot --edit"), { locked = true })
 hl.bind("SUPER + Print", hl.dsp.exec_cmd("zone-c screenshot --full"), { locked = true })
 hl.bind("SUPER + SHIFT + Print", hl.dsp.exec_cmd("zone-c screenshot --full --edit"), { locked = true })
-hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("flameshot gui"))
+hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/flameshot-gui"))
 hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.exec_cmd("zone-c screenshot"))
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("zone-c screenshot --record"))
 

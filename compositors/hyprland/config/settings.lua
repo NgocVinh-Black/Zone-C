@@ -34,7 +34,7 @@ hl.config({
   },
 
   misc = {
-    focus_on_activate = false,
+    focus_on_activate = true,
     font_family = "JetBrains Mono",
     disable_hyprland_logo = true,
     disable_splash_rendering = true,
@@ -52,3 +52,18 @@ hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "myBezier" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "myBezier", style = "slide" })
 hl.animation({ leaf = "specialWorkspaceIn", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
 hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
+
+-- Flameshot: cua so chup phu kin man hinh, khong bi tile / nhet vao nhom tab.
+-- Script ~/.local/bin/flameshot-gui bat fullscreen cho no de nam tren ca bar va vien dien.
+hl.window_rule({
+  name  = "flameshot-fullscreen",
+  match = { class = "^(flameshot)$" },
+
+  float        = true,
+  move         = "0 0",
+  size         = "monitor_w monitor_h",
+  no_anim      = true,
+  border_size  = 0,
+  rounding     = 0,
+  stay_focused = true,
+})
