@@ -328,6 +328,41 @@ deploy_package() {
             } >> "$bashrc"
         fi
 
+        # ble.sh: goi y lenh cu tu lich su (autosuggestion) cho bash
+        local blesh_dir="$HOME/.local/share/blesh"
+        if [ ! -f "$blesh_dir/ble.sh" ]; then
+            local blesh_src
+            blesh_src=$(mktemp -d)
+            if git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git "$blesh_src/ble.sh" >/dev/null 2>&1; then
+                make -C "$blesh_src/ble.sh" install PREFIX="$HOME/.local" >/dev/null 2>&1 || true
+            fi
+            rm -rf "$blesh_src"
+        fi
+        if [ -f "$REPO_ROOT/config/blesh/blerc" ]; then
+            cp "$REPO_ROOT/config/blesh/blerc" "$HOME/.blerc"
+        fi
+        if [ -f "$blesh_dir/ble.sh" ] && ! grep -q 'blesh/ble.sh' "$bashrc" 2>/dev/null; then
+            local bashrc_tmp
+            bashrc_tmp=$(mktemp)
+            {
+                echo '# Zone-C: ble.sh - goi y lenh cu tu lich su (de o dau file)'
+                echo '[[ $- == *i* && -f ~/.local/share/blesh/ble.sh ]] && source -- ~/.local/share/blesh/ble.sh --attach=none'
+                echo ''
+                echo '# Zone-C: lich su lenh - luu nhieu, khong trung, ghi ngay'
+                echo 'HISTSIZE=50000'
+                echo 'HISTFILESIZE=100000'
+                echo 'HISTCONTROL=ignoreboth:erasedups'
+                echo 'shopt -s histappend'
+                echo 'PROMPT_COMMAND="history -a${PROMPT_COMMAND:+; $PROMPT_COMMAND}"'
+                echo ''
+                [ -f "$bashrc" ] && cat "$bashrc"
+                echo ''
+                echo '# Zone-C: gan ble.sh (de o cuoi file)'
+                echo '[[ ${BLE_VERSION-} ]] && ble-attach'
+            } > "$bashrc_tmp"
+            mv "$bashrc_tmp" "$bashrc"
+        fi
+
         if [ "$is_update" != "true" ]; then
             for comp in "${COMPOSITORS[@]}"; do
                 local target_config_name

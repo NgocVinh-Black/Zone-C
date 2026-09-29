@@ -51,7 +51,7 @@ REQUIRED_PKGS=(
     "cliphist" "jq" "socat" "inotify-tools" "pamixer" "brightnessctl" "ddcutil" "acpi" "iw"
     "bluez" "bluez-utils" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
     "pipewire" "wireplumber" "pipewire-pulse" "pipewire-alsa" "libpulse" "python"
-    "imagemagick" "wget" "file" "git" "psmisc"
+    "imagemagick" "wget" "file" "git" "make" "psmisc"
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
     "qt5ct" "qt6ct" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
