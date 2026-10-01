@@ -97,7 +97,7 @@ Item {
 
                                 Image {
                                     anchors.fill: parent
-                                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
+                                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                                     sourceSize: Qt.size(512, 512)
                                     fillMode: Image.PreserveAspectFit
                                     smooth: true
@@ -248,7 +248,7 @@ Item {
                                     buttonIcon: modelData.icon
                                     iconFontSize: rootObj.s(16)
                                     accentColor: ThemeBackend.surface0
-                                    textColor: "#ffffff"
+                                    textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                 }
 
                                 Text {
@@ -318,7 +318,7 @@ Item {
                                     buttonIcon: modelData.icon
                                     iconFontSize: rootObj.s(16)
                                     accentColor: ThemeBackend.surface0
-                                    textColor: "#ffffff"
+                                    textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                 }
 
                                 Text {

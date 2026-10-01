@@ -253,7 +253,7 @@ Item {
     property string activeArtUrl: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.artUrl : localArtUrl
     property string activeBlur: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.blur : localBlur
     property string activeGrad: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.grad : localGrad
-    property string activeTextColor: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.textColor : (localTextColor || "#cdd6f4")
+    property string activeTextColor: ZoneStyle.flatBar ? ThemeBackend.text.toString() : (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.textColor : (localTextColor || "#cdd6f4")
     property string activeDeviceIcon: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.deviceIcon : localDeviceIcon
     property string activeDeviceName: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.deviceName : localDeviceName
 
@@ -381,9 +381,12 @@ Item {
     }
 
     property var borderColors: {
-        var defaultColors = [ThemeBackend.mauve || "#cba6f7", ThemeBackend.blue || "#89b4fa", ThemeBackend.red || "#f38ba8", ThemeBackend.mauve || "#cba6f7"];
+        // Zone Frost: vien mot mau bang, khong co do
+        var defaultColors = ZoneStyle.flatBar
+            ? [ThemeBackend.surface2, ThemeBackend.surface2, ThemeBackend.surface2, ThemeBackend.surface2]
+            : [ThemeBackend.mauve || "#cba6f7", ThemeBackend.blue || "#89b4fa", ThemeBackend.red || "#f38ba8", ThemeBackend.mauve || "#cba6f7"];
         var gradSource = root.activeGrad || (typeof MprisController !== "undefined" ? MprisController.grad : "");
-        if (!gradSource) return defaultColors;
+        if (!gradSource || ZoneStyle.flatBar) return defaultColors;
         
         var hexRegex = /#[0-9a-fA-F]{6}/g;
         var matches = gradSource.match(hexRegex);

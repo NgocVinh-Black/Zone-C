@@ -221,7 +221,8 @@ PanelWindow {
         return defaultLauncherSettings;
     }
 
-    property string launcherPosition: (rawLauncherSettings && rawLauncherSettings.position !== undefined) ? rawLauncherSettings.position : "top"
+    // Zone Frost (bar dang vien roi): launcher luon mo tu duoi, vi kieu "top" bam vao bar lien khoi se de len bar
+    property string launcherPosition: ZoneStyle.flatBar ? "bottom" : ((rawLauncherSettings && rawLauncherSettings.position !== undefined) ? rawLauncherSettings.position : "top")
     property real customWidth: (rawLauncherSettings && rawLauncherSettings.width !== undefined && !isNaN(rawLauncherSettings.width) && rawLauncherSettings.width > 0) ? rawLauncherSettings.width : 600
     property int customItemCount: (rawLauncherSettings && rawLauncherSettings.itemCount !== undefined && !isNaN(rawLauncherSettings.itemCount) && rawLauncherSettings.itemCount > 0) ? rawLauncherSettings.itemCount : 6
     property string terminalCommand: (rawLauncherSettings && rawLauncherSettings.terminalCommand !== undefined) ? rawLauncherSettings.terminalCommand : "kitty -e"
@@ -1349,6 +1350,7 @@ PanelWindow {
                     id: searchInput
                     z: 10
                     focus: true
+                    directKeys: true
                     anchors.left: parent.left
                     anchors.right: parent.right
                     y: contentContainer.isSearchAtBottom ? Math.max(0, parent.height - height) : 0

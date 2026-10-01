@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     readonly property bool isBottomBar: barWindow ? (barWindow.barPosition === "bottom") : false
 
     property bool isCleaningUp: false

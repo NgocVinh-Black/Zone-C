@@ -1,0 +1,27 @@
+{
+  "name": "Zone Frost",
+  "colors": {
+    "base": "#333f45",
+    "mantle": "#2c373c",
+    "crust": "#252f34",
+    "text": "#e9f1f4",
+    "subtext0": "#93a7b1",
+    "subtext1": "#b7c7cf",
+    "surface0": "#3e4b52",
+    "surface1": "#4a5960",
+    "surface2": "#58686f",
+    "overlay0": "#6d7f87",
+    "overlay1": "#8597a0",
+    "overlay2": "#9daeb6",
+    "blue": "#d6e6ec",
+    "sapphire": "#cfe1e8",
+    "peach": "#e3dccf",
+    "green": "#cfe4d8",
+    "red": "#ff6b6b",
+    "mauve": "#d6e6ec",
+    "pink": "#d6e6ec",
+    "yellow": "#ece0b0",
+    "maroon": "#c9d9df",
+    "teal": "#cfe6e6"
+  }
+}

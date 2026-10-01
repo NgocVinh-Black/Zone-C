@@ -31,6 +31,8 @@ Item {
     property var validator: null
 
     property bool masked: false
+    // Bo go (fcitx5/Unikey) gui phim thang vao o, khong giu preedit -> khong can tat Unikey
+    property bool directKeys: false
     property bool revealTyping: true
     property int revealDuration: 300
 
@@ -438,6 +440,7 @@ Item {
                 enabled: root.enabled && !root.isBusy
                 maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
                 validator: root.validator
+                inputMethodHints: root.directKeys ? (Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase) : Qt.ImhNone
 
                 onCursorPositionChanged: root.updateScroll()
                 onSelectionStartChanged: root.updateScroll()

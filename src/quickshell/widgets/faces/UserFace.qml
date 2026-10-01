@@ -40,7 +40,7 @@ Item {
                     size: Scaler.s(70)
                     cornerRadius: ThemeBackend.borderRadius > 0 ? Math.min(ThemeBackend.borderRadius, Scaler.s(12)) : Scaler.s(12)
                     imageRadius: cornerRadius
-                    source: SystemInfo.avatarPath !== "" ? "file://" + SystemInfo.avatarPath : ""
+                    source: ZoneStyle.avatarSource(SystemInfo.avatarPath)
                     backgroundColor: SystemInfo.avatarPath === "" ? ThemeBackend.surface1 : "transparent"
 
                     Text {

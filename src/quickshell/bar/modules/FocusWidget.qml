@@ -17,7 +17,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     property real targetX: 0
 
     readonly property string displayText: CurrentFocus.displayText
@@ -27,7 +27,7 @@ Rectangle {
     property real rightPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.s(12) : 12)
     property real maxWidth: barWindow ? barWindow.s(300) : 300
     property real maxTextWidth: Math.max(0, maxWidth - (leftPadding + focusIconButton.width + innerLayout.spacing + rightPadding))
-    property real targetWidth: (moduleActive && isFocused) ? Math.min(maxWidth, leftPadding + focusIconButton.width + innerLayout.spacing + titleTextMain.width + rightPadding) : 0
+    property real targetWidth: (moduleActive && isFocused) ? Math.min(maxWidth, leftPadding + (focusIconButton.visible ? focusIconButton.width + innerLayout.spacing : 0) + titleTextMain.width + rightPadding) : 0
 
     x: targetX
     Behavior on x {
@@ -38,7 +38,7 @@ Rectangle {
     height: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
     radius: ThemeBackend.borderRadius
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: (isGrouped || ZoneStyle.flatBar) ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
     border.width: 0
     clip: true
 
@@ -67,6 +67,7 @@ Rectangle {
 
         IconButton {
             id: focusIconButton
+            visible: !ZoneStyle.flatBar
             width: barWindow ? barWindow.s(focusWidgetRoot.isCompact ? 28 : 30) : (focusWidgetRoot.isCompact ? 28 : 30)
             height: barWindow ? barWindow.s(focusWidgetRoot.isCompact ? 28 : 30) : (focusWidgetRoot.isCompact ? 28 : 30)
             cornerRadius: barWindow ? barWindow.s(focusWidgetRoot.isCompact ? 9 : 10) : (focusWidgetRoot.isCompact ? 9 : 10)
@@ -86,7 +87,10 @@ Rectangle {
             id: titleTextMain
             text: focusWidgetRoot.displayText
             color: ThemeBackend.text
-            font.pixelSize: barWindow ? barWindow.s(focusWidgetRoot.isCompact ? 11 : 12) : (focusWidgetRoot.isCompact ? 11 : 12)
+            font.bold: ZoneStyle.flatBar
+            style: ZoneStyle.flatBar ? Text.Raised : Text.Normal
+            styleColor: Qt.rgba(0, 0, 0, 0.35)
+            font.pixelSize: barWindow ? barWindow.s(ZoneStyle.flatBar ? 13 : (focusWidgetRoot.isCompact ? 11 : 12)) : (focusWidgetRoot.isCompact ? 11 : 12)
             anchors.verticalCenter: parent.verticalCenter
             elide: Text.ElideRight
             width: Math.min(implicitWidth, focusWidgetRoot.maxTextWidth)

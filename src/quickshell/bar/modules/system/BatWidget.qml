@@ -17,7 +17,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
 
     property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
     readonly property int batCap: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
@@ -48,11 +48,11 @@ Rectangle {
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
     radius: ThemeBackend.borderRadius
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: (isGrouped || ZoneStyle.flatBar) ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
     clip: true
     layer.enabled: true
 
-    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0
+    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (ZoneStyle.flatBar ? 0 : (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10)))) : 0
     width: targetWidth
 
     opacity: (showLayout && moduleActive) ? ((barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0) : 0.0
@@ -82,7 +82,7 @@ Rectangle {
     Row {
         id: sysLayout
         anchors.centerIn: parent
-        property int pillHeight: barWindow ? barWindow.s(batWidgetRoot.isCompact ? 28 : 30) : (batWidgetRoot.isCompact ? 28 : 30)
+        property int pillHeight: (ZoneStyle.flatBar && barWindow) ? batWidgetRoot.height : (barWindow ? barWindow.s(batWidgetRoot.isCompact ? 28 : 30) : (batWidgetRoot.isCompact ? 28 : 30))
 
         Rectangle {
             id: batPill
@@ -104,8 +104,8 @@ Rectangle {
             Behavior on width { NumberAnimation { duration: 480; easing.type: Easing.OutQuint } }
 
             radius: Math.max(0, ThemeBackend.borderRadius - (barWindow ? barWindow.s(2) : 2))
-            color: batWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
-            border.color: batWidgetRoot.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1
+            color: ZoneStyle.flatBar ? ZoneStyle.pillColor : (batWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+            border.color: ZoneStyle.flatBar ? ZoneStyle.pillBorder : (batWidgetRoot.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1)
             border.width: 1
             clip: true
 
@@ -125,6 +125,7 @@ Rectangle {
             Canvas {
                 id: pillCanvas
                 anchors.fill: parent
+                visible: !ZoneStyle.flatBar
                 renderTarget: Canvas.FramebufferObject
                 renderStrategy: Canvas.Cooperative
 
@@ -205,7 +206,7 @@ Rectangle {
                     text: batWidgetRoot.batIcon
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: batWidgetRoot.isDesktop ? (barWindow ? barWindow.s(batWidgetRoot.isCompact ? 15 : 16) : (batWidgetRoot.isCompact ? 15 : 16)) : (barWindow ? barWindow.s(batWidgetRoot.isCompact ? 12 : 13.5) : (batWidgetRoot.isCompact ? 12 : 13.5))
-                    color: batWidgetRoot.isDesktop ? ThemeBackend.red : (batWidgetRoot.isCompact ? ThemeBackend.text : ThemeBackend.subtext0)
+                    color: batWidgetRoot.isDesktop ? ThemeBackend.red : ((ZoneStyle.flatBar || batWidgetRoot.isCompact) ? ThemeBackend.text : ThemeBackend.subtext0)
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
@@ -214,7 +215,8 @@ Rectangle {
                     text: batWidgetRoot.batPercent
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: barWindow ? barWindow.s(batWidgetRoot.isCompact ? 11 : 12.6) : (batWidgetRoot.isCompact ? 11 : 12.6)
-                    font.bold: true
+                    font.bold: !ZoneStyle.flatBar
+                    font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Bold
                     color: ThemeBackend.text
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -227,7 +229,7 @@ Rectangle {
                 anchors.right: parent.right
                 height: Math.min(parent.height, Math.max(0, (parent.height * batPill.fillRatio) - batPill.waveCenterOffset))
                 clip: true
-                visible: batPill.fillRatio > 0
+                visible: batPill.fillRatio > 0 && !ZoneStyle.flatBar
 
                 Item {
                     anchors.bottom: parent.bottom
@@ -252,7 +254,8 @@ Rectangle {
                             text: batWidgetRoot.batPercent
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: barWindow ? barWindow.s(batWidgetRoot.isCompact ? 11 : 12.6) : (batWidgetRoot.isCompact ? 11 : 12.6)
-                            font.bold: true
+                            font.bold: !ZoneStyle.flatBar
+                    font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Bold
                             color: ThemeBackend.crust
                             anchors.verticalCenter: parent.verticalCenter
                         }

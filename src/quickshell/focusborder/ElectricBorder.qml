@@ -116,9 +116,22 @@ Scope {
                 return { x: w.x - sx, y: w.y - sy, w: w.w, h: w.h };
             }
 
+            // Preset co plainBorder (Zone Frost): chi la mot duong vien manh dung yen
+            Rectangle {
+                visible: overlay.local !== null && ZoneStyle.plainBorder
+                x: overlay.local ? overlay.local.x - root.outset : 0
+                y: overlay.local ? overlay.local.y - root.outset : 0
+                width: overlay.local ? overlay.local.w + 2 * root.outset : 0
+                height: overlay.local ? overlay.local.h + 2 * root.outset : 0
+                radius: root.cornerRadius + root.outset
+                color: "transparent"
+                border.width: 2
+                border.color: Qt.alpha(root.boltColor, 0.85)
+            }
+
             ShaderEffect {
                 id: bolt
-                visible: overlay.local !== null
+                visible: overlay.local !== null && !ZoneStyle.plainBorder
                 x: overlay.local ? overlay.local.x - root.outset - root.glowMargin : 0
                 y: overlay.local ? overlay.local.y - root.outset - root.glowMargin : 0
                 width: overlay.local ? overlay.local.w + 2 * (root.outset + root.glowMargin) : 0

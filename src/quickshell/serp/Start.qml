@@ -438,7 +438,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             width: window.s(360)
                             height: window.s(360)
-                            source: "file://" + Caching.zoneCDir + "/assets/logo.png"
+                            source: "file://" + Caching.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                             sourceSize: Qt.size(width, height)
                             fillMode: Image.PreserveAspectFit
                             smooth: true
@@ -572,7 +572,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         width: window.s(360)
                         height: window.s(360)
-                        source: "file://" + Caching.zoneCDir + "/assets/logo.png"
+                        source: "file://" + Caching.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                         sourceSize: Qt.size(512, 512)
                         fillMode: Image.PreserveAspectFit
                         smooth: true

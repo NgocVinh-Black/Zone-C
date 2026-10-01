@@ -19,7 +19,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     property real contentWrapperWidth: 0
     property bool layoutAnimationsEnabled: true
 
@@ -36,7 +36,7 @@ Rectangle {
 
     radius: ThemeBackend.borderRadius
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: ZoneStyle.flatBar ? ZoneStyle.pillColor : (isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base))
     height: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
     clip: true
@@ -194,7 +194,7 @@ Rectangle {
                                         id: titleTextMain
                                         text: isMediaActive ? (player ? player.trackTitle : "") : I18n.t("music.nothing_playing")
                                         font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Black
+                                        font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Black
                                         font.pixelSize: barWindow ? barWindow.s(mediaWidgetRoot.isCompact ? 11 : 12) : (mediaWidgetRoot.isCompact ? 11 : 12)
                                         color: ThemeBackend.text
 
@@ -212,7 +212,7 @@ Rectangle {
                                         id: titleTextClone
                                         text: titleTextMain.text
                                         font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Black
+                                        font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Black
                                         font.pixelSize: barWindow ? barWindow.s(mediaWidgetRoot.isCompact ? 11 : 12) : (mediaWidgetRoot.isCompact ? 11 : 12)
                                         color: ThemeBackend.text
                                         visible: titleTextMain.implicitWidth > titleClipRect.width
@@ -244,7 +244,7 @@ Rectangle {
                         Text {
                             text: isMediaActive && player ? (mediaWidgetRoot.formatTime(MprisController.livePosition) + " / " + mediaWidgetRoot.formatTime(player.length)) : ""
                             font.family: ThemeBackend.fontFamily
-                            font.weight: Font.Black
+                            font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Black
                             font.pixelSize: barWindow ? barWindow.s(mediaWidgetRoot.isCompact ? 9 : 10) : (mediaWidgetRoot.isCompact ? 9 : 10)
                             color: mediaWidgetRoot.isCompact ? ThemeBackend.overlay2 : ThemeBackend.subtext0
                             width: parent.width

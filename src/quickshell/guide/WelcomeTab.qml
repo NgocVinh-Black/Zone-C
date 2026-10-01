@@ -147,7 +147,7 @@ Item {
                     anchors.centerIn: parent
                     width: rootObj.s(210)
                     height: rootObj.s(210)
-                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
+                    source: "file://" + rootObj.appPaths.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                     sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
                     smooth: true
@@ -256,7 +256,7 @@ Item {
                 anchors.centerIn: parent
                 width: rootObj.s(210)
                 height: rootObj.s(210)
-                source: "file://" + rootObj.appPaths.zoneCDir + "/assets/logo.png"
+                source: "file://" + rootObj.appPaths.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                 sourceSize: Qt.size(512, 512)
                 fillMode: Image.PreserveAspectFit
                 smooth: true

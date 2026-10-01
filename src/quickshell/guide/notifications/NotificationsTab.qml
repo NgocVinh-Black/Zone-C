@@ -391,7 +391,7 @@ Item {
                             iconOffsetX: -2
                             iconFontSize: rootObj.s(16)
                             accentColor: ThemeBackend.surface0
-                            textColor: "#ffffff"
+                            textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                         }
 
                         ColumnLayout {
@@ -563,7 +563,7 @@ Item {
                                         horizontalPadding: rootObj.s(6)
                                         textFontSize: rootObj.s(11)
                                         accentColor: ThemeBackend.surface1
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                         buttonText: "X: " + notificationsTabRoot.horizontalPosition + "%  Y: " + notificationsTabRoot.verticalPosition + "%"
                                     }
 
@@ -739,7 +739,7 @@ Item {
                         buttonIcon: "󰂛"
                         iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
-                        textColor: "#ffffff"
+                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                     }
 
                     ColumnLayout {
@@ -805,7 +805,7 @@ Item {
                         buttonIcon: "󰋑"
                         iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
-                        textColor: "#ffffff"
+                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                     }
 
                     ColumnLayout {
@@ -876,7 +876,7 @@ Item {
                             buttonIcon: "󰂚"
                             iconFontSize: rootObj.s(16)
                             accentColor: ThemeBackend.surface0
-                            textColor: "#ffffff"
+                            textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                         }
 
                         ColumnLayout {
@@ -950,7 +950,7 @@ Item {
                                     buttonIcon: "󰎆"
                                     iconFontSize: rootObj.s(16)
                                     accentColor: ThemeBackend.surface0
-                                    textColor: "#ffffff"
+                                    textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                 }
 
                                 ColumnLayout {

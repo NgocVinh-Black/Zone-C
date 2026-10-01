@@ -325,7 +325,7 @@ Item {
                                 buttonIcon: "󰮯"
                                 iconFontSize: rootObj.s(16)
                                 accentColor: ThemeBackend.surface0
-                                textColor: "#ffffff"
+                                textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                             }
 
                             ColumnLayout {
@@ -650,7 +650,7 @@ Item {
                                 buttonIcon: "󰃭"
                                 iconFontSize: rootObj.s(16)
                                 accentColor: ThemeBackend.surface0
-                                textColor: "#ffffff"
+                                textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                             }
 
                             ColumnLayout {
@@ -726,7 +726,7 @@ Item {
                                 buttonIcon: "󰅐"
                                 iconFontSize: rootObj.s(16)
                                 accentColor: ThemeBackend.surface0
-                                textColor: "#ffffff"
+                                textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                             }
 
                             ColumnLayout {

@@ -446,7 +446,8 @@ Item {
             anchors.right: root.isLeftAnchored ? undefined : parent.right
             width: sidebarPanel.radius + root.s(2)
             color: sidebarPanel.color
-            visible: sidebarPanel.radius > 0
+            // Frost: panel noi tach khoi mep man hinh -> bo du 4 goc
+            visible: sidebarPanel.radius > 0 && !ZoneStyle.flatBar
         }
 
         Item {
@@ -479,7 +480,7 @@ Item {
                             size: root.s(34)
                             cornerRadius: root.s(8)
                             imageRadius: root.s(8)
-                            source: SystemInfo.avatarPath !== "" ? "file://" + SystemInfo.avatarPath : ""
+                            source: ZoneStyle.avatarSource(SystemInfo.avatarPath)
                             backgroundColor: SystemInfo.avatarPath === "" ? ThemeBackend.surface1 : "transparent"
 
                             Text {
@@ -514,6 +515,22 @@ Item {
                         }
 
                         Item { Layout.fillWidth: true }
+
+                        // Nut nhanh doi Dark/Light (chi preset co ban sang, vd Zone Frost)
+                        ClickButton {
+                            visible: ZoneStyle.hasModes
+                            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+                            Layout.preferredWidth: root.s(34)
+                            Layout.preferredHeight: root.s(34)
+                            horizontalPadding: 0
+                            cornerRadius: root.s(12)
+                            buttonText: ""
+                            buttonIcon: ZoneStyle.isLight ? "󰖔" : "󰖨"
+                            iconFontSize: root.s(15)
+                            accentColor: ThemeBackend.surface2
+                            textColor: ThemeBackend.text
+                            onTriggered: ZoneStyle.setMode("toggle")
+                        }
 
                         ClickButton {
                             id: logoutBtn

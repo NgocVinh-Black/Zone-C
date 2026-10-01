@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     property string kbLayout: "us"
     property real targetX: 0
     property bool showLayout: false
@@ -85,10 +85,10 @@ Rectangle {
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
     radius: ThemeBackend.borderRadius
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: (isGrouped || ZoneStyle.flatBar) ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
     clip: true
 
-    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0
+    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (ZoneStyle.flatBar ? 0 : (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10)))) : 0
     width: targetWidth
 
     opacity: (showLayout && moduleActive) ? ((barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0) : 0.0
@@ -109,7 +109,7 @@ Rectangle {
     Row {
         id: sysLayout
         anchors.centerIn: parent
-        property int pillHeight: barWindow ? barWindow.s(kbWidgetRoot.isCompact ? 28 : 30) : (kbWidgetRoot.isCompact ? 28 : 30)
+        property int pillHeight: (ZoneStyle.flatBar && barWindow) ? kbWidgetRoot.height : (barWindow ? barWindow.s(kbWidgetRoot.isCompact ? 28 : 30) : (kbWidgetRoot.isCompact ? 28 : 30))
 
         ClickButton {
             id: kbPill
@@ -122,8 +122,8 @@ Rectangle {
             iconFontSize: barWindow ? barWindow.s(kbWidgetRoot.isCompact ? 14 : 15) : (kbWidgetRoot.isCompact ? 14 : 15)
             buttonText: kbLayout
             textFontSize: barWindow ? barWindow.s(kbWidgetRoot.isCompact ? 11 : 12) : (kbWidgetRoot.isCompact ? 11 : 12)
-            accentColor: kbWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
-            textColor: isHoveredOrHighlighted ? ThemeBackend.text : (kbWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
+            accentColor: ZoneStyle.flatBar ? ZoneStyle.pillColor : kbWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+            textColor: ZoneStyle.flatBar ? ThemeBackend.text : isHoveredOrHighlighted ? ThemeBackend.text : (kbWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
 
             property real targetWidth: Math.max(barWindow ? barWindow.s(kbWidgetRoot.isCompact ? 48 : 52) : (kbWidgetRoot.isCompact ? 48 : 52), implicitWidth)
             width: targetWidth

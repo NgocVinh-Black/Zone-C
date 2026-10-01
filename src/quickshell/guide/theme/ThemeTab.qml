@@ -508,7 +508,8 @@ Item {
         current.activePreset = modelData.name;
         current.matugen = isMatugen;
         if (!isMatugen) {
-            current.colors = modelData.colors;
+            // Preset co che do sang/toi (Zone Frost) -> lay bang mau theo theme.mode
+            current.colors = ZoneStyle.presetColors(modelData.name, modelData.colors);
         }
 
         Config.setSetting("theme", current);
@@ -1069,7 +1070,7 @@ Item {
                         buttonIcon: "󰸉"
                         iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
-                        textColor: "#ffffff"
+                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                     }
 
                     ColumnLayout {
@@ -1178,7 +1179,7 @@ Item {
                         buttonIcon: "󰛖"
                         iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
-                        textColor: "#ffffff"
+                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                     }
 
                     ColumnLayout {
@@ -1280,7 +1281,7 @@ Item {
                         buttonIcon: "󰞁"
                         iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
-                        textColor: "#ffffff"
+                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                     }
 
                     ColumnLayout {
@@ -1332,6 +1333,65 @@ Item {
                 }
             }
 
+            // Che do Dark / Light (chi hien khi preset co ban sang, vd Zone Frost)
+            Rectangle {
+                Layout.fillWidth: true
+                visible: ZoneStyle.hasModes
+                implicitHeight: rowModeLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
+
+                RowLayout {
+                    id: rowModeLayout
+                    anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
+                    anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: ZoneStyle.isLight ? "󰖨" : "󰖔"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: ThemeBackend.text
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                        spacing: rootObj.s(2)
+
+                        Text { Layout.fillWidth: true; text: "Appearance"; font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                        Text { Layout.fillWidth: true; text: "Dark or light mode — also switches Files, Chrome and the foot terminal"; font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0; wrapMode: Text.WordWrap }
+                    }
+
+                    Switch {
+                        id: modeSwitch
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(180)
+                        implicitHeight: rootObj.s(32)
+                        options: ["Dark", "Light"]
+                        // Giu dong bo ca khi doi che do tu cho khac (panel, phim tat)
+                        Binding on currentIndex { value: ZoneStyle.isLight ? 1 : 0 }
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.base
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: rootObj.s(11)
+                        onToggled: (index) => ZoneStyle.setMode(index === 1 ? "light" : "dark")
+                    }
+                }
+            }
+
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: themesSectionCol.implicitHeight + rootObj.s(24)
@@ -1359,7 +1419,7 @@ Item {
                             buttonIcon: "󰏘"
                             iconFontSize: rootObj.s(16)
                             accentColor: ThemeBackend.surface0
-                            textColor: "#ffffff"
+                            textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                         }
 
                         ColumnLayout {

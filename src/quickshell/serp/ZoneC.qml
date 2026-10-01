@@ -254,7 +254,7 @@ PanelWindow {
                         Image {
                             id: rawSvgImage
                             anchors.fill: parent
-                            source: "file://" + Caching.zoneCDir + "/assets/logo.png"
+                            source: "file://" + Caching.zoneCDir + "/assets/" + ZoneStyle.art("logo.png")
                             sourceSize: Qt.size(1024, 1024)
                             fillMode: Image.PreserveAspectFit
                             antialiasing: true

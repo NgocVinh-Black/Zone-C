@@ -1133,9 +1133,9 @@ Variants {
                             id: dockBg
                             anchors.fill: parent
                             radius: dockContainer.dynamicCornerRadius
-                            color: ThemeBackend.base
-                            border.width: (dockWindow.dockFloating || dockWindow.editMode || dockContainer.outerCornerProgress < 0.99) ? 1 : 0
-                            border.color: (dockWindow.dockFloating || dockWindow.editMode || dockContainer.outerCornerProgress < 0.99) ? Qt.alpha(ThemeBackend.surface1, 0.4 * (1.0 - dockContainer.outerCornerProgress * 0.5)) : "transparent"
+                            color: ZoneStyle.dockGlass ? ZoneStyle.dockGlassColor : ThemeBackend.base
+                            border.width: (ZoneStyle.dockGlass || dockWindow.dockFloating || dockWindow.editMode || dockContainer.outerCornerProgress < 0.99) ? 1 : 0
+                            border.color: ZoneStyle.dockGlass ? Qt.rgba(1, 1, 1, 0.35) : ((dockWindow.dockFloating || dockWindow.editMode || dockContainer.outerCornerProgress < 0.99) ? Qt.alpha(ThemeBackend.surface1, 0.4 * (1.0 - dockContainer.outerCornerProgress * 0.5)) : "transparent")
                             clip: true
 
                             Rectangle {
@@ -1517,7 +1517,7 @@ Variants {
                                         property int itemIndex: index
                                         property real popScale: 1.0
                                         property real flashOpacity: 0.0
-                                        property color btnColor: ThemeBackend.surface0
+                                        property color btnColor: ZoneStyle.dockGlass ? "transparent" : ThemeBackend.surface0
                                         property int cornerRadius: Math.round(dockWindow.s(dockWindow.dockElementSize) * 0.28)
                                         property bool isDropTarget: dockWindow.dropTargetIndex === index && dockWindow.dragSourceIndex !== index
                                         property bool isBeingDragged: btnMa.drag.active

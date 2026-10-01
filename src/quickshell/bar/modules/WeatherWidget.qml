@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     readonly property bool isBottomBar: barWindow ? (barWindow.barPosition === "bottom") : false
 
     property string weatherIcon: Weather.currentIcon
@@ -78,7 +78,7 @@ Rectangle {
         width: parent.width
         height: parent.height
         radius: ThemeBackend.borderRadius
-        color: weatherWidgetRoot.isGrouped ? "transparent" : (weatherWidgetRoot.isSolid ? (weatherWidgetRoot.distinctPills ? (weatherWidgetRoot.isHovered ? ThemeBackend.surface0 : Qt.darker(ThemeBackend.surface0, 1.15)) : "transparent") : (weatherWidgetRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base))
+        color: ZoneStyle.flatBar ? (weatherWidgetRoot.isHovered ? ZoneStyle.pillHover : ZoneStyle.pillColor) : weatherWidgetRoot.isGrouped ? "transparent" : (weatherWidgetRoot.isSolid ? (weatherWidgetRoot.distinctPills ? (weatherWidgetRoot.isHovered ? ThemeBackend.surface0 : Qt.darker(ThemeBackend.surface0, 1.15)) : "transparent") : (weatherWidgetRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base))
         border.width: 0
         visible: height > 0
 
@@ -146,8 +146,8 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: barWindow ? barWindow.s(weatherWidgetRoot.isCompact ? 14 : 15) : (weatherWidgetRoot.isCompact ? 14 : 15)
-                font.weight: Font.Black
-                color: weatherWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.peach, 1.1) : ThemeBackend.peach
+                font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Black
+                color: ZoneStyle.flatBar ? ThemeBackend.text : (weatherWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.peach, 1.1) : ThemeBackend.peach)
                 visible: !weatherWidgetRoot.isWeatherLoading
             }
         }

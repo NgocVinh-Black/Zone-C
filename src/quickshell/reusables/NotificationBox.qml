@@ -222,7 +222,7 @@ Item {
                         size: root.emptyGraphicSize
                         cornerRadius: root.s(0)
                         imageRadius: root.s(0)
-                        source: Caching.zoneCDir ? ("file://" + Caching.zoneCDir + "/assets/pushy.gif") : Qt.resolvedUrl("../../assets/pushy.gif")
+                        source: Caching.zoneCDir ? ("file://" + Caching.zoneCDir + "/assets/" + ZoneStyle.art("pushy.gif")) : Qt.resolvedUrl("../../assets/pushy.gif")
                         isGif: true
                         playing: true
                         fillMode: Image.PreserveAspectFit

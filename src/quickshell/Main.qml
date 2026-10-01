@@ -490,6 +490,20 @@ PanelWindow {
         let scale = masterWindow.globalUiScale || 1.0;
         let isFixed = (name === "guide" || name === "wallpaper" || name === "notifications" || name === "system" || name === "hidden");
 
+        // Zone Frost: panel cao full man hinh nam duoi bar (khong de len bar), cach mep nhu cac vien noi
+        if (ZoneStyle.flatBar && (name === "notifications" || name === "system") && bp === "top" && !effHidden) {
+            let gapEdge = Math.round(6 * scale);
+            let topOffset = Math.round(52 * scale);
+            return {
+                w: result.w,
+                h: result.h - topOffset - gapEdge,
+                rx: result.rx + (name === "system" ? -gapEdge : gapEdge),
+                ry: result.ry + topOffset,
+                comp: result.comp,
+                draggable: result.draggable
+            };
+        }
+
         if (effHidden && !isFixed) {
             let offsetAdjustment = Math.round(46 * scale);
             let adjusted = {

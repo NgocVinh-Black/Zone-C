@@ -143,7 +143,7 @@ Item {
     }
 
     property string layoutState: {
-        if (isFill) return "default";
+        if (isFill || ZoneStyle.flatBar) return "default"; // Frost: panel nam duoi bar, bar khong can co lai
         if (barWindow && barWindow.isNotifOpen) return "settings";
         if (barWindow && barWindow.isSysOpen) return "sys";
         return "default";
@@ -234,7 +234,7 @@ Item {
         return 0;
     }
 
-    property real gap: barWindow ? barWindow.s(2) : 2
+    property real gap: barWindow ? barWindow.s(ZoneStyle.flatBar ? 5 : 2) : 2
     property real groupGap: barWindow ? -barWindow.s(4) : -4
     property real gap8: barWindow ? barWindow.s(10) : 10
     property real groupPad: (!isSolid || distinctPills) ? (barWindow ? barWindow.s(4) : 4) : 0

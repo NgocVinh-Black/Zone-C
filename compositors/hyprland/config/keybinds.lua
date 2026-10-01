@@ -11,9 +11,9 @@ hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 -- Phim tat cu (tu repo arch-linux-setup), chuyen sang zone-c
 ------------------------------------------------------------------
 
--- Launcher: nhan nha SUPER. Tam tat Unikey de o search nhan duoc chu, dong launcher thi bat lai.
+-- Launcher: nhan nha SUPER.
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd("zone-c msg toggle launcher"), { release = true })
-hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/launcher-im-guard"), { release = true })
+-- Da bo launcher-im-guard: o search tu nhan phim truc tiep (directKeys) nen khong can tat/bat Unikey nua
 
 -- Media
 hl.bind("CTRL + SUPER + Space", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })

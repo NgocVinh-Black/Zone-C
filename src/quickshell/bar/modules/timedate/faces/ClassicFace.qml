@@ -22,8 +22,8 @@ Item {
             text: widget ? widget.timeStr : (typeof DateTime !== "undefined" ? DateTime.time : "12:00")
             font.family: ThemeBackend.fontFamily
             font.pixelSize: widget ? widget.s(widget.isCompact ? 14 : 15) : 15
-            font.weight: Font.Black
-            color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.blue, 1.1) : ThemeBackend.blue
+            font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Black
+            color: ZoneStyle.flatBar ? ThemeBackend.text : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.blue, 1.1) : ThemeBackend.blue)
         }
 
         Text {
@@ -33,7 +33,7 @@ Item {
             text: widget ? widget.dateStr : (typeof DateTime !== "undefined" ? DateTime.fullDate : "Mon, Jan 1")
             font.family: ThemeBackend.fontFamily
             font.pixelSize: widget ? widget.s(widget.isCompact ? 9 : 10) : 10
-            font.weight: Font.Bold
+            font.weight: ZoneStyle.flatBar ? Font.Normal : Font.Bold
             color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.subtext0, 1.08) : ThemeBackend.subtext0
         }
     }

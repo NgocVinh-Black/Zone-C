@@ -541,7 +541,7 @@ Item {
                                         iconOffsetX: root.tabsModel[0].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -610,7 +610,7 @@ Item {
                                         iconOffsetX: root.tabsModel[1].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -691,7 +691,7 @@ Item {
                                             iconFontSize: root.s(16)
                                             iconOffsetX: root.tabsModel[2].iconOffsetX ?? 0
                                             accentColor: ThemeBackend.surface0
-                                            textColor: "#ffffff"
+                                            textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                         }
 
                                         Text {
@@ -811,7 +811,7 @@ Item {
                                                         iconOffsetX: root.tabsModel[2].subtabs[0].iconOffsetX ?? 0
                                                         iconFontSize: root.s(13)
                                                         accentColor: ThemeBackend.surface0
-                                                        textColor: "#ffffff"
+                                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                                     }
 
                                                     Text {
@@ -875,7 +875,7 @@ Item {
                                                         iconOffsetX: root.tabsModel[2].subtabs[1].iconOffsetX ?? 0
                                                         iconFontSize: root.s(13)
                                                         accentColor: ThemeBackend.surface0
-                                                        textColor: "#ffffff"
+                                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                                     }
 
                                                     Text {
@@ -946,7 +946,7 @@ Item {
                                         iconOffsetX: root.tabsModel[3].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1027,7 +1027,7 @@ Item {
                                             iconOffsetX: root.tabsModel[4].iconOffsetX ?? 0
                                             iconFontSize: root.s(16)
                                             accentColor: ThemeBackend.surface0
-                                            textColor: "#ffffff"
+                                            textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                         }
 
                                         Text {
@@ -1147,7 +1147,7 @@ Item {
                                                         iconOffsetX: root.tabsModel[4].subtabs[0].iconOffsetX ?? 0
                                                         iconFontSize: root.s(13)
                                                         accentColor: ThemeBackend.surface0
-                                                        textColor: "#ffffff"
+                                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                                     }
 
                                                     Text {
@@ -1211,7 +1211,7 @@ Item {
                                                         iconOffsetX: root.tabsModel[4].subtabs[1].iconOffsetX ?? 0
                                                         iconFontSize: root.s(13)
                                                         accentColor: ThemeBackend.surface0
-                                                        textColor: "#ffffff"
+                                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                                     }
 
                                                     Text {
@@ -1282,7 +1282,7 @@ Item {
                                         iconOffsetX: root.tabsModel[5].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1351,7 +1351,7 @@ Item {
                                         iconOffsetX: root.tabsModel[6].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1420,7 +1420,7 @@ Item {
                                         iconOffsetX: root.tabsModel[7].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1489,7 +1489,7 @@ Item {
                                         iconOffsetX: root.tabsModel[8].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1558,7 +1558,7 @@ Item {
                                         iconOffsetX: root.tabsModel[9].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1627,7 +1627,7 @@ Item {
                                         iconOffsetX: root.tabsModel[10].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {
@@ -1696,7 +1696,7 @@ Item {
                                         iconOffsetX: root.tabsModel[11].iconOffsetX ?? 0
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
-                                        textColor: "#ffffff"
+                                        textColor: ZoneStyle.isLight ? ThemeBackend.text : "#ffffff"
                                     }
 
                                     Text {

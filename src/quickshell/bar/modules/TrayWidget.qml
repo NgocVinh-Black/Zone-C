@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     property bool suppressAnimation: false
 
     property real targetX: 0
@@ -96,7 +96,7 @@ Rectangle {
         anchors.fill: parent
         radius: ThemeBackend.borderRadius
         border.width: 0
-        color: trayWidgetRoot.isGrouped ? "transparent" : (trayWidgetRoot.isSolid ? (trayWidgetRoot.distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+        color: ZoneStyle.flatBar ? ZoneStyle.pillColor : trayWidgetRoot.isGrouped ? "transparent" : (trayWidgetRoot.isSolid ? (trayWidgetRoot.distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
         visible: width > 0
     }
 

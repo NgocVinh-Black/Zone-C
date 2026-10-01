@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     readonly property bool isBottomBar: barWindow ? (barWindow.barPosition === "bottom") : false
 
     property int configRevision: 0
@@ -126,7 +126,7 @@ Rectangle {
         width: parent.width
         height: parent.height
         radius: ThemeBackend.borderRadius
-        color: timeDateRoot.isGrouped ? "transparent" : (timeDateRoot.isSolid ? (timeDateRoot.distinctPills ? (timeDateRoot.isHovered ? ThemeBackend.surface0 : Qt.darker(ThemeBackend.surface0, 1.15)) : "transparent") : (timeDateRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base))
+        color: ZoneStyle.flatBar ? (timeDateRoot.isHovered ? ZoneStyle.pillHover : ZoneStyle.pillColor) : timeDateRoot.isGrouped ? "transparent" : (timeDateRoot.isSolid ? (timeDateRoot.distinctPills ? (timeDateRoot.isHovered ? ThemeBackend.surface0 : Qt.darker(ThemeBackend.surface0, 1.15)) : "transparent") : (timeDateRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base))
         border.width: 0
         visible: height > 0
 

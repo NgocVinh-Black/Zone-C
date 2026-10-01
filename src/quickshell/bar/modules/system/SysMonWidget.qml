@@ -16,7 +16,7 @@ Rectangle {
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
-    property bool isCompact: isGrouped || (isSolid && distinctPills)
+    property bool isCompact: isGrouped || (isSolid && distinctPills) || ZoneStyle.flatBar
     property real targetX: 0
     property bool showLayout: false
 
@@ -44,11 +44,11 @@ Rectangle {
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
     radius: ThemeBackend.borderRadius
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: (isGrouped || ZoneStyle.flatBar) ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
     clip: true
     layer.enabled: true
 
-    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0
+    property real targetWidth: (moduleActive && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (ZoneStyle.flatBar ? 0 : (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10)))) : 0
     width: targetWidth
 
     opacity: (showLayout && moduleActive) ? ((barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0) : 0.0
@@ -94,8 +94,8 @@ Rectangle {
         height: sysLayout.pillHeight
         width: sysLayout.pillWidth
         radius: Math.min(Math.max(0, ThemeBackend.borderRadius - (barWindow ? barWindow.s(2) : 2)), height / 2)
-        color: sysMonWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
-        border.color: sysMonWidgetRoot.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1
+        color: ZoneStyle.flatBar ? ZoneStyle.pillColor : (sysMonWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+        border.color: ZoneStyle.flatBar ? ZoneStyle.pillBorder : (sysMonWidgetRoot.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1)
         border.width: 1
         clip: true
 
@@ -122,6 +122,15 @@ Rectangle {
                 var ctx = getContext("2d");
                 ctx.clearRect(0, 0, width, height);
                 if (pillRoot.fillRatio <= 0) return;
+
+                // Bar phang: chi mot vach tien do mong o day vien
+                if (ZoneStyle.flatBar) {
+                    var inset = pillRoot.radius;
+                    var bh = Math.max(2, height * 0.07);
+                    ctx.fillStyle = pillRoot.accentColor.toString();
+                    ctx.fillRect(inset, height - bh - 2, (width - 2 * inset) * pillRoot.fillRatio, bh);
+                    return;
+                }
 
                 ctx.save();
                 var r = pillRoot.radius;
@@ -185,7 +194,7 @@ Rectangle {
                 text: icon
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 13.5 : 14.5) : (sysMonWidgetRoot.isCompact ? 13.5 : 14.5)
-                color: sysMonWidgetRoot.isCompact ? ThemeBackend.text : ThemeBackend.subtext0
+                color: (ZoneStyle.flatBar || sysMonWidgetRoot.isCompact) ? ThemeBackend.text : ThemeBackend.subtext0
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -193,7 +202,8 @@ Rectangle {
                 text: textVal
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 12 : 13) : (sysMonWidgetRoot.isCompact ? 12 : 13)
-                font.bold: true
+                font.bold: !ZoneStyle.flatBar
+                    font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Bold
                 color: ThemeBackend.text
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -206,7 +216,7 @@ Rectangle {
             anchors.right: parent.right
             height: Math.min(parent.height, Math.max(0, (parent.height * pillRoot.fillRatio) - pillRoot.waveCenterOffset))
             clip: true
-            visible: pillRoot.fillRatio > 0
+            visible: pillRoot.fillRatio > 0 && !ZoneStyle.flatBar
 
             Item {
                 anchors.bottom: parent.bottom
@@ -230,7 +240,8 @@ Rectangle {
                         text: textVal
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 12 : 13) : (sysMonWidgetRoot.isCompact ? 12 : 13)
-                        font.bold: true
+                        font.bold: !ZoneStyle.flatBar
+                    font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Bold
                         color: ThemeBackend.crust
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -243,7 +254,7 @@ Rectangle {
         id: sysLayout
         anchors.centerIn: parent
         spacing: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 5 : 6) : (sysMonWidgetRoot.isCompact ? 5 : 6)
-        property int pillHeight: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 28 : 30) : (sysMonWidgetRoot.isCompact ? 28 : 30)
+        property int pillHeight: (ZoneStyle.flatBar && barWindow) ? sysMonWidgetRoot.height : (barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 28 : 30) : (sysMonWidgetRoot.isCompact ? 28 : 30))
         property int pillWidth: barWindow ? barWindow.s(sysMonWidgetRoot.isCompact ? 48 : 52) : (sysMonWidgetRoot.isCompact ? 48 : 52)
 
         SysMonPill {

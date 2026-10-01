@@ -100,7 +100,7 @@ Item {
                     visible: root.buttonText !== ""
                     text: root.buttonText
                     font.family: ThemeBackend.fontFamily
-                    font.weight: Font.Bold
+                    font.weight: ZoneStyle.flatBar ? Font.Medium : Font.Bold
                     font.pixelSize: root.textFontSize
                     color: root.textColor
                     elide: Text.ElideRight
