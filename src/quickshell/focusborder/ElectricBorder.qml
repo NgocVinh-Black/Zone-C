@@ -104,9 +104,26 @@ Scope {
             WlrLayershell.namespace: "qs-electric-border"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
             exclusionMode: ExclusionMode.Ignore
-            anchors { top: true; bottom: true; left: true; right: true }
             color: "transparent"
             mask: Region {}
+
+            // Lop chi to vua cua so + phan vien/quang sang (khong phu toan man hinh -> do ton bo nho do hoa);
+            // khong co cua so thi an han.
+            readonly property real pad: ZoneStyle.plainBorder ? root.outset + 4 : root.outset + root.glowMargin
+            readonly property rect area: {
+                let l = overlay.local;
+                if (!l) return Qt.rect(0, 0, 0, 0);
+                let x0 = Math.max(0, Math.floor(l.x - pad));
+                let y0 = Math.max(0, Math.floor(l.y - pad));
+                let x1 = Math.min(modelData.width, Math.ceil(l.x + l.w + pad));
+                let y1 = Math.min(modelData.height, Math.ceil(l.y + l.h + pad));
+                return Qt.rect(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0));
+            }
+            visible: overlay.local !== null
+            anchors { top: true; left: true }
+            margins { top: area.y; left: area.x }
+            implicitWidth: area.width
+            implicitHeight: area.height
 
             // Cua so dang chon co nam tren man hinh nay khong
             readonly property var local: {
@@ -117,6 +134,13 @@ Scope {
                 if (cx < sx || cy < sy || cx > sx + modelData.width || cy > sy + modelData.height) return null;
                 return { x: w.x - sx, y: w.y - sy, w: w.w, h: w.h };
             }
+
+            // Ve theo toa do man hinh, dich ve goc cua lop
+            Item {
+            x: -overlay.area.x
+            y: -overlay.area.y
+            width: overlay.modelData.width
+            height: overlay.modelData.height
 
             // Preset co plainBorder (Zone Frost): chi la mot duong vien manh dung yen
             Rectangle {
@@ -159,6 +183,7 @@ Scope {
                     running: bolt.visible && ZoneStyle.animated
                     onTriggered: bolt.time += frameTime
                 }
+            }
             }
         }
     }

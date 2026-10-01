@@ -315,7 +315,11 @@ PanelWindow {
 
     property var widgetCache: ({})
     property var componentCache: ({})
-    property var _allWidgetNames: ["battery", "network", "volume", "guide", "calendar", "wallpaper", "music", "movies", "notifications", "system"]
+    // Nap san cac bang nhe, hay dung -> mo ra tuc thi.
+    // Bang nang, it dung (trang cai dat, bo chon hinh nen) chi nap khi mo va duoc giai phong
+    // sau khi dong mot luc (_lazyWidgets) de quickshell khong giu chung trong RAM.
+    property var _allWidgetNames: ["battery", "network", "volume", "calendar", "music", "notifications", "system"]
+    property var _lazyWidgets: ["guide", "wallpaper"]
     property int _preloadIndex: 0
 
     function widgetNameForItem(item) {
@@ -386,6 +390,31 @@ PanelWindow {
 
     onCurrentActiveChanged: {
         reportWidgetState();
+        lazyEvictTimer.restart();
+    }
+
+    Timer {
+        id: lazyEvictTimer
+        interval: 30000
+        onTriggered: masterWindow.evictLazyWidgets()
+    }
+
+    function evictLazyWidgets() {
+        let freed = false;
+        for (let i = 0; i < _lazyWidgets.length; i++) {
+            let name = _lazyWidgets[i];
+            let item = widgetCache[name];
+            if (!item || name === currentActive) continue;
+            if (widgetStack.currentItem === item) {
+                if (currentActive !== "hidden") continue;
+                widgetStack.clear(StackView.Immediate);
+            }
+            delete widgetCache[name];
+            item.destroy();
+            freed = true;
+        }
+        // Don rac JS ngay de bo nho cua bang vua huy duoc dung lai, khong cong don
+        if (freed) Qt.callLater(gc);
     }
 
     onScreenChanged: {
