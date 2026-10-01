@@ -22,6 +22,8 @@ grep -q 'namespace: qs-applauncher' <<<"$layers"  && zone-c msg toggle launcher 
 grep -q 'namespace: qs-clipboard' <<<"$layers"    && zone-c msg toggle clipboard >/dev/null 2>&1
 grep -q 'namespace: qs-keybinds' <<<"$layers"     && zone-c ipc call keybinds close >/dev/null 2>&1
 grep -q 'namespace: qs-closeconfirm' <<<"$layers" && zone-c ipc call closeconfirm cancel >/dev/null 2>&1
+# Thanh Quick actions (lop Overlay, luon co mat) -> dong neu dang mo
+zone-c ipc call floating hide >/dev/null 2>&1
 
 sleep 0.15
 hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null

@@ -98,7 +98,9 @@ Scope {
             required property var modelData
             screen: modelData
 
-            WlrLayershell.layer: WlrLayer.Overlay
+            // Lop Top: tren cac cua so nhung luon duoi popup/panel cua shell (lop Overlay),
+            // khong de len bang Quick actions, launcher, panel he thong...
+            WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.namespace: "qs-electric-border"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
             exclusionMode: ExclusionMode.Ignore

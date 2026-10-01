@@ -9,6 +9,7 @@ Item {
 
     signal setIndexRequested(var screen, string index)
     signal showSystemUsageRequested(var screen)
+    signal hideRequested()
 
     function targetScreen(screen) {
         if (screen) return screen;
@@ -35,6 +36,11 @@ Item {
 
         function showSystemUsage() {
             controller.showSystemUsage(null);
+        }
+
+        // Dong thanh Quick actions (vd truoc khi chup Flameshot de no nhan duoc ban phim/chuot)
+        function hide() {
+            controller.hideRequested();
         }
 
         function forceReload() {

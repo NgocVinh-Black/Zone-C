@@ -258,6 +258,13 @@ Variants {
                         floatingWidget.showSystemUsage();
                     }
                 }
+
+                function onHideRequested() {
+                    hideTimer.stop();
+                    floatingWidget.isExpanded = false;
+                    floatingWidget.isSidebarVisible = false;
+                    floatingWidget.useGraceTimer = false;
+                }
             }
 
             function matchesScreen(targetScreen) {
