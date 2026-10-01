@@ -11,37 +11,51 @@ Rectangle {
     height: Screen.height
     color: c.crust
 
+    // Bang mau + hinh nen theo theme dang dung cua Zone-C.
+    // Shell ghi current/theme.conf (thu muc current/ thuoc user) moi khi doi theme/hinh nen;
+    // chua co file thi dung mau Zone Thunder mac dinh ben duoi.
+    // SDDM doc current/theme.conf (ConfigFile trong metadata.desktop) vao doi tuong "config"
+    property var live: (typeof config !== "undefined" && config) ? config : ({})
+    function pick(key, fallback) {
+        let v = root.live[key];
+        return (v !== undefined && v !== null && String(v) !== "") ? String(v) : fallback;
+    }
+
     QtObject {
         id: c
-        readonly property color crust: "#030817"
-        readonly property color mantle: "#06102a"
-        readonly property color base: "#0a1633"
-        readonly property color surface0: "#112552"
-        readonly property color surface1: "#183368"
-        readonly property color surface2: "#22448a"
-        readonly property color subtext0: "#8199cc"
-        readonly property color subtext1: "#b7c9ee"
-        readonly property color text: "#e6efff"
-        readonly property color blue: "#3d9bff"
-        readonly property color sapphire: "#5cc0ff"
-        readonly property color teal: "#62e3ff"
-        readonly property color mauve: "#86b4ff"
-        readonly property color red: "#ff5a74"
-        readonly property color glass: Qt.rgba(0.039, 0.086, 0.2, 0.72)   // base @ 72%
-        readonly property color edge: "#2b4f94"
-        readonly property color glow: Qt.rgba(0.24, 0.61, 1.0, 0.55)      // blue @ 55%
+        readonly property color crust: root.pick("crust", "#030817")
+        readonly property color mantle: root.pick("mantle", "#06102a")
+        readonly property color base: root.pick("base", "#0a1633")
+        readonly property color surface0: root.pick("surface0", "#112552")
+        readonly property color surface1: root.pick("surface1", "#183368")
+        readonly property color surface2: root.pick("surface2", "#22448a")
+        readonly property color subtext0: root.pick("subtext0", "#8199cc")
+        readonly property color subtext1: root.pick("subtext1", "#b7c9ee")
+        readonly property color text: root.pick("text", "#e6efff")
+        readonly property color blue: root.pick("blue", "#3d9bff")
+        readonly property color sapphire: root.pick("sapphire", "#5cc0ff")
+        readonly property color teal: root.pick("teal", "#62e3ff")
+        readonly property color mauve: root.pick("mauve", "#86b4ff")
+        readonly property color red: root.pick("red", "#ff5a74")
+        readonly property color glass: Qt.rgba(base.r, base.g, base.b, 0.72)   // base @ 72%
+        readonly property color edge: root.pick("edge", "#2b4f94")
+        readonly property color glow: Qt.rgba(blue.r, blue.g, blue.b, 0.55)    // blue @ 55%
     }
 
     // ---------- background: still frame under a looping video ----------
     Image {
         anchors.fill: parent
-        source: "bg.png"
+        source: root.pick("background", "") !== "" ? Qt.resolvedUrl("current/" + root.pick("background", "")) : "bg.png"
         fillMode: Image.PreserveAspectCrop
     }
 
     Video {
         anchors.fill: parent
-        source: Qt.resolvedUrl("bg.mp4")
+        // Theme co hinh nen video (Thunder) -> phat video; hinh nen anh (Crystal, Frost) -> khong co video
+        visible: source != ""
+        source: root.pick("background", "") !== ""
+            ? (root.pick("video", "") !== "" ? Qt.resolvedUrl("current/" + root.pick("video", "")) : "")
+            : Qt.resolvedUrl("bg.mp4")
         fillMode: VideoOutput.PreserveAspectCrop
         loops: MediaPlayer.Infinite
         muted: true

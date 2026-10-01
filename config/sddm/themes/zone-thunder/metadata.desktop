@@ -1,10 +1,10 @@
 [SddmGreeterTheme]
 Name=Zone Thunder
-Description=Zone-C electric blue login theme, based on Material-you by Darkkal44
+Description=Zone-C login theme: follows the active Zone-C theme (colors + wallpaper), defaults to electric blue. Based on Material-you by Darkkal44
 Author=zone-c
 License=MIT
 Type=sddm-theme
 Version=1.0
 MainScript=Main.qml
-ConfigFile=theme.conf
+ConfigFile=current/theme.conf
 QtVersion=6

@@ -185,6 +185,9 @@ setup_sddm() {
         sudo mkdir -p "$sddm_theme_dest"
         sudo cp -r "$sddm_theme_src/." "$sddm_theme_dest/"
         sudo chmod -R 755 "$sddm_theme_dest"
+        # Thu muc current/ thuoc user: shell ghi bang mau + hinh nen cua theme dang dung vao day
+        # (scripts/sddm_sync.sh) de man dang nhap doi theo theme. Code QML van thuoc root.
+        sudo install -d -o "$USER" -g "$(id -gn)" -m 755 "$sddm_theme_dest/current"
         if [ -d "$sddm_theme_src/font" ]; then
             sudo mkdir -p /usr/share/fonts/TTF
             sudo cp -r "$sddm_theme_src/font/"*.ttf /usr/share/fonts/TTF/ 2>/dev/null || true

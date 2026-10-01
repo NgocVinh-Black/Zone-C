@@ -186,6 +186,27 @@ Item {
             "pkill -" + sig + " -x foot; true"]);
     }
 
+    // Man dang nhap SDDM + mau terminal theo theme dang dung (scripts/sddm_sync.sh, scripts/term_sync.sh).
+    // Goi khi doi preset, doi che do sang/toi, doi hinh nen va luc khoi dong; gop cac lan goi sat nhau.
+    function syncSddm() { sddmSyncTimer.restart(); }
+    Timer {
+        id: sddmSyncTimer
+        interval: 2000
+        onTriggered: {
+            if (!Caching.zoneCDir) return;
+            Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/sddm_sync.sh", Wallpaper.getWallpaperPath("")]);
+            Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/term_sync.sh"]);
+        }
+    }
+    Connections {
+        target: Wallpaper
+        function onWallpaperChanged(screenName, path, transition) { root.syncSddm(); }
+    }
+    Connections {
+        target: ThemeBackend
+        function onBaseChanged() { root.syncSddm(); }
+    }
+
     IpcHandler {
         target: "zonetheme"
         function mode(m: string): void { root.setMode(m); }
@@ -211,5 +232,8 @@ Item {
         if (hasModes || (t && t.mode === "light")) syncExternal(mode);
     }
 
-    Component.onCompleted: _ready = preset !== ""
+    Component.onCompleted: {
+        _ready = preset !== "";
+        syncSddm();
+    }
 }

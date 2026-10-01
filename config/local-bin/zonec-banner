@@ -3,7 +3,7 @@
 
 cols=$(tput cols 2>/dev/null || echo 80)
 
-# Tong xanh dien cua logo: sang (loi set) -> xanh dam
+# Mac dinh: tong xanh dien cua logo, sang (loi set) -> xanh dam
 colors=(
     "205;245;255"
     "140;225;255"
@@ -12,6 +12,13 @@ colors=(
     "15;115;255"
     "10;75;215"
 )
+
+# Theo theme dang dung cua Zone-C (scripts/term_sync.sh ghi file nay khi doi theme)
+theme_file="${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"
+if [[ -f "$theme_file" ]]; then
+    source "$theme_file"
+    (( ${#ZONEC_BANNER_COLORS[@]} )) && colors=("${ZONEC_BANNER_COLORS[@]}")
+fi
 
 if (( cols >= 66 )); then
     lines=(
