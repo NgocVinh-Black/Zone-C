@@ -134,7 +134,10 @@ Item {
             window.fetchIpData();
             window.fetchFreqData();
             if (window.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
+            if (BtAgent.active) window.gotoTab("bt");
         } else {
+            // Dong panel giua chung coi nhu tu choi ghep doi
+            if (BtAgent.active) BtAgent.respond(false);
             window.stopBtScan();
             window.stopWifiScan();
             btProfilePoller.running = false;
@@ -224,6 +227,7 @@ Item {
                     function onStateChanged() { window.requestBtRebuild(); }
                     function onPairedChanged() {
                         window.requestBtRebuild();
+                        if (device && device.paired) BtAgent.clearFor(device.address);
                         if (device && device.paired && window.pendingPairThenConnect === device.address) {
                             window.pendingPairThenConnect = "";
                             let mac = device.address;
@@ -461,8 +465,23 @@ Item {
         }
     }
 
+    Connections {
+        target: BtAgent
+        function onRequestStarted() { window.gotoTab("bt"); }
+    }
+
+    Keys.onReturnPressed: (event) => {
+        if (BtAgent.active && !BtAgent.needsInput && BtAgent.request.type !== "display") {
+            BtAgent.respond(true);
+            event.accepted = true;
+        }
+    }
+
     Keys.onEscapePressed: (event) => {
-        if (window.pendingWifiId !== "") {
+        if (BtAgent.active) {
+            BtAgent.respond(false);
+            event.accepted = true;
+        } else if (window.pendingWifiId !== "") {
             window.pendingWifiId = "";
             window.pendingWifiSsid = "";
             event.accepted = true;
@@ -531,6 +550,7 @@ Item {
         onFileChanged: reload()
         onLoaded: {
             let mode = text().trim();
+            if (BtAgent.active) return;
             if ((mode === "wifi" || mode === "bt" || mode === "eth") && window.activeMode !== mode) {
                 if ((mode === "eth" && window.ethPresent) ||
                     (mode === "wifi" && window.wifiPresent) ||
@@ -1694,9 +1714,11 @@ Item {
                         property string myId: myDevice ? (window.activeMode === "wifi" ? (myDevice.ssid || "") : (window.activeMode === "eth" ? (myDevice.id || "") : (myDevice.mac || ""))) : "unknown"
                         property bool isMyDisconnecting: !!window.disconnectingDevices[myId]
 
-                        property bool showScanning: isPrimary && window.currentPower && !window.currentConn && window.pendingWifiId === "" && window.activeMode !== "eth"
-                        property bool showConnected: window.currentConn && hasDevice && window.pendingWifiId === ""
+                        property bool showBtAuth: isPrimary && BtAgent.active && window.activeMode === "bt"
+                        property bool showScanning: isPrimary && window.currentPower && !window.currentConn && window.pendingWifiId === "" && window.activeMode !== "eth" && !showBtAuth
+                        property bool showConnected: window.currentConn && hasDevice && window.pendingWifiId === "" && !showBtAuth
                         property bool showPassword: isPrimary && window.pendingWifiId !== "" && window.activeMode === "wifi"
+                        property bool showPrompt: showPassword || showBtAuth
                         property bool showEthDisconnected: isPrimary && window.currentPower && !window.currentConn && window.activeMode === "eth"
 
                         MultiEffect {
@@ -1736,8 +1758,8 @@ Item {
                                     color: {
                                         if (!window.currentPower) return ThemeBackend.mantle;
                                         if (isMyDisconnecting) return ThemeBackend.surface0;
-                                        if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.15), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
-                                        return window.currentConn || showPassword ? Qt.lighter(window.activeColor, 1.15) : ThemeBackend.surface0;
+                                        if (centralCore.isDangerState && window.currentConn && !showPrompt) return Qt.tint(Qt.lighter(window.activeColor, 1.15), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
+                                        return window.currentConn || showPrompt ? Qt.lighter(window.activeColor, 1.15) : ThemeBackend.surface0;
                                     }
                                     Behavior on color { enabled: window.visible; ColorAnimation { duration: 300 } }
                                 }
@@ -1746,8 +1768,8 @@ Item {
                                     color: {
                                         if (!window.currentPower) return ThemeBackend.crust;
                                         if (isMyDisconnecting) return ThemeBackend.base;
-                                        if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(window.activeColor, Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
-                                        return window.currentConn || showPassword ? window.activeColor : ThemeBackend.base;
+                                        if (centralCore.isDangerState && window.currentConn && !showPrompt) return Qt.tint(window.activeColor, Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
+                                        return window.currentConn || showPrompt ? window.activeColor : ThemeBackend.base;
                                     }
                                     Behavior on color { enabled: window.visible; ColorAnimation { duration: 300 } }
                                 }
@@ -1756,8 +1778,8 @@ Item {
                             border.color: {
                                 if (!window.currentPower) return ThemeBackend.crust;
                                 if (isMyDisconnecting) return ThemeBackend.surface0;
-                                if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.1), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.45));
-                                return window.currentConn || showPassword ? Qt.lighter(window.activeColor, 1.1) : ThemeBackend.surface1;
+                                if (centralCore.isDangerState && window.currentConn && !showPrompt) return Qt.tint(Qt.lighter(window.activeColor, 1.1), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.45));
+                                return window.currentConn || showPrompt ? Qt.lighter(window.activeColor, 1.1) : ThemeBackend.surface1;
                             }
                             border.width: window.s(2)
                             Behavior on border.color { enabled: window.visible; ColorAnimation { duration: 300 } }
@@ -1832,14 +1854,14 @@ Item {
                                 width: parent.width + window.s(30)
                                 height: width
                                 radius: width / 2
-                                color: centralCore.isDangerState && window.currentConn && !showPassword ? ThemeBackend.red : window.activeColor
-                                opacity: (window.currentConn || showPassword) && !isMyDisconnecting ? (centralCore.isDangerState && !showPassword ? 0.45 : 0.15) : 0.0
+                                color: centralCore.isDangerState && window.currentConn && !showPrompt ? ThemeBackend.red : window.activeColor
+                                opacity: (window.currentConn || showPrompt) && !isMyDisconnecting ? (centralCore.isDangerState && !showPrompt ? 0.45 : 0.15) : 0.0
                                 z: -1
                                 Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
                                 Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 300 } }
 
                                 SequentialAnimation on scale {
-                                    loops: Animation.Infinite; running: window.visible && (window.currentConn || showPassword)
+                                    loops: Animation.Infinite; running: window.visible && (window.currentConn || showPrompt)
                                     NumberAnimation { to: 1.1; duration: 2000; easing.type: Easing.InOutSine }
                                     NumberAnimation { to: 1.0; duration: 2000; easing.type: Easing.InOutSine }
                                 }
@@ -1851,13 +1873,13 @@ Item {
                                 height: width
                                 radius: width / 2
                                 color: "transparent"
-                                border.color: centralCore.isDangerState && !showPassword ? ThemeBackend.red : window.activeColor
+                                border.color: centralCore.isDangerState && !showPrompt ? ThemeBackend.red : window.activeColor
                                 border.width: window.s(2)
                                 z: -2
 
                                 property real pulseOp: 0.0
                                 property real pulseSc: 1.0
-                                opacity: ((window.currentConn || showPassword) && window.showInfoView && window.currentPower && !isMyDisconnecting) ? pulseOp : 0.0
+                                opacity: ((window.currentConn || showPrompt) && window.showInfoView && window.currentPower && !isMyDisconnecting) ? pulseOp : 0.0
                                 scale: pulseSc
 
                                 Timer {
@@ -2070,30 +2092,153 @@ Item {
                                 anchors.fill: parent
                                 enabled: window.visible
                                 hoverEnabled: window.visible
-                                cursorShape: window.currentConn && !isMyDisconnecting && !showPassword ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                cursorShape: window.currentConn && !isMyDisconnecting && !showPrompt ? Qt.PointingHandCursor : Qt.ArrowCursor
 
                                 onEntered: {
-                                    if (window.currentConn && !showPassword) {
+                                    if (window.currentConn && !showPrompt) {
                                         window.disconnectHoverCount++;
                                     }
                                 }
                                 onExited: {
-                                    if (window.currentConn && !showPassword) {
+                                    if (window.currentConn && !showPrompt) {
                                         window.disconnectHoverCount = Math.max(0, window.disconnectHoverCount - 1);
                                     }
                                 }
 
                                 onPressed: {
-                                    if (window.currentConn && !isMyDisconnecting && !centralCore.disconnectTriggered && !showPassword) {
+                                    if (window.currentConn && !isMyDisconnecting && !centralCore.disconnectTriggered && !showPrompt) {
                                         coreDrainAnim.stop();
                                         coreFillAnim.start();
                                     }
                                 }
                                 onReleased: {
-                                    if (!centralCore.disconnectTriggered && !isMyDisconnecting && !showPassword) {
+                                    if (!centralCore.disconnectTriggered && !isMyDisconnecting && !showPrompt) {
                                         coreFillAnim.stop();
                                         coreDrainAnim.start();
                                     }
+                                }
+                            }
+
+                            // Xac nhan ghep doi Bluetooth (dat sau coreMa de nhan duoc click)
+                            Item {
+                                id: btAuthLayer
+                                anchors.fill: parent
+                                opacity: showBtAuth ? 1.0 : 0.0
+                                visible: opacity > 0.01
+                                scale: showBtAuth ? 1.0 : 0.8
+                                Behavior on scale { enabled: window.visible; NumberAnimation { duration: 400; easing.type: Easing.OutBack; easing.overshoot: 1.5 } }
+                                Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 300; easing.type: Easing.OutSine } }
+
+                                property var req: BtAgent.request
+                                property string reqType: req ? req.type : ""
+                                property bool hasCode: reqType === "confirm" || reqType === "display"
+
+                                function accept() {
+                                    if (BtAgent.needsInput && btPinField.text.trim() === "") return;
+                                    BtAgent.respond(true, btPinField.text.trim());
+                                    btPinField.text = "";
+                                    window.forceActiveFocus();
+                                }
+                                function reject() {
+                                    BtAgent.respond(false);
+                                    btPinField.text = "";
+                                    window.forceActiveFocus();
+                                }
+
+                                MouseArea { anchors.fill: parent; enabled: showBtAuth }
+
+                                ColumnLayout {
+                                    anchors.centerIn: parent
+                                    spacing: window.s(4)
+
+                                    Text {
+                                        Layout.alignment: Qt.AlignHCenter; Layout.maximumWidth: btAuthLayer.width - window.s(36)
+                                        font.family: ThemeBackend.fontFamily; font.weight: Font.Bold; font.pixelSize: window.s(11)
+                                        color: ThemeBackend.crust; elide: Text.ElideRight
+                                        text: btAuthLayer.req ? btAuthLayer.req.name : ""
+                                    }
+
+                                    Text {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        visible: btAuthLayer.hasCode
+                                        font.family: ThemeBackend.fontFamily; font.weight: Font.Black; font.pixelSize: window.s(24)
+                                        font.letterSpacing: window.s(2)
+                                        color: ThemeBackend.crust
+                                        text: btAuthLayer.req && btAuthLayer.req.passkey ? btAuthLayer.req.passkey : ""
+                                    }
+
+                                    Text {
+                                        Layout.alignment: Qt.AlignHCenter; Layout.maximumWidth: btAuthLayer.width - window.s(30)
+                                        horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                                        font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(9)
+                                        color: ThemeBackend.crust; opacity: 0.8
+                                        text: {
+                                            switch (btAuthLayer.reqType) {
+                                            case "confirm": return I18n.t("network.pairing.confirm");
+                                            case "display": return I18n.t("network.pairing.type_on_device");
+                                            case "authorize": return I18n.t("network.pairing.allow");
+                                            default: return I18n.t("network.pairing.enter_code");
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        Layout.preferredWidth: btAuthLayer.width - window.s(50); height: window.s(28)
+                                        visible: BtAgent.needsInput
+                                        radius: ThemeBackend.borderRadius
+                                        color: ThemeBackend.surface0
+                                        border.color: btPinField.activeFocus ? ThemeBackend.crust : "transparent"
+                                        border.width: 1
+
+                                        TextInput {
+                                            id: btPinField
+                                            anchors.fill: parent
+                                            anchors.leftMargin: window.s(10); anchors.rightMargin: window.s(10)
+                                            verticalAlignment: TextInput.AlignVCenter; horizontalAlignment: TextInput.AlignHCenter
+                                            font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(13); color: ThemeBackend.text
+                                            clip: true
+                                            maximumLength: btAuthLayer.reqType === "passkey" ? 6 : 16
+                                            validator: RegularExpressionValidator { regularExpression: btAuthLayer.reqType === "passkey" ? /[0-9]*/ : /.*/ }
+                                            onAccepted: btAuthLayer.accept()
+                                            Keys.onEscapePressed: btAuthLayer.reject()
+                                        }
+                                    }
+
+                                    RowLayout {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        Layout.topMargin: window.s(2)
+                                        spacing: window.s(10)
+
+                                        Repeater {
+                                            model: btAuthLayer.reqType === "display" ? ["reject"] : ["accept", "reject"]
+                                            Rectangle {
+                                                property bool isAccept: modelData === "accept"
+                                                width: window.s(30); height: width; radius: width / 2
+                                                color: btnMa.containsMouse ? (isAccept ? ThemeBackend.base : ThemeBackend.red) : ThemeBackend.crust
+                                                Behavior on color { enabled: window.visible; ColorAnimation { duration: 150 } }
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(15)
+                                                    color: parent.isAccept ? window.activeColor : (btnMa.containsMouse ? ThemeBackend.crust : ThemeBackend.red)
+                                                    text: parent.isAccept ? "󰄬" : "󰅖"
+                                                }
+                                                MouseArea {
+                                                    id: btnMa
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: parent.isAccept ? btAuthLayer.accept() : btAuthLayer.reject()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Timer { id: btPinFocusTimer; interval: 50; onTriggered: btPinField.forceActiveFocus() }
+                                Connections {
+                                    target: BtAgent
+                                    function onNeedsInputChanged() { if (BtAgent.needsInput && showBtAuth) { btPinField.text = ""; btPinFocusTimer.start(); } }
                                 }
                             }
 

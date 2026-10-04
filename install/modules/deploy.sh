@@ -366,6 +366,11 @@ deploy_package() {
             mv "$bashrc_tmp" "$bashrc"
         fi
 
+        # Zone-C: panel Bluetooth tu lam agent ghep doi, tat agent cua blueman de khong tranh nhau
+        if command -v gsettings >/dev/null 2>&1; then
+            gsettings set org.blueman.general plugin-list "['!AuthAgent']" 2>/dev/null || true
+        fi
+
         if [ "$is_update" != "true" ]; then
             for comp in "${COMPOSITORS[@]}"; do
                 local target_config_name

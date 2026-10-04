@@ -130,6 +130,7 @@ hl.bind("SUPER + G", hl.dsp.exec_cmd(browser))
 hl.bind("SUPER + C", hl.dsp.exec_cmd(editor))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileExplorer))
 hl.bind("CTRL + ALT + V", hl.dsp.exec_cmd("pavucontrol"))
+hl.bind("CTRL + ALT + B", hl.dsp.exec_cmd("blueman-manager"))
 
 -- Screenshot / record
 hl.bind("Print", hl.dsp.exec_cmd("zone-c screenshot"), { locked = true })

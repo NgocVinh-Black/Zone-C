@@ -763,6 +763,12 @@
     "actions": {
       "unpair": "Hủy ghép nối",
       "scan": "Quét"
+    },
+    "pairing": {
+      "confirm": "Mã có khớp với thiết bị không?",
+      "type_on_device": "Nhập mã này trên thiết bị",
+      "allow": "Cho phép thiết bị kết nối?",
+      "enter_code": "Nhập mã PIN hiển thị trên thiết bị"
     }
   },
   "notifications": {

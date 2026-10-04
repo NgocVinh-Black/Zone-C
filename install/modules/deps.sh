@@ -49,7 +49,7 @@ REQUIRED_PKGS=(
     "kitty" "cava" "zbar" "pavucontrol" "alsa-utils"
     "wl-clipboard" "fd" "qt6-multimedia" "qt6-5compat" "ripgrep"
     "cliphist" "jq" "socat" "inotify-tools" "pamixer" "brightnessctl" "ddcutil" "acpi" "iw"
-    "bluez" "bluez-utils" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
+    "bluez" "bluez-utils" "blueman" "python-gobject" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
     "pipewire" "wireplumber" "pipewire-pulse" "pipewire-alsa" "libpulse" "python"
     "imagemagick" "wget" "file" "git" "make" "psmisc"
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"

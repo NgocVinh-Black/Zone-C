@@ -763,6 +763,12 @@
     "actions": {
       "unpair": "Unpair",
       "scan": "Scan"
+    },
+    "pairing": {
+      "confirm": "Does the code match the device?",
+      "type_on_device": "Type this code on the device",
+      "allow": "Allow this device to connect?",
+      "enter_code": "Enter the PIN shown on the device"
     }
   },
   "notifications": {

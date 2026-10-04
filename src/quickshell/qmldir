@@ -29,6 +29,7 @@ CloseConfirm 1.0 closeconfirm/CloseConfirm.qml
 KeybindsHelp 1.0 keybinds/KeybindsHelp.qml
 singleton PolkitService 1.0 polkit/PolkitService.qml
 singleton NotificationManager 1.0 notifications/NotificationManager.qml
+singleton BtAgent 1.0 network/BtAgent.qml
 
 singleton Audio 1.0 singletons/audio/Audio.qml
 singleton Cava 1.0 singletons/audio/Cava.qml

@@ -76,6 +76,14 @@ PanelWindow {
         }
     }
 
+    // Co yeu cau ghep doi Bluetooth -> mo panel mang de xac nhan
+    Connections {
+        target: BtAgent
+        function onRequestStarted() {
+            if (masterWindow.targetActive !== "network") switchWidget("network", "bt");
+        }
+    }
+
     IpcHandler {
         target: "main"
 
