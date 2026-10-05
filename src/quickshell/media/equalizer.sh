@@ -4,7 +4,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/caching.sh"
 qs_ensure_cache "music"
 
 STATE_FILE="$QS_RUN_MUSIC/eq_state.json"
-PRESET_DIR="$HOME/.config/easyeffects/output"
+PRESET_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/easyeffects/output"
 PRESET_NAME="live_eq"
 PRESET_FILE="$PRESET_DIR/${PRESET_NAME}.json"
 
@@ -32,7 +32,10 @@ try:
                 gain = gains[s_idx]
                 break
         bands[f\"band{i}\"] = { \"frequency\": freq, \"gain\": gain, \"mode\": \"Bell\", \"mute\": False, \"q\": 1.0, \"solo\": False, \"width\": 1.0, \"slope\": \"x1\" }
-    preset = { \"output\": { \"blocklist\": [], \"plugins_order\": [ \"equalizer\" ], \"equalizer\": { \"bypass\": False, \"input-gain\": 0.0, \"output-gain\": 0.0, \"left\": bands, \"right\": bands, \"mode\": \"IIR\", \"num-bands\": 32, \"split-channels\": False } } }
+    preset = { \"output\": { \"blocklist\": [], \"plugins_order\": [ \"equalizer#0\", \"autogain#0\", \"limiter#0\" ],
+        \"equalizer#0\": { \"bypass\": False, \"input-gain\": 0.0, \"output-gain\": 0.0, \"left\": bands, \"right\": bands, \"mode\": \"IIR\", \"num-bands\": 32, \"split-channels\": False },
+        \"autogain#0\": { \"bypass\": False, \"input-gain\": 0.0, \"output-gain\": 0.0, \"target\": -16.0, \"silence-threshold\": -70.0, \"maximum-history\": 15, \"reference\": \"Geometric Mean (MSI)\" },
+        \"limiter#0\": { \"bypass\": False, \"input-gain\": 0.0, \"output-gain\": 0.0, \"threshold\": -1.0, \"attack\": 5.0, \"release\": 50.0, \"lookahead\": 5.0, \"gain-boost\": True, \"stereo-link\": 100.0, \"mode\": \"Herm Thin\", \"oversampling\": \"None\", \"dithering\": \"None\", \"sidechain-type\": \"Internal\" } } }
     print(json.dumps(preset, indent=4))
 except:
     sys.exit(1)
