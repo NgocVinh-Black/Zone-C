@@ -67,3 +67,12 @@ hl.window_rule({
   rounding     = 0,
   stay_focused = true,
 })
+
+-- Thanh "... is sharing a window/your screen" cua Chrome: nut Hide cua Chrome xin minimize,
+-- Hyprland khong co minimize nen cho no vao special workspace an ngay khi mo.
+hl.window_rule({
+  name  = "chrome-sharing-indicator",
+  match = { class = "^$", title = "^.* is sharing (a window|your screen|a tab|this tab).*$" },
+
+  workspace = "special:sharing silent",
+})
