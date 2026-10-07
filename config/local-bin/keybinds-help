@@ -47,6 +47,10 @@ if [ "$1" = "--show" ]; then
     row "Super+chuột trái (giữ Super+Z)" "Kéo cửa sổ"
     row "Super+chuột phải (giữ Super+X)" "Kéo đổi kích thước"
 
+    head "CON MÈO (FLOAT-CAT)"
+    row "Super+Shift+K  /  phím Copilot" "Bật  /  tắt con mèo"
+    row "Super+K" "Rồi kéo bằng chuột để dời chỗ"
+
     cur=RR
     head "NHÓM CỬA SỔ (TAB)"
     row "Alt+Tab  /  Shift+Alt+Tab" "Chuyển cửa sổ"

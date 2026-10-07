@@ -41,6 +41,9 @@ PanelWindow {
             { k: "Super+Shift+S", d: "Flameshot" },
             { k: "Super+Shift+Alt+S", d: "Chụp vùng (zone-c)" },
             { k: "Super+Alt+R", d: "Quay màn hình" } ] },
+        { col: 2, icon: "󰄛", title: "Con mèo (float-cat)", accent: "yellow", rows: [
+            { k: "Super+Shift+K|Phím Copilot", d: "Bật / tắt con mèo" },
+            { k: "Super+K", d: "Rồi kéo bằng chuột để dời chỗ" } ] },
         { col: 1, icon: "󰖲", title: "Cửa sổ", accent: "sapphire", rows: [
             { k: "Super+Q", d: "Đóng (hỏi Yes/No)" },
             { k: "Super+Shift+Q", d: "Đóng ngay, không hỏi" },

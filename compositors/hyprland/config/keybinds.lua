@@ -176,3 +176,13 @@ hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("zone-c msg toggle volume"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("zone-c msg toggle guide"))
 hl.bind(mainMod .. " + slash", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/keybinds-help"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("zone-c msg toggle autohide"))
+
+------------------------------------------------------------------
+-- float-cat: nhan SUPER + K roi keo con meo bang chuot trai (khong giu SUPER,
+-- vi SUPER + chuot trai la keo cua so); tha chuot la dat xuong
+------------------------------------------------------------------
+hl.bind("SUPER + K", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/float-cat grab toggle"))
+-- float-cat: bat / tat con meo
+hl.bind("SUPER + SHIFT + K", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/float-cat toggle"))
+-- float-cat: phim Copilot (gui SUPER + SHIFT + F23) cung bat / tat con meo
+hl.bind("SUPER + SHIFT + F23", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/float-cat toggle"))
