@@ -121,7 +121,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             } 
         },
         "music": { 
-            w: 625, h: 565, comp: "media/MusicPopup.qml", 
+            w: 625, h: 266, comp: "media/MusicPopup.qml", 
             pos: { 
                 "top": { anchor: "top-left", mt: 52, ml: 5 }, 
                 "bottom": { anchor: "bottom-left", mb: 52, ml: 5 }, 

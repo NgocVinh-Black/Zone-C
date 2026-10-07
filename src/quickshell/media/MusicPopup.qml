@@ -1300,6 +1300,7 @@ Item {
                 }
 
                 Rectangle {
+                    visible: false
                     Layout.fillWidth: true
                     Layout.preferredHeight: root.s(2)
                     Layout.topMargin: root.s(16)
@@ -1312,6 +1313,7 @@ Item {
                 }
 
                 ColumnLayout {
+                    visible: false
                     Layout.fillWidth: true
                     spacing: root.s(12)
 
