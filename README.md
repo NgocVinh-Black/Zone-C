@@ -50,6 +50,35 @@ Desktop shell cho Hyprland, viết bằng Quickshell, theo chủ đề **sấm s
 | `Super + F` | Toàn màn hình |
 | `Super + ←/→/↑/↓` | Chuyển cửa sổ |
 | `Super + Page Up/Down` | Chuyển workspace |
+| `Super + Shift + K` / phím Copilot | Bật / tắt con mèo float-cat |
+| `Super + K` | Rồi kéo con mèo bằng chuột để dời chỗ |
+
+## Con mèo float-cat (Claude Code)
+
+Con mèo sấm nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột. Nó thở, chớp mắt, giật tai,
+nhai que bông, vung kiếm; đám mây trôi và phóng sét. Màu tự đổi theo theme đang dùng.
+
+Khi dùng [Claude Code](https://claude.com/claude-code), con mèo cho biết Claude đang làm gì:
+khung suy nghĩ `• • •` khi đang chạy, dấu ✓ kèm nhảy lên khi xong, "Cần bạn nè!" khi chờ bạn duyệt.
+
+Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
+Để con mèo đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
+
+```json
+{
+  "hooks": {
+    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat start" }] }],
+    "SessionEnd":       [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat stop" }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say thinking" }] }],
+    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say thinking" }] }],
+    "Notification":     [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say ask" }] }],
+    "Stop":             [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say done" }] }]
+  }
+}
+```
+
+Không dùng Claude Code thì vẫn bật / tắt tay được: `float-cat toggle` hoặc `Super + Shift + K`.
+Xoá `~/.local/state/float-cat/pos.json` để đưa con mèo về góc phải dưới.
 
 ## Cài đặt (Arch Linux và các bản dựa trên Arch)
 

@@ -1,0 +1,18 @@
+#!/bin/bash
+# float-cat start|stop|toggle|say <thinking|done|ask|idle>|grab <on|off|toggle>: the Zone-C cat overlay shown while Claude Code runs.
+QML="$HOME/.local/share/float-cat/shell.qml"
+running() { pgrep -fx "qs -p $QML" >/dev/null; }
+show() { mkdir -p "$HOME/.local/state/float-cat"; running || setsid -f qs -p "$QML" >/dev/null 2>&1; }
+hide() { pkill -fx "qs -p $QML"; }
+case "$1" in
+  start) show ;;
+  # The ending session is still alive here, so hide only when it is the last one.
+  stop) [ "$2" = "--force" ] || [ "$(pgrep -ax claude | grep -vc -- --chrome-native-host)" -le 1 ] && hide ;;
+  toggle) if running; then hide; else show; fi ;;
+  # Tell the cat what Claude Code is doing; never blocks or fails the hook.
+  say) running && timeout 1 qs ipc -p "$QML" call cat state "$2" >/dev/null 2>&1 ;;
+  # Held key: the cat takes the mouse so it can be dragged elsewhere.
+  grab) running && timeout 1 qs ipc -p "$QML" call cat grab "$2" >/dev/null 2>&1 ;;
+  *) echo "usage: float-cat start|stop|toggle|say <thinking|done|ask|idle>|grab <on|off|toggle>" >&2; exit 2 ;;
+esac
+exit 0

@@ -250,6 +250,26 @@ EOF
     echo -e "  \e[32m$(t "installer.deploy.sddm_success")\e[0m"
 }
 
+# float-cat: con meo noi tren man hinh khi Claude Code chay (config/float-cat -> ~/.local/share/float-cat).
+# Chay ca khi cai day du lan cap nhat. Thu muc themed/ (to mau theo theme) tu sinh lai khi chay;
+# vi tri con meo (~/.local/state/float-cat) giu nguyen.
+deploy_float_cat() {
+    local REPO_ROOT="$1"
+    local BIN_DIR="$2"
+    local src="$REPO_ROOT/config/float-cat"
+    local dest="$HOME/.local/share/float-cat"
+
+    [ -d "$src" ] || return 0
+    mkdir -p "$dest" "$HOME/.local/state/float-cat" "$BIN_DIR"
+    cp -r "$src/." "$dest/"
+    chmod +x "$dest/src/build-layers.sh" "$dest/src/tint.py" 2>/dev/null || true
+
+    if [ -f "$REPO_ROOT/config/local-bin/float-cat" ]; then
+        cp "$REPO_ROOT/config/local-bin/float-cat" "$BIN_DIR/float-cat"
+        chmod +x "$BIN_DIR/float-cat"
+    fi
+}
+
 deploy_package() {
     local REPO_ROOT="$1"
     local OLD_COMMIT="$2"
@@ -305,7 +325,7 @@ deploy_package() {
 
         if [ -d "$REPO_ROOT/config/local-bin" ]; then
             cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
-            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/flameshot-gui "$BIN_DIR"/zonec-banner 2>/dev/null || true
+            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/flameshot-gui "$BIN_DIR"/zonec-banner "$BIN_DIR"/float-cat 2>/dev/null || true
         fi
 
         if [ -d "$REPO_ROOT/config/icons" ]; then
@@ -509,6 +529,8 @@ deploy_package() {
             done <<< "$changed_files"
         fi
     fi
+
+    deploy_float_cat "$REPO_ROOT" "$BIN_DIR"
 
     if [ -f "$TARGET_BASE/bin/zone-c" ]; then
         ln -sf "$TARGET_BASE/bin/zone-c" "$BIN_DIR/zone-c"
