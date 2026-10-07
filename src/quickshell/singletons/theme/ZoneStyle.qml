@@ -7,7 +7,8 @@ import "../../"
 // Zone-C: kieu hieu ung di kem preset mau.
 //   Zone Thunder -> hinh nen video + vien dien chay (dong)
 //   Zone Crystal -> hinh nen anh tinh + vien dung yen (tinh)
-//   Zone Frost   -> hinh nen tuyet + bar dang vien rieng (modular) + dock kinh mo
+//   Zone Frost   -> hinh nen tuyet + dock kinh mo
+// Doi preset chi doi mau / hinh nen / hieu ung; bo cuc bar, dock, launcher giu nguyen nhu ban dat.
 // Man hinh khoa dung chinh hinh nen hien tai nen tu dong/tinh theo.
 // Preset khac: giu nguyen hinh nen, vien chay nhu Thunder.
 Item {
@@ -36,19 +37,7 @@ Item {
                 "dark": { "base": "#333f45", "mantle": "#2c373c", "crust": "#252f34", "text": "#e9f1f4", "subtext0": "#93a7b1", "subtext1": "#b7c7cf", "surface0": "#3e4b52", "surface1": "#4a5960", "surface2": "#58686f", "overlay0": "#6d7f87", "overlay1": "#8597a0", "overlay2": "#9daeb6", "blue": "#d6e6ec", "sapphire": "#cfe1e8", "peach": "#e3dccf", "green": "#cfe4d8", "red": "#ff6b6b", "mauve": "#d6e6ec", "pink": "#d6e6ec", "yellow": "#ece0b0", "maroon": "#c9d9df", "teal": "#cfe6e6" },
                 "light": { "base": "#eef4f7", "mantle": "#e4ecf0", "crust": "#d6e2e8", "text": "#1f2d35", "subtext0": "#5d717b", "subtext1": "#44565f", "surface0": "#dde7ec", "surface1": "#cfdce3", "surface2": "#bccdd6", "overlay0": "#8fa3ad", "overlay1": "#768b95", "overlay2": "#5f747e", "blue": "#2f5d72", "sapphire": "#3a6c82", "peach": "#a8683a", "green": "#3f7a5c", "red": "#d64545", "mauve": "#2f5d72", "pink": "#3a6c82", "yellow": "#9a7d22", "maroon": "#4a7a8e", "teal": "#2f7277" }
             },
-            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff", dockTint: "#ffffff", dockAlpha: 0.55 },
-            // Bo cuc rieng cua Frost; bo cuc cua ban duoc luu lai va tra ve khi roi Frost
-            layout: {
-                "bar.style": "modular",
-                "dock.floating": true,
-                "launcher.position": "bottom",
-                // Thu tu nhu bo cuc mac dinh, nhung tach nhom -> moi muc mot vien rieng
-                "bar.modules": {
-                    "left": ["left", "workspaces", "media"],
-                    "center": ["info", "timedate", "weather"],
-                    "right": ["tray", "sysmon", "kb", "wifi", "bt", "vol", "bat"]
-                }
-            }
+            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff", dockTint: "#ffffff", dockAlpha: 0.55 }
         }
     })
 
@@ -128,33 +117,6 @@ Item {
         Wallpaper.setWallpaper("all", target, "fade");
     }
 
-    // Bo cuc bar/dock/launcher di kem preset (chi preset co "layout", vd Zone Frost).
-    // Vao preset do: luu bo cuc hien tai vao zoneStyle.savedLayout roi ap bo cuc cua preset.
-    // Sang preset khac (Crystal, Thunder, Nord...): tra lai dung bo cuc da luu -> theme cu khong bi doi.
-    readonly property var layoutKeys: ["bar.style", "dock.floating", "bar.modules", "launcher.position"]
-
-    function applyLayout() {
-        let s = styles[preset];
-        let saved = Config.getSetting("zoneStyle.savedLayout", null);
-        let upd = {};
-        if (s && s.layout) {
-            if (!saved) {
-                let cur = {};
-                for (let k of layoutKeys) cur[k] = Config.getSetting(k, null);
-                upd["zoneStyle.savedLayout"] = cur;
-            }
-            for (let k in s.layout) upd[k] = s.layout[k];
-        } else if (saved) {
-            for (let k of layoutKeys) {
-                if (saved[k] !== null && saved[k] !== undefined) upd[k] = saved[k];
-            }
-            upd["zoneStyle.savedLayout"] = null;
-        } else {
-            return;
-        }
-        Config.updateJsonBulk(upd);
-    }
-
     // Bang mau cua preset theo che do hien tai (ThemeTab dung khi ap preset)
     function presetColors(name, fallback) {
         let st = styles[name];
@@ -225,7 +187,6 @@ Item {
 
     function onPresetSwitched() {
         applyWallpaper();
-        applyLayout();
         // Vao/ra preset co che do sang: dong bo app ngoai theo che do thuc te
         // (roi sang Crystal/Thunder khi dang light -> tra Files/foot ve toi). Theme cu khong dung den thi bo qua.
         let t = Config.getSetting("theme", {});
