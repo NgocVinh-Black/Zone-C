@@ -34,7 +34,7 @@ hl.config({
   },
 
   misc = {
-    focus_on_activate = true,
+    focus_on_activate = false,
     font_family = "JetBrains Mono",
     disable_hyprland_logo = true,
     disable_splash_rendering = true,
@@ -75,4 +75,15 @@ hl.window_rule({
   match = { class = "^$", title = "^.* is sharing (a window|your screen|a tab|this tab).*$" },
 
   workspace = "special:sharing silent",
+})
+
+-- Hop thoai chon file (portal GTK / KDE, file chooser cua app): portal mo float o 0,0 voi chieu cao
+-- gan bang man hinh nen bi bar de len. Ep kich thuoc vua vung lam viec va dat giua man hinh.
+hl.window_rule({
+  name  = "file-dialog-fit",
+  match = { class = "^(xdg-desktop-portal-gtk|Xdg-desktop-portal-gtk|xdg-desktop-portal-kde|org.freedesktop.impl.portal.desktop.kde)$" },
+
+  float  = true,
+  size   = "(monitor_w*0.6) (monitor_h*0.75)",
+  center = true,
 })
