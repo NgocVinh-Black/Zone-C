@@ -403,11 +403,11 @@ ShellRoot {
 
                     Layer { name: "l-cloud" }
                     Layer {
-                        id: boltB1; name: "l-boltB1"
+                        id: boltB1; name: "l-boltB1"; height: 268
                         transform: Scale { id: boltB1S; origin.x: 77; origin.y: 228; yScale: 1; xScale: 1 }
                     }
                     Layer {
-                        id: boltB2; name: "l-boltB2"
+                        id: boltB2; name: "l-boltB2"; height: 268
                         transform: Scale { id: boltB2S; origin.x: 183; origin.y: 228; yScale: 1; xScale: 1 }
                     }
                 }
