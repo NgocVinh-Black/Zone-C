@@ -26,7 +26,8 @@ Item {
         "telegram": "org.telegram.desktop",
         "discord": "discord",
         "slack": "slack",
-        "spotify": "spotify"
+        "spotify": "spotify",
+        "viber": "viber"
     })
 
     signal popupAdded(int uid, var notif)
@@ -72,7 +73,8 @@ Item {
         let resolved = {
             groupKey: entry ? entry.id : (appName || "system"),
             displayName: entry ? entry.name : (rawAppName || "System"),
-            icon: n.appIcon || (entry ? entry.icon : ""),
+            // Uu tien logo cua app (tu desktop entry); appIcon nhieu app gui avatar nguoi gui (Viber...)
+            icon: (entry && entry.icon) ? entry.icon : (n.appIcon || ""),
             desktopEntry: entry
         };
         _resolveCache[key] = resolved;
