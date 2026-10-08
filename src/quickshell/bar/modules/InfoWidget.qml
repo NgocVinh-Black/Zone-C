@@ -31,7 +31,26 @@ Rectangle {
     readonly property string timerIcon: TimerState.icon
     readonly property color timerColor: TimerState.colorType === "green" ? ((typeof ThemeBackend !== "undefined" && ThemeBackend.green !== undefined) ? ThemeBackend.green : Qt.rgba(166/255, 227/255, 161/255, 1.0)) : ThemeBackend.mauve
 
-    readonly property bool hasActiveContent: isRecording || isTimerActive
+    property var usbDevices: []
+    readonly property bool hasUsb: usbDevices.length > 0
+    readonly property string usbIcon: {
+        if (!hasUsb) return "";
+        let k = usbDevices[0].kind;
+        if (k === "camera") return "\uf030";
+        if (k === "storage") return "\uf0a0";
+        if (k === "input") return "\uf11c";
+        if (k === "audio") return "\uf025";
+        return "\uf1e6";
+    }
+    readonly property string usbLabel: hasUsb ? (usbDevices[0].name + (usbDevices.length > 1 ? " +" + (usbDevices.length - 1) : "")) : ""
+
+    readonly property bool hasActiveContent: isRecording || isTimerActive || hasUsb
+
+    function checkUsb() {
+        if (infoWidgetRoot.isCleaningUp || !infoWidgetRoot.moduleActive) return;
+        usbListProc.running = false;
+        usbListProc.running = true;
+    }
 
     function checkRecording() {
         if (infoWidgetRoot.isCleaningUp || !infoWidgetRoot.moduleActive || infoWidgetRoot.recCacheDir === "") return;
@@ -105,6 +124,56 @@ Rectangle {
         }
     }
 
+    Process {
+        id: usbListProc
+        command: ["bash", "-c", "exec \"$ZONE_C_DIR/scripts/usb_list.sh\""]
+        stdout: StdioCollector {
+            id: usbListOut
+            onStreamFinished: {
+                let list = [];
+                let lines = usbListOut.text.trim().split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                    let parts = lines[i].split("\t");
+                    if (parts.length >= 2 && parts[1].trim() !== "") list.push({ kind: parts[0], name: parts[1].trim() });
+                }
+                infoWidgetRoot.usbDevices = list;
+            }
+        }
+    }
+
+    Process {
+        id: usbWatcher
+        running: !infoWidgetRoot.isCleaningUp && infoWidgetRoot.moduleActive
+        command: ["bash", "-c", "exec udevadm monitor --udev --subsystem-match=usb/usb_device 2>/dev/null"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data.indexOf(" add ") !== -1 || data.indexOf(" remove ") !== -1 || data.indexOf(" change ") !== -1 || data.indexOf(" bind ") !== -1) usbDebounce.restart();
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 127 || infoWidgetRoot.isCleaningUp) return;
+            if (infoWidgetRoot.moduleActive) usbWatcherRestartTimer.restart();
+        }
+    }
+
+    Timer {
+        id: usbDebounce
+        interval: 700
+        repeat: false
+        onTriggered: infoWidgetRoot.checkUsb()
+    }
+
+    Timer {
+        id: usbWatcherRestartTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            if (!infoWidgetRoot.isCleaningUp && infoWidgetRoot.moduleActive && !usbWatcher.running) {
+                usbWatcher.running = true;
+            }
+        }
+    }
+
     Timer {
         id: recElapsedTimer
         interval: 1000
@@ -135,9 +204,11 @@ Rectangle {
 
     property real recWidth: isRecording ? recRow.implicitWidth : 0
     property real timerWidth: isTimerActive ? timerRow.implicitWidth : 0
-    property real activeSpacing: (isRecording && isTimerActive) ? innerSpacing : 0
+    property real usbWidth: hasUsb ? usbRow.implicitWidth : 0
+    property int activeCount: (isRecording ? 1 : 0) + (isTimerActive ? 1 : 0) + (hasUsb ? 1 : 0)
+    property real activeSpacing: activeCount > 1 ? innerSpacing * (activeCount - 1) : 0
 
-    property real baseWidth: hasActiveContent ? (recWidth + timerWidth + activeSpacing + (horizontalPadding * 2)) : 0
+    property real baseWidth: hasActiveContent ? (usbWidth + recWidth + timerWidth + activeSpacing + (horizontalPadding * 2)) : 0
     property real baseHeight: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
 
     property real targetHeight: baseHeight
@@ -222,6 +293,34 @@ Rectangle {
             spacing: infoWidgetRoot.innerSpacing
 
             Row {
+                id: usbRow
+                spacing: barWindow ? barWindow.s(infoWidgetRoot.isCompact ? 5 : 6) : (infoWidgetRoot.isCompact ? 5 : 6)
+                visible: hasUsb
+                opacity: hasUsb ? 1.0 : 0.0
+                Behavior on opacity {
+                    enabled: barWindow ? !barWindow.positionChanging : true
+                    NumberAnimation { duration: 300 }
+                }
+
+                Text {
+                    text: infoWidgetRoot.usbIcon
+                    font.family: "Font Awesome 6 Free Solid"
+                    font.pixelSize: barWindow ? barWindow.s(infoWidgetRoot.isCompact ? 11 : 12) : (infoWidgetRoot.isCompact ? 11 : 12)
+                    color: ThemeBackend.mauve
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                    text: infoWidgetRoot.usbLabel
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: barWindow ? barWindow.s(infoWidgetRoot.isCompact ? 13 : 14) : (infoWidgetRoot.isCompact ? 13 : 14)
+                    font.weight: Font.Bold
+                    color: ThemeBackend.mauve
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            Row {
                 id: recRow
                 spacing: barWindow ? barWindow.s(infoWidgetRoot.isCompact ? 5 : 6) : (infoWidgetRoot.isCompact ? 5 : 6)
                 visible: isRecording
@@ -293,6 +392,7 @@ Rectangle {
 
     Component.onCompleted: {
         infoWidgetRoot.checkRecording();
+        infoWidgetRoot.checkUsb();
     }
 
     Component.onDestruction: {
@@ -300,5 +400,9 @@ Rectangle {
         recWatcherRestartTimer.stop();
         recWatcher.running = false;
         recCheckProc.running = false;
+        usbDebounce.stop();
+        usbWatcherRestartTimer.stop();
+        usbWatcher.running = false;
+        usbListProc.running = false;
     }
 }
