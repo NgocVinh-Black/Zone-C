@@ -15,6 +15,7 @@ ddcutil
 dkms
 easyeffects
 efibootmgr
+exfatprogs
 fastfetch
 fcitx5
 fcitx5-configtool
@@ -54,6 +55,8 @@ nano
 nautilus
 networkmanager
 noto-fonts
+ntfs-3g
+ntfsprogs
 pamixer
 papirus-icon-theme
 pavucontrol

@@ -66,7 +66,7 @@ cp /etc/sddm.conf.d/* "$OUT/etc/sddm.conf.d/" 2>/dev/null || true
 cp /etc/X11/xorg.conf.d/* "$OUT/etc/X11/xorg.conf.d/" 2>/dev/null || true
 cp /etc/pacman.d/mirrorlist "$OUT/etc/mirrorlist" 2>/dev/null || true
 
-find "$OUT/home" -name "*.lock*" -delete
+find "$OUT/home" \( -name "*.lock*" -o -name "*-shm" -o -name "*-wal" \) -delete
 rm -rf "$OUT/home/.config/ElegooSlicer/log" "$OUT/home/.config/ElegooSlicer/cache"
 # Repo is public: drop the IP-based location cache (the shell refetches it)
 python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d.get("general",{}).pop("location",None);json.dump(d,open(p,"w"),indent=2)' "$OUT/home/.config/zone-c/settings.json"
