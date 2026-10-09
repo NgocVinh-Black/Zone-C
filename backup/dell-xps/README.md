@@ -3,7 +3,7 @@
 A snapshot of the Arch Linux setup on the Dell XPS (`arch-xps`), taken before a reinstall.
 
 - `lists/`: package lists (official and AUR), enabled systemd services, system info, user fonts
-- `home/`: dotfiles, `~/.config`, `~/.local/bin` scripts, a dconf dump
+- `home/`: dotfiles, `~/.config` (including ElegooSlicer profiles), `~/.local/bin` scripts, user fonts, ble.sh, a dconf dump and the `sddm-zone-thunder` theme sources
 - `etc/`: pacman, mkinitcpio, locale, sddm, keyboard and mirrorlist (fstab is only a reference)
 
 ## Restore
@@ -15,14 +15,13 @@ git clone -b dell-XPS git@github.com:NgocVinh-Black/Zone-C.git ~/Zone-C
 
 Then run the Zone-C installer and reboot.
 
-## Not included (repo is public)
+## Not included
 
-These have to be copied by hand (USB or external drive):
+Personal data and account logins are left out on purpose; sign back in after restoring:
 
 - `~/.ssh` (SSH keys)
 - Browser profiles (Chrome, Brave, Edge, Opera, Vivaldi) and logins for VS Code, GitHub Desktop and Viber; sign back in, or use browser sync
-- `~/.local/share/fonts` (Iosevka Nerd Font, ~760 MB): `sudo pacman -S ttf-iosevka-nerd`
-- `~/Documents`, `~/Projects`, `~/Pictures`, `~/Videos`, `~/Downloads`
-- ElegooSlicer profiles (`~/.config/ElegooSlicer`)
+- `~/.bash_history`, plus Claude, Copilot and Cargo credentials
+- Personal folders: `~/Documents`, `~/Downloads`, `~/Pictures`, `~/Projects`, `~/Videos`
 
 Re-run `backup.sh` to refresh the snapshot.

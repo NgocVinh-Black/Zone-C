@@ -37,7 +37,7 @@ done
 # ~/.config (no browsers, Electron app data, or login stores)
 for d in cava easyeffects fastfetch fcitx5 flameshot foot gtk-3.0 gtk-4.0 hypr kitty \
          nautilus qt6ct systemd zone-c yay procps \
-         code-flags.conf mimeapps.list pavucontrol.ini; do
+         ElegooSlicer code-flags.conf mimeapps.list pavucontrol.ini; do
   [ -e "$H/.config/$d" ] && cp -a "$H/.config/$d" "$OUT/home/.config/"
 done
 mkdir -p "$OUT/home/.config/Code/User"
@@ -46,9 +46,14 @@ for f in settings.json keybindings.json snippets; do
 done
 command -v dconf >/dev/null && dconf dump / > "$OUT/home/.config/dconf-dump.ini" || true
 
+# SDDM theme sources
+for d in sddm-zone-thunder; do
+  [ -e "$H/$d" ] && cp -a "$H/$d" "$OUT/home/"
+done
+
 # ~/.local (regular scripts only; symlinks into installed apps are recreated by their installers)
 find "$H/.local/bin" -maxdepth 1 -type f -exec cp -a {} "$OUT/home/.local/bin/" \;
-for d in applications icons easyeffects; do
+for d in applications icons easyeffects fonts elegoo-slicer blesh float-cat nautilus; do
   [ -e "$H/.local/share/$d" ] && cp -a "$H/.local/share/$d" "$OUT/home/.local/share/"
 done
 
@@ -62,6 +67,7 @@ cp /etc/X11/xorg.conf.d/* "$OUT/etc/X11/xorg.conf.d/" 2>/dev/null || true
 cp /etc/pacman.d/mirrorlist "$OUT/etc/mirrorlist" 2>/dev/null || true
 
 find "$OUT/home" -name "*.lock*" -delete
+rm -rf "$OUT/home/.config/ElegooSlicer/log" "$OUT/home/.config/ElegooSlicer/cache"
 # Repo is public: drop the IP-based location cache (the shell refetches it)
 python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d.get("general",{}).pop("location",None);json.dump(d,open(p,"w"),indent=2)' "$OUT/home/.config/zone-c/settings.json"
 rm -f "$OUT/home/.local/share/applications/mimeinfo.cache"
