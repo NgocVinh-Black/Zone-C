@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# Bang phim tat (Super+/): mo bang QML cua zone-c; neu shell khong chay thi mo ban terminal.
+# Bam lai Super+/ (hoac Esc) de dong.
+
+APP_ID="keybinds-help"
+
+if [ "$1" = "--show" ]; then
+    B=$'\e[1;36m'; K=$'\e[1;33m'; D=$'\e[2m'; R=$'\e[0m'
+    KW=32; DW=34   # do rong cot phim / mo ta
+    L=(); RR=(); cur=L
+    pad() { local s="$1" w="$2"; printf '%s%*s' "$s" $(( w - ${#s} > 0 ? w - ${#s} : 0 )) ''; }
+    add() { if [ "$cur" = L ]; then L+=("$1"); else RR+=("$1"); fi; }
+    head() { add ""; add "${B}$(pad "$1" $((KW + DW + 1)))${R}"; }
+    row() { add "${K}$(pad "$1" $KW)${R} $(pad "$2" $DW)"; }
+    blank() { printf '%*s' $((KW + DW + 1)) ''; }
+
+    head "MỞ ỨNG DỤNG"
+    row "Nhấn rồi thả Super / Super+D" "Launcher (tìm ứng dụng)"
+    row "Super+T / Super+Enter" "Terminal (foot)"
+    row "Super+W / Super+G" "Chrome"
+    row "Super+C" "VS Code"
+    row "Super+E" "Trình quản lý file"
+    row "Ctrl+Alt+V" "Chỉnh âm thanh"
+    row "Super+/" "Bảng phím tắt này"
+
+    head "BẢNG CỦA ZONE-C"
+    row "Super+V" "Lịch sử clipboard"
+    row "Super+M  /  Super+B" "Nhạc  /  Bảng hệ thống"
+    row "Super+S  /  Super+N" "Lịch  /  Mạng"
+    row "Super+Shift+V" "Âm lượng"
+    row "Super+Shift+W" "Chọn hình nền"
+    row "Super+H" "Cài đặt / hướng dẫn"
+    row "Super+A  /  Super+R" "Tự ẩn bar  /  Tải lại shell"
+
+    head "CỬA SỔ"
+    row "Super+Q  /  Super+Shift+Q" "Đóng (hỏi Yes/No)  /  Đóng ngay"
+    row "Super+F  /  Super+Alt+F" "Toàn màn hình  /  Phóng to"
+    row "Super+Shift+F, Super+Alt+Space" "Cửa sổ nổi"
+    row "Super+P" "Ghim (hiện ở mọi workspace)"
+    row "Super+Alt+\\" "Chế độ PiP"
+    row "Ctrl+Super+\\  /  +Alt" "Ra giữa  /  cỡ 55×70% + giữa"
+    row "Super+mũi tên" "Chuyển sang cửa sổ bên cạnh"
+    row "Super+Shift+mũi tên" "Di chuyển cửa sổ"
+    row "Super+Alt+mũi tên" "Đổi kích thước"
+    row "Super+=  /  Super+-" "Rộng ra  /  hẹp lại"
+    row "Super+Shift+=  /  Super+Shift+-" "Cao lên  /  thấp xuống"
+    row "Super+chuột trái (giữ Super+Z)" "Kéo cửa sổ"
+    row "Super+chuột phải (giữ Super+X)" "Kéo đổi kích thước"
+
+    head "CON MÈO (FLOAT-CAT)"
+    row "Super+Shift+K  /  phím Copilot" "Bật  /  tắt con mèo"
+    row "Super+K" "Rồi kéo bằng chuột để dời chỗ"
+
+    cur=RR
+    head "NHÓM CỬA SỔ (TAB)"
+    row "Alt+Tab  /  Shift+Alt+Tab" "Chuyển cửa sổ"
+    row "Super+,  /  Super+U" "Gộp nhóm  /  Tách khỏi nhóm"
+    row "Super+Shift+," "Khoá nhóm"
+    row "Ctrl+Alt+Tab  /  +Shift" "Tab kế tiếp  /  tab trước"
+
+    head "WORKSPACE"
+    row "Super+1…0" "Sang workspace 1–10"
+    row "Super+Shift+1…0 (hoặc Alt)" "Chuyển cửa sổ sang đó"
+    row "Ctrl+Super+1…0  /  +Alt" "Nhóm workspace: sang / chuyển"
+    row "Ctrl+Super+←/→" "Workspace trước / sau"
+    row "Super+PgUp/PgDn, Super+cuộn" "Workspace trước / sau"
+    row "Ctrl+Super+cuộn" "Nhảy 10 workspace"
+    row "Vuốt ngang 3 ngón" "Đổi workspace (touchpad)"
+    row "Ctrl+Super+Shift+←/→" "Mang cửa sổ sang trước / sau"
+    row "Super+Alt+PgUp/PgDn, +cuộn" "Mang cửa sổ sang trước / sau"
+    row "Super+Alt+S, Ctrl+Super+Shift+↑" "Cất vào workspace ẩn"
+    row "Ctrl+Super+Shift+↓" "Lấy ra từ workspace ẩn"
+
+    head "CHỤP & QUAY MÀN HÌNH"
+    row "Print  /  Shift+Print" "Chụp  /  Chụp rồi chỉnh sửa"
+    row "Super+Print  /  +Shift" "Toàn màn hình  /  rồi chỉnh sửa"
+    row "Super+Shift+S" "Flameshot"
+    row "Super+Shift+Alt+S" "Chụp vùng (zone-c)"
+    row "Super+Alt+R" "Quay màn hình"
+
+    head "HỆ THỐNG & MEDIA"
+    row "Super+L  /  nút nguồn" "Khoá màn hình"
+    row "Super+Shift+L" "Ngủ"
+    row "Super+Space, Ctrl+Super+Space" "Phát / dừng nhạc"
+    row "Ctrl+Super+ =  /  -" "Bài tiếp  /  bài trước"
+    row "Super+Shift+M  /  phím Mute" "Tắt tiếng loa"
+    row "Phím âm lượng  /  độ sáng" "Tăng giảm âm lượng / độ sáng"
+    row "Phím Mic" "Tắt / bật micro"
+
+    printf "\e[1;35m  PHÍM TẮT  —  Super = phím Windows\e[0m\n"
+    n=$(( ${#L[@]} > ${#RR[@]} ? ${#L[@]} : ${#RR[@]} ))
+    for ((i = 0; i < n; i++)); do
+        l="${L[i]}"; r="${RR[i]}"
+        [ -z "$l" ] && l="$(blank)"
+        printf '  %s    %s\n' "$l" "$r"
+    done
+    printf "\n  ${D}Bấm phím bất kỳ (hoặc Super+/) để đóng${R}"
+    read -rsn1
+    exit 0
+fi
+
+# Uu tien bang QML cua zone-c (cung theme); shell khong chay thi dung ban terminal ben duoi.
+if zone-c ipc call keybinds toggle >/dev/null 2>&1; then
+    exit 0
+fi
+
+# Dang mo thi dong lai (toggle)
+addr=$(hyprctl clients -j | jq -r --arg c "$APP_ID" '.[] | select(.class == $c) | .address' | head -1)
+if [ -n "$addr" ]; then
+    hyprctl dispatch "hl.dsp.window.close({ window = \"address:$addr\" })" >/dev/null
+    exit 0
+fi
+
+foot --app-id="$APP_ID" --override=font=monospace:size=9 --override=colors-dark.alpha=1.0 "$0" --show &
+
+# Doi cua so hien ra roi cho no noi, dua ra giua
+for _ in $(seq 40); do
+    addr=$(hyprctl clients -j | jq -r --arg c "$APP_ID" '.[] | select(.class == $c) | .address' | head -1)
+    [ -n "$addr" ] && break
+    sleep 0.05
+done
+[ -z "$addr" ] && exit 0
+hyprctl dispatch "hl.dsp.window.float({ action = \"on\", window = \"address:$addr\" })" >/dev/null
+read -r mw mh <<<"$(hyprctl monitors -j | jq -r '.[] | select(.focused) | "\((.width / .scale | floor) - .reserved[0] - .reserved[2]) \((.height / .scale | floor) - .reserved[1] - .reserved[3])"')"
+w=$(( mw > 1240 ? 1200 : mw - 40 )); h=$(( mh > 760 ? 720 : mh - 40 ))
+hyprctl dispatch "hl.dsp.window.resize({ x = $w, y = $h, relative = false, window = \"address:$addr\" })" >/dev/null
+hyprctl dispatch "hl.dsp.window.center({ window = \"address:$addr\" })" >/dev/null

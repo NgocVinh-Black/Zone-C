@@ -1,0 +1,161 @@
+{
+  "general": {
+    "language": "en",
+    "avatarPath": "/home/zone-c/.face",
+    "muteSfx": false,
+    "sfxVolume": 100,
+    "screenshotCaptureOnRelease": false,
+    "quickactions": true,
+    "weatherInterval": 15,
+    "weatherUnit": "metric"
+  },
+  "display": {
+    "monitors": {
+      "eDP-1": {
+        "scale": 1.6,
+        "enabled": false,
+        "temperature": 43
+      }
+    }
+  },
+  "theme": {
+    "fontFamily": "Google Sans",
+    "borderRadius": 8,
+    "activePreset": "Zone Frost",
+    "matugen": false,
+    "colors": {
+      "base": "#333f45",
+      "mantle": "#2c373c",
+      "crust": "#252f34",
+      "text": "#e9f1f4",
+      "subtext0": "#93a7b1",
+      "subtext1": "#b7c7cf",
+      "surface0": "#3e4b52",
+      "surface1": "#4a5960",
+      "surface2": "#58686f",
+      "overlay0": "#6d7f87",
+      "overlay1": "#8597a0",
+      "overlay2": "#9daeb6",
+      "blue": "#d6e6ec",
+      "sapphire": "#cfe1e8",
+      "peach": "#e3dccf",
+      "green": "#cfe4d8",
+      "red": "#ff6b6b",
+      "mauve": "#d6e6ec",
+      "pink": "#d6e6ec",
+      "yellow": "#ece0b0",
+      "maroon": "#c9d9df",
+      "teal": "#cfe6e6"
+    },
+    "mode": "dark"
+  },
+  "bar": {
+    "position": "top",
+    "width": 100,
+    "opacity": 100,
+    "style": "solid",
+    "distinctPills": false,
+    "time": {
+      "format": "HH:mm:ss"
+    },
+    "autohide": false,
+    "autohideTimeout": 1000,
+    "groupColors": {},
+    "modules": {
+      "left": [
+        "timedate",
+        "weather",
+        "sysmon"
+      ],
+      "center": [
+        "info",
+        "workspaces",
+        "media"
+      ],
+      "right": [
+        "tray",
+        "kb",
+        "wifi",
+        "bt",
+        "vol",
+        "left",
+        "bat"
+      ]
+    },
+    "workspacesStyle": "numbers",
+    "timeStyle": "classic",
+    "workspaceCount": 8
+  },
+  "notifications": {
+    "dnd": false,
+    "position": "top right",
+    "horizontalPosition": 88,
+    "verticalPosition": 13,
+    "sound": true,
+    "soundFile": "/home/zone-c/.local/share/zone-c/src/assets/sounds/notifications/Botanica.wav",
+    "showEmptyGraphic": true
+  },
+  "dock": {
+    "enabled": true,
+    "position": "bottom",
+    "onTop": true,
+    "elementSize": 44,
+    "floating": true,
+    "opacity": 100,
+    "exclusive": false,
+    "autohide": false,
+    "smartAutohide": true,
+    "autohideTimeout": 1000,
+    "editing": false,
+    "apps": [],
+    "overrideBoundsCorrection": false,
+    "enableScrolling": false,
+    "visibleElements": 7,
+    "hoverScale": 120,
+    "cascadeScale": false
+  },
+  "widgets": {
+    "hideBarInRedactor": true
+  },
+  "launcher": {
+    "position": "bottom",
+    "width": 600,
+    "itemCount": 6,
+    "terminalCommand": "kitty -e",
+    "smartRanking": true
+  },
+  "idle": {
+    "manualInhibit": false
+  },
+  "wallpaperDir": "/home/zone-c/Pictures/Wallpapers",
+  "zoneStyle": {
+    "savedLayout": {
+      "bar.style": "solid",
+      "dock.floating": false,
+      "bar.modules": {
+        "left": [
+          "left",
+          "workspaces",
+          "media"
+        ],
+        "center": [
+          "info",
+          "timedate",
+          "weather"
+        ],
+        "right": [
+          "tray",
+          [
+            "sysmon",
+            "kb",
+            "wifi",
+            "bt",
+            "vol",
+            "bat"
+          ]
+        ]
+      },
+      "launcher.position": "top"
+    }
+  }
+}

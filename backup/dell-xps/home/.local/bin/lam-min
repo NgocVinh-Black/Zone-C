@@ -1,0 +1,15 @@
+#!/bin/bash
+# Làm mịn da + màu ấm nhẹ cho ảnh chân dung. Giữ nguyên ảnh gốc, tạo bản *_min.jpg
+# Dùng: lam-min ảnh1.JPG [ảnh2.JPG ...]   (mức mịn: MIN=nhe|vua|manh, mặc định vua)
+case "${MIN:-vua}" in
+  nhe)  s=0.06; mix=0.5 ;;
+  manh) s=0.12; mix=0.8 ;;
+  *)    s=0.09; mix=0.65 ;;
+esac
+for f in "$@"; do
+  case "$f" in *_min.jpg) continue ;; esac
+  out="${f%.*}_min.jpg"
+  ffmpeg -loglevel error -y -i "$f" -filter_complex \
+    "[0:v]split[a][b];[b]bilateral=sigmaS=12:sigmaR=$s,colortemperature=temperature=6000:mix=0.4[s];[a][s]blend=all_mode=normal:all_opacity=$mix,eq=brightness=0.02:saturation=1.05" \
+    -q:v 2 "$out" && echo "Đã làm mịn: $out"
+done

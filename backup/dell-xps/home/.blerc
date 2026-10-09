@@ -1,0 +1,5 @@
+# Mau goi y lenh cu: chu xam mo, khong nen
+ble-face -s auto_complete fg=242
+
+# Mau to cu phap theo theme dang dung cua Zone-C (scripts/term_sync.sh)
+[[ -f ${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh ]] && source "${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"

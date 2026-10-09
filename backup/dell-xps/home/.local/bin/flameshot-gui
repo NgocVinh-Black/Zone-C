@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SUPER+SHIFT+S: chup bang Flameshot.
+# - Bat fullscreen cho cua so chup de nam tren bar (lop Top) va vien dien (vien tu an khi fullscreen).
+# - Neu dang mo bang cua zone-c (Super+H, launcher...) thi dong bang SAU khi Flameshot da chup
+#   (anh van co bang), vi bang o lop Overlay luon de len va giu ban phim.
+layers=$(hyprctl layers 2>/dev/null)
+flameshot gui "$@" &
+
+addr=""
+for _ in $(seq 60); do
+  addr=$(hyprctl clients -j | jq -r '.[] | select(.class == "flameshot") | .address' | head -1)
+  [[ -n $addr ]] && break
+  sleep 0.05
+done
+[[ -z $addr ]] && exit 0
+
+fs=$(hyprctl clients -j | jq -r --arg a "$addr" '.[] | select(.address == $a) | .fullscreen')
+[[ $fs == 0 ]] && hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"fullscreen\", window = \"address:$addr\" })" >/dev/null
+
+grep -q 'namespace: qs-master' <<<"$layers"       && zone-c msg close >/dev/null 2>&1
+grep -q 'namespace: qs-applauncher' <<<"$layers"  && zone-c msg toggle launcher >/dev/null 2>&1
+grep -q 'namespace: qs-clipboard' <<<"$layers"    && zone-c msg toggle clipboard >/dev/null 2>&1
+grep -q 'namespace: qs-keybinds' <<<"$layers"     && zone-c ipc call keybinds close >/dev/null 2>&1
+grep -q 'namespace: qs-closeconfirm' <<<"$layers" && zone-c ipc call closeconfirm cancel >/dev/null 2>&1
+# Thanh Quick actions (lop Overlay, luon co mat) -> dong neu dang mo
+zone-c ipc call floating hide >/dev/null 2>&1
+
+sleep 0.15
+hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null

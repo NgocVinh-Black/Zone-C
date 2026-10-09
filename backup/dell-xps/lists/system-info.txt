@@ -1,0 +1,10 @@
+hostname=arch-xps
+user=zone-c groups=zone-c wheel
+shell=/usr/bin/bash
+Timezone=Asia/Ho_Chi_Minh
+System Locale: LANG=en_US.UTF-8
+    VC Keymap: us
+   X11 Layout: us
+    X11 Model: pc105+inet
+  X11 Options: terminate:ctrl_alt_bksp
+7.2.9-arch1-1

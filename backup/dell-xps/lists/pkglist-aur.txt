@@ -1,0 +1,9 @@
+elegoo-slicer-bin
+github-desktop-bin
+google-chrome
+intel-vision-drivers-dkms-git
+viber
+visual-studio-code-bin
+wl-gammarelay-rs
+yay-bin
+yay-bin-debug

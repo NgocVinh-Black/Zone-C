@@ -1,0 +1,32 @@
+#!/bin/bash
+# Theo dõi USB, báo khi cắm/rút máy ảnh Sony (ZV-1)
+mode_of() {  # $1 = productId
+  case "$1" in
+    0c44) echo "PC Remote – chụp bằng lệnh 'chup'" ;;
+    0830) echo "đang sạc / máy ảnh đang tắt" ;;
+    *)    echo "chế độ khác (id $1)" ;;
+  esac
+}
+udevadm monitor --udev --subsystem-match=usb/usb_device --property | while read -r line; do
+  case "$line" in
+    ACTION=*)  action=${line#ACTION=} ;;
+    PRODUCT=*) product=${line#PRODUCT=} ;;
+    ID_MODEL=*) model=${line#ID_MODEL=} ;;
+    "")
+      vid=${product%%/*}; pid=${product#*/}; pid=${pid%%/*}
+      if [ "$vid" = 54c ]; then
+        pid=$(printf '%04x' "0x$pid")
+        [ "$action" = add ] && sleep 2
+        if [ -d /dev/v4l ] && [ "$action" = add ] && grep -qs "${model:-ZV-1}" /sys/class/video4linux/*/name; then
+          m="Webcam (USB Streaming) – dùng được cho Facebook/Meet"
+        else
+          m=$(mode_of "$pid")
+        fi
+        case "$action" in
+          add)    notify-send -a "Máy ảnh" -i camera-photo "📷 ${model:-Sony} đã kết nối" "$m" ;;
+          remove) notify-send -a "Máy ảnh" -i camera-photo "📷 Máy ảnh đã ngắt kết nối" ;;
+        esac
+      fi
+      action= product= model= ;;
+  esac
+done

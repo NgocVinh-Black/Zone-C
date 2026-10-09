@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Mo link bang Chrome roi nhay toi cua so Chrome (giong Ubuntu).
+# Dung lam trinh duyet mac dinh cho http/https: app khac (Viber...) mo link qua xdg-open -> script nay.
+/usr/bin/google-chrome-stable "$@" >/dev/null 2>&1
+exec bash "$HOME/.local/share/zone-c/src/scripts/focus_app.sh" google-chrome.desktop google-chrome

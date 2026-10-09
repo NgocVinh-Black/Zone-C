@@ -1,0 +1,12 @@
+#!/bin/bash
+# Đặt máy ảnh ZV-1 (PC Remote) về style chân dung: A, f/1.8, ISO Auto, WB Auto, AF-C, RAW+JPEG
+set_cfg(){ for t in 1 2 3 4; do gphoto2 --set-config "$1=$2" >/dev/null 2>&1; sleep 1; cur=$(gphoto2 --get-config "$1" 2>/dev/null | sed -n 's/^Current: //p'); [ "$cur" = "$2" ] && break; sleep 1; done; printf '%-22s %s\n' "$1" "$cur"; }
+set_cfg expprogram A
+set_cfg f-number f/1.8
+set_cfg iso "Auto ISO"
+set_cfg whitebalance Automatic
+set_cfg exposurecompensation 0
+set_cfg focusmode AF-C
+set_cfg focusarea Wide
+set_cfg dro "DRO Auto"
+set_cfg imagequality RAW+JPEG
