@@ -4,6 +4,20 @@
 set -euo pipefail
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
+restore_home() {
+  echo "==> Home configs"
+  cp -a "$SRC/home/." "$HOME/"
+  [ -f "$HOME/.config/dconf-dump.ini" ] && dconf load / < "$HOME/.config/dconf-dump.ini"
+  fc-cache -f >/dev/null 2>&1 || true
+}
+
+# "restore.sh configs" only copies the home configs back (use after the Zone-C installer)
+if [ "${1:-}" = configs ]; then
+  restore_home
+  echo "Done. Log out and back in (or reboot)."
+  exit 0
+fi
+
 echo "==> /etc (pacman, mkinitcpio, locale, sddm, keyboard)"
 sudo cp "$SRC/etc/pacman.conf" "$SRC/etc/makepkg.conf" "$SRC/etc/mkinitcpio.conf" \
         "$SRC/etc/locale.conf" "$SRC/etc/vconsole.conf" "$SRC/etc/environment" /etc/
@@ -25,9 +39,7 @@ if ! command -v yay >/dev/null; then
 fi
 grep -v -- '-debug$' "$SRC/lists/pkglist-aur.txt" | yay -S --needed -
 
-echo "==> Home configs"
-cp -a "$SRC/home/." "$HOME/"
-[ -f "$HOME/.config/dconf-dump.ini" ] && dconf load / < "$HOME/.config/dconf-dump.ini"
+restore_home
 
 echo "==> Services"
 sudo systemctl enable $(grep -v '@' "$SRC/lists/systemd-system-enabled.txt" | tr '\n' ' ')
@@ -35,4 +47,4 @@ systemctl --user daemon-reload
 systemctl --user enable $(cat "$SRC/lists/systemd-user-enabled.txt" | tr '\n' ' ') || true
 
 sudo mkinitcpio -P
-echo "Done. Next: run the Zone-C installer (install/) to redeploy the shell, then reboot."
+echo "Done. Next: run ./install/install.sh, then backup/dell-xps/restore.sh configs, then reboot."

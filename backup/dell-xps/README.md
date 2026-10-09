@@ -13,7 +13,7 @@ git clone -b dell-XPS git@github.com:NgocVinh-Black/Zone-C.git ~/Zone-C
 ~/Zone-C/backup/dell-xps/restore.sh
 ```
 
-Then run the Zone-C installer and reboot.
+Then run `./install/install.sh`, then `restore.sh configs`, and reboot. See the top-level README for the full steps.
 
 ## Not included
 

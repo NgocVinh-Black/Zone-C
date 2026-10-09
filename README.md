@@ -1,105 +1,122 @@
-# Zone-C
+# Zone-C · nhánh `dell-XPS`
 
-Desktop shell cho Hyprland, viết bằng Quickshell, theo chủ đề **sấm sét xanh** — của **NgocVinh-Black**.
+Nhánh này là **bản sao lưu máy Dell XPS** (hostname `arch-xps`, user `zone-c`) trước khi cài lại Arch Linux.
+Nó gồm toàn bộ Zone-C, cộng thêm cấu hình hệ thống, danh sách gói, font và theme của máy, nằm trong
+[`backup/dell-xps`](backup/dell-xps).
 
-## Demo
+README gốc của Zone-C (giới thiệu, ảnh, phím tắt) nằm ở nhánh [`main`](https://github.com/NgocVinh-Black/Zone-C/tree/main).
 
-[![Zone-C demo](docs/assets/screenshots/desktop.jpg)](docs/assets/demo.mp4)
+---
 
-▶ Bấm vào ảnh để xem video demo ([demo.mp4](docs/assets/demo.mp4)).
+## Khôi phục sau khi cài lại Arch
 
-## Ảnh chụp
+### 0. Cài Arch cơ bản
 
-| | |
-|---|---|
-| ![Launcher](docs/assets/screenshots/launcher.jpg) | ![Trình phát nhạc](docs/assets/screenshots/music.jpg) |
-| **Launcher** | **Trình phát nhạc + equalizer** |
-| ![Lịch và thời tiết](docs/assets/screenshots/calendar.jpg) | ![Bảng hệ thống](docs/assets/screenshots/system.jpg) |
-| **Lịch và thời tiết** | **Bảng hệ thống / thông báo** |
-| ![Chọn hình nền](docs/assets/screenshots/wallpaper.jpg) | |
-| **Chọn hình nền** | |
+Cài Arch như bình thường (ví dụ bằng `archinstall`), với các điểm sau:
 
-## Giao diện
+- Tạo user **`zone-c`** và cho vào nhóm `wheel` (dùng được `sudo`).
+- Cài sẵn `git` và `base-devel`.
+- Có mạng (NetworkManager).
+- Không cần chọn desktop. Zone-C và SDDM sẽ được cài ở bước sau.
 
-- **Hình nền video sấm sét** động, logo và mascot mèo sấm Zone-C.
-- **Viền điện** chạy quanh cửa sổ đang dùng (shader nhiễu trên GPU) kèm ánh sáng xanh.
-- **Bar** ở cạnh trên (đổi được sang trái / phải / dưới): workspace, nhạc, đồng hồ, thời tiết, mạng,
-  Bluetooth, âm lượng, pin và nút chuyển gõ tiếng Việt (`VI` / `US`).
-- **Trình phát nhạc** có cột cava nhảy theo nhạc và hiệu ứng tia sét quét theo nhịp.
-- **Launcher** tìm ứng dụng, gõ `>` để chạy lệnh. Tự tắt Unikey khi mở để gõ tìm kiếm.
-- **Theme** có sẵn: *Zone Thunder* và *Zone Crystal*, đổi trong phần cài đặt.
-- **Màn hình khóa** và **SDDM** (theme `zone-thunder`) cùng phong cách, nền video.
-- **Hộp xác nhận đóng** cửa sổ theo theme, **bảng phím tắt** theo theme.
-- Thông báo, clipboard, lịch, chụp / quay màn hình, quick actions, polkit.
-- **Terminal foot** nền xanh navy trong suốt, banner Zone-C + fastfetch khi mở, gợi ý lệnh cũ từ lịch sử
-  (ble.sh — nhấn `→` để nhận).
-- **Gõ tiếng Việt** bằng fcitx5 + Unikey, icon Papirus-Dark.
+Khởi động vào tài khoản `zone-c` ở màn hình dòng lệnh (TTY).
 
-## Phím tắt chính
+### 1. Clone nhánh này về
 
-| Phím | Chức năng |
-|---|---|
-| `Super` | Mở launcher |
-| `Super + /` | Xem bảng phím tắt |
-| `Super + T` | Terminal |
-| `Super + W` | Trình duyệt |
-| `Super + Q` | Đóng panel / đóng cửa sổ (có hỏi xác nhận) |
-| `Super + Shift + Q` | Đóng cửa sổ ngay |
-| `Super + Shift + S` | Chụp vùng màn hình |
-| `Super + Alt + R` | Quay màn hình |
-| `Super + F` | Toàn màn hình |
-| `Super + ←/→/↑/↓` | Chuyển cửa sổ |
-| `Super + Page Up/Down` | Chuyển workspace |
-| `Super + Shift + K` / phím Copilot | Bật / tắt con mèo float-cat |
-| `Super + K` | Rồi kéo con mèo bằng chuột để dời chỗ |
-
-## Con mèo float-cat (Claude Code)
-
-Con mèo sấm nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột. Nó thở, chớp mắt, giật tai,
-nhai que bông, vung kiếm; đám mây trôi và phóng sét. Màu tự đổi theo theme đang dùng.
-
-Khi dùng [Claude Code](https://claude.com/claude-code), con mèo cho biết Claude đang làm gì:
-khung suy nghĩ `• • •` khi đang chạy, dấu ✓ kèm nhảy lên khi xong, "Cần bạn nè!" khi chờ bạn duyệt.
-
-Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
-Để con mèo đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
-
-```json
-{
-  "hooks": {
-    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat start" }] }],
-    "SessionEnd":       [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat stop" }] }],
-    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say thinking" }] }],
-    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say thinking" }] }],
-    "Notification":     [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say ask" }] }],
-    "Stop":             [{ "hooks": [{ "type": "command", "command": "~/.local/bin/float-cat say done" }] }]
-  }
-}
-```
-
-Không dùng Claude Code thì vẫn bật / tắt tay được: `float-cat toggle` hoặc `Super + Shift + K`.
-Xoá `~/.local/state/float-cat/pos.json` để đưa con mèo về góc phải dưới.
-
-## Cài đặt (Arch Linux và các bản dựa trên Arch)
+Máy mới chưa có khóa SSH, nên clone bằng HTTPS:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/NgocVinh-Black/Zone-C/main/install/install.sh)"
+sudo pacman -S --needed git base-devel
+git clone -b dell-XPS https://github.com/NgocVinh-Black/Zone-C.git ~/Zone-C
+cd ~/Zone-C
 ```
 
-Hoặc clone về rồi chạy:
+### 2. Khôi phục hệ thống
 
 ```bash
-git clone https://github.com/NgocVinh-Black/Zone-C.git
-cd Zone-C
+./backup/dell-xps/restore.sh
+```
+
+Script sẽ:
+
+1. Chép cấu hình `/etc`: `pacman.conf` (bật multilib, Color, giữ `sof-firmware`), mirrorlist,
+   `mkinitcpio.conf`, locale, bàn phím, SDDM, hostname `arch-xps`, múi giờ `Asia/Ho_Chi_Minh`.
+2. Cài lại **toàn bộ gói chính thức** từ `lists/pkglist-native.txt`.
+3. Cài **yay**, rồi cài các **gói AUR** (Chrome, VS Code, Viber, GitHub Desktop, ElegooSlicer…).
+4. Chép **cấu hình home**: dotfile, `~/.config`, script trong `~/.local/bin`, font, ble.sh, dconf.
+5. Bật lại **dịch vụ**: NetworkManager, bluetooth, sddm, fstrim, pipewire, `zv1-notify`…
+6. Chạy `mkinitcpio -P`.
+
+Trong lúc chạy, script sẽ hỏi mật khẩu `sudo` và hỏi xác nhận khi pacman hoặc yay cài gói.
+
+### 3. Cài Zone-C
+
+```bash
 ./install/install.sh
 ```
 
-Để cập nhật, chạy lại script và chọn "update".
+Chọn cài đặt mới và bật SDDM trong menu.
 
-Cấu hình mẫu cho các compositor khác (niri, sway) nằm trong thư mục [compositors](compositors).
+### 4. Chép lại cấu hình của bạn
+
+Trình cài Zone-C có thể ghi đè một số file cấu hình bằng bản mặc định. Chạy lệnh sau để đưa cấu hình
+của bạn về lại:
+
+```bash
+./backup/dell-xps/restore.sh configs
+```
+
+### 5. Khởi động lại
+
+```bash
+reboot
+```
+
+Đăng nhập ở màn hình SDDM `zone-thunder`. Máy sẽ giống như trước khi cài lại.
+
+---
+
+## Việc cần làm tay sau khi khôi phục
+
+Các mục này **không có** trong bản sao lưu (cố ý):
+
+| Mục | Cách làm |
+|---|---|
+| Khóa SSH cho GitHub | `ssh-keygen -t ed25519 -C "ngocvinh1923@gmail.com"`, rồi thêm `~/.ssh/id_ed25519.pub` vào GitHub → Settings → SSH keys |
+| Chuyển repo sang SSH | `git -C ~/Zone-C remote set-url origin git@github.com:NgocVinh-Black/Zone-C.git` |
+| Chrome và các trình duyệt | Đăng nhập Google để đồng bộ bookmark, mật khẩu, extension |
+| VS Code, GitHub Desktop, Viber | Đăng nhập lại |
+| Claude Code | `curl -fsSL https://claude.ai/install.sh \| bash`, rồi `claude` để đăng nhập |
+| Hook con mèo float-cat | Thêm hook vào `~/.claude/settings.json` theo README nhánh `main` |
+| Dữ liệu cá nhân | Chép lại Documents, Downloads, Pictures, Projects, Videos từ USB hoặc ổ ngoài nếu có |
+| fstab | Không cần làm gì, vì archinstall tự tạo fstab mới. File cũ để tham khảo: `backup/dell-xps/etc/fstab` |
+
+---
+
+## Nội dung `backup/dell-xps`
+
+```
+backup/dell-xps/
+├── backup.sh      # chụp lại trạng thái máy hiện tại vào thư mục này
+├── restore.sh     # khôi phục (thêm "configs" để chỉ chép lại cấu hình home)
+├── lists/         # danh sách gói, dịch vụ, font, thông tin hệ thống
+├── etc/           # file cấu hình hệ thống trong /etc
+└── home/          # dotfile, ~/.config, ~/.local, font, theme sddm-zone-thunder
+```
+
+### Cập nhật bản sao lưu
+
+Nếu chỉnh thêm gì trên máy và muốn lưu lại:
+
+```bash
+cd ~/Zone-C
+./backup/dell-xps/backup.sh
+git add -A backup/dell-xps
+git commit -m "Cập nhật bản sao lưu Dell XPS"
+git push
+```
 
 ## Giấy phép
 
 Zone-C là tác phẩm phái sinh của [Serpantinum](https://github.com/ilyamiro/serpantinum) © ilyamiro,
 phân phối theo [GNU AGPL-3.0](LICENSE.md).
-Mọi bản phân phối lại hoặc chỉnh sửa tiếp theo cũng phải giữ giấy phép AGPL-3.0 và ghi công các tác giả.
