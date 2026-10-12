@@ -2,6 +2,7 @@ acpi
 acpica
 adw-gtk-theme
 alsa-utils
+android-tools
 base
 base-devel
 bc
@@ -80,6 +81,7 @@ qt6ct
 quickshell
 ripgrep
 satty
+scrcpy
 sddm
 slurp
 socat
