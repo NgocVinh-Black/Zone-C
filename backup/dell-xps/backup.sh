@@ -56,6 +56,11 @@ find "$H/.local/bin" -maxdepth 1 -type f -exec cp -a {} "$OUT/home/.local/bin/" 
 for d in applications icons easyeffects fonts elegoo-slicer blesh float-cat nautilus; do
   [ -e "$H/.local/share/$d" ] && cp -a "$H/.local/share/$d" "$OUT/home/.local/share/"
 done
+# Zone-C custom themes (saved from the theme tab)
+if [ -d "$H/.local/state/zone-c/themes" ]; then
+  mkdir -p "$OUT/home/.local/state/zone-c"
+  cp -a "$H/.local/state/zone-c/themes" "$OUT/home/.local/state/zone-c/"
+fi
 
 # /etc files that differ from defaults on this machine
 for f in pacman.conf mkinitcpio.conf locale.conf vconsole.conf hostname environment makepkg.conf fstab; do
