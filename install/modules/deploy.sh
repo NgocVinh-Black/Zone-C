@@ -7,6 +7,9 @@ EXTRA_CONFIGS=(
     "fcitx5"
     "qt6ct"
     "foot"
+    "systemd"
+    "mimeapps.list"
+    "code-flags.conf"
 )
 
 render_wallpaper_progress() {
@@ -325,7 +328,9 @@ deploy_package() {
 
         if [ -d "$REPO_ROOT/config/local-bin" ]; then
             cp -r "$REPO_ROOT/config/local-bin/." "$BIN_DIR/"
-            chmod +x "$BIN_DIR"/keybinds-help "$BIN_DIR"/launcher-im-guard "$BIN_DIR"/smart-close "$BIN_DIR"/flameshot-gui "$BIN_DIR"/zonec-banner "$BIN_DIR"/float-cat 2>/dev/null || true
+            for f in "$REPO_ROOT/config/local-bin/"*; do
+                chmod +x "$BIN_DIR/$(basename "$f")" 2>/dev/null || true
+            done
         fi
 
         if [ -d "$REPO_ROOT/config/icons" ]; then
@@ -348,6 +353,15 @@ deploy_package() {
                 echo '    "$HOME/.local/bin/zonec-banner"'
                 echo '    command -v fastfetch >/dev/null && fastfetch'
                 echo 'fi'
+            } >> "$bashrc"
+        fi
+
+        # ~/.local/bin vao PATH de goi duoc cac lenh Zone-C (chup, lam-min, usb-list...) tu terminal
+        if ! grep -q 'PATH=.*\.local/bin' "$bashrc" 2>/dev/null; then
+            {
+                echo ''
+                echo '# Zone-C: lenh trong ~/.local/bin'
+                echo 'export PATH="$HOME/.local/bin:$PATH"'
             } >> "$bashrc"
         fi
 
@@ -389,6 +403,7 @@ deploy_package() {
         # Zone-C: panel Bluetooth tu lam agent ghep doi, tat agent cua blueman de khong tranh nhau
         if command -v gsettings >/dev/null 2>&1; then
             gsettings set org.blueman.general plugin-list "['!AuthAgent']" 2>/dev/null || true
+            gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
         fi
 
         if [ "$is_update" != "true" ]; then

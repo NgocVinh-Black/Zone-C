@@ -103,6 +103,9 @@ setup_services() {
     fi
 
     enable_user_service "easyeffects" "$init_sys"
+    if [ -f "$HOME/.config/systemd/user/zv1-notify.service" ]; then
+        enable_user_service "zv1-notify" "$init_sys"
+    fi
     enable_system_service "NetworkManager" "$init_sys"
     enable_system_service "power-profiles-daemon" "$init_sys"
 }

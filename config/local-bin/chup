@@ -1,0 +1,16 @@
+#!/bin/bash
+# Chụp ZV-1 qua USB (PC Remote), lưu vào ~/Pictures/ZV1, tự tạo bản da mịn *_min.jpg
+# Dùng: chup          -> chụp 1 tấm
+#       chup 5        -> chụp 5 tấm, mỗi tấm cách 3 giây
+#       chup 5 10     -> chụp 5 tấm, mỗi tấm cách 10 giây
+# Mức mịn: MIN=nhe chup | MIN=manh chup   (mặc định: vừa). Tắt làm mịn: MIN=0 chup
+mkdir -p ~/Pictures/ZV1 && cd ~/Pictures/ZV1 || exit 1
+n=${1:-1}; gap=${2:-3}
+mark=$(mktemp); trap 'rm -f "$mark"' EXIT
+if [ "$n" -gt 1 ]; then
+  gphoto2 --capture-image-and-download -F "$n" -I "$gap" --filename "ZV1_%Y%m%d_%H%M%S_%n.%C"
+else
+  gphoto2 --capture-image-and-download --filename "ZV1_%Y%m%d_%H%M%S.%C"
+fi
+[ "${MIN:-}" = 0 ] && exit 0
+find . -maxdepth 1 -name 'ZV1_*.JPG' -newer "$mark" -print0 | xargs -0 -r lam-min

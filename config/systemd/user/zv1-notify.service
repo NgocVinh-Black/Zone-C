@@ -1,0 +1,9 @@
+[Unit]
+Description=Thông báo cắm/rút máy ảnh Sony ZV-1
+
+[Service]
+ExecStart=%h/.local/bin/zv1-notify
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

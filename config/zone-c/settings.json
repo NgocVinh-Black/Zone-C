@@ -4,7 +4,10 @@
     "avatarPath": "",
     "muteSfx": false,
     "weatherInterval": 15,
-    "weatherUnit": "metric"
+    "weatherUnit": "metric",
+    "sfxVolume": 100,
+    "screenshotCaptureOnRelease": false,
+    "quickactions": true
   },
   "syspanel": {
     "clipExpandProgress": 0,
@@ -15,7 +18,7 @@
     "position": "top",
     "width": 100,
     "opacity": 100,
-    "style": "fill", 
+    "style": "solid",
     "time": {
       "format": "HH:mm:ss"
     },
@@ -23,34 +26,61 @@
     "autohideTimeout": 1000,
     "modules": {
       "left": [
-        "left",
-        "workspaces",
-        "media" 
+        "timedate",
+        "weather",
+        "sysmon"
       ],
-     "center": [
-        [
-          "timedate",
-          "info",
-          "weather"
-        ]
-      ],      
-     "right": [
+      "center": [
+        "info",
+        "workspaces",
+        "media"
+      ],
+      "right": [
         "tray",
-        [
-          "kb",
-          "wifi",
-          "bt",
-          "vol",
-          "bat"
-        ]
+        "kb",
+        "wifi",
+        "bt",
+        "vol",
+        "left",
+        "bat"
       ]
-    }
+    },
+    "distinctPills": false,
+    "groupColors": {},
+    "workspacesStyle": "numbers",
+    "timeStyle": "classic",
+    "workspaceCount": 8
   },
   "theme": {
-    "fontFamily": "Adwaita Mono",
-    "borderRadius": 10,
-    "activePreset": "Matugen",
-    "matugen": true
+    "fontFamily": "Google Sans",
+    "borderRadius": 8,
+    "activePreset": "Zone Frost",
+    "matugen": false,
+    "colors": {
+      "base": "#333f45",
+      "mantle": "#2c373c",
+      "crust": "#252f34",
+      "text": "#e9f1f4",
+      "subtext0": "#93a7b1",
+      "subtext1": "#b7c7cf",
+      "surface0": "#3e4b52",
+      "surface1": "#4a5960",
+      "surface2": "#58686f",
+      "overlay0": "#6d7f87",
+      "overlay1": "#8597a0",
+      "overlay2": "#9daeb6",
+      "blue": "#d6e6ec",
+      "sapphire": "#cfe1e8",
+      "peach": "#e3dccf",
+      "green": "#cfe4d8",
+      "red": "#ff6b6b",
+      "mauve": "#d6e6ec",
+      "pink": "#d6e6ec",
+      "yellow": "#ece0b0",
+      "maroon": "#c9d9df",
+      "teal": "#cfe6e6"
+    },
+    "mode": "dark"
   },
   "idle": {
     "enabled": true,
@@ -95,20 +125,85 @@
         "resumeCommand": "",
         "isCustom": false
       }
-    }
+    },
+    "manualInhibit": false
   },
   "notifications": {
-    "dnd": true,
+    "dnd": false,
     "position": "top right",
     "sound": true,
-    "soundFile": ""
+    "soundFile": "",
+    "horizontalPosition": 88,
+    "verticalPosition": 13,
+    "showEmptyGraphic": true
   },
   "display": {
     "monitors": {
       "eDP-1": {
         "enabled": false,
-        "scale": 1
+        "scale": 1.6,
+        "temperature": 43
       }
+    }
+  },
+  "dock": {
+    "enabled": true,
+    "position": "bottom",
+    "onTop": true,
+    "elementSize": 44,
+    "floating": true,
+    "opacity": 100,
+    "exclusive": false,
+    "autohide": false,
+    "smartAutohide": true,
+    "autohideTimeout": 1000,
+    "editing": false,
+    "apps": [],
+    "overrideBoundsCorrection": false,
+    "enableScrolling": false,
+    "visibleElements": 7,
+    "hoverScale": 120,
+    "cascadeScale": false
+  },
+  "widgets": {
+    "hideBarInRedactor": true
+  },
+  "launcher": {
+    "position": "bottom",
+    "width": 600,
+    "itemCount": 6,
+    "terminalCommand": "kitty -e",
+    "smartRanking": true
+  },
+  "wallpaperDir": null,
+  "zoneStyle": {
+    "savedLayout": {
+      "bar.style": "solid",
+      "dock.floating": false,
+      "bar.modules": {
+        "left": [
+          "left",
+          "workspaces",
+          "media"
+        ],
+        "center": [
+          "info",
+          "timedate",
+          "weather"
+        ],
+        "right": [
+          "tray",
+          [
+            "sysmon",
+            "kb",
+            "wifi",
+            "bt",
+            "vol",
+            "bat"
+          ]
+        ]
+      },
+      "launcher.position": "top"
     }
   }
 }
