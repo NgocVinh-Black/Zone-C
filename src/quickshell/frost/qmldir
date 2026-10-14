@@ -1,0 +1,17 @@
+singleton Fz 1.0 Fz.qml
+singleton Rec 1.0 Rec.qml
+FIcon 1.0 FIcon.qml
+FText 1.0 FText.qml
+Glass 1.0 Glass.qml
+Card 1.0 Card.qml
+FBtn 1.0 FBtn.qml
+FIconBtn 1.0 FIconBtn.qml
+FToggle 1.0 FToggle.qml
+FSeg 1.0 FSeg.qml
+FChip 1.0 FChip.qml
+FBar 1.0 FBar.qml
+FKbd 1.0 FKbd.qml
+FRadio 1.0 FRadio.qml
+BarPill 1.0 BarPill.qml
+BarItem 1.0 BarItem.qml
+BarSep 1.0 BarSep.qml

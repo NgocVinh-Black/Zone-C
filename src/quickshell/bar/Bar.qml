@@ -262,8 +262,8 @@ Variants {
             implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding)) : 0
 
             margins {
-                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(4)))
-                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(4)))
+                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(6)))
+                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(6)))
                 left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : s(4)))
                 right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(4)))
             }
@@ -366,9 +366,14 @@ Variants {
                 }
             }
 
-            TopBar {
+            FrostTopBar {
                 id: contentWrapper
                 barWindow: barWindow
+                visible: !barWindow.isVertical
+                transform: Translate {
+                    y: barWindow.isRevealed ? 0 : (barWindow.barPosition === "bottom" ? 1 : -1) * (barWindow.barHeight + barWindow.s(10))
+                    Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+                }
             }
         }
     }
