@@ -13,8 +13,9 @@ Item {
     id: root
     focus: true
 
-    Component.onCompleted: { NotificationManager.sysPanelOpen = true; briRead.running = true; }
-    Component.onDestruction: NotificationManager.sysPanelOpen = false
+    // The panel is preloaded hidden; toasts are only held back while it is actually on screen.
+    Component.onCompleted: NotificationManager.sysPanelOpen = visible
+    Component.onDestruction: if (visible) NotificationManager.sysPanelOpen = false
     onVisibleChanged: { NotificationManager.sysPanelOpen = visible; if (visible) briRead.running = true; }
 
     // ---------- state ----------

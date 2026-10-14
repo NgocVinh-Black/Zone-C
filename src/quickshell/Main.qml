@@ -445,7 +445,7 @@ PanelWindow {
 
     property real globalUiScale: 1.0
 
-    Notifs.NotificationPopups {
+    Notifs.FrostToasts {
         id: osdPopups
     }
 

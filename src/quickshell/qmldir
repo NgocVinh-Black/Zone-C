@@ -17,6 +17,7 @@ ZoneC 1.0 serp/ZoneC.qml
 ElectricBorder 1.0 focusborder/ElectricBorder.qml
 
 Osd 1.0 popouts/Osd.qml
+FrostOsd 1.0 popouts/FrostOsd.qml
 PopoutManager 1.0 popouts/PopoutManager.qml
 SideMusicPopout 1.0 popouts/SideMusicPopout.qml
 TrayBase 1.0 popouts/TrayBase.qml

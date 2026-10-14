@@ -119,6 +119,22 @@ Item {
         }
     }
 
+    // Input method switches (fcitx5: unikey <-> keyboard-us) show the "Tiếng Việt · Unikey" OSD.
+    property string lastIme: ""
+    Process {
+        id: imePoll
+        command: ["fcitx5-remote", "-n"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let im = this.text.trim();
+                if (im === "") return;
+                if (controller.lastIme !== "" && im !== controller.lastIme) controller.show("ime", im);
+                controller.lastIme = im;
+            }
+        }
+    }
+    Timer { interval: 700; running: true; repeat: true; onTriggered: imePoll.running = true }
+
     Process {
         id: kbWatcher
         running: true
@@ -204,6 +220,12 @@ Item {
                 }
             }
         }
+    }
+
+    // quickshell ipc call osd trigger <volume|brightness|mic|capslock|numlock|airplane|ime> [value]
+    IpcHandler {
+        target: "osd"
+        function trigger(kind: string, value: string): void { controller.show(kind, value === "" ? undefined : value); }
     }
 
     function show(k, v, scr) {

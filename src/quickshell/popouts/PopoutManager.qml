@@ -5,7 +5,7 @@ import "../"
 Item {
     id: root
 
-    Osd {}
+    FrostOsd {}
     TrayBase {}
     SideMusicPopout {}
 }
