@@ -175,7 +175,8 @@ def get_cliphist():
             "id": iid,
             "content": display_content,
             "type": item_type,
-            "pinned": iid in pinned_ids
+            "pinned": iid in pinned_ids,
+            "meta": content.strip() if "[[ binary data" in content else ""
         })
 
     if decode_tasks:
