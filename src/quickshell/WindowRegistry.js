@@ -103,9 +103,9 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             } 
         },
         "calendar": { 
-            w: 1360, h: 510, comp: "calendar/CalendarPopup.qml", 
+            w: 1360, h: 560, comp: "calendar/FrostCalendar.qml", 
             pos: { 
-                "top": { anchor: "top-center", mt: 52 }, 
+                "top": { anchor: "top-center", mt: 60 }, 
                 "bottom": { anchor: "bottom-center", mb: 52 }, 
                 "left": { anchor: "top-center", mt: 12 }, 
                 "right": { anchor: "top-center", mt: 12 } 
