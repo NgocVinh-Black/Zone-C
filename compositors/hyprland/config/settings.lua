@@ -87,3 +87,13 @@ hl.window_rule({
   size   = "(monitor_w*0.6) (monitor_h*0.75)",
   center = true,
 })
+
+-- Zone-C Frost: frosted glass behind the shell's panels, bar pills and desktop cards (backdrop-filter in
+-- the design). ignore_alpha keeps the blur to the glass itself, not the transparent rest of each layer.
+hl.layer_rule({
+  name  = "zone-c-glass",
+  match = { namespace = "^(qs-.*)$" },
+
+  blur         = true,
+  ignore_alpha = 0.5,
+})

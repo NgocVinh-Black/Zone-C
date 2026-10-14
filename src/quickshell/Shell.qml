@@ -22,6 +22,7 @@ ShellRoot {
     Clipboard {}    
 
     Polkit {}
+    PairDialog {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}

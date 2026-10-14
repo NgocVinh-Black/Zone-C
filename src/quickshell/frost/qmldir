@@ -24,3 +24,9 @@ FInput 1.0 FInput.qml
 FSelect 1.0 FSelect.qml
 FFilePicker 1.0 FFilePicker.qml
 RoundImage 1.0 RoundImage.qml
+Solid 1.0 Solid.qml
+Ico 1.0 Ico.qml
+Lbl 1.0 Lbl.qml
+Caps 1.0 Caps.qml
+Grp 1.0 Grp.qml
+GRow 1.0 GRow.qml

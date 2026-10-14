@@ -76,9 +76,9 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
 
     let base = {
         "network": { 
-            w: 720, h: 600, comp: "network/NetworkPopup.qml", 
+            w: 430, h: 600, comp: "network/FrostNetwork.qml", 
             pos: { 
-                "top": { anchor: "top-right", mt: 52, mr: 4 }, 
+                "top": { anchor: "top-right", mt: 58, mr: 120 }, 
                 "bottom": { anchor: "bottom-right", mb: 52, mr: 4 }, 
                 "left": { anchor: "bottom-left", ml: 52, mb: 4 }, 
                 "right": { anchor: "bottom-right", mr: 52, mb: 4 } 

@@ -76,13 +76,7 @@ PanelWindow {
         }
     }
 
-    // Co yeu cau ghep doi Bluetooth -> mo panel mang de xac nhan
-    Connections {
-        target: BtAgent
-        function onRequestStarted() {
-            if (masterWindow.targetActive !== "network") switchWidget("network", "bt");
-        }
-    }
+    // Bluetooth pairing requests are answered in network/PairDialog.qml
 
     IpcHandler {
         target: "main"
@@ -596,6 +590,10 @@ PanelWindow {
             }
         }
 
+        // Frost panels size themselves to their content (fitWidth / fitHeight), keeping the layout's anchor edge.
+        if (item && typeof item.fitHeight === "number" && item.fitHeight >= 50) th = item.fitHeight;
+        if (item && typeof item.fitWidth === "number" && item.fitWidth >= 50) tw = item.fitWidth;
+
         let x = (tw !== t.w) ? recenterX(t, tw) : t.rx;
         return { x: x, y: t.ry, w: tw, h: th };
     }
@@ -792,6 +790,8 @@ PanelWindow {
 
         let finalW = (typeof cachedItem.targetMasterWidth === "number" && cachedItem.targetMasterWidth >= 50) ? cachedItem.targetMasterWidth : t.w;
         let finalH = (typeof cachedItem.targetMasterHeight === "number" && cachedItem.targetMasterHeight >= 50) ? cachedItem.targetMasterHeight : t.h;
+        if (typeof cachedItem.fitWidth === "number" && cachedItem.fitWidth >= 50) finalW = cachedItem.fitWidth;
+        if (typeof cachedItem.fitHeight === "number" && cachedItem.fitHeight >= 50) finalH = cachedItem.fitHeight;
         let finalX = (finalW !== t.w) ? recenterX(t, finalW) : t.rx;
         let finalY = t.ry;
 
