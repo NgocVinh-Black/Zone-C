@@ -112,12 +112,12 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             } 
         },
         "wallpaper": { 
-            w: "fill", h: 650, comp: "wallpaper/WallpaperPicker.qml", 
+            w: "fill", h: "fill", comp: "wallpaper/FrostWallpaper.qml", 
             pos: { 
-                "top": { anchor: "center-left" }, 
-                "bottom": { anchor: "center-left" }, 
-                "left": { anchor: "center-left" }, 
-                "right": { anchor: "center-left" } 
+                "top": { anchor: "fill", mt: 52 }, 
+                "bottom": { anchor: "fill" }, 
+                "left": { anchor: "fill" }, 
+                "right": { anchor: "fill" } 
             } 
         },
         "music": { 
@@ -215,7 +215,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             break;
         case "fill":
             rx = 0;
-            ry = 0;
+            ry = s(p.mt || 0, scale);
             break;
         case "hidden":
             rx = -5000;
