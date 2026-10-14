@@ -23,3 +23,4 @@ FSlider 1.0 FSlider.qml
 FInput 1.0 FInput.qml
 FSelect 1.0 FSelect.qml
 FFilePicker 1.0 FFilePicker.qml
+RoundImage 1.0 RoundImage.qml

@@ -139,12 +139,12 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             } 
         },
         "system": { 
-            w: 500, h: "fill", comp: "syspanel/SystemPanel.qml", 
+            w: 456, h: "fill", comp: "syspanel/FrostSystemPanel.qml", 
             pos: { 
-                "top": { anchor: "right" }, 
-                "bottom": { anchor: "right" }, 
-                "left": { anchor: "right" }, 
-                "right": { anchor: "left" } 
+                "top": { anchor: "top-right", mt: 58, mb: 10, mr: 10 }, 
+                "bottom": { anchor: "top-right", mt: 10, mb: 58, mr: 10 }, 
+                "left": { anchor: "top-right", mt: 10, mb: 10, mr: 10 }, 
+                "right": { anchor: "top-left", mt: 10, mb: 10, ml: 10 } 
             } 
         },
         "hidden": { 
@@ -163,7 +163,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
     let p = t.pos[barPosition] || t.pos["top"];
 
     let finalW = t.w === "fill" ? mw : s(t.w, scale);
-    let finalH = t.h === "fill" ? mh : s(t.h, scale);
+    let finalH = t.h === "fill" ? mh - s(p.mt || 0, scale) - s(p.mb || 0, scale) : s(t.h, scale);
 
     let rx = 0;
     let ry = 0;

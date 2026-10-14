@@ -160,7 +160,7 @@ Item {
                 text: root.mediaText
                 color: mediaIt.fgColor
                 px: 13
-                font.weight: Font.Medium
+                weight: Font.Medium
                 width: Math.min(implicitWidth, 230 - 20 - 20)
                 elide: Text.ElideRight
                 anchors.verticalCenter: parent.verticalCenter
@@ -179,7 +179,7 @@ Item {
             label: "Đang quay màn hình"
             onClicked: Fz.open("screenshot")
             FIcon { name: "b-rec"; size: 11; color: "#ff9b9b"; anchors.verticalCenter: parent.verticalCenter }
-            FText { mono: true; text: Rec.elapsed; color: "#ff9b9b"; px: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+            FText { mono: true; text: Rec.elapsed; color: "#ff9b9b"; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
         }
         BarSep { visible: root.recording }
         BarItem {
@@ -187,8 +187,8 @@ Item {
             on: root.openWidget === "calendar"
             label: "Mở lịch"
             onClicked: Fz.open("calendar")
-            FText { mono: true; text: DateTime.timeShort; color: clockIt.fgColor; px: 14; font.weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+            FText { mono: true; text: DateTime.timeShort; color: clockIt.fgColor; px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
         }
         BarSep {}
         BarItem {
@@ -197,7 +197,7 @@ Item {
             label: "Thời tiết"
             onClicked: Fz.open("calendar")
             FIcon { name: Fz.weatherIcon(Weather.currentIcon); size: 15; color: weatherIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: Weather.currentTemp !== "" ? Math.round(Number(Weather.currentTemp)) + "°" : "--°"; color: weatherIt.fgColor; px: 13; font.weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: Weather.currentTemp !== "" ? Math.round(Number(Weather.currentTemp)) + "°" : "--°"; color: weatherIt.fgColor; px: 13; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
         }
     }
 
@@ -222,7 +222,7 @@ Item {
                 padX: 9
                 label: root.kbLayout === "VI" ? "Bộ gõ Tiếng Việt" : "Bàn phím " + root.kbLayout
                 onClicked: { Quickshell.execDetached(["fcitx5-remote", "-t"]); kbPoll.running = true; }
-                FText { text: root.kbLayout; color: kbIt.fgColor; px: 12; font.weight: Font.Bold; font.letterSpacing: 0.5; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: root.kbLayout; color: kbIt.fgColor; px: 12; weight: Font.Bold; font.letterSpacing: 0.5; anchors.verticalCenter: parent.verticalCenter }
             }
         }
 
@@ -233,20 +233,20 @@ Item {
                 label: root.ssid !== "" ? "Wi-Fi " + root.ssid : "Wi-Fi"
                 onClicked: Fz.open("network", "wifi")
                 FIcon { name: root.wifiOn ? "b-wifi" : "wifioff"; size: 15; color: wifiIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); color: wifiIt.fgColor; px: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); color: wifiIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
                 id: btIt
                 label: "Bluetooth, " + root.btConnected + " thiết bị đã kết nối"
                 onClicked: Fz.open("network", "bt")
                 FIcon { name: root.btOn ? "b-bt" : "btoff"; size: 15; color: btIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: root.btOn ? "Bluetooth" : "Tắt"; color: btIt.fgColor; px: 13; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: root.btOn ? "Bluetooth" : "Tắt"; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
                 Rectangle {
                     visible: root.btConnected > 0
                     width: Math.max(16, btBadge.implicitWidth + 8); height: 16; radius: 8
                     color: btIt.on ? Fz.ink : Fz.acc
                     anchors.verticalCenter: parent.verticalCenter
-                    FText { id: btBadge; anchors.centerIn: parent; text: root.btConnected; color: btIt.on ? Fz.acc : Fz.ink; px: 10.5; font.weight: Font.Bold }
+                    FText { id: btBadge; anchors.centerIn: parent; text: root.btConnected; color: btIt.on ? Fz.acc : Fz.ink; px: 10.5; weight: Font.Bold }
                 }
             }
             BarItem {
@@ -289,7 +289,7 @@ Item {
                     width: Math.max(16, notifBadge.implicitWidth + 8); height: 16; radius: 8
                     color: notifIt.on ? Fz.ink : Fz.acc
                     anchors.verticalCenter: parent.verticalCenter
-                    FText { id: notifBadge; anchors.centerIn: parent; text: root.notifCount; color: notifIt.on ? Fz.acc : Fz.ink; px: 10.5; font.weight: Font.Bold }
+                    FText { id: notifBadge; anchors.centerIn: parent; text: root.notifCount; color: notifIt.on ? Fz.acc : Fz.ink; px: 10.5; weight: Font.Bold }
                 }
             }
             BarItem {

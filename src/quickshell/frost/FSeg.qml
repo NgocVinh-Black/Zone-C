@@ -27,8 +27,8 @@ Rectangle {
                 required property var modelData
                 required property int index
                 readonly property bool on: index === root.current
-                readonly property string label: typeof modelData === "string" ? modelData : (modelData.label || "")
-                readonly property string icon: typeof modelData === "string" ? "" : (modelData.icon || "")
+                readonly property string segLabel: typeof modelData === "string" ? modelData : (modelData.label || "")
+                readonly property string segIcon: typeof modelData === "string" ? "" : (modelData.icon || "")
                 width: root.btnWidth > 0 ? root.btnWidth : content.implicitWidth + 24
                 height: root.btnHeight
                 radius: 9
@@ -37,8 +37,8 @@ Rectangle {
                     id: content
                     anchors.centerIn: parent
                     spacing: 6
-                    FIcon { visible: icon !== ""; name: icon; size: label === "" ? 20 : 14; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
-                    FText { visible: label !== ""; text: label; px: root.fontSize; weight: Font.Medium; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
+                    FIcon { visible: segIcon !== ""; name: segIcon; size: segLabel === "" ? 20 : 14; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
+                    FText { visible: segLabel !== ""; text: segLabel; px: root.fontSize; weight: Font.Medium; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
                 }
                 MouseArea { id: segMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.current = index; root.picked(index); } }
             }
