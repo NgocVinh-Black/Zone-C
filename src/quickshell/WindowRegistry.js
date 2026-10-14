@@ -85,9 +85,9 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             } 
         },
         "volume": { 
-            w: 410, h: 580, comp: "volume/VolumePopup.qml", 
+            w: 420, h: 580, comp: "volume/FrostVolume.qml", 
             pos: { 
-                "top": { anchor: "top-right", mt: 52, mr: 5 }, 
+                "top": { anchor: "top-right", mt: 58, mr: 60 }, 
                 "bottom": { anchor: "bottom-right", mb: 52, mr: 5 }, 
                 "left": { anchor: "bottom-left", ml: 52, mb: 5 }, 
                 "right": { anchor: "bottom-right", mr: 52, mb: 5 } 
