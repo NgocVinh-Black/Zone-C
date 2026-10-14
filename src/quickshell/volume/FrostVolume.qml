@@ -65,7 +65,7 @@ Item {
             Row {
                 width: parent.width
                 spacing: 12
-                FIconBtn { on: root.muted; icon: root.muted ? "v-mute" : "v-vol"; label: "Tắt tiếng"; anchors.verticalCenter: parent.verticalCenter
+                FIconBtn { on: root.muted; icon: root.muted ? "v-mute" : "Volume:v-vol"; label: "Tắt tiếng"; anchors.verticalCenter: parent.verticalCenter
                            onClicked: if (root.sink) Audio.toggleMute(root.sink) }
                 Column {
                     width: parent.width - 36 - 24 - masterT.implicitWidth
