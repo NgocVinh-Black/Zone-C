@@ -20,14 +20,25 @@ fi
 
 if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d "$PROJECT_ROOT/src" ]]; then
     command -v git &>/dev/null || sudo pacman -Sy --noconfirm --needed git
+    # ZONE_C_BRANCH=Zone-c-V2 de cai mot nhanh khac main
+    BRANCH="$(printf '%s' "${ZONE_C_BRANCH:-}" | tr -d '\r\n\t ' | sed 's/[^a-zA-Z0-9._\/-]//g')"
     if [ ! -d "$CACHE_BASE/.git" ]; then
         rm -rf "$CACHE_BASE"
         mkdir -p "$CACHE_BASE"
-        git clone "https://github.com/${REPO_SLUG}.git" "$CACHE_BASE"
+        if [ -n "$BRANCH" ]; then
+            git clone -b "$BRANCH" "https://github.com/${REPO_SLUG}.git" "$CACHE_BASE"
+        else
+            git clone "https://github.com/${REPO_SLUG}.git" "$CACHE_BASE"
+        fi
     else
         git -C "$CACHE_BASE" remote set-url origin "https://github.com/${REPO_SLUG}.git" 2>/dev/null || true
         git -C "$CACHE_BASE" fetch origin 2>/dev/null || true
-        git -C "$CACHE_BASE" reset --hard origin/HEAD 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/main 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/master 2>/dev/null || true
+        if [ -n "$BRANCH" ]; then
+            git -C "$CACHE_BASE" checkout -B "$BRANCH" "origin/$BRANCH" 2>/dev/null || true
+            git -C "$CACHE_BASE" reset --hard "origin/$BRANCH" 2>/dev/null || true
+        else
+            git -C "$CACHE_BASE" reset --hard origin/HEAD 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/main 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/master 2>/dev/null || true
+        fi
     fi
     INSTALL_DIR="$CACHE_BASE/install"
     PROJECT_ROOT="$CACHE_BASE"

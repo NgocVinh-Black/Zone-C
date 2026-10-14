@@ -1,3 +1,13 @@
+### Zone-C V2 (Frost Dark)
+
+- style: new Frost Dark palette for the Zone Frost preset (deeper slate base, brighter secondary text, ice accent #d6e6ec)
+- feat: Zone Frost is the default preset; bar defaults to floating islands (logo, workspace pills, media | info, clock, weather | tray, kb/wifi/bt/vol/bat)
+- feat: dock is off by default, apps open from the launcher
+- style: 14px corner radius by default
+- feat: new Ice Bolt logo (src/assets/logo/*.svg) and logo-frost.png
+- feat: install.sh can install any branch with ZONE_C_BRANCH
+- docs: README for V2 and a new banner
+
 ### 2.1.9
 
 - feat: add a file browser in the launcher to open files with the default application configured for it

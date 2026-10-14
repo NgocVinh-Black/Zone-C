@@ -18,7 +18,7 @@
     "position": "top",
     "width": 100,
     "opacity": 100,
-    "style": "solid",
+    "style": "modular",
     "time": {
       "format": "HH:mm:ss"
     },
@@ -26,59 +26,60 @@
     "autohideTimeout": 1000,
     "modules": {
       "left": [
-        "timedate",
-        "weather",
-        "sysmon"
-      ],
-      "center": [
-        "info",
+        "left",
         "workspaces",
         "media"
       ],
+      "center": [
+        "info",
+        "timedate",
+        "weather"
+      ],
       "right": [
         "tray",
-        "kb",
-        "wifi",
-        "bt",
-        "vol",
-        "left",
-        "bat"
+        [
+          "kb",
+          "wifi",
+          "bt",
+          "vol",
+          "bat"
+        ]
       ]
     },
-    "distinctPills": false,
+    "distinctPills": true,
     "groupColors": {},
-    "workspacesStyle": "numbers",
+    "workspacesStyle": "pills",
     "timeStyle": "classic",
     "workspaceCount": 8
   },
   "theme": {
     "fontFamily": "Google Sans",
-    "borderRadius": 8,
+    "borderRadius": 14,
     "activePreset": "Zone Frost",
     "matugen": false,
     "colors": {
-      "base": "#333f45",
-      "mantle": "#2c373c",
-      "crust": "#252f34",
-      "text": "#e9f1f4",
-      "subtext0": "#93a7b1",
-      "subtext1": "#b7c7cf",
-      "surface0": "#3e4b52",
-      "surface1": "#4a5960",
-      "surface2": "#58686f",
-      "overlay0": "#6d7f87",
-      "overlay1": "#8597a0",
-      "overlay2": "#9daeb6",
+      "base": "#2a353b",
+      "mantle": "#232d32",
+      "crust": "#1c2428",
+      "text": "#edf3f6",
+      "subtext0": "#a7b8c1",
+      "subtext1": "#c6d3d9",
+      "surface0": "#34424a",
+      "surface1": "#415058",
+      "surface2": "#53646d",
+      "overlay0": "#7d909a",
+      "overlay1": "#8fa2ab",
+      "overlay2": "#a7b8c1",
       "blue": "#d6e6ec",
-      "sapphire": "#cfe1e8",
-      "peach": "#e3dccf",
-      "green": "#cfe4d8",
-      "red": "#ff6b6b",
+      "sapphire": "#9fd3e0",
+      "peach": "#e9c9a8",
+      "green": "#a6dcbc",
+      "red": "#ff7b7b",
       "mauve": "#d6e6ec",
       "pink": "#d6e6ec",
-      "yellow": "#ece0b0",
-      "maroon": "#c9d9df",
-      "teal": "#cfe6e6"
+      "yellow": "#ecdcaa",
+      "maroon": "#c6d3d9",
+      "teal": "#9fd3e0"
     },
     "mode": "dark"
   },
@@ -147,7 +148,7 @@
     }
   },
   "dock": {
-    "enabled": true,
+    "enabled": false,
     "position": "bottom",
     "onTop": true,
     "elementSize": 44,
@@ -169,9 +170,9 @@
     "hideBarInRedactor": true
   },
   "launcher": {
-    "position": "bottom",
-    "width": 600,
-    "itemCount": 6,
+    "position": "top",
+    "width": 680,
+    "itemCount": 7,
     "terminalCommand": "kitty -e",
     "smartRanking": true
   },
