@@ -18,27 +18,9 @@ Item {
     PwObjectTracker { objects: [root.sink, root.source].concat(Audio.outputs).concat(Audio.apps).filter(n => n) }
     PwNodePeakMonitor { id: micPeak; node: root.source; enabled: root.visible && root.source !== null }
 
-    // Friendly names like the design ("Loa tích hợp · Analog stereo") instead of ALSA card strings.
     function props(n) { return (n && n.properties) || {}; }
-    function devName(n) {
-        if (!n) return "";
-        let p = props(n), d = n.description || p["node.description"] || n.name || "";
-        let prof = p["device.profile.description"] || "";
-        if ((n.name || "").indexOf("easyeffects") === 0) return "Easy Effects";
-        if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return d;
-        if (/hdmi|displayport/i.test(prof || d)) return (prof || d).replace(/ Output.*$/, "").replace(/^.*(HDMI)/i, "$1");
-        if (/speaker/i.test(prof || d)) return "Loa tích hợp";
-        if (/headphone/i.test(prof || d)) return "Tai nghe 3.5 mm";
-        if (/mic/i.test(prof || d)) return "Micro tích hợp";
-        return d;
-    }
-    function devSub(n) {
-        let p = props(n), d = (n.description || "") + " " + (p["device.profile.description"] || "");
-        if ((n.name || "").indexOf("easyeffects") === 0) return "Bộ xử lý âm thanh";
-        if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return "Bluetooth" + (p["api.bluez5.codec"] ? " · " + String(p["api.bluez5.codec"]).toUpperCase() : "");
-        if (/hdmi|displayport/i.test(d)) return "HDMI";
-        return "Analog stereo";
-    }
+    function devName(n) { return Fz.audioName(n); }
+    function devSub(n) { return Fz.audioSub(n); }
     // HDMI ports only matter with an external screen plugged in
     readonly property var outputs: Audio.outputs.filter(n => root.sink === n || !/hdmi|displayport/i.test((n.description || "") + (props(n)["device.profile.description"] || "")) || Quickshell.screens.length > 1)
     // playback streams, one row per application

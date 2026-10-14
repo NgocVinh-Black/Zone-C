@@ -120,6 +120,27 @@ Item {
         return n.length ? n.charAt(0).toUpperCase() + n.slice(1) : "";
     }
 
+    // Friendly names like the design ("Loa tích hợp · Analog stereo") instead of ALSA card strings.
+    function audioName(n) {
+        if (!n) return "";
+        let p = ((n && n.properties) || {}), d = n.description || p["node.description"] || n.name || "";
+        let prof = p["device.profile.description"] || "";
+        if ((n.name || "").indexOf("easyeffects") === 0) return "Easy Effects";
+        if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return d;
+        if (/hdmi|displayport/i.test(prof || d)) return (prof || d).replace(/ Output.*$/, "").replace(/^.*(HDMI)/i, "$1");
+        if (/speaker/i.test(prof || d)) return "Loa tích hợp";
+        if (/headphone/i.test(prof || d)) return "Tai nghe 3.5 mm";
+        if (/mic/i.test(prof || d)) return "Micro tích hợp";
+        return d;
+    }
+    function audioSub(n) {
+        let p = ((n && n.properties) || {}), d = (n.description || "") + " " + (p["device.profile.description"] || "");
+        if ((n.name || "").indexOf("easyeffects") === 0) return "Bộ xử lý âm thanh";
+        if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return "Bluetooth" + (p["api.bluez5.codec"] ? " · " + String(p["api.bluez5.codec"]).toUpperCase() : "");
+        if (/hdmi|displayport/i.test(d)) return "HDMI";
+        return "Analog stereo";
+    }
+
     // "Thứ Tư 14/10" (bar) and "Thứ Tư, 14 tháng 10" (desktop, lock screen)
     readonly property var weekdays: ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
     function dateShort(d) { return weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }
