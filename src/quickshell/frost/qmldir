@@ -1,4 +1,6 @@
 singleton Fz 1.0 Fz.qml
+singleton Agenda 1.0 Agenda.qml
+singleton Desk 1.0 Desk.qml
 singleton Rec 1.0 Rec.qml
 FIcon 1.0 FIcon.qml
 FText 1.0 FText.qml
@@ -15,3 +17,9 @@ FRadio 1.0 FRadio.qml
 BarPill 1.0 BarPill.qml
 BarItem 1.0 BarItem.qml
 BarSep 1.0 BarSep.qml
+Ring 1.0 Ring.qml
+MusicDisc 1.0 MusicDisc.qml
+FSlider 1.0 FSlider.qml
+FInput 1.0 FInput.qml
+FSelect 1.0 FSelect.qml
+FFilePicker 1.0 FFilePicker.qml

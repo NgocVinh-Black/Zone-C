@@ -22,6 +22,7 @@ SideMusicPopout 1.0 popouts/SideMusicPopout.qml
 TrayBase 1.0 popouts/TrayBase.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
+FrostDesktop 1.0 desktop/FrostDesktop.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

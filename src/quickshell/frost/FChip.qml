@@ -16,6 +16,6 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 5
         FIcon { visible: root.icon !== ""; name: root.icon; size: 13; color: root.fgColor; anchors.verticalCenter: parent.verticalCenter }
-        FText { text: root.text; px: 11.5; font.weight: Font.DemiBold; color: root.fgColor; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: root.text; px: 11.5; weight: Font.DemiBold; color: root.fgColor; anchors.verticalCenter: parent.verticalCenter }
     }
 }

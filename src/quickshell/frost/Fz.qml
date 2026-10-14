@@ -107,6 +107,19 @@ Item {
         return "cloud";
     }
 
+    function weatherDesc(glyph) {
+        return ({ sun: "Nắng", moon: "Trời quang", rain: "Có mưa", wind: "Sương mù", zc: "Giông bão" })[weatherIcon(glyph)] || "Nhiều mây";
+    }
+    function deg(v) { return (v === undefined || v === null || v === "") ? "--°" : Math.round(Number(v)) + "°"; }
+
+    // Name used in greetings: Settings > Người dùng (general.displayName), else the login name.
+    readonly property string displayName: {
+        let g = Config.getSetting("general", {});
+        if (g && g.displayName) return g.displayName;
+        let n = SystemInfo.username || "";
+        return n.length ? n.charAt(0).toUpperCase() + n.slice(1) : "";
+    }
+
     // "Thứ Tư 14/10" (bar) and "Thứ Tư, 14 tháng 10" (desktop, lock screen)
     readonly property var weekdays: ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
     function dateShort(d) { return weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }

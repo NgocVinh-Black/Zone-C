@@ -545,16 +545,20 @@ ShellRoot {
                             }
                         }
 
+                        // Covers the screen like object-fit: cover; object-position: center 62% (Frost design)
                         Image {
                             id: imgA
-                            anchors.fill: parent
+                            readonly property real ar: implicitHeight > 0 ? implicitWidth / implicitHeight : 16 / 9
+                            width: Math.max(parent.width, parent.height * ar)
+                            height: Math.max(parent.height, parent.width / ar)
+                            x: (parent.width - width) / 2
+                            y: (parent.height - height) * 0.62
                             source: !barWindow.isVideoA && barWindow.pathA ? "file://" + barWindow.pathA : ""
-                            fillMode: Image.PreserveAspectCrop
+                            fillMode: Image.Stretch
                             asynchronous: true
                             visible: !barWindow.isVideoA && barWindow.pathA !== ""
                             cache: true
-                            sourceSize.width: parent.width > 0 ? parent.width : 0
-                            sourceSize.height: parent.height > 0 ? parent.height : 0
+                            sourceSize.width: parent.width > 0 ? Math.max(parent.width, parent.height * 2) : 0
                         }
 
                         Loader {
@@ -725,16 +729,20 @@ ShellRoot {
                             }
                         }
 
+                        // Covers the screen like object-fit: cover; object-position: center 62% (Frost design)
                         Image {
                             id: imgB
-                            anchors.fill: parent
+                            readonly property real ar: implicitHeight > 0 ? implicitWidth / implicitHeight : 16 / 9
+                            width: Math.max(parent.width, parent.height * ar)
+                            height: Math.max(parent.height, parent.width / ar)
+                            x: (parent.width - width) / 2
+                            y: (parent.height - height) * 0.62
                             source: !barWindow.isVideoB && barWindow.pathB ? "file://" + barWindow.pathB : ""
-                            fillMode: Image.PreserveAspectCrop
+                            fillMode: Image.Stretch
                             asynchronous: true
                             visible: !barWindow.isVideoB && barWindow.pathB !== ""
                             cache: true
-                            sourceSize.width: parent.width > 0 ? parent.width : 0
-                            sourceSize.height: parent.height > 0 ? parent.height : 0
+                            sourceSize.width: parent.width > 0 ? Math.max(parent.width, parent.height * 2) : 0
                         }
 
                         Loader {

@@ -1,0 +1,14 @@
+AnalogClock 1.0 AnalogClock.qml
+Battery 1.0 Battery.qml
+HeroClock 1.0 HeroClock.qml
+ImageFrame 1.0 ImageFrame.qml
+LumenClock 1.0 LumenClock.qml
+MaterialClock 1.0 MaterialClock.qml
+MusicFull 1.0 MusicFull.qml
+MusicRound 1.0 MusicRound.qml
+Resources 1.0 Resources.qml
+Today 1.0 Today.qml
+User 1.0 User.qml
+Visualizer 1.0 Visualizer.qml
+WeatherCompact 1.0 WeatherCompact.qml
+WeatherFull 1.0 WeatherFull.qml

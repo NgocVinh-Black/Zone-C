@@ -35,13 +35,9 @@ ShellRoot {
         active: !performanceMode
         sourceComponent: Idle {}
     }
-    Variants {
-        model: performanceMode ? [] : Quickshell.screens
-        delegate: WidgetLoader {
-            required property var modelData
-            screen: modelData
-            monitorName: modelData.name
-        }
+    Loader {
+        active: !performanceMode
+        sourceComponent: FrostDesktop {}
     }
     Loader {
         active: !performanceMode

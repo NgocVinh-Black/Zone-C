@@ -27,7 +27,7 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 7
         FIcon { visible: root.icon !== ""; name: root.icon; size: root.iconSize; color: root.fgColor; anchors.verticalCenter: parent.verticalCenter }
-        FText { visible: root.text !== ""; text: root.text; color: root.fgColor; px: root.fontSize; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+        FText { visible: root.text !== ""; text: root.text; color: root.fgColor; px: root.fontSize; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
     }
     MouseArea { id: mouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.clicked() }
 }

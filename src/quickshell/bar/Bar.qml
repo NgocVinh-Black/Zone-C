@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import "../reusables"
 import "../"
+import "../frost"
 
 Variants {
     model: Quickshell.screens
@@ -31,7 +32,7 @@ Variants {
                 return true;
             }
 
-            property bool shouldHideForRedact: isRedacting && hideBarInRedactor
+            property bool shouldHideForRedact: (isRedacting || Desk.editingScreen === (modelData ? modelData.name : "")) && hideBarInRedactor
 
             property var activeToplevel: ToplevelManager.activeToplevel
             property bool isFullscreenActive: {

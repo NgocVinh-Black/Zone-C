@@ -38,7 +38,7 @@ Rectangle {
                     anchors.centerIn: parent
                     spacing: 6
                     FIcon { visible: icon !== ""; name: icon; size: label === "" ? 20 : 14; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
-                    FText { visible: label !== ""; text: label; px: root.fontSize; font.weight: Font.Medium; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
+                    FText { visible: label !== ""; text: label; px: root.fontSize; weight: Font.Medium; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
                 }
                 MouseArea { id: segMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.current = index; root.picked(index); } }
             }
