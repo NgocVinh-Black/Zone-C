@@ -146,8 +146,12 @@ Item {
     function dateShort(d) { return weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }
     function dateLong(d) { return weekdays[d.getDay()] + ", " + d.getDate() + " tháng " + (d.getMonth() + 1); }
 
-    // Opens a shell panel the same way the bar always has (scripts/qs_manager.sh).
+    // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
+    // listen for this; everything else opens through the popup host like the bar always has.
+    signal openRequest(string name, string arg)
+    readonly property var standalone: ["overview", "alttab", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome"]
     function open(widget, arg) {
+        if (standalone.indexOf(widget) !== -1) { openRequest(widget, arg || ""); return; }
         Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "toggle", widget].concat(arg ? [arg] : []));
     }
 }

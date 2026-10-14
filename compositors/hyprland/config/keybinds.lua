@@ -55,8 +55,10 @@ hl.bind("CTRL + SUPER + SHIFT + Down", hl.dsp.window.move({ workspace = "e+0" })
 hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" }))
 
 -- Window groups
-hl.bind("ALT + TAB", hl.dsp.window.cycle_next(), { repeating = true })
+-- Alt+Tab: dai ung dung cua Zone-C (tha Alt de chuyen); Super+Tab: tong quan cua so (Overview artboard)
+hl.bind("ALT + TAB", hl.dsp.exec_cmd("zone-c ipc call overview alttab"))
 hl.bind("SHIFT + ALT + TAB", hl.dsp.window.cycle_next({ next = false }), { repeating = true })
+hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("zone-c ipc call overview toggle"))
 hl.bind("CTRL + ALT + Tab", hl.dsp.group.next(), { repeating = true })
 hl.bind("CTRL + SHIFT + ALT + Tab", hl.dsp.group.prev(), { repeating = true })
 hl.bind("SUPER + Comma", hl.dsp.group.toggle())

@@ -23,6 +23,7 @@ ShellRoot {
 
     Polkit {}
     PairDialog {}
+    FrostOverview {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}
