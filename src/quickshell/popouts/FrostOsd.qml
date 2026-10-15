@@ -13,8 +13,11 @@ PanelWindow {
     WlrLayershell.namespace: "qs-osd"
     WlrLayershell.layer: WlrLayer.Overlay
     exclusionMode: ExclusionMode.Ignore
-    anchors { bottom: true; left: true; right: true }
+    // Settings → OSD "Vị trí": top / bottom / right
+    readonly property string pos: Config.getSetting("osd.position", "bottom")
+    anchors { bottom: pos !== "top"; top: pos === "top" || pos === "right"; left: pos !== "right"; right: true }
     implicitHeight: 58 + 60 + 40
+    implicitWidth: 340 + 120
     color: "transparent"
     visible: OsdController.isVisible || fade.running
     mask: Region { item: pill }
@@ -45,8 +48,8 @@ PanelWindow {
         radius: 29
         height: 58
         width: win.slider ? 340 : content.implicitWidth + 40
-        x: win.slider ? 60 : (win.width - width) / 2
-        y: 40
+        x: win.pos === "right" ? win.width - width - 24 : win.slider ? 60 : (win.width - width) / 2
+        y: win.pos === "right" ? (win.height - height) / 2 : win.pos === "top" ? 60 : 40
         color: win.accent ? Fz.acc : Fz.glass
         opacity: OsdController.isVisible ? 1 : 0
         Behavior on opacity { NumberAnimation { id: fade; duration: 160 } }

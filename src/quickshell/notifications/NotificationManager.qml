@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
+import "../"
 
 Item {
     id: root
@@ -392,7 +393,10 @@ Item {
 
             historyModel.insert(0, notifData);
 
-            if (!root.isStartup && !root.sysPanelOpen) {
+            // Settings → Thông báo → Ứng dụng: muted apps stay in history but don't pop up (critical ones still do)
+            let mutedApps = Config.getSetting("notifications.mutedApps", []) || [];
+            let muted = n.urgency !== 2 && (mutedApps.indexOf(resolved.displayName) !== -1 || mutedApps.indexOf(notifData.appName) !== -1);
+            if (!root.isStartup && !root.sysPanelOpen && !muted) {
                 let newPopup = {
                     "uid":           currentUid,
                     "latestUid":     currentUid,

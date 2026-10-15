@@ -2,7 +2,7 @@ local mainMod = _G.mainMod or "SUPER"
 local terminal = _G.terminal or "kitty"
 local browser = "google-chrome-stable"
 local editor = "code"
-local fileExplorer = "nautilus"
+local fileExplorer = "zone-c ipc call files toggle"
 local fn = require("config/functions")
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
@@ -145,7 +145,7 @@ hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.exec_cmd("zone-c screenshot"))
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("zone-c screenshot --record"))
 
 -- Lock / sleep
-hl.bind("XF86PowerOff", hl.dsp.exec_cmd("zone-c lock"), { locked = true })
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("zone-c ipc call power toggle"), { locked = true })
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("zone-c lock"), { locked = true })
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd("systemctl suspend-then-hibernate"), { locked = true })
 
@@ -177,6 +177,9 @@ hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("zone-c msg toggle calendar"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("zone-c msg toggle network"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("zone-c msg toggle volume"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("zone-c msg toggle guide"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("zone-c ipc call settings toggle"))
+hl.bind("SUPER + ALT + equal", hl.dsp.exec_cmd("zone-c ipc call access zoom in"), { repeating = true })
+hl.bind("SUPER + ALT + minus", hl.dsp.exec_cmd("zone-c ipc call access zoom out"), { repeating = true })
 hl.bind(mainMod .. " + slash", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/keybinds-help"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("zone-c msg toggle autohide"))
 

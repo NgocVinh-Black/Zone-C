@@ -11,9 +11,10 @@ Item {
     property date shown: new Date(DateTime.now.getFullYear(), DateTime.now.getMonth(), 1)
     property date selected: DateTime.now
     property bool adding: false
+    readonly property int weekStart: Number(Config.getSetting("datetime.weekStart", 1)) === 0 ? 0 : 1
     readonly property var cells: {
         let first = new Date(shown.getFullYear(), shown.getMonth(), 1);
-        let lead = (first.getDay() + 6) % 7;               // weeks start on Monday (T2)
+        let lead = (first.getDay() + 7 - weekStart) % 7;   // Settings → Ngày & giờ: Monday (T2) or Sunday (CN)
         let out = [];
         for (let i = lead; i > 0; i--) out.push({ d: new Date(first.getFullYear(), first.getMonth(), 1 - i), mute: true });
         let days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
@@ -71,7 +72,7 @@ Item {
                 columnSpacing: 3; rowSpacing: 3
                 readonly property real cw: (left.width - 18) / 7
                 Repeater {
-                    model: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+                    model: root.weekStart === 0 ? ["CN", "T2", "T3", "T4", "T5", "T6", "T7"] : ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
                     delegate: Item {
                         required property var modelData
                         width: grid.cw; height: 26

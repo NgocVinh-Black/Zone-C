@@ -28,6 +28,12 @@ PanelWindow {
     property var history: []
     property string imeBefore: ""
     readonly property string terminal: { let l = Config.getSetting("launcher", {}); return (l && l.terminalCommand) ? l.terminalCommand : "kitty -e"; }
+    // Settings → Launcher
+    readonly property string boxPos: Config.getSetting("launcher.position", "top")
+    readonly property real boxWidth: Math.max(400, Math.min(900, Number(Config.getSetting("launcher.width", 680)) || 680))
+    readonly property int maxItems: Math.max(3, Math.min(12, Number(Config.getSetting("launcher.itemCount", 7)) || 7))
+    readonly property bool smartRank: Config.getSetting("launcher.smartRanking", true) !== false
+    readonly property bool imGuard: Config.getSetting("launcher.imGuard", true) !== false
 
     onVisibleChanged: {
         if (visible) {
@@ -47,7 +53,7 @@ PanelWindow {
     Process {
         id: imeProbe
         command: ["fcitx5-remote", "-n"]
-        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim(); if (win.imeBefore === "unikey") Quickshell.execDetached(["fcitx5-remote", "-c"]); } }
+        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim(); if (win.imeBefore === "unikey") { if (win.imGuard) Quickshell.execDetached(["fcitx5-remote", "-c"]); else win.imeBefore = ""; } } }
     }
     Process {
         id: rankProc
@@ -82,6 +88,7 @@ PanelWindow {
     function score(e) {
         let cls = (e.startupClass || "").toLowerCase(), base = (e.id || "").toLowerCase().replace(".desktop", ""), nm = (e.name || "").toLowerCase();
         let r = ranks || {}, f = (r.focus || {}), l = (r.launch || {}), c = (r.context || {});
+        if (!smartRank) return 0;
         return (f[cls] || f[base] || f[nm] || 0) + (l[e.name] || 0) + 0.5 * (c[cls] || c[base] || c[nm] || 0);
     }
     readonly property var apps: {
@@ -129,7 +136,7 @@ PanelWindow {
         if (scope === 0) out = out.concat(match(apps, q));
         else if (scope === 1) out = fileHits;
         else out = match(actions, q);
-        return out.slice(0, 7);
+        return out.slice(0, maxItems);
     }
     onResultsChanged: sel = 0
 
@@ -172,8 +179,8 @@ PanelWindow {
     Glass {
         id: box
         x: (parent.width - width) / 2
-        y: 72
-        width: 680
+        y: win.boxPos === "bottom" ? parent.height - height - 72 : win.boxPos === "center" ? (parent.height - height) / 2 : 72
+        width: win.boxWidth
         height: col.implicitHeight + 28
         MouseArea { anchors.fill: parent }
 

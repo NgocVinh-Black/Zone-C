@@ -201,7 +201,14 @@ FocusScope {
         y: parent.height - 44 - 16
         spacing: 8
         FIcon { name: "k-bell"; size: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
-        FText { text: root.notifCount + " thông báo · nội dung ẩn khi khóa"; px: 13; color: Fz.sub2 }
+        FText {
+            // Settings → Quyền riêng tư "Ẩn nội dung thông báo khi khóa"
+            readonly property bool hide: Config.getSetting("lock.hideNotifications", true) !== false
+            readonly property var last: root.notifCount > 0 ? NotificationManager.globalNotificationHistory.get(0) : null
+            text: hide || !last ? root.notifCount + " thông báo · nội dung ẩn khi khóa" : root.notifCount + " thông báo · " + last.appName + ": " + last.summary
+            width: Math.min(implicitWidth, 520); elide: Text.ElideRight
+            px: 13; color: Fz.sub2
+        }
     }
 
     // ---------- session buttons ----------

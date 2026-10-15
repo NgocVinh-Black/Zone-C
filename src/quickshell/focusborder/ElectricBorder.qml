@@ -119,7 +119,7 @@ Scope {
                 let y1 = Math.min(modelData.height, Math.ceil(l.y + l.h + pad));
                 return Qt.rect(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0));
             }
-            visible: overlay.local !== null
+            visible: overlay.local !== null && !ZoneStyle.borderOff
             anchors { top: true; left: true }
             margins { top: area.y; left: area.x }
             implicitWidth: area.width

@@ -13,8 +13,12 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: replying ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
-    anchors { top: true; bottom: true; right: true }
-    margins { top: 64 - 40; right: 16 - 40 }
+    // Settings → Thông báo "Vị trí thông báo nổi": top/bottom + left/center/right
+    readonly property string pos: Config.getSetting("notifications.position", "top right") || "top right"
+    readonly property string hpos: pos.indexOf("left") !== -1 ? "left" : pos.indexOf("center") !== -1 ? "center" : "right"
+    readonly property bool atBottom: pos.indexOf("bottom") === 0
+    anchors { top: true; bottom: true; right: hpos !== "left"; left: hpos !== "right" }
+    margins { top: 64 - 40; bottom: 16 - 40; right: hpos === "right" ? 16 - 40 : 0; left: hpos === "left" ? 16 - 40 : 0 }
     implicitWidth: 380 + 80
     color: "transparent"
     visible: NotificationManager.activePopupsModel.count > 0 && !NotificationManager.sysPanelOpen
@@ -52,7 +56,8 @@ PanelWindow {
 
     ListView {
         id: list
-        x: 40; y: 40
+        x: win.hpos === "center" ? (win.width - width) / 2 : 40
+        y: win.atBottom ? win.height - 40 - height : 40
         width: 380
         height: Math.min(contentHeight, win.height - 80)
         interactive: false

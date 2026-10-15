@@ -32,6 +32,10 @@ FrostPower 1.0 power/FrostPower.qml
 FrostFiles 1.0 apps/FrostFiles.qml
 FrostTaskManager 1.0 apps/FrostTaskManager.qml
 FrostAppStore 1.0 apps/FrostAppStore.qml
+FrostSettings 1.0 settings/FrostSettings.qml
+WellbeingService 1.0 settings/WellbeingService.qml
+PowerService 1.0 settings/PowerService.qml
+AccessService 1.0 settings/AccessService.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

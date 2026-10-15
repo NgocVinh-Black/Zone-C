@@ -128,6 +128,12 @@ Variants {
                 function save(): string { win.save(); return "ok"; }
                 function preset(name: string): string { win.applyPreset(name); return "ok"; }
             }
+            Connections {
+                target: Desk
+                function onEditRequested(monitor) { if (monitor === win.monitor) win.editing = true; }
+                function onPresetRequested(monitor, name) { if (monitor === win.monitor || monitor === "") win.applyPreset(name); }
+            }
+            onPresetChanged: Desk.report(monitor, preset, widgets.length)
             IpcHandler {
                 target: "desktop"
                 function edit(): void { if (Hyprland.focusedMonitor && Hyprland.focusedMonitor.name !== win.monitor) return; win.editing = !win.editing; }
@@ -239,7 +245,7 @@ Variants {
             }
 
             // Input region outside the editor: the union of the widgets' boxes.
-            onWidgetsChanged: maskTimer.restart()
+            onWidgetsChanged: { maskTimer.restart(); Desk.report(monitor, preset, widgets.length); }
             Timer {
                 id: maskTimer
                 interval: 50

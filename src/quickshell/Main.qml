@@ -9,6 +9,7 @@ import Quickshell.Bluetooth
 import Quickshell.Networking
 import "WindowRegistry.js" as Registry
 import "notifications" as Notifs
+import "frost"
 
 PanelWindow {
     id: masterWindow
@@ -93,6 +94,12 @@ PanelWindow {
             cmd = cmd || "";
             targetWidget = targetWidget || "";
             arg = arg || "";
+
+            // the old guide popup became the Frost settings window
+            if (targetWidget === "guide" || targetWidget === "settings" || cmd === "guide" || cmd === "settings") {
+                Fz.openRequest("settings", (targetWidget === "guide" || targetWidget === "settings") ? arg : targetWidget);
+                return;
+            }
 
             if (cmd === "clearNotifications" || cmd === "clear_notifications" || cmd === "clearNotifs") {
                 NotificationManager.clearNotifications();

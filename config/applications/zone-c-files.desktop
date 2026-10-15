@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tệp
+Comment=Quản lý tệp · Máy tính này
+Exec=zone-c-files %f
+Icon=system-file-manager
+Terminal=false
+Categories=System;FileTools;FileManager;
+MimeType=inode/directory;

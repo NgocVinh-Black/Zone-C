@@ -10,7 +10,7 @@ Text {
     property int weight: Font.Normal
     color: Fz.tx
     font.family: mono ? Fz.mono : Fz.font
-    font.pointSize: px * 0.75
+    font.pointSize: px * 0.75 * Fz.textScale
     font.weight: weight
     font.variableAxes: ({ "wght": weight })
     renderType: Text.NativeRendering

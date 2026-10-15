@@ -41,7 +41,10 @@ Item {
         glassEdge: Qt.rgba(1, 1, 1, 0.7), shadow: Qt.rgba(31 / 255, 45 / 255, 53 / 255, 0.16)
     })
 
-    readonly property var t: light ? lightSet : dark
+    // "Màu nhấn" in Settings → Theme recolours the dark palette's accent (the light palette keeps its own)
+    readonly property string accentHex: { let a = Config.getSetting("theme.accent", ""); return typeof a === "string" && /^#[0-9a-fA-F]{6}$/.test(a) ? a : ""; }
+    readonly property var t: light ? lightSet : (accentHex ? Object.assign({}, dark, { acc: accentHex,
+        accRgb: [parseInt(accentHex.slice(1, 3), 16), parseInt(accentHex.slice(3, 5), 16), parseInt(accentHex.slice(5, 7), 16)] }) : dark)
 
     readonly property color crust: t.crust
     readonly property color mantle: t.mantle
@@ -50,9 +53,9 @@ Item {
     readonly property color s1: t.s1
     readonly property color s2: t.s2
     readonly property color tx: t.tx
-    readonly property color sub: t.sub
+    readonly property color sub: highContrast ? t.sub2 : t.sub
     readonly property color sub2: t.sub2
-    readonly property color dim: t.dim
+    readonly property color dim: highContrast ? t.sub : t.dim
     readonly property color acc: t.acc
     readonly property color ink: t.ink
     readonly property color glow: t.glow
@@ -72,8 +75,11 @@ Item {
     readonly property color cardFill: t.cardFill
     readonly property color glassEdge: t.glassEdge
     readonly property color shadow: t.shadow
-    readonly property color line: fg(light ? 0.10 : 0.08)
-    readonly property color line2: fg(light ? 0.16 : 0.14)
+    // Settings → Trợ năng: high contrast thickens hairlines; text scale multiplies every FText size
+    readonly property bool highContrast: Config.getSetting("access.highContrast", false) === true
+    readonly property real textScale: Math.max(0.8, Math.min(1.6, (Number(Config.getSetting("access.textScale", 100)) || 100) / 100))
+    readonly property color line: fg(highContrast ? 0.28 : (light ? 0.10 : 0.08))
+    readonly property color line2: fg(highContrast ? 0.36 : (light ? 0.16 : 0.14))
 
     function _rgba(rgb, a) { return Qt.rgba(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, a); }
     // rgba(var(--fg-rgb), a) and friends from zone.css
@@ -87,7 +93,8 @@ Item {
     // rgb(var(--well-sp) / calc(a * var(--well-k))): sunken wells (inputs, segmented controls)
     function well(a) { return _rgba(t.wellRgb, a * t.wellK); }
 
-    readonly property string font: "Geist"
+    // Settings → Theme "Phông chữ" (Geist by default, as in the design)
+    readonly property string font: { let f = Config.getSetting("theme.frostFont", "Geist"); return typeof f === "string" && f ? f : "Geist"; }
     readonly property string mono: "Geist Mono"
 
     FontLoader { source: Caching.zoneCDir ? "file://" + Caching.zoneCDir + "/assets/fonts/Geist-Variable.ttf" : "" }
@@ -149,8 +156,9 @@ Item {
     // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
     // listen for this; everything else opens through the popup host like the bar always has.
     signal openRequest(string name, string arg)
-    readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome"]
+    readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome", "settings", "guide"]
     function open(widget, arg) {
+        if (widget === "guide") widget = "settings";
         if (standalone.indexOf(widget) !== -1) { openRequest(widget, arg || ""); return; }
         Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "toggle", widget].concat(arg ? [arg] : []));
     }

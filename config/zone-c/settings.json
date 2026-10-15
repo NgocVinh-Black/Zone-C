@@ -150,9 +150,9 @@
     "hideBarInRedactor": true
   },
   "launcher": {
-    "position": "bottom",
-    "width": 600,
-    "itemCount": 6,
+    "position": "top",
+    "width": 680,
+    "itemCount": 7,
     "terminalCommand": "kitty -e",
     "smartRanking": true
   },

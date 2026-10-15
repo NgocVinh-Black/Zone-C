@@ -293,6 +293,12 @@ if [ "$COMMAND" == "start" ]; then
     bash "$ZONE_C_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!
 
+    # Settings → Chung "Tỷ lệ giao diện" (general.uiScale, percent) scales the whole shell
+    UI_SCALE=$(python3 -c 'import json,os;print(json.load(open(os.path.expanduser("~/.config/zone-c/settings.json"))).get("general",{}).get("uiScale",100))' 2>/dev/null)
+    if [[ "$UI_SCALE" =~ ^[0-9]+$ ]] && [ "$UI_SCALE" != "100" ]; then
+        export QT_SCALE_FACTOR=$(awk "BEGIN{print $UI_SCALE/100}")
+    fi
+
     quickshell -p "$MAIN_QML" 9>&- &
     QS_PID=$!
 

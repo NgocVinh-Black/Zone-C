@@ -29,6 +29,10 @@ ShellRoot {
     FrostFiles {}
     FrostTaskManager {}
     FrostAppStore {}
+    FrostSettings {}
+    WellbeingService {}
+    PowerService {}
+    AccessService {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}

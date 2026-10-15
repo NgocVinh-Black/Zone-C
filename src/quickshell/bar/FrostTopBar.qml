@@ -85,6 +85,11 @@ Item {
     }
 
     readonly property bool recording: Rec.active
+    // Settings → Thanh bar: modules dropped from every column of bar.modules are hidden
+    readonly property var modulesOn: { let m = Config.getSetting("bar.modules", null); if (!m) return null; let out = []; for (const c of ["left", "center", "right"]) (m[c] || []).forEach(x => out = out.concat(Array.isArray(x) ? x : [x])); return out; }
+    function shown(k) { return modulesOn === null || modulesOn.indexOf(k) !== -1; }
+    readonly property int wsCount: Math.max(1, Math.min(10, Number(Config.getSetting("bar.workspaceCount", 8)) || 8))
+    readonly property bool showDate: Config.getSetting("bar.showDate", true) !== false
 
     // ---------- left: launcher · workspaces · media ----------
     BarPill {
@@ -94,6 +99,7 @@ Item {
 
         BarItem {
             id: launcherIt
+            visible: root.shown("left")
             padX: 9
             label: "Zone-C: mở launcher"
             on: root.launcherOpen
@@ -103,15 +109,16 @@ Item {
         BarSep {}
         BarItem {
             id: wsIt
+            visible: root.shown("workspaces")
             padX: 8
-            label: "Không gian làm việc " + root.activeWs + " trên 8"
+            label: "Không gian làm việc " + root.activeWs + " trên " + root.wsCount
             onClicked: Fz.open("overview")
             onWheel: (steps) => Hyprland.dispatch("hl.dsp.focus({ workspace = \"" + (steps > 0 ? "e-1" : "e+1") + "\" })")
             Row {
                 spacing: 4
                 anchors.verticalCenter: parent.verticalCenter
                 Repeater {
-                    model: 8
+                    model: root.wsCount
                     delegate: Rectangle {
                         required property int index
                         readonly property bool cur: index + 1 === root.activeWs
@@ -129,6 +136,7 @@ Item {
         BarSep {}
         BarItem {
             id: mediaIt
+            visible: root.shown("media")
             label: root.mediaText
             on: root.openWidget === "music"
             onClicked: Fz.open("music")
@@ -184,15 +192,17 @@ Item {
         BarSep { visible: root.recording }
         BarItem {
             id: clockIt
+            visible: root.shown("timedate")
             on: root.openWidget === "calendar"
             label: "Mở lịch"
             onClicked: Fz.open("calendar")
             FText { mono: true; text: DateTime.timeShort; color: clockIt.fgColor; px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+            FText { visible: root.showDate; text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
         }
         BarSep {}
         BarItem {
             id: weatherIt
+            visible: root.shown("weather")
             on: root.openWidget === "calendar"
             label: "Thời tiết"
             onClicked: Fz.open("calendar")
@@ -211,6 +221,7 @@ Item {
         BarPill {
             BarItem {
                 id: clipIt
+                visible: root.shown("tray")
                 padX: 9
                 label: "Clipboard"
                 on: root.clipboardOpen
@@ -220,6 +231,7 @@ Item {
             }
             BarItem {
                 id: kbIt
+                visible: root.shown("kb")
                 padX: 9
                 label: root.kbLayout === "VI" ? "Bộ gõ Tiếng Việt" : "Bàn phím " + root.kbLayout
                 onClicked: { Quickshell.execDetached(["fcitx5-remote", "-t"]); kbPoll.running = true; }
@@ -230,6 +242,7 @@ Item {
         BarPill {
             BarItem {
                 id: wifiIt
+                visible: root.shown("wifi")
                 on: root.openWidget === "network"
                 label: root.ssid !== "" ? "Wi-Fi " + root.ssid : "Wi-Fi"
                 onClicked: Fz.open("network", "wifi")
@@ -238,6 +251,7 @@ Item {
             }
             BarItem {
                 id: btIt
+                visible: root.shown("bt")
                 label: "Bluetooth, " + root.btConnected + " thiết bị đã kết nối"
                 onClicked: Fz.open("network", "bt")
                 FIcon { name: root.btOn ? "b-bt" : "btoff"; size: 15; color: btIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
@@ -252,6 +266,7 @@ Item {
             }
             BarItem {
                 id: volIt
+                visible: root.shown("vol")
                 padX: 9
                 on: root.openWidget === "volume"
                 label: "Âm lượng " + root.volume + " phần trăm"
@@ -262,7 +277,7 @@ Item {
             }
             BarItem {
                 id: batIt
-                visible: root.hasBattery
+                visible: root.shown("bat") && (root.hasBattery)
                 on: root.openWidget === "system"
                 label: "Pin " + root.battery + " phần trăm, mở bảng hệ thống"
                 onClicked: Fz.open("system")

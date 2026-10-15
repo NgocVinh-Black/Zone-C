@@ -55,7 +55,7 @@ Item {
     readonly property bool isLight: mode === "light"
     readonly property var style: (isLight && baseStyle.lightStyle) ? Object.assign({}, baseStyle, baseStyle.lightStyle) : baseStyle
 
-    readonly property bool animated: style.animated
+    readonly property bool animated: focusBorder === "bolt" ? true : style.animated
     readonly property color borderGlow: style.glow
     readonly property color borderBolt: style.bolt
     readonly property color borderCore: style.core
@@ -63,7 +63,10 @@ Item {
 
 
     // Vien focus la mot duong manh dung yen (khong tia dien)
-    readonly property bool plainBorder: styles[preset] ? styles[preset].plainBorder === true : false
+    // Settings → Theme "Hiệu ứng viền focus": still | bolt | off ("" = whatever the preset uses)
+    readonly property string focusBorder: { let v = Config.getSetting("theme.focusBorder", ""); return v === "still" || v === "bolt" || v === "off" ? v : ""; }
+    readonly property bool borderOff: focusBorder === "off"
+    readonly property bool plainBorder: focusBorder === "still" || (focusBorder === "" && (styles[preset] ? styles[preset].plainBorder === true : false))
     // Bar phang: moi muc la mot vien toi rieng, chu trang, khong to mau accent
     readonly property bool flatBar: styles[preset] ? styles[preset].flatBar === true : false
     readonly property color pillBorder: "transparent"

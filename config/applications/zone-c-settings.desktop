@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Cài đặt
+Comment=Cài đặt Zone-C và hệ thống
+Exec=zone-c ipc call settings toggle
+Icon=preferences-system
+Terminal=false
+Categories=Settings;
+

@@ -46,7 +46,7 @@ Item {
 
     Timer {
         id: hideTimer
-        interval: 1800
+        interval: controller.showMs
         repeat: false
         onTriggered: {
             if (!controller.isHovered) {
@@ -228,7 +228,15 @@ Item {
         function trigger(kind: string, value: string): void { controller.show(kind, value === "" ? undefined : value); }
     }
 
+    // Settings → OSD: which kinds pop up and for how long
+    readonly property int showMs: Math.max(500, Number(Config.getSetting("osd.duration", 1500)) || 1500)
+    function enabledFor(k) {
+        let key = (k === "volume" || k === "mic") ? "volume" : k === "brightness" ? "brightness" : k === "ime" ? "kb" : (k === "capslock" || k === "numlock") ? "caps" : "";
+        return key === "" || Config.getSetting("osd." + key, true) !== false;
+    }
+
     function show(k, v, scr) {
+        if (!enabledFor(k || "volume")) return;
         controller.kind = k || "volume";
         if (controller.kind === "brightness" && v !== undefined) {
             controller.briVal = parseInt(v) || 0;
