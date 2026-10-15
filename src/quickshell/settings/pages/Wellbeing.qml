@@ -17,7 +17,7 @@ Column {
         command: ["python3", Caching.qsDir + "/guide/wellbeing/get_stats.py", "--db-dir", Caching.getStateDir("focustime")]
         stdout: StdioCollector { onStreamFinished: { try { page.stats = JSON.parse(this.text); } catch (e) {} } }
     }
-    function dur(s) { let h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h > 0 ? h + " giờ " + String(m).padStart(2, "0") + " phút" : m + " phút"; }
+    function dur(s) { let h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h > 0 ? h + Fz.tr(" giờ ") + String(m).padStart(2, "0") + Fz.tr(" phút") : m + Fz.tr(" phút"); }
     readonly property var week: stats ? stats.week : []
     readonly property real weekMax: Math.max(3600, ...week.map(w => w.total))
     readonly property int total: stats ? stats.total : 0
@@ -33,7 +33,7 @@ Column {
                 x: 20; y: 20
                 spacing: 14
                 Column {
-                    FText { text: "Thời gian dùng hôm nay"; px: 13.5; color: Fz.sub }
+                    FText { text: Fz.tr("Thời gian dùng hôm nay"); px: 13.5; color: Fz.sub }
                     FText { text: page.dur(page.total); px: 40; weight: Font.Light; font.letterSpacing: -1 }
                 }
                 FChip {
@@ -41,7 +41,7 @@ Column {
                     anchors.bottom: parent.bottom; anchors.bottomMargin: 10
                     readonly property int pct: Math.round((page.total - page.yesterday) / page.yesterday * 100)
                     kind: pct <= 0 ? "ok" : "warn"
-                    text: (pct <= 0 ? "−" : "+") + Math.abs(pct) + "% so với hôm qua"
+                    text: (pct <= 0 ? "−" : "+") + Math.abs(pct) + Fz.tr("% so với hôm qua")
                 }
             }
             Row {
@@ -70,7 +70,7 @@ Column {
         }
     }
 
-    H3 { text: "Ứng dụng dùng nhiều" }
+    H3 { text: Fz.tr("Ứng dụng dùng nhiều") }
     Grp {
         width: parent.width
         Repeater {
@@ -91,13 +91,13 @@ Column {
                 }
             }
         }
-        SRow { visible: page.topApps.length === 0; title: "Chưa có dữ liệu"; sub: "Thời gian dùng được ghi lại khi bạn làm việc" }
+        SRow { visible: page.topApps.length === 0; title: Fz.tr("Chưa có dữ liệu"); sub: Fz.tr("Thời gian dùng được ghi lại khi bạn làm việc") }
     }
 
-    H3 { text: "Tập trung" }
+    H3 { text: Fz.tr("Tập trung") }
     Grp {
         width: parent.width
-        SRow { title: "Chế độ tập trung"; sub: "Bật Không làm phiền trong giờ làm"; CfgToggle { key: "wellbeing.focus" } }
-        SRow { title: "Nhắc nghỉ mắt"; sub: "20-20-20"; CfgToggle { key: "wellbeing.eyes"; def: true } }
+        SRow { title: Fz.tr("Chế độ tập trung"); sub: Fz.tr("Bật Không làm phiền trong giờ làm"); CfgToggle { key: "wellbeing.focus" } }
+        SRow { title: Fz.tr("Nhắc nghỉ mắt"); sub: "20-20-20"; CfgToggle { key: "wellbeing.eyes"; def: true } }
     }
 }

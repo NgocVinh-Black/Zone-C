@@ -79,9 +79,9 @@ Column {
         Row {
             anchors.right: parent.right; anchors.rightMargin: 14; anchors.bottom: parent.bottom; anchors.bottomMargin: 12
             spacing: 8
-            FBtn { text: "Nhận diện"; onClicked: ident.show() }
+            FBtn { text: Fz.tr("Nhận diện"); onClicked: ident.show() }
             FBtn {
-                text: "Nhân bản"; visible: page.mons.length > 1
+                text: Fz.tr("Nhân bản"); visible: page.mons.length > 1
                 onClicked: { let a = page.mons[0], b = page.mons[1]; Quickshell.execDetached(["hyprctl", "eval", 'hl.monitor({ output = "' + b.name + '", mode = "preferred", position = "auto", scale = ' + b.scale + ', mirror = "' + a.name + '" })']); reprobe.restart(); }
             }
         }
@@ -116,17 +116,17 @@ Column {
     H3 { text: page.m ? page.tag(page.m) : "" }
     Grp {
         width: parent.width
-        SRow { title: "Bật màn hình này"; FToggle { on: page.m ? !page.m.disabled : false; enabled: page.mons.length > 1; onToggled: (v) => page.apply({ disabled: !v }) } }
+        SRow { title: Fz.tr("Bật màn hình này"); FToggle { on: page.m ? !page.m.disabled : false; enabled: page.mons.length > 1; onToggled: (v) => page.apply({ disabled: !v }) } }
         SRow {
-            title: "Độ phân giải"
+            title: Fz.tr("Độ phân giải")
             FSelect {
-                options: page.modes.map((x, i) => x.res.replace("x", " × ") + (i === 0 ? " (Khuyên dùng)" : ""))
+                options: page.modes.map((x, i) => x.res.replace("x", Fz.tr(" × ")) + (i === 0 ? Fz.tr(" (Khuyên dùng)") : ""))
                 current: Math.max(0, page.modes.findIndex(x => x.res === page.curRes))
                 onPicked: (i) => { let md = page.modes[i]; page.apply({ mode: md.res + "@" + md.rates[md.rates.length - 1].toFixed(2) }); }
             }
         }
         SRow {
-            title: "Tần số quét"
+            title: Fz.tr("Tần số quét")
             FSeg {
                 options: page.rates.map(r => Math.round(r) + " Hz")
                 current: Math.max(0, page.rates.findIndex(r => page.m && Math.abs(r - page.m.refreshRate) < 0.5))
@@ -134,37 +134,37 @@ Column {
             }
         }
         SRow {
-            title: "Tỷ lệ giao diện"
+            title: Fz.tr("Tỷ lệ giao diện")
             FSeg {
                 options: page.scales.map(s => Math.round(s * 100) + "%")
                 current: Math.max(0, page.scales.findIndex(s => page.m && Math.abs(s - page.m.scale) < 0.01))
                 onPicked: (i) => page.apply({ scale: page.scales[i] })
             }
         }
-        SRow { title: "Đồng bộ thích ứng (VRR)"; FToggle { on: page.m ? page.m.vrr === true : false; onToggled: (v) => page.apply({ vrr: v ? 1 : 0 }) } }
+        SRow { title: Fz.tr("Đồng bộ thích ứng (VRR)"); FToggle { on: page.m ? page.m.vrr === true : false; onToggled: (v) => page.apply({ vrr: v ? 1 : 0 }) } }
     }
 
-    H3 { text: "Bộ lọc ánh sáng xanh" }
+    H3 { text: Fz.tr("Bộ lọc ánh sáng xanh") }
     Grp {
         width: parent.width
         SRow {
-            title: "Bật bộ lọc"; sub: "Ánh sáng màn hình ấm"
+            title: Fz.tr("Bật bộ lọc"); sub: Fz.tr("Ánh sáng màn hình ấm")
             FToggle { on: page.m ? Config.getSetting("display.monitors." + page.m.name + ".enabled", false) === true : false; onToggled: (v) => BlueLight.setEnabled(page.m ? page.m.name : "", v) }
         }
         SRow {
-            title: "Lịch trình tự động"; sub: "Theo hoàng hôn và bình minh tại " + (Location.city && Location.city !== "Unknown" ? Location.city : "vị trí của bạn")
+            title: Fz.tr("Lịch trình tự động"); sub: Fz.tr("Theo hoàng hôn và bình minh tại ") + (Location.city && Location.city !== "Unknown" ? Location.city : Fz.tr("vị trí của bạn"))
             FToggle { on: BlueLight.getSavedAuto(page.m ? page.m.name : ""); onToggled: (v) => BlueLight.setAuto(page.m ? page.m.name : "", v) }
         }
         SRow {
-            title: "Nhiệt độ màu"
-            FText { text: "Lạnh"; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+            title: Fz.tr("Nhiệt độ màu")
+            FText { text: Fz.tr("Lạnh"); px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
             FSlider { id: tempSlider; width: 200; from: 0; to: 100; value: BlueLight.getSavedTemperature(page.m ? page.m.name : ""); anchors.verticalCenter: parent.verticalCenter
                       onMoved: (v) => tempSave.restart() }
-            FText { text: "Ấm"; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: Fz.tr("Ấm"); px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
             Timer { id: tempSave; interval: 250; onTriggered: BlueLight.setTemperature(page.m ? page.m.name : "", tempSlider.value) }
         }
         SRow {
-            title: "Độ sáng"
+            title: Fz.tr("Độ sáng")
             FSlider { id: bri; width: 220; from: 1; to: 100; value: OsdController.sysBrightness || 50; anchors.verticalCenter: parent.verticalCenter
                       onMoved: (v) => briSave.restart() }
             FText { width: 44; horizontalAlignment: Text.AlignRight; text: Math.round(bri.value) + "%"; mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }

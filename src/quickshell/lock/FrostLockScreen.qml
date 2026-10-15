@@ -140,15 +140,15 @@ FocusScope {
                 }
                 FText {
                     anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""
-                    text: !root.lockUI ? "Nhập mật khẩu" : root.lockUI.authenticating ? "Đang kiểm tra…" : root.lockUI.failed ? "Sai mật khẩu, thử lại" : "Nhập mật khẩu"
+                    text: !root.lockUI ? Fz.tr("Nhập mật khẩu") : root.lockUI.authenticating ? Fz.tr("Đang kiểm tra…") : root.lockUI.failed ? Fz.tr("Sai mật khẩu, thử lại") : Fz.tr("Nhập mật khẩu")
                     color: root.lockUI && root.lockUI.failed ? Fz.redTx : Fz.dim; px: 15
                 }
             }
             Row {
                 anchors.right: parent.right; anchors.rightMargin: 7; anchors.verticalCenter: parent.verticalCenter
                 spacing: 6
-                FIconBtn { ghost: true; icon: "k-eye"; label: "Hiện mật khẩu"; on: root.showPw; onClicked: root.showPw = !root.showPw; anchors.verticalCenter: parent.verticalCenter }
-                FIconBtn { on: true; width: 40; height: 40; radius: 20; icon: "k-arrow"; label: "Mở khóa"; onClicked: root.submit(); anchors.verticalCenter: parent.verticalCenter }
+                FIconBtn { ghost: true; icon: "k-eye"; label: Fz.tr("Hiện mật khẩu"); on: root.showPw; onClicked: root.showPw = !root.showPw; anchors.verticalCenter: parent.verticalCenter }
+                FIconBtn { on: true; width: 40; height: 40; radius: 20; icon: "k-arrow"; label: Fz.tr("Mở khóa"); onClicked: root.submit(); anchors.verticalCenter: parent.verticalCenter }
             }
         }
         Row {
@@ -156,7 +156,7 @@ FocusScope {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 8
             FIcon { name: "k-finger"; size: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: "Hoặc chạm cảm biến vân tay"; px: 13; color: Fz.sub2 }
+            FText { text: Fz.tr("Hoặc chạm cảm biến vân tay"); px: 13; color: Fz.sub2 }
         }
     }
 
@@ -175,7 +175,7 @@ FocusScope {
                 MusicDisc { size: 56; art: { let a = MprisController.artUrl || ""; return a === "" ? "" : (a.startsWith("/") ? "file://" + a : a); } }
                 Column {
                     width: parent.width - 70; anchors.verticalCenter: parent.verticalCenter; spacing: 2
-                    FText { text: ((MprisController.isPlaying ? "Đang phát" : "Tạm dừng") + (root.player && root.player.identity ? " · " + root.player.identity : "")).toUpperCase(); px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.08; color: Fz.sub }
+                    FText { text: ((MprisController.isPlaying ? Fz.tr("Đang phát") : Fz.tr("Tạm dừng")) + (root.player && root.player.identity ? " · " + root.player.identity : "")).toUpperCase(); px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.08; color: Fz.sub }
                     FText { width: parent.width; elide: Text.ElideRight; text: MprisController.trackTitle; px: 14; weight: Font.DemiBold }
                     FText { width: parent.width; elide: Text.ElideRight; text: MprisController.trackArtist; px: 12.5; color: Fz.sub }
                 }
@@ -189,9 +189,9 @@ FocusScope {
             }
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter; spacing: 10
-                FIconBtn { icon: "k-prev"; label: "Bài trước"; onClicked: if (root.player) root.player.previous() }
-                FIconBtn { on: true; width: 56; height: 40; icon: MprisController.isPlaying ? "k-pause" : "m-play"; label: "Phát / tạm dừng"; onClicked: if (root.player) root.player.togglePlaying() }
-                FIconBtn { icon: "k-next"; label: "Bài tiếp"; onClicked: if (root.player) root.player.next() }
+                FIconBtn { icon: "k-prev"; label: Fz.tr("Bài trước"); onClicked: if (root.player) root.player.previous() }
+                FIconBtn { on: true; width: 56; height: 40; icon: MprisController.isPlaying ? "k-pause" : "m-play"; label: Fz.tr("Phát / tạm dừng"); onClicked: if (root.player) root.player.togglePlaying() }
+                FIconBtn { icon: "k-next"; label: Fz.tr("Bài tiếp"); onClicked: if (root.player) root.player.next() }
             }
         }
     }
@@ -205,7 +205,7 @@ FocusScope {
             // Settings → Quyền riêng tư "Ẩn nội dung thông báo khi khóa"
             readonly property bool hide: Config.getSetting("lock.hideNotifications", true) !== false
             readonly property var last: root.notifCount > 0 ? NotificationManager.globalNotificationHistory.get(0) : null
-            text: hide || !last ? root.notifCount + " thông báo · nội dung ẩn khi khóa" : root.notifCount + " thông báo · " + last.appName + ": " + last.summary
+            text: hide || !last ? root.notifCount + Fz.tr(" thông báo · nội dung ẩn khi khóa") : root.notifCount + Fz.tr(" thông báo · ") + last.appName + ": " + last.summary
             width: Math.min(implicitWidth, 520); elide: Text.ElideRight
             px: 13; color: Fz.sub2
         }
@@ -216,11 +216,11 @@ FocusScope {
         anchors.right: parent.right; anchors.rightMargin: 28
         y: parent.height - 28 - 44
         spacing: 8
-        FBtn { height: 44; radius: 22; padX: 18; text: "Đổi người dùng"
+        FBtn { height: 44; radius: 22; padX: 18; text: Fz.tr("Đổi người dùng")
                onClicked: Quickshell.execDetached(["busctl", "--system", "call", "org.freedesktop.DisplayManager", "/org/freedesktop/DisplayManager/Seat0", "org.freedesktop.DisplayManager.Seat", "SwitchToGreeter"]) }
-        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-moon"; label: "Ngủ"; onClicked: root.powerActions.sleep() }
-        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-restart"; label: "Khởi động lại"; onClicked: root.powerActions.reboot() }
-        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-off"; iconColor: Fz.red; label: "Tắt máy"; onClicked: root.powerActions.poweroff() }
+        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-moon"; label: Fz.tr("Ngủ"); onClicked: root.powerActions.sleep() }
+        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-restart"; label: Fz.tr("Khởi động lại"); onClicked: root.powerActions.reboot() }
+        FIconBtn { width: 44; height: 44; radius: 22; icon: "k-off"; iconColor: Fz.red; label: Fz.tr("Tắt máy"); onClicked: root.powerActions.poweroff() }
     }
 
     // `.pill`

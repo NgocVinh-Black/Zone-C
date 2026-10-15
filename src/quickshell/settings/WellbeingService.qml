@@ -8,7 +8,7 @@ Scope {
     Timer {
         interval: 20 * 60 * 1000; repeat: true
         running: Config.getSetting("wellbeing.eyes", true) !== false
-        onTriggered: Quickshell.execDetached(["notify-send", "-a", "Sức khỏe số", "-i", "eye", "Nghỉ mắt 20 giây", "Nhìn một vật cách khoảng 6 mét trong 20 giây."])
+        onTriggered: Quickshell.execDetached(["notify-send", "-a", Fz.tr("Sức khỏe số"), "-i", "eye", Fz.tr("Nghỉ mắt 20 giây"), Fz.tr("Nhìn một vật cách khoảng 6 mét trong 20 giây.")])
     }
     readonly property bool focus: Config.getSetting("wellbeing.focus", false) === true
     onFocusChanged: {

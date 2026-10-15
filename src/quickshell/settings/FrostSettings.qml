@@ -13,10 +13,10 @@ Scope {
     property int updates: 0
 
     readonly property var groups: [
-        ["Zone-C", [["theme", "Theme & giao diện"], ["bar", "Thanh bar"], ["launcher", "Launcher"], ["widgets", "Widget"], ["notif", "Thông báo"], ["osd", "OSD"], ["idle", "Chờ & khóa"], ["wellbeing", "Sức khỏe số"]]],
-        ["Kết nối", [["wifi", "Wi-Fi"], ["bt", "Bluetooth"], ["net", "Mạng & VPN"]]],
-        ["Thiết bị", [["display", "Màn hình"], ["sound", "Âm thanh"], ["power", "Pin & nguồn"], ["keyboard", "Bàn phím"], ["mouse", "Chuột & touchpad"]]],
-        ["Hệ thống", [["general", "Chung"], ["access", "Trợ năng"], ["apps", "Ứng dụng"], ["printers", "Máy in"], ["storage", "Lưu trữ"], ["users", "Người dùng"], ["privacy", "Quyền riêng tư"], ["datetime", "Ngày & giờ"], ["language", "Ngôn ngữ & vùng"], ["updates", "Cập nhật"], ["about", "Giới thiệu"]]]
+        ["Zone-C", [["theme", Fz.tr("Theme & giao diện")], ["bar", Fz.tr("Thanh bar")], ["launcher", "Launcher"], ["widgets", Fz.tr("Widget")], ["notif", Fz.tr("Thông báo")], ["osd", "OSD"], ["idle", Fz.tr("Chờ & khóa")], ["wellbeing", Fz.tr("Sức khỏe số")]]],
+        [Fz.tr("Kết nối"), [["wifi", "Wi-Fi"], ["bt", "Bluetooth"], ["net", Fz.tr("Mạng & VPN")]]],
+        [Fz.tr("Thiết bị"), [["display", Fz.tr("Màn hình")], ["sound", Fz.tr("Âm thanh")], ["power", Fz.tr("Pin & nguồn")], ["keyboard", Fz.tr("Bàn phím")], ["mouse", Fz.tr("Chuột & touchpad")]]],
+        [Fz.tr("Hệ thống"), [["general", Fz.tr("Chung")], ["access", Fz.tr("Trợ năng")], ["apps", Fz.tr("Ứng dụng")], ["printers", Fz.tr("Máy in")], ["storage", Fz.tr("Lưu trữ")], ["users", Fz.tr("Người dùng")], ["privacy", Fz.tr("Quyền riêng tư")], ["datetime", Fz.tr("Ngày & giờ")], ["language", Fz.tr("Ngôn ngữ & vùng")], ["updates", Fz.tr("Cập nhật")], ["about", Fz.tr("Giới thiệu")]]]
     ]
     readonly property var files: ({ theme: "Theme", bar: "Bar", launcher: "Launcher", widgets: "Widgets", notif: "Notifications", osd: "Osd", idle: "Idle", wellbeing: "Wellbeing",
         wifi: "Wifi", bt: "Bluetooth", net: "Network", display: "Display", sound: "Sound", power: "Power", keyboard: "Keyboard", mouse: "Mouse",
@@ -58,7 +58,7 @@ Scope {
         active: app.open
         FloatingWindow {
             id: win
-            title: "Zone-C · Cài đặt"
+            title: Fz.tr("Zone-C · Cài đặt")
             implicitWidth: 1200
             implicitHeight: 780
             minimumSize: Qt.size(900, 560)
@@ -93,7 +93,7 @@ Scope {
                     }
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
-                        FText { text: "Cài đặt"; px: 14; weight: Font.DemiBold }
+                        FText { text: Fz.tr("Cài đặt"); px: 14; weight: Font.DemiBold }
                         FText { text: "Zone-C · " + (ZoneStyle.preset || "Zone Frost").replace(/^Zone /, "") + (ZoneStyle.hasModes ? (ZoneStyle.isLight ? " Light" : " Dark") : ""); px: 11.5; color: Fz.sub }
                     }
                 }
@@ -101,7 +101,7 @@ Scope {
                     id: search
                     x: 12; y: 16 + 36 + 4 + 10
                     width: parent.width - 24; height: 36; radius: 11; fontSize: 13.5; icon: "s-search"
-                    placeholder: "Tìm cài đặt"
+                    placeholder: Fz.tr("Tìm cài đặt")
                     onTextChanged: win.q = text
                     Keys.onEscapePressed: text = ""
                     Keys.onReturnPressed: { let f = navList.firstMatch(); if (f) app.page = f; }
@@ -172,16 +172,16 @@ Scope {
                 Row {
                     anchors.right: parent.right; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter
                     spacing: 6
-                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-min"; iconSize: 14; label: "Thu nhỏ"
+                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-min"; iconSize: 14; label: Fz.tr("Thu nhỏ")
                                onClicked: Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.window.move({ workspace = 'special:minimized', follow = false })"]) }
-                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-max"; iconSize: 13; label: "Phóng to"
+                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-max"; iconSize: 13; label: Fz.tr("Phóng to")
                                onClicked: Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.window.fullscreen({ mode = 'maximized' })"]) }
-                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-x"; iconSize: 14; label: "Đóng"; onClicked: app.open = false }
+                    FIconBtn { width: 30; height: 30; ghost: true; icon: "s-x"; iconSize: 14; label: Fz.tr("Đóng"); onClicked: app.open = false }
                 }
             }
 
             // file chooser for pages (avatar, VPN config…)
-            FFilePicker { id: picker; z: 50; subtitle: "Cài đặt" }
+            FFilePicker { id: picker; z: 50; subtitle: Fz.tr("Cài đặt") }
 
             // ---------------- page ----------------
             Flickable {

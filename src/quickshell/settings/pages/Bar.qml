@@ -10,8 +10,8 @@ Column {
     property var app
     width: parent ? parent.width : 0
 
-    readonly property var names: ({ left: "Cài đặt", workspaces: "Workspace", media: "Phương tiện", info: "Ghi hình/Hẹn giờ", timedate: "Thời gian", weather: "Thời tiết",
-        tray: "Khay", sysmon: "Sysmon", kb: "Bàn phím", wifi: "Mạng", bt: "BT", vol: "Âm lượng", bat: "Pin", focus: "Tiêu điểm", cava: "Visualizer (cava)", actions: "Thao tác" })
+    readonly property var names: ({ left: Fz.tr("Cài đặt"), workspaces: "Workspace", media: Fz.tr("Phương tiện"), info: Fz.tr("Ghi hình/Hẹn giờ"), timedate: Fz.tr("Thời gian"), weather: Fz.tr("Thời tiết"),
+        tray: "Khay", sysmon: "Sysmon", kb: Fz.tr("Bàn phím"), wifi: Fz.tr("Mạng"), bt: "BT", vol: Fz.tr("Âm lượng"), bat: "Pin", focus: Fz.tr("Tiêu điểm"), cava: "Visualizer (cava)", actions: Fz.tr("Thao tác") })
     readonly property var all: ["left", "workspaces", "media", "info", "timedate", "weather", "tray", "sysmon", "kb", "wifi", "bt", "vol", "bat", "focus", "cava", "actions"]
     readonly property var mods: Config.getSetting("bar.modules", { left: ["left", "workspaces", "media"], center: ["info", "timedate", "weather"], right: ["tray", "sysmon", "kb", "wifi", "bt", "vol", "bat"] })
     function flat(col) { let out = []; (mods[col] || []).forEach(x => out = out.concat(Array.isArray(x) ? x : [x])); return out; }
@@ -29,21 +29,21 @@ Column {
 
     Grp {
         width: parent.width
-        SRow { title: "Vị trí thanh tác vụ"; CfgSeg { key: "bar.position"; def: "top"; options: ["Trên", "Dưới", "Trái", "Phải"]; values: ["top", "bottom", "left", "right"] } }
-        SRow { title: "Kiểu thanh tác vụ"; sub: "Mô-đun, đặc hoặc đầy"; CfgSeg { key: "bar.style"; def: "modular"; options: ["Mô-đun", "Đặc", "Đầy"]; values: ["modular", "solid", "fill"] } }
-        SRow { title: "Chiều rộng"; CfgRange { key: "bar.width"; from: 50; to: 100; def: 100; unit: "%" } }
-        SRow { title: "Độ mờ"; CfgRange { key: "bar.opacity"; from: 0; to: 100; def: 100; unit: "%" } }
-        SRow { title: "Tự động ẩn"; sub: "Ẩn khi không di chuột qua"; CfgToggle { key: "bar.autohide" } }
-        SRow { title: "Viền riêng cho từng mô-đun"; sub: "Kiểu pill gọn gàng"; CfgToggle { key: "bar.distinctPills"; def: true } }
+        SRow { title: Fz.tr("Vị trí thanh tác vụ"); CfgSeg { key: "bar.position"; def: "top"; options: [Fz.tr("Trên"), Fz.tr("Dưới"), Fz.tr("Trái"), Fz.tr("Phải")]; values: ["top", "bottom", "left", "right"] } }
+        SRow { title: Fz.tr("Kiểu thanh tác vụ"); sub: Fz.tr("Mô-đun, đặc hoặc đầy"); CfgSeg { key: "bar.style"; def: "modular"; options: [Fz.tr("Mô-đun"), Fz.tr("Đặc"), Fz.tr("Đầy")]; values: ["modular", "solid", "fill"] } }
+        SRow { title: Fz.tr("Chiều rộng"); CfgRange { key: "bar.width"; from: 50; to: 100; def: 100; unit: "%" } }
+        SRow { title: Fz.tr("Độ mờ"); CfgRange { key: "bar.opacity"; from: 0; to: 100; def: 100; unit: "%" } }
+        SRow { title: Fz.tr("Tự động ẩn"); sub: Fz.tr("Ẩn khi không di chuột qua"); CfgToggle { key: "bar.autohide" } }
+        SRow { title: Fz.tr("Viền riêng cho từng mô-đun"); sub: Fz.tr("Kiểu pill gọn gàng"); CfgToggle { key: "bar.distinctPills"; def: true } }
     }
 
-    H3 { text: "Không gian làm việc & đồng hồ" }
+    H3 { text: Fz.tr("Không gian làm việc & đồng hồ") }
     Grp {
         width: parent.width
-        SRow { title: "Số workspace hiển thị"; CfgSelect { key: "bar.workspaceCount"; def: 8; options: ["5", "6", "8", "10"]; values: [5, 6, 8, 10] } }
-        SRow { title: "Kiểu workspace"; CfgSeg { key: "bar.workspacesStyle"; def: "pills"; options: ["Số", "Viên", "Pacman"]; values: ["numbers", "pills", "pacman"] } }
+        SRow { title: Fz.tr("Số workspace hiển thị"); CfgSelect { key: "bar.workspaceCount"; def: 8; options: ["5", "6", "8", "10"]; values: [5, 6, 8, 10] } }
+        SRow { title: Fz.tr("Kiểu workspace"); CfgSeg { key: "bar.workspacesStyle"; def: "pills"; options: [Fz.tr("Số"), Fz.tr("Viên"), "Pacman"]; values: ["numbers", "pills", "pacman"] } }
         SRow {
-            title: "Định dạng thời gian"; sub: "VD: HH:mm:ss hoặc hh:mm AP"
+            title: Fz.tr("Định dạng thời gian"); sub: Fz.tr("VD: HH:mm:ss hoặc hh:mm AP")
             FInput {
                 id: tf
                 width: 160; height: 36; fontSize: 13.5
@@ -53,16 +53,16 @@ Column {
                 Connections { target: tf.input; function onActiveFocusChanged() { if (!tf.input.activeFocus) Config.setSetting("bar.time.format", tf.text.trim() || "HH:mm:ss"); } }
             }
         }
-        SRow { title: "Kiểu đồng hồ"; CfgSeg { key: "bar.timeStyle"; def: "classic"; options: ["Cổ điển", "Material", "Ma trận điểm"]; values: ["classic", "material", "badge"] } }
-        SRow { title: "Hiển thị ngày"; CfgToggle { key: "bar.showDate"; def: true } }
+        SRow { title: Fz.tr("Kiểu đồng hồ"); CfgSeg { key: "bar.timeStyle"; def: "classic"; options: [Fz.tr("Cổ điển"), "Material", Fz.tr("Ma trận điểm")]; values: ["classic", "material", "badge"] } }
+        SRow { title: Fz.tr("Hiển thị ngày"); CfgToggle { key: "bar.showDate"; def: true } }
     }
 
-    H3 { text: "Mô-đun" }
+    H3 { text: Fz.tr("Mô-đun") }
     Row {
         width: parent.width
         spacing: 10
         Repeater {
-            model: [["left", "Trái"], ["center", "Giữa"], ["right", "Phải"]]
+            model: [["left", Fz.tr("Trái")], ["center", Fz.tr("Giữa")], ["right", Fz.tr("Phải")]]
             delegate: Column {
                 required property var modelData
                 width: (page.width - 20) / 3
@@ -76,7 +76,7 @@ Column {
     Column {
         width: parent.width
         spacing: 6
-        FText { text: "Có sẵn · bấm để thêm vào cột phải"; px: 13.5; color: Fz.sub }
+        FText { text: Fz.tr("Có sẵn · bấm để thêm vào cột phải"); px: 13.5; color: Fz.sub }
         ModuleBox { width: parent.width; keys: page.all.filter(k => page.used.indexOf(k) === -1); on: false; onPicked: (k) => page.add(k) }
     }
 

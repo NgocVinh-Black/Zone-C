@@ -25,13 +25,13 @@ PanelWindow {
     property var recent: []
     property point at: Qt.point(860, 210)
 
-    readonly property var symbols: [["→","mũi tên phải"],["←","mũi tên trái"],["↑","mũi tên lên"],["↓","mũi tên xuống"],["⇄","đổi chiều"],["•","chấm tròn"],["…","dấu ba chấm"],["—","gạch dài"],["°","độ"],["±","cộng trừ"],
-        ["×","nhân"],["÷","chia"],["≈","xấp xỉ"],["≠","khác"],["≤","nhỏ hơn bằng"],["≥","lớn hơn bằng"],["∞","vô cực"],["√","căn"],["π","pi"],["Σ","tổng"],
-        ["₫","đồng"],["€","euro"],["$","đô la"],["©","bản quyền"],["®","đăng ký"],["™","nhãn hiệu"],["§","mục"],["¶","đoạn"],["✓","tích"],["★","sao"],
-        ["⌘","command"],["⌥","option"],["⇧","shift"],["⌃","control"],["⏎","enter"],["⌫","xóa lùi"],["⎋","escape"],["⇥","tab"],["␣","dấu cách"],["⌨","bàn phím"],
-        ["←→","hai chiều"],["⟶","mũi tên dài"],["½","một nửa"],["¼","một phần tư"],["²","bình phương"],["³","lập phương"],["µ","micro"],["Ω","ôm"],["Δ","delta"],["λ","lambda"]]
-    readonly property var kaomoji: [["(＾▽＾)","vui"],["(╯°□°)╯︵ ┻━┻","lật bàn"],["¯\\_(ツ)_/¯","nhún vai"],["(｡•́︿•̀｡)","buồn"],["ʕ•ᴥ•ʔ","gấu"],["(=^･ω･^=)","mèo"],
-        ["(ง •̀_•́)ง","quyết tâm"],["(っ˘ω˘ς )","ôm"],["(≧◡≦)","hạnh phúc"],["(¬‿¬)","tinh quái"],["(⌐■_■)","ngầu"],["(ಥ﹏ಥ)","khóc"]]
+    readonly property var symbols: [["→",Fz.tr("mũi tên phải")],["←",Fz.tr("mũi tên trái")],["↑",Fz.tr("mũi tên lên")],["↓",Fz.tr("mũi tên xuống")],["⇄",Fz.tr("đổi chiều")],["•",Fz.tr("chấm tròn")],["…",Fz.tr("dấu ba chấm")],["—",Fz.tr("gạch dài")],["°",Fz.tr("độ")],["±",Fz.tr("cộng trừ")],
+        [Fz.tr("×"),Fz.tr("nhân")],[Fz.tr("÷"),"chia"],["≈",Fz.tr("xấp xỉ")],["≠",Fz.tr("khác")],["≤",Fz.tr("nhỏ hơn bằng")],["≥",Fz.tr("lớn hơn bằng")],["∞",Fz.tr("vô cực")],["√",Fz.tr("căn")],[Fz.tr("π"),"pi"],[Fz.tr("Σ"),Fz.tr("tổng")],
+        ["₫",Fz.tr("đồng")],["€","euro"],["$",Fz.tr("đô la")],["©",Fz.tr("bản quyền")],["®",Fz.tr("đăng ký")],["™",Fz.tr("nhãn hiệu")],["§",Fz.tr("mục")],["¶",Fz.tr("đoạn")],["✓",Fz.tr("tích")],["★","sao"],
+        ["⌘","command"],["⌥","option"],["⇧","shift"],["⌃","control"],["⏎","enter"],["⌫",Fz.tr("xóa lùi")],["⎋","escape"],["⇥","tab"],["␣",Fz.tr("dấu cách")],["⌨",Fz.tr("bàn phím")],
+        ["←→",Fz.tr("hai chiều")],["⟶",Fz.tr("mũi tên dài")],["½",Fz.tr("một nửa")],["¼",Fz.tr("một phần tư")],["²",Fz.tr("bình phương")],["³",Fz.tr("lập phương")],["µ","micro"],[Fz.tr("Ω"),Fz.tr("ôm")],[Fz.tr("Δ"),"delta"],[Fz.tr("λ"),"lambda"]]
+    readonly property var kaomoji: [["(＾▽＾)","vui"],["(╯°□°)╯︵ ┻━┻",Fz.tr("lật bàn")],["¯\\_(ツ)_/¯",Fz.tr("nhún vai")],[Fz.tr("(｡•́︿•̀｡)"),Fz.tr("buồn")],[Fz.tr("ʕ•ᴥ•ʔ"),Fz.tr("gấu")],[Fz.tr("(=^･ω･^=)"),Fz.tr("mèo")],
+        [Fz.tr("(ง •̀_•́)ง"),Fz.tr("quyết tâm")],[Fz.tr("(っ˘ω˘ς )"),Fz.tr("ôm")],["(≧◡≦)",Fz.tr("hạnh phúc")],["(¬‿¬)",Fz.tr("tinh quái")],["(⌐■_■)",Fz.tr("ngầu")],[Fz.tr("(ಥ﹏ಥ)"),Fz.tr("khóc")]]
 
     readonly property var list: {
         let q = query.trim().toLowerCase();
@@ -132,7 +132,7 @@ PanelWindow {
                                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) { win.insert(win.cur); e.accepted = true; }
                             }
                         }
-                        FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: "Tìm: tim, cười, lửa, mũi tên…"; color: Fz.dim; px: 14 }
+                        FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: Fz.tr("Tìm: tim, cười, lửa, mũi tên…"); color: Fz.dim; px: 14 }
                     }
                     FKbd { id: k; text: "Super ."; anchors.verticalCenter: parent.verticalCenter }
                 }
@@ -141,14 +141,14 @@ PanelWindow {
             FSeg {
                 width: parent.width
                 btnWidth: (parent.width - 6 - 4) / 3
-                options: ["Emoji", "Ký tự", "Kaomoji"]
+                options: ["Emoji", Fz.tr("Ký tự"), "Kaomoji"]
                 current: win.tab
                 onPicked: (i) => { win.tab = i; field.forceActiveFocus(); }
             }
 
             Caps {
                 px: 10.5; leftPadding: 4; topPadding: 2
-                text: win.query.trim() ? "Kết quả cho “" + win.query.trim() + "”" : (win.tab === 0 ? (win.recent.length ? "Dùng gần đây · Phổ biến" : "Phổ biến") : (win.tab === 1 ? "Mũi tên · Toán · Tiền tệ · Phím" : "Kaomoji"))
+                text: win.query.trim() ? Fz.tr("Kết quả cho “") + win.query.trim() + "”" : (win.tab === 0 ? (win.recent.length ? Fz.tr("Dùng gần đây · Phổ biến") : Fz.tr("Phổ biến")) : (win.tab === 1 ? Fz.tr("Mũi tên · Toán · Tiền tệ · Phím") : "Kaomoji"))
             }
 
             GridView {
@@ -181,7 +181,7 @@ PanelWindow {
                                 onEntered: win.sel = index; onClicked: win.insert(modelData) }
                 }
             }
-            FText { visible: win.list.length === 0; width: parent.width; topPadding: 30; bottomPadding: 30; horizontalAlignment: Text.AlignHCenter; text: "Không tìm thấy."; color: Fz.sub; px: 13 }
+            FText { visible: win.list.length === 0; width: parent.width; topPadding: 30; bottomPadding: 30; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Không tìm thấy."); color: Fz.sub; px: 13 }
 
             Item {
                 width: parent.width; height: 52
@@ -198,7 +198,7 @@ PanelWindow {
                     }
                 }
                 Row { id: hint; anchors.right: parent.right; anchors.rightMargin: 6; y: 20; spacing: 4
-                      FKbd { text: "Enter" } FText { text: "chèn"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                      FKbd { text: "Enter" } FText { text: Fz.tr("chèn"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
             }
         }
     }

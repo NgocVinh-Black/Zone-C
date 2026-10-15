@@ -40,14 +40,14 @@ PanelWindow {
     // "[[ binary data 33 KiB png 1440x900 ]]" -> "Ảnh PNG · 1440×900"; copied files keep their name
     function imageLabel(it) {
         let m = /binary data\s+([\d.]+\s*\w+)\s+(\w+)\s+(\d+)x(\d+)/.exec(it.meta || "");
-        if (m) return "Ảnh " + m[2].toUpperCase() + " · " + m[3] + "×" + m[4] + " · " + m[1];
+        if (m) return Fz.tr("Ảnh ") + m[2].toUpperCase() + " · " + m[3] + Fz.tr("×") + m[4] + " · " + m[1];
         return (it.content || "").split("/").pop();
     }
     function ago(id) {
         let t = seen[id];
         if (!t) return "";
         let m = Math.floor((Date.now() - t) / 60000);
-        return m < 1 ? "vừa xong" : m < 60 ? m + " phút" : m < 1440 ? Math.floor(m / 60) + " giờ" : Math.floor(m / 1440) + " ngày";
+        return m < 1 ? Fz.tr("vừa xong") : m < 60 ? m + Fz.tr(" phút") : m < 1440 ? Math.floor(m / 60) + Fz.tr(" giờ") : Math.floor(m / 1440) + Fz.tr(" ngày");
     }
     readonly property var shown: {
         let q = query.trim().toLowerCase();
@@ -135,17 +135,17 @@ PanelWindow {
                                     else if (e.key === Qt.Key_Tab) { win.filter = (win.filter + 1) % 5; e.accepted = true; }
                                 }
                             }
-                            FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: "Tìm trong lịch sử clipboard"; color: Fz.dim; px: 14.5 }
+                            FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: Fz.tr("Tìm trong lịch sử clipboard"); color: Fz.dim; px: 14.5 }
                         }
                     }
                 }
-                FBtn { id: clearBtn; height: 44; kind: "danger"; text: "Xóa hết"; onClicked: win.wipe() }
+                FBtn { id: clearBtn; height: 44; kind: "danger"; text: Fz.tr("Xóa hết"); onClicked: win.wipe() }
             }
 
             FSeg {
                 width: parent.width
                 btnWidth: (parent.width - 6 - 8) / 5
-                options: ["Tất cả", "Văn bản", "Ảnh", "Link", "Đã ghim"]
+                options: [Fz.tr("Tất cả"), Fz.tr("Văn bản"), Fz.tr("Ảnh"), "Link", Fz.tr("Đã ghim")]
                 current: win.filter
                 onPicked: (i) => { win.filter = i; win.sel = 0; field.forceActiveFocus(); }
             }
@@ -186,7 +186,7 @@ PanelWindow {
                             }
                             FText { width: 60; horizontalAlignment: Text.AlignRight; text: win.ago(ci.modelData.id); px: 11.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
                             FIconBtn { width: 30; height: 30; ghost: !ci.modelData.pinned; on: ci.modelData.pinned; icon: "cb-pin"; iconSize: 14; label: "Ghim"; onClicked: win.pin(ci.modelData); anchors.verticalCenter: parent.verticalCenter }
-                            FIconBtn { width: 30; height: 30; ghost: true; icon: "cb-trash"; iconSize: 14; label: "Xóa mục"; onClicked: win.remove(ci.modelData); anchors.verticalCenter: parent.verticalCenter }
+                            FIconBtn { width: 30; height: 30; ghost: true; icon: "cb-trash"; iconSize: 14; label: Fz.tr("Xóa mục"); onClicked: win.remove(ci.modelData); anchors.verticalCenter: parent.verticalCenter }
                         }
                         MouseArea { id: ciMouse; anchors.fill: parent; anchors.rightMargin: 84; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                                     onEntered: win.sel = ci.index; onClicked: win.paste(ci.modelData) }
@@ -196,8 +196,8 @@ PanelWindow {
                     visible: win.shown.length === 0
                     width: parent.width; topPadding: 24; bottomPadding: 24
                     icon: "x-clip"
-                    title: win.query !== "" ? "Không có mục khớp" : "Clipboard trống"
-                    message: win.query !== "" ? "Thử từ khóa khác." : "Sao chép văn bản hoặc ảnh, chúng sẽ được lưu ở đây."
+                    title: win.query !== "" ? Fz.tr("Không có mục khớp") : Fz.tr("Clipboard trống")
+                    message: win.query !== "" ? Fz.tr("Thử từ khóa khác.") : Fz.tr("Sao chép văn bản hoặc ảnh, chúng sẽ được lưu ở đây.")
                 }
             }
 
@@ -208,11 +208,11 @@ PanelWindow {
                 Row {
                     x: 4; y: 4 + 6
                     spacing: 14
-                    Row { spacing: 4; FKbd { text: "Enter" } FText { text: "dán"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                    Row { spacing: 4; FKbd { text: "Enter" } FText { text: Fz.tr("dán"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
                     Row { spacing: 4; FKbd { text: "Ctrl P" } FText { text: "ghim"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-                    Row { spacing: 4; FKbd { text: "Del" } FText { text: "xóa"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                    Row { spacing: 4; FKbd { text: "Del" } FText { text: Fz.tr("xóa"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
                 }
-                FText { anchors.right: parent.right; anchors.rightMargin: 4; y: 4 + 9; text: "cliphist · " + win.total + " mục"; px: 12; color: Fz.sub }
+                FText { anchors.right: parent.right; anchors.rightMargin: 4; y: 4 + 9; text: "cliphist · " + win.total + Fz.tr(" mục"); px: 12; color: Fz.sub }
             }
         }
     }

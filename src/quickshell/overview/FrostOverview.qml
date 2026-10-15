@@ -67,8 +67,8 @@ PanelWindow {
     }
     function appName(t) {
         let c = cls(t);
-        let map = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "code-oss": "VS Code", "org.gnome.Nautilus": "Tệp", "ViberPC": "Viber", "Spotify": "Nhạc", "spotify": "Nhạc" };
-        return map[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : (t.title || "Cửa sổ"));
+        let map = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "code-oss": "VS Code", "org.gnome.Nautilus": Fz.tr("Tệp"), "ViberPC": "Viber", "Spotify": Fz.tr("Nhạc"), "spotify": Fz.tr("Nhạc") };
+        return map[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : (t.title || Fz.tr("Cửa sổ")));
     }
     readonly property var wsWindows: all.filter(t => wsId(t) === shownWs && (filter === "" || (t.title + " " + cls(t)).toLowerCase().indexOf(filter.toLowerCase()) !== -1))
     // most recently focused first, one entry per window
@@ -204,7 +204,7 @@ PanelWindow {
                         else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) { win.focusWin(win.wsWindows[win.selWin]); e.accepted = true; }
                     }
                 }
-                FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: "Gõ để lọc cửa sổ…"; color: Fz.dim; px: 14 }
+                FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: Fz.tr("Gõ để lọc cửa sổ…"); color: Fz.dim; px: 14 }
             }
             FText { id: wsLabel; text: "Workspace " + win.shownWs; color: Fz.sub; px: 12; anchors.verticalCenter: parent.verticalCenter }
         }
@@ -237,7 +237,7 @@ PanelWindow {
                         FIcon { name: win.icon(wc.modelData); size: 15; color: Fz.glow; anchors.verticalCenter: parent.verticalCenter }
                         FText { width: wc.width - 24 - 15 - 16 - 30; elide: Text.ElideRight; text: wc.modelData.title; px: 13; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
                     }
-                    FIconBtn { anchors.right: parent.right; anchors.rightMargin: 6; anchors.verticalCenter: parent.verticalCenter; width: 26; height: 26; ghost: true; icon: "o-x"; iconSize: 14; label: "Đóng cửa sổ"
+                    FIconBtn { anchors.right: parent.right; anchors.rightMargin: 6; anchors.verticalCenter: parent.verticalCenter; width: 26; height: 26; ghost: true; icon: "o-x"; iconSize: 14; label: Fz.tr("Đóng cửa sổ")
                                onClicked: Hyprland.dispatch("hl.dsp.window.close({ window = \"address:0x" + wc.modelData.address + "\" })") }
                 }
                 ScreencopyView {
@@ -252,7 +252,7 @@ PanelWindow {
     FText {
         visible: win.mode === "overview" && win.wsWindows.length === 0
         anchors.centerIn: parent
-        text: win.filter ? "Không có cửa sổ nào khớp" : "Workspace " + win.shownWs + " đang trống"
+        text: win.filter ? Fz.tr("Không có cửa sổ nào khớp") : "Workspace " + win.shownWs + Fz.tr(" đang trống")
         color: Fz.sub2; px: 15
     }
 
@@ -295,9 +295,9 @@ PanelWindow {
         y: parent.height - 12 - 24
         spacing: 6
         FKbd { text: "Super Tab" }
-        FText { text: "tổng quan ·"; px: 12; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("tổng quan ·"); px: 12; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
         FKbd { text: "Alt Tab" }
-        FText { text: "chuyển ứng dụng · kéo cửa sổ lên workspace khác để di chuyển"; px: 12; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("chuyển ứng dụng · kéo cửa sổ lên workspace khác để di chuyển"); px: 12; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
     }
 
 }

@@ -14,11 +14,11 @@ Glass {
     readonly property bool charging: dev.ready && (dev.state === UPowerDeviceState.Charging || dev.state === UPowerDeviceState.PendingCharge)
     readonly property real secs: charging ? dev.timeToFull : dev.timeToEmpty
     readonly property string timeLeft: {
-        if (!dev.ready || !dev.isLaptopBattery) return "Máy không dùng pin";
-        if (dev.state === UPowerDeviceState.FullyCharged) return "Đã sạc đầy";
-        if (secs <= 0) return charging ? "Đang sạc" : "Đang dùng pin";
+        if (!dev.ready || !dev.isLaptopBattery) return Fz.tr("Máy không dùng pin");
+        if (dev.state === UPowerDeviceState.FullyCharged) return Fz.tr("Đã sạc đầy");
+        if (secs <= 0) return charging ? Fz.tr("Đang sạc") : Fz.tr("Đang dùng pin");
         let h = Math.floor(secs / 3600), m = Math.round((secs % 3600) / 60);
-        return (charging ? "đầy sau " : "còn ") + (h > 0 ? h + " giờ " : "") + m + " phút";
+        return (charging ? Fz.tr("đầy sau ") : Fz.tr("còn ")) + (h > 0 ? h + Fz.tr(" giờ ") : "") + m + Fz.tr(" phút");
     }
     Row {
         x: 20

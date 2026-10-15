@@ -110,7 +110,7 @@ Item {
         return "n-bt";
     }
     function btKind(d) {
-        return ({ "n-head": "Tai nghe", "n-mouse": "Chuột", "n-kbd": "Bàn phím", "n-phone": "Điện thoại", "n-spk": "Loa" })[btIcon(d)] || "Thiết bị";
+        return ({ "n-head": "Tai nghe", "n-mouse": Fz.tr("Chuột"), "n-kbd": Fz.tr("Bàn phím"), "n-phone": Fz.tr("Điện thoại"), "n-spk": "Loa" })[btIcon(d)] || Fz.tr("Thiết bị");
     }
 
     Glass {
@@ -140,7 +140,7 @@ Item {
                 Row {
                     anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter
                     spacing: 12
-                    FIconBtn { ghost: true; icon: "n-refresh"; label: "Quét lại"; anchors.verticalCenter: parent.verticalCenter
+                    FIconBtn { ghost: true; icon: "n-refresh"; label: Fz.tr("Quét lại"); anchors.verticalCenter: parent.verticalCenter
                         onClicked: { if (root.wifiDev) { root.wifiDev.scannerEnabled = false; root.wifiDev.scannerEnabled = true; } scanMeta.running = true; } }
                     FToggle { on: Networking.wifiEnabled; onToggled: (v) => Networking.wifiEnabled = v; anchors.verticalCenter: parent.verticalCenter }
                 }
@@ -167,7 +167,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 FText { text: root.current ? root.current.name : ""; px: 15; weight: Font.Bold; color: Fz.ink }
                                 FText {
-                                    text: ["Đã kết nối", root.secName(root.current), root.current ? root.band(root.current.name) : "", root.ip].filter(s => s !== "").join(" · ")
+                                    text: [Fz.tr("Đã kết nối"), root.secName(root.current), root.current ? root.band(root.current.name) : "", root.ip].filter(s => s !== "").join(" · ")
                                     px: 12; weight: Font.Medium; color: Fz.ink; opacity: 0.75
                                 }
                             }
@@ -177,7 +177,7 @@ Item {
                             width: discT.implicitWidth + 28; height: 30; radius: 11
                             color: Fz.surf(discMouse.containsMouse ? 0.2 : 0.1)
                             border.width: 1; border.color: Fz.surf(0.18)
-                            FText { id: discT; anchors.centerIn: parent; text: "Ngắt"; px: 12; weight: Font.Medium; color: Fz.ink }
+                            FText { id: discT; anchors.centerIn: parent; text: Fz.tr("Ngắt"); px: 12; weight: Font.Medium; color: Fz.ink }
                             MouseArea { id: discMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: if (root.current) root.current.disconnect() }
                         }
                     }
@@ -192,14 +192,14 @@ Item {
                 }
             }
 
-            Caps { visible: root.isWifi && Networking.wifiEnabled && root.others.length > 0; px: 11; leftPadding: 4; topPadding: 4; text: "Mạng khả dụng" }
+            Caps { visible: root.isWifi && Networking.wifiEnabled && root.others.length > 0; px: 11; leftPadding: 4; topPadding: 4; text: Fz.tr("Mạng khả dụng") }
             EmptyState {
                 visible: root.isWifi && (!Networking.wifiEnabled || (root.others.length === 0 && root.current === null))
                 width: parent.width
                 icon: "x-wifioff"; iconColor: Fz.red; iconBg: Fz.redA(0.12)
-                title: Networking.wifiEnabled ? "Không tìm thấy mạng nào" : "Wi-Fi đang tắt"
-                message: Networking.wifiEnabled ? "Không có mạng Wi-Fi trong vùng phủ sóng. Thử lại hoặc cắm cáp Ethernet." : "Bật Wi-Fi để tìm mạng gần đây."
-                button: Networking.wifiEnabled ? "Quét lại" : "Bật Wi-Fi"
+                title: Networking.wifiEnabled ? Fz.tr("Không tìm thấy mạng nào") : Fz.tr("Wi-Fi đang tắt")
+                message: Networking.wifiEnabled ? Fz.tr("Không có mạng Wi-Fi trong vùng phủ sóng. Thử lại hoặc cắm cáp Ethernet.") : Fz.tr("Bật Wi-Fi để tìm mạng gần đây.")
+                button: Networking.wifiEnabled ? Fz.tr("Quét lại") : Fz.tr("Bật Wi-Fi")
                 onClicked: { if (!Networking.wifiEnabled) Networking.wifiEnabled = true; else if (root.wifiDev) root.wifiDev.scannerEnabled = true; }
             }
 
@@ -241,7 +241,7 @@ Item {
                                     width: netRow.width - 24 - 18 - 12 - 26
                                     anchors.verticalCenter: parent.verticalCenter
                                     title: netRow.modelData.name
-                                    sub: [netRow.locked ? root.secName(netRow.modelData) : "Mạng mở", root.band(netRow.modelData.name)].filter(s => s !== "").join(" · ") + (netRow.modelData.known ? " · Đã lưu" : "")
+                                    sub: [netRow.locked ? root.secName(netRow.modelData) : Fz.tr("Mạng mở"), root.band(netRow.modelData.name)].filter(s => s !== "").join(" · ") + (netRow.modelData.known ? Fz.tr(" · Đã lưu") : "")
                                 }
                                 FIcon { visible: netRow.locked; name: "n-lock"; size: 14; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
                             }
@@ -259,9 +259,9 @@ Item {
                             width: parent.width - 24
                             topPadding: 4; bottomPadding: 10
                             spacing: 8
-                            FInput { id: pw; width: parent.width - 8 - connectBtn.width; height: 36; password: true; placeholder: "Mật khẩu"
+                            FInput { id: pw; width: parent.width - 8 - connectBtn.width; height: 36; password: true; placeholder: Fz.tr("Mật khẩu")
                                 onAccepted: root.connect(netRow.modelData, text) }
-                            FBtn { id: connectBtn; kind: "pri"; text: "Kết nối"; onClicked: root.connect(netRow.modelData, pw.text) }
+                            FBtn { id: connectBtn; kind: "pri"; text: Fz.tr("Kết nối"); onClicked: root.connect(netRow.modelData, pw.text) }
                         }
                     }
                 }
@@ -272,21 +272,21 @@ Item {
                 visible: !root.isWifi && root.adapter === null
                 width: parent.width
                 icon: "x-btoff"
-                title: "Không tìm thấy bộ điều hợp Bluetooth"
-                message: "Máy chưa có USB Bluetooth hoặc thiết bị đang bị chặn bởi rfkill."
+                title: Fz.tr("Không tìm thấy bộ điều hợp Bluetooth")
+                message: Fz.tr("Máy chưa có USB Bluetooth hoặc thiết bị đang bị chặn bởi rfkill.")
                 code: "rfkill unblock bluetooth"
-                button: "Khởi động lại bluetooth.service"; buttonPrimary: false
+                button: Fz.tr("Khởi động lại bluetooth.service"); buttonPrimary: false
                 onClicked: Quickshell.execDetached(["bash", "-c", "rfkill unblock bluetooth; systemctl restart bluetooth.service"])
             }
             Item {
                 visible: !root.isWifi && root.adapter !== null
                 width: parent.width; height: 40
                 Lbl { x: 4; width: parent.width - 60; anchors.verticalCenter: parent.verticalCenter
-                      title: "Bluetooth"; sub: "Hiển thị với tên “" + (root.adapter ? (root.adapter.name || SystemInfo.hostname) : SystemInfo.hostname) + "”" }
+                      title: "Bluetooth"; sub: Fz.tr("Hiển thị với tên “") + (root.adapter ? (root.adapter.name || SystemInfo.hostname) : SystemInfo.hostname) + "”" }
                 FToggle { anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter
                           on: root.adapter ? root.adapter.enabled : false; onToggled: (v) => { if (root.adapter) root.adapter.enabled = v; } }
             }
-            Caps { visible: !root.isWifi && root.paired.length > 0; px: 11; leftPadding: 4; topPadding: 4; text: "Đã ghép nối" }
+            Caps { visible: !root.isWifi && root.paired.length > 0; px: 11; leftPadding: 4; topPadding: 4; text: Fz.tr("Đã ghép nối") }
             Grp {
                 visible: !root.isWifi && root.paired.length > 0
                 width: parent.width
@@ -301,7 +301,7 @@ Item {
                             width: br.width - 32 - 36 - 28 - 76
                             anchors.verticalCenter: parent.verticalCenter
                             title: br.modelData.name || br.modelData.address
-                            sub: br.modelData.state === BluetoothDeviceState.Connecting ? "Đang kết nối…" : (br.modelData.connected ? "Đã kết nối" : "Chưa kết nối")
+                            sub: br.modelData.state === BluetoothDeviceState.Connecting ? Fz.tr("Đang kết nối…") : (br.modelData.connected ? Fz.tr("Đã kết nối") : Fz.tr("Chưa kết nối"))
                         }
                         Item {
                             width: 76; height: 30
@@ -309,7 +309,7 @@ Item {
                             FChip { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; visible: br.modelData.connected && br.bat >= 0
                                     text: br.bat + "%"; kind: br.bat >= 60 ? "ok" : (br.bat >= 20 ? "warn" : "bad") }
                             FBtn { anchors.right: parent.right; visible: !br.modelData.connected || br.bat < 0; height: 30; fontSize: 12; padX: 12
-                                   text: br.modelData.connected ? "Ngắt" : "Kết nối"
+                                   text: br.modelData.connected ? Fz.tr("Ngắt") : Fz.tr("Kết nối")
                                    onClicked: { br.modelData.trusted = true; if (br.modelData.connected) br.modelData.disconnect(); else br.modelData.connect(); } }
                         }
                     }
@@ -318,9 +318,9 @@ Item {
             Item {
                 visible: !root.isWifi
                 width: parent.width; height: 20
-                Caps { x: 4; px: 11; anchors.bottom: parent.bottom; text: "Thiết bị lân cận" }
+                Caps { x: 4; px: 11; anchors.bottom: parent.bottom; text: Fz.tr("Thiết bị lân cận") }
                 FText { anchors.right: parent.right; anchors.rightMargin: 4; anchors.bottom: parent.bottom
-                        text: root.adapter && root.adapter.discovering ? "Đang quét…" : ""; px: 12; color: Fz.sub }
+                        text: root.adapter && root.adapter.discovering ? Fz.tr("Đang quét…") : ""; px: 12; color: Fz.sub }
             }
             Grp {
                 visible: !root.isWifi && root.nearby.length > 0
@@ -332,7 +332,7 @@ Item {
                         required property var modelData
                         Ico { icon: root.btIcon(nr.modelData); anchors.verticalCenter: parent.verticalCenter }
                         Lbl { width: nr.width - 32 - 36 - 28 - 86; anchors.verticalCenter: parent.verticalCenter; title: nr.modelData.name; sub: root.btKind(nr.modelData) }
-                        FBtn { height: 30; fontSize: 12; padX: 12; kind: "pri"; text: nr.modelData.pairing ? "Đang ghép…" : "Ghép nối"; anchors.verticalCenter: parent.verticalCenter
+                        FBtn { height: 30; fontSize: 12; padX: 12; kind: "pri"; text: nr.modelData.pairing ? Fz.tr("Đang ghép…") : Fz.tr("Ghép nối"); anchors.verticalCenter: parent.verticalCenter
                                onClicked: { nr.modelData.trusted = true; nr.modelData.pair(); } }
                     }
                 }
@@ -340,14 +340,14 @@ Item {
             FText {
                 visible: !root.isWifi && root.nearby.length === 0
                 leftPadding: 4
-                text: root.adapter && root.adapter.enabled ? "Chưa tìm thấy thiết bị nào gần đây" : "Bật Bluetooth để tìm thiết bị"
+                text: root.adapter && root.adapter.enabled ? Fz.tr("Chưa tìm thấy thiết bị nào gần đây") : Fz.tr("Bật Bluetooth để tìm thiết bị")
                 color: Fz.sub; px: 13
             }
 
             FBtn {
                 width: parent.width
                 icon: "n-gear"; iconSize: 15
-                text: "Cài đặt mạng nâng cao"
+                text: Fz.tr("Cài đặt mạng nâng cao")
                 onClicked: Fz.open("guide", root.isWifi ? "wifi" : "bt")
             }
         }

@@ -27,8 +27,8 @@ Column {
         }
     }
     Process { id: run; onExited: probe.running = true }
-    readonly property var names: ({ "vi_VN": "Tiếng Việt", "en_US": "English (US)", "en_GB": "English (UK)", "de_DE": "Deutsch", "fr_FR": "Français", "ja_JP": "日本語", "ko_KR": "한국어", "zh_CN": "中文 (简体)" })
-    readonly property var regions: ({ "vi_VN": "Việt Nam", "en_US": "Hoa Kỳ", "en_GB": "Anh", "de_DE": "Đức", "fr_FR": "Pháp", "ja_JP": "Nhật Bản", "ko_KR": "Hàn Quốc", "zh_CN": "Trung Quốc" })
+    readonly property var names: ({ "vi_VN": Fz.tr("Tiếng Việt"), "en_US": "English (US)", "en_GB": "English (UK)", "de_DE": "Deutsch", "fr_FR": Fz.tr("Français"), "ja_JP": "日本語", "ko_KR": "한국어", "zh_CN": "中文 (简体)" })
+    readonly property var regions: ({ "vi_VN": Fz.tr("Việt Nam"), "en_US": Fz.tr("Hoa Kỳ"), "en_GB": Fz.tr("Anh"), "de_DE": Fz.tr("Đức"), "fr_FR": Fz.tr("Pháp"), "ja_JP": Fz.tr("Nhật Bản"), "ko_KR": Fz.tr("Hàn Quốc"), "zh_CN": Fz.tr("Trung Quốc") })
     function base(l) { return (l || "").split(".")[0]; }
     readonly property string lang: d.LANG || "en_US.UTF-8"
     readonly property string region: d.LC_TIME || d.LC_NUMERIC || lang
@@ -39,7 +39,7 @@ Column {
     Grp {
         width: parent.width
         SRow {
-            title: "Ngôn ngữ hệ thống"; sub: "LANG=" + page.lang; subMono: true
+            title: Fz.tr("Ngôn ngữ hệ thống"); sub: "LANG=" + page.lang; subMono: true
             FSelect {
                 options: page.options.map(l => page.names[page.base(l)] || page.base(l))
                 current: 0
@@ -47,7 +47,7 @@ Column {
             }
         }
         SRow {
-            title: "Vùng định dạng"; sub: page.hasVi ? "" : "Bật vi_VN.UTF-8 trong /etc/locale.gen để có định dạng Việt Nam"
+            title: Fz.tr("Vùng định dạng"); sub: page.hasVi ? "" : Fz.tr("Bật vi_VN.UTF-8 trong /etc/locale.gen để có định dạng Việt Nam")
             FSelect {
                 options: page.options.map(l => page.regions[page.base(l)] || page.base(l))
                 current: Math.max(0, page.options.findIndex(l => page.base(l) === page.base(page.region)))
@@ -56,18 +56,18 @@ Column {
         }
     }
 
-    H3 { text: "Xem trước" }
+    H3 { text: Fz.tr("Xem trước") }
     Grp {
         width: parent.width
-        SRow { title: "Ngày"; FText { text: page.base(page.region) === "en_US" ? Qt.formatDate(DateTime.now, "MM/dd/yyyy") : Qt.formatDate(DateTime.now, "dd/MM/yyyy"); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-        SRow { title: "Số"; FText { text: page.regionFmt(1234567.89, 2); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-        SRow { title: "Tiền tệ"; FText { text: page.base(page.region) === "vi_VN" ? page.regionFmt(1234567, 0) + " ₫" : page.base(page.region) === "en_US" ? "$" + page.regionFmt(1234567, 0) : page.regionFmt(1234567, 0); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+        SRow { title: Fz.tr("Ngày"); FText { text: page.base(page.region) === "en_US" ? Qt.formatDate(DateTime.now, "MM/dd/yyyy") : Qt.formatDate(DateTime.now, "dd/MM/yyyy"); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+        SRow { title: Fz.tr("Số"); FText { text: page.regionFmt(1234567.89, 2); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+        SRow { title: Fz.tr("Tiền tệ"); FText { text: page.base(page.region) === "vi_VN" ? page.regionFmt(1234567, 0) + " ₫" : page.base(page.region) === "en_US" ? "$" + page.regionFmt(1234567, 0) : page.regionFmt(1234567, 0); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
     }
     Item { width: 1; height: 12 }
     Row {
         spacing: 4
-        FText { text: "Ngôn ngữ của Zone-C đổi trong"; px: 13.5; color: Fz.sub }
-        FText { text: "Chung"; px: 13.5; color: Fz.glow; font.underline: true; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.app.page = "general" } }
+        FText { text: Fz.tr("Ngôn ngữ của Zone-C đổi trong"); px: 13.5; color: Fz.sub }
+        FText { text: Fz.tr("Chung"); px: 13.5; color: Fz.glow; font.underline: true; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.app.page = "general" } }
         FText { text: "."; px: 13.5; color: Fz.sub }
     }
 }

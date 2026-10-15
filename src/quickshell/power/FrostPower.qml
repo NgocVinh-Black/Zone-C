@@ -21,11 +21,11 @@ PanelWindow {
     color: "transparent"
 
     readonly property var defs: [
-        { k: "logout", l: "Đăng xuất", i: "p-logout", h: "Đăng xuất khỏi Hyprland?", s: "Mọi ứng dụng sẽ được đóng.", c: "Đăng xuất", run: "exit.sh" },
-        { k: "suspend", l: "Ngủ", i: "p-zzz", h: "Đưa máy vào chế độ ngủ?", s: "Phiên làm việc giữ nguyên trong RAM.", c: "Ngủ ngay", run: "suspend.sh" },
-        { k: "hibernate", l: "Ngủ đông", i: "p-moon", h: "Ngủ đông?", s: "Lưu phiên ra ổ đĩa rồi tắt nguồn.", c: "Ngủ đông", run: "hibernate.sh" },
-        { k: "reboot", l: "Khởi động lại", i: "p-restart", h: "Khởi động lại máy?", s: "Hệ thống sẽ khởi động lại.", c: "Khởi động lại", run: "reboot.sh" },
-        { k: "poweroff", l: "Tắt máy", i: "p-off", h: "Tắt máy?", s: "Hãy lưu công việc trước khi tắt.", c: "Tắt ngay", run: "poweroff.sh" }
+        { k: "logout", l: Fz.tr("Đăng xuất"), i: "p-logout", h: Fz.tr("Đăng xuất khỏi Hyprland?"), s: Fz.tr("Mọi ứng dụng sẽ được đóng."), c: Fz.tr("Đăng xuất"), run: "exit.sh" },
+        { k: "suspend", l: Fz.tr("Ngủ"), i: "p-zzz", h: Fz.tr("Đưa máy vào chế độ ngủ?"), s: Fz.tr("Phiên làm việc giữ nguyên trong RAM."), c: Fz.tr("Ngủ ngay"), run: "suspend.sh" },
+        { k: "hibernate", l: Fz.tr("Ngủ đông"), i: "p-moon", h: Fz.tr("Ngủ đông?"), s: Fz.tr("Lưu phiên ra ổ đĩa rồi tắt nguồn."), c: Fz.tr("Ngủ đông"), run: "hibernate.sh" },
+        { k: "reboot", l: Fz.tr("Khởi động lại"), i: "p-restart", h: Fz.tr("Khởi động lại máy?"), s: Fz.tr("Hệ thống sẽ khởi động lại."), c: Fz.tr("Khởi động lại"), run: "reboot.sh" },
+        { k: "poweroff", l: Fz.tr("Tắt máy"), i: "p-off", h: Fz.tr("Tắt máy?"), s: Fz.tr("Hãy lưu công việc trước khi tắt."), c: Fz.tr("Tắt ngay"), run: "poweroff.sh" }
     ]
     property string pick: "poweroff"
     property bool canHibernate: true
@@ -36,7 +36,7 @@ PanelWindow {
         let tl = Hyprland.toplevels ? (Hyprland.toplevels.values || []) : [], seen = {}, out = [];
         for (const t of tl) {
             let c = t.lastIpcObject && t.lastIpcObject.class ? t.lastIpcObject.class : "";
-            let n = ({ "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "org.gnome.Nautilus": "Tệp", "ViberPC": "Viber" })[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : "");
+            let n = ({ "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "org.gnome.Nautilus": Fz.tr("Tệp"), "ViberPC": "Viber" })[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : "");
             if (n && !seen[n]) { seen[n] = true; out.push(n); }
         }
         return out;
@@ -93,7 +93,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         y: 320 * win.height / 900
         spacing: 18
-        PowerTile { label: "Khóa"; icon: "p-lock"; on: false; onClicked: { win.open = false; Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]); } }
+        PowerTile { label: Fz.tr("Khóa"); icon: "p-lock"; on: false; onClicked: { win.open = false; Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]); } }
         Repeater {
             model: win.options
             delegate: PowerTile {
@@ -109,7 +109,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         y: 504 * win.height / 900
         spacing: 10
-        FBtn { height: 44; radius: 22; padX: 22; text: "Hủy · Esc"; onClicked: win.open = false }
+        FBtn { height: 44; radius: 22; padX: 22; text: Fz.tr("Hủy · Esc"); onClicked: win.open = false }
         FBtn { height: 44; radius: 22; padX: 22; kind: "pri"; text: win.cur.c; onClicked: win.run() }
     }
     Column {
@@ -120,9 +120,9 @@ PanelWindow {
         FBar { width: parent.width; value: win.secsLeft / 60 }
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            FText { text: "Tự thực hiện sau "; px: 12.5; color: Fz.sub }
+            FText { text: Fz.tr("Tự thực hiện sau "); px: 12.5; color: Fz.sub }
             FText { text: win.secsLeft; mono: true; px: 12.5; color: Fz.sub }
-            FText { text: " giây" + (win.openApps.length ? " · " + win.openApps.slice(0, 3).join(", ") + " đang mở" : ""); px: 12.5; color: Fz.sub }
+            FText { text: Fz.tr(" giây") + (win.openApps.length ? " · " + win.openApps.slice(0, 3).join(", ") + Fz.tr(" đang mở") : ""); px: 12.5; color: Fz.sub }
         }
     }
 

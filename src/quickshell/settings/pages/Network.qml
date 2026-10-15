@@ -45,7 +45,7 @@ Column {
     Process { id: run; onExited: probe.running = true }
     function nm(args) { run.command = ["nmcli"].concat(args); run.running = true; }
 
-    H3 { first: true; text: "Có dây" }
+    H3 { first: true; text: Fz.tr("Có dây") }
     Grp {
         width: parent.width
         Repeater {
@@ -54,11 +54,11 @@ Column {
                 required property var modelData
                 readonly property bool up: modelData.state === "connected"
                 icon: "s-eth"; title: "Ethernet (" + modelData.dev + ")"
-                sub: up ? "Đã kết nối · " + modelData.conn : modelData.state === "unavailable" ? "Chưa cắm cáp" : "Ngắt"
-                FChip { kind: up ? "ok" : ""; text: up ? "Đã kết nối" : "Ngắt"; anchors.verticalCenter: parent.verticalCenter }
+                sub: up ? Fz.tr("Đã kết nối · ") + modelData.conn : modelData.state === "unavailable" ? Fz.tr("Chưa cắm cáp") : Fz.tr("Ngắt")
+                FChip { kind: up ? "ok" : ""; text: up ? Fz.tr("Đã kết nối") : Fz.tr("Ngắt"); anchors.verticalCenter: parent.verticalCenter }
             }
         }
-        SRow { visible: page.eth.length === 0; icon: "s-eth"; title: "Không có cổng Ethernet" }
+        SRow { visible: page.eth.length === 0; icon: "s-eth"; title: Fz.tr("Không có cổng Ethernet") }
     }
 
     H3 { text: "VPN" }
@@ -68,22 +68,22 @@ Column {
             model: page.vpns
             delegate: SRow {
                 required property var modelData
-                icon: "s-lock"; title: modelData.name; sub: (modelData.type === "wireguard" ? "WireGuard" : "VPN") + (modelData.active ? " · đang bật" : "")
+                icon: "s-lock"; title: modelData.name; sub: (modelData.type === "wireguard" ? "WireGuard" : "VPN") + (modelData.active ? Fz.tr(" · đang bật") : "")
                 FToggle { on: modelData.active; onToggled: (v) => page.nm(["connection", v ? "up" : "down", modelData.name]) }
             }
         }
         Column {
             width: parent.width
             SRow {
-                title: "Thêm VPN…"; sub: "WireGuard, OpenVPN, nhập .conf"
-                FBtn { icon: "s-plus"; iconSize: 14; text: "Thêm"; onClicked: page.adding = !page.adding }
+                title: Fz.tr("Thêm VPN…"); sub: Fz.tr("WireGuard, OpenVPN, nhập .conf")
+                FBtn { icon: "s-plus"; iconSize: 14; text: Fz.tr("Thêm"); onClicked: page.adding = !page.adding }
             }
             Row {
                 visible: page.adding
                 x: 16; spacing: 8; bottomPadding: 12
-                FInput { id: confPath; width: 320; height: 36; placeholder: "Đường dẫn tệp .conf hoặc .ovpn" }
+                FInput { id: confPath; width: 320; height: 36; placeholder: Fz.tr("Đường dẫn tệp .conf hoặc .ovpn") }
                 FBtn {
-                    kind: "pri"; text: "Nhập"
+                    kind: "pri"; text: Fz.tr("Nhập")
                     onClicked: {
                         let p = confPath.text.trim().replace(/^~/, Quickshell.env("HOME"));
                         if (p) page.nm(["connection", "import", "type", p.endsWith(".ovpn") ? "openvpn" : "wireguard", "file", p]);
@@ -100,10 +100,10 @@ Column {
         Column {
             width: parent.width
             SRow {
-                title: "Máy chủ DNS"; subMono: true
-                sub: (page.st.dns || page.st.curdns || "").replace(/,/g, ", ").trim() || "Tự động"
+                title: Fz.tr("Máy chủ DNS"); subMono: true
+                sub: (page.st.dns || page.st.curdns || "").replace(/,/g, ", ").trim() || Fz.tr("Tự động")
                 FSelect {
-                    options: ["Tự động (DHCP)", "Tùy chỉnh"]
+                    options: [Fz.tr("Tự động (DHCP)"), Fz.tr("Tùy chỉnh")]
                     current: page.st.auto === "yes" ? 1 : 0
                     onPicked: (i) => {
                         if (!page.st.conn) return;
@@ -117,7 +117,7 @@ Column {
                 x: 16; spacing: 8; bottomPadding: 12
                 FInput { id: dnsField; width: 260; height: 36; text: "1.1.1.1, 9.9.9.9"; placeholder: "1.1.1.1, 9.9.9.9" }
                 FBtn {
-                    kind: "pri"; text: "Áp dụng"
+                    kind: "pri"; text: Fz.tr("Áp dụng")
                     onClicked: {
                         let servers = dnsField.text.split(/[ ,]+/).filter(x => x).join(" ");
                         run.command = ["bash", "-c", "nmcli connection modify \"$1\" ipv4.ignore-auto-dns yes ipv4.dns \"$2\" && nmcli connection up \"$1\"", "_", page.st.conn, servers];
@@ -127,7 +127,7 @@ Column {
             }
         }
         SRow {
-            title: "DNS over TLS"; sub: page.st.resolved === "active" ? "systemd-resolved" : "Cần bật systemd-resolved"
+            title: "DNS over TLS"; sub: page.st.resolved === "active" ? "systemd-resolved" : Fz.tr("Cần bật systemd-resolved")
             FToggle {
                 enabled: page.st.resolved === "active"; opacity: enabled ? 1 : 0.5
                 on: page.st.dot === "2" || page.st.dot === "yes"
@@ -137,7 +137,7 @@ Column {
         SRow {
             title: "Proxy"
             FSelect {
-                options: ["Không dùng", "Thủ công", "Tự động (PAC)"]
+                options: [Fz.tr("Không dùng"), Fz.tr("Thủ công"), Fz.tr("Tự động (PAC)")]
                 readonly property var values: ["none", "manual", "auto"]
                 current: Math.max(0, values.indexOf(page.st.proxy || "none"))
                 onPicked: (i) => { run.command = ["gsettings", "set", "org.gnome.system.proxy", "mode", values[i]]; run.running = true; }

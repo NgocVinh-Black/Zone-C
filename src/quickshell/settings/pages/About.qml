@@ -20,7 +20,7 @@ Column {
             + "echo \"hypr=$(hyprctl version -j 2>/dev/null | grep -m1 '\"tag\"' | cut -d'\"' -f4)\"; echo \"up=$(cut -d. -f1 /proc/uptime)\""]
         stdout: StdioCollector { onStreamFinished: { let o = {}; this.text.split("\n").forEach(l => { let i = l.indexOf("="); if (i > 0) o[l.slice(0, i)] = l.slice(i + 1); }); page.d = o; } }
     }
-    function up(s) { s = Number(s) || 0; let dd = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return (dd ? dd + " ngày " : "") + (h ? h + " giờ " : "") + m + " phút"; }
+    function up(s) { s = Number(s) || 0; let dd = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return (dd ? dd + Fz.tr(" ngày ") : "") + (h ? h + Fz.tr(" giờ ") : "") + m + Fz.tr(" phút"); }
 
     Grp {
         width: parent.width
@@ -35,7 +35,7 @@ Column {
                 FIcon { anchors.centerIn: parent; name: "s-zc"; size: 62; color: Fz.acc }
             }
             FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Zone-C"; px: 24; weight: Font.DemiBold }
-            FText { anchors.horizontalCenter: parent.horizontalCenter; text: "v" + Updater.localVersion + " • bởi NgocVinh-Black · phái sinh từ Serpantinum · AGPL-3.0"; px: 13; color: Fz.sub }
+            FText { anchors.horizontalCenter: parent.horizontalCenter; text: "v" + Updater.localVersion + Fz.tr(" • bởi NgocVinh-Black · phái sinh từ Serpantinum · AGPL-3.0"); px: 13; color: Fz.sub }
             FText {
                 anchors.horizontalCenter: parent.horizontalCenter; text: "github.com/NgocVinh-Black/Zone-C"; px: 13; color: Fz.glow
                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally("https://github.com/NgocVinh-Black/Zone-C") }
@@ -50,21 +50,21 @@ Column {
         FText { text: inf.value; mono: inf.valueMono; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
     }
 
-    H3 { text: "Phần cứng" }
+    H3 { text: Fz.tr("Phần cứng") }
     Grp {
         width: parent.width
-        Info { title: "Tên thiết bị"; value: (page.d.host || "") + (page.d.hostname ? " · " + page.d.hostname : "") }
-        Info { title: "Bộ xử lý"; value: page.d.cpu || "" }
-        Info { title: "Card đồ họa"; value: page.d.gpu || "" }
-        Info { title: "Bộ nhớ (RAM)"; value: (page.d.ram || "") + " GB" }
-        Info { title: "Dung lượng ổ đĩa"; value: (page.d.disk || "") + " GB" }
+        Info { title: Fz.tr("Tên thiết bị"); value: (page.d.host || "") + (page.d.hostname ? " · " + page.d.hostname : "") }
+        Info { title: Fz.tr("Bộ xử lý"); value: page.d.cpu || "" }
+        Info { title: Fz.tr("Card đồ họa"); value: page.d.gpu || "" }
+        Info { title: Fz.tr("Bộ nhớ (RAM)"); value: (page.d.ram || "") + " GB" }
+        Info { title: Fz.tr("Dung lượng ổ đĩa"); value: (page.d.disk || "") + " GB" }
     }
-    H3 { text: "Hệ thống" }
+    H3 { text: Fz.tr("Hệ thống") }
     Grp {
         width: parent.width
-        Info { title: "Hệ điều hành"; value: page.d.os || "" }
+        Info { title: Fz.tr("Hệ điều hành"); value: page.d.os || "" }
         Info { title: "Kernel"; value: page.d.kernel || ""; valueMono: true }
-        Info { title: "Môi trường desktop"; value: "Hyprland " + (page.d.hypr || "") + " · Quickshell" }
-        Info { title: "Thời gian hoạt động"; value: page.up(page.d.up) }
+        Info { title: Fz.tr("Môi trường desktop"); value: "Hyprland " + (page.d.hypr || "") + " · Quickshell" }
+        Info { title: Fz.tr("Thời gian hoạt động"); value: page.up(page.d.up) }
     }
 }

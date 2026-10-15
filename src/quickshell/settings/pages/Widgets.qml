@@ -23,20 +23,20 @@ Column {
                 required property int index
                 readonly property var st: Desk.screens[modelData.name] || null
                 icon: "s-display"
-                title: modelData.name + " · " + (modelData.model || (index === 0 ? "màn hình tích hợp" : "màn hình ngoài"))
-                sub: st && st.count > 0 ? st.count + " tiện ích · preset " + (page.presetNames[st.preset] || st.preset) : "Chưa có tiện ích"
-                FBtn { kind: index === 0 ? "pri" : ""; text: "Mở trình chỉnh sửa"; onClicked: { Desk.editRequested(modelData.name); page.app.open = false; } }
+                title: modelData.name + " · " + (modelData.model || (index === 0 ? Fz.tr("màn hình tích hợp") : Fz.tr("màn hình ngoài")))
+                sub: st && st.count > 0 ? st.count + Fz.tr(" tiện ích · preset ") + (page.presetNames[st.preset] || st.preset) : Fz.tr("Chưa có tiện ích")
+                FBtn { kind: index === 0 ? "pri" : ""; text: Fz.tr("Mở trình chỉnh sửa"); onClicked: { Desk.editRequested(modelData.name); page.app.open = false; } }
             }
         }
-        SRow { title: "Ẩn thanh trong trình chỉnh sửa"; CfgToggle { key: "widgets.hideBarInRedactor"; def: true } }
+        SRow { title: Fz.tr("Ẩn thanh trong trình chỉnh sửa"); CfgToggle { key: "widgets.hideBarInRedactor"; def: true } }
     }
 
-    H3 { text: "Mẫu tiện ích" }
+    H3 { text: Fz.tr("Mẫu tiện ích") }
     Grid {
         width: parent.width
         columns: 3; spacing: 10
         Repeater {
-            model: [["dash", "Dashboard", "Đồng hồ, thời tiết, nhạc"], ["media", "Media station", "Nhạc + visualizer"], ["min", "Minimal", "Chỉ đồng hồ"]]
+            model: [["dash", "Dashboard", Fz.tr("Đồng hồ, thời tiết, nhạc")], ["media", "Media station", Fz.tr("Nhạc + visualizer")], ["min", "Minimal", Fz.tr("Chỉ đồng hồ")]]
             delegate: Rectangle {
                 id: pc
                 required property var modelData

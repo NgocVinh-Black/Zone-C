@@ -46,20 +46,20 @@ Variants {
 
             // ---------- types and presets ----------
             readonly property var types: ({
-                hero:           { comp: heroC,     tag: "Đồng hồ · Dashboard" },
-                material:       { comp: materialC, tag: "Đồng hồ · Material" },
-                analog:         { comp: analogC,   tag: "Đồng hồ · kim" },
-                lumen:          { comp: lumenC,    tag: "Đồng hồ · Lumen" },
-                weatherFull:    { comp: wFullC,    tag: "Thời tiết · đầy đủ" },
-                weatherCompact: { comp: wCompC,    tag: "Thời tiết · gọn" },
-                musicFull:      { comp: mFullC,    tag: "Nhạc · đầy đủ" },
-                musicRound:     { comp: mRoundC,   tag: "Nhạc · tròn" },
+                hero:           { comp: heroC,     tag: Fz.tr("Đồng hồ · Dashboard") },
+                material:       { comp: materialC, tag: Fz.tr("Đồng hồ · Material") },
+                analog:         { comp: analogC,   tag: Fz.tr("Đồng hồ · kim") },
+                lumen:          { comp: lumenC,    tag: Fz.tr("Đồng hồ · Lumen") },
+                weatherFull:    { comp: wFullC,    tag: Fz.tr("Thời tiết · đầy đủ") },
+                weatherCompact: { comp: wCompC,    tag: Fz.tr("Thời tiết · gọn") },
+                musicFull:      { comp: mFullC,    tag: Fz.tr("Nhạc · đầy đủ") },
+                musicRound:     { comp: mRoundC,   tag: Fz.tr("Nhạc · tròn") },
                 viz:            { comp: vizC,      tag: "Visualizer · cava" },
                 battery:        { comp: batC,      tag: "Pin" },
-                resources:      { comp: resC,      tag: "Tài nguyên" },
-                user:           { comp: userC,     tag: "Người dùng" },
-                image:          { comp: imageC,    tag: "Khung ảnh" },
-                today:          { comp: todayC,    tag: "Hôm nay" }
+                resources:      { comp: resC,      tag: Fz.tr("Tài nguyên") },
+                user:           { comp: userC,     tag: Fz.tr("Người dùng") },
+                image:          { comp: imageC,    tag: Fz.tr("Khung ảnh") },
+                today:          { comp: todayC,    tag: Fz.tr("Hôm nay") }
             })
             // Positions in design pixels; ax "r" measures x from the right edge (the Desktop artboard's right column).
             readonly property var builtinPresets: ({
@@ -275,7 +275,7 @@ Variants {
                     id: toolbar
                     x: 8; y: 8
                     spacing: 8
-                    FText { anchors.verticalCenter: parent.verticalCenter; leftPadding: 10; rightPadding: 10; text: "Chỉnh widget · " + win.monitor; px: 13.5; weight: Font.DemiBold }
+                    FText { anchors.verticalCenter: parent.verticalCenter; leftPadding: 10; rightPadding: 10; text: Fz.tr("Chỉnh widget · ") + win.monitor; px: 13.5; weight: Font.DemiBold }
                     FSeg {
                         anchors.verticalCenter: parent.verticalCenter
                         options: win.presetNames.map(p => p[1])
@@ -284,7 +284,7 @@ Variants {
                     }
                     FBtn {
                         anchors.verticalCenter: parent.verticalCenter
-                        icon: "w-save"; text: "Lưu preset"
+                        icon: "w-save"; text: Fz.tr("Lưu preset")
                         onClicked: {
                             let c = Object.assign({}, win.customPresets);
                             c[win.preset] = win.widgets.map(w => { let o = Object.assign({}, w); delete o.id; return o; });
@@ -312,19 +312,19 @@ Variants {
                     spacing: 12
                     Item {
                         width: parent.width; height: 22
-                        FText { anchors.verticalCenter: parent.verticalCenter; text: "Thêm tiện ích"; px: 16; weight: Font.DemiBold }
-                        FChip { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: "kéo thả vào màn hình" }
+                        FText { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Thêm tiện ích"); px: 16; weight: Font.DemiBold }
+                        FChip { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("kéo thả vào màn hình") }
                     }
                     Grid {
                         columns: 2
                         columnSpacing: 8; rowSpacing: 8
                         Repeater {
                             model: [
-                                { t: "material", l: "Đồng hồ số", pv: "digital" }, { t: "analog", l: "Đồng hồ kim", pv: "analog" },
-                                { t: "lumen", l: "Material Lumen", pv: "lumen" }, { t: "weatherFull", l: "Thời tiết đầy đủ", pv: "w-cloud" },
-                                { t: "musicFull", l: "Nhạc", pv: "w-music" }, { t: "viz", l: "Visualizer", pv: "w-wave" },
-                                { t: "battery", l: "Pin", pv: "w-bat" }, { t: "resources", l: "Tài nguyên", pv: "w-cpu" },
-                                { t: "user", l: "Người dùng", pv: "w-user" }, { t: "image", l: "Khung ảnh", pv: "w-image" }
+                                { t: "material", l: Fz.tr("Đồng hồ số"), pv: "digital" }, { t: "analog", l: Fz.tr("Đồng hồ kim"), pv: "analog" },
+                                { t: "lumen", l: "Material Lumen", pv: "lumen" }, { t: "weatherFull", l: Fz.tr("Thời tiết đầy đủ"), pv: "w-cloud" },
+                                { t: "musicFull", l: Fz.tr("Nhạc"), pv: "w-music" }, { t: "viz", l: "Visualizer", pv: "w-wave" },
+                                { t: "battery", l: "Pin", pv: "w-bat" }, { t: "resources", l: Fz.tr("Tài nguyên"), pv: "w-cpu" },
+                                { t: "user", l: Fz.tr("Người dùng"), pv: "w-user" }, { t: "image", l: Fz.tr("Khung ảnh"), pv: "w-image" }
                             ]
                             delegate: Rectangle {
                                 required property var modelData
@@ -377,7 +377,7 @@ Variants {
                         Row {
                             width: parent.width
                             spacing: 10
-                            FText { width: parent.width - 150 - 10 - 44 - 10; text: "Kích thước"; color: Fz.sub; px: 12.5; anchors.verticalCenter: parent.verticalCenter }
+                            FText { width: parent.width - 150 - 10 - 44 - 10; text: Fz.tr("Kích thước"); color: Fz.sub; px: 12.5; anchors.verticalCenter: parent.verticalCenter }
                             FSlider {
                                 width: 150; anchors.verticalCenter: parent.verticalCenter
                                 from: 50; to: 200
@@ -388,15 +388,15 @@ Variants {
                         }
                         FBtn {
                             visible: insp.parent.w !== null && insp.parent.w.type === "image"
-                            width: parent.width; icon: "w-image"; text: "Chọn ảnh"; iconSize: 14
+                            width: parent.width; icon: "w-image"; text: Fz.tr("Chọn ảnh"); iconSize: 14
                             onClicked: picker.open(win.selectedId)
                         }
                         Row {
                             width: parent.width
                             spacing: 6
-                            FBtn { width: (parent.width - 6) / 2; icon: "w-move"; iconSize: 14; text: "Căn lưới"
+                            FBtn { width: (parent.width - 6) / 2; icon: "w-move"; iconSize: 14; text: Fz.tr("Căn lưới")
                                 onClicked: { let w = win.selected(); if (w) win.update(w.id, { x: Math.round(w.x / 40) * 40, y: Math.round(w.y / 40) * 40 }); } }
-                            FBtn { width: (parent.width - 6) / 2; kind: "danger"; icon: "w-x"; iconSize: 14; text: "Gỡ"
+                            FBtn { width: (parent.width - 6) / 2; kind: "danger"; icon: "w-x"; iconSize: 14; text: Fz.tr("Gỡ")
                                 onClicked: { win.widgets = win.widgets.filter(x => x.id !== win.selectedId); win.selectedId = ""; } }
                         }
                     }
@@ -407,21 +407,21 @@ Variants {
                 id: deskMenu
                 visible: false
                 z: 50
-                FMenuItem { icon: "t-image"; text: "Đổi hình nền"; hint: "Super Shift W"; onTriggered: { deskMenu.visible = false; Fz.open("wallpaper"); } }
-                FMenuItem { icon: "t-widgets"; text: "Chỉnh widget"; onTriggered: { deskMenu.visible = false; win.editing = true; } }
-                FMenuItem { icon: "t-display"; text: "Cài đặt màn hình"; onTriggered: { deskMenu.visible = false; Fz.open("guide", "display"); } }
+                FMenuItem { icon: "t-image"; text: Fz.tr("Đổi hình nền"); hint: "Super Shift W"; onTriggered: { deskMenu.visible = false; Fz.open("wallpaper"); } }
+                FMenuItem { icon: "t-widgets"; text: Fz.tr("Chỉnh widget"); onTriggered: { deskMenu.visible = false; win.editing = true; } }
+                FMenuItem { icon: "t-display"; text: Fz.tr("Cài đặt màn hình"); onTriggered: { deskMenu.visible = false; Fz.open("guide", "display"); } }
                 FMenuSep {}
-                FMenuItem { icon: "t-terminal"; text: "Mở terminal"; hint: "Super T"; onTriggered: { deskMenu.visible = false; Quickshell.execDetached(["bash", "-c", "kitty || foot"]); } }
-                FMenuItem { icon: "t-moon"; text: Fz.light ? "Chuyển sang chế độ tối" : "Chuyển sang chế độ sáng"; chevron: true; onTriggered: { deskMenu.visible = false; ZoneStyle.setMode("toggle"); } }
+                FMenuItem { icon: "t-terminal"; text: Fz.tr("Mở terminal"); hint: "Super T"; onTriggered: { deskMenu.visible = false; Quickshell.execDetached(["bash", "-c", "kitty || foot"]); } }
+                FMenuItem { icon: "t-moon"; text: Fz.light ? Fz.tr("Chuyển sang chế độ tối") : Fz.tr("Chuyển sang chế độ sáng"); chevron: true; onTriggered: { deskMenu.visible = false; ZoneStyle.setMode("toggle"); } }
                 FMenuSep {}
-                FMenuItem { icon: "t-gear"; text: "Cài đặt Zone-C"; hint: "Super I"; onTriggered: { deskMenu.visible = false; Fz.open("guide"); } }
+                FMenuItem { icon: "t-gear"; text: Fz.tr("Cài đặt Zone-C"); hint: "Super I"; onTriggered: { deskMenu.visible = false; Fz.open("guide"); } }
             }
 
             FFilePicker {
                 id: picker
                 z: 30
                 property string targetId: ""
-                function open(id) { targetId = id; show("Chọn ảnh cho khung ảnh", ["png", "jpg", "jpeg", "webp", "gif"], Quickshell.env("HOME") + "/Pictures"); }
+                function open(id) { targetId = id; show(Fz.tr("Chọn ảnh cho khung ảnh"), ["png", "jpg", "jpeg", "webp", "gif"], Quickshell.env("HOME") + "/Pictures"); }
                 onAccepted: (path) => win.update(targetId, { path: path })
             }
 

@@ -28,8 +28,8 @@ PanelWindow {
 
     readonly property var skip: { let c = Config.getSetting("closeconfirm", {}); return (c && c.skip) ? c.skip : []; }
     readonly property string appName: {
-        let m = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Google Chrome", "code": "VS Code", "org.gnome.Nautilus": "Tệp", "ViberPC": "Viber" };
-        return m[winClass] || (winClass ? winClass.charAt(0).toUpperCase() + winClass.slice(1) : (winTitle || "cửa sổ này"));
+        let m = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Google Chrome", "code": "VS Code", "org.gnome.Nautilus": Fz.tr("Tệp"), "ViberPC": "Viber" };
+        return m[winClass] || (winClass ? winClass.charAt(0).toUpperCase() + winClass.slice(1) : (winTitle || Fz.tr("cửa sổ này")));
     }
     readonly property bool isTerminal: /foot|kitty|alacritty|wezterm|konsole|terminal/i.test(winClass)
     readonly property bool risky: proc !== null && /pacman|yay|paru|pkexec|sudo|dd |mkfs|rsync|git /.test(proc.cmd)
@@ -107,12 +107,12 @@ PanelWindow {
                 Column {
                     width: parent.width - 52 - 16
                     spacing: 6
-                    FText { text: "Đóng " + root.appName + "?"; px: 20; weight: Font.DemiBold }
+                    FText { text: Fz.tr("Đóng ") + root.appName + "?"; px: 20; weight: Font.DemiBold }
                     FText {
                         width: parent.width; wrapMode: Text.Wrap; lineHeight: 1.25; px: 14; color: Fz.sub2
                         text: root.proc
-                            ? (root.isTerminal ? "Terminal" : root.appName) + " đang chạy một tiến trình. Đóng bây giờ sẽ dừng tiến trình" + (root.risky ? " và có thể làm hỏng lần cập nhật." : ".")
-                            : "Nội dung chưa lưu trong " + (root.winTitle || root.appName) + " có thể bị mất."
+                            ? (root.isTerminal ? "Terminal" : root.appName) + Fz.tr(" đang chạy một tiến trình. Đóng bây giờ sẽ dừng tiến trình") + (root.risky ? Fz.tr(" và có thể làm hỏng lần cập nhật.") : ".")
+                            : Fz.tr("Nội dung chưa lưu trong ") + (root.winTitle || root.appName) + Fz.tr(" có thể bị mất.")
                     }
                 }
             }
@@ -138,15 +138,15 @@ PanelWindow {
                         border.width: root.dontAsk ? 0 : 1.5; border.color: Fz.s2
                         FIcon { anchors.centerIn: parent; name: "dg-check"; size: 14; color: Fz.ink; opacity: root.dontAsk ? 1 : 0 }
                     }
-                    FText { text: "Không hỏi lại với " + root.appName; px: 13.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                    FText { text: Fz.tr("Không hỏi lại với ") + root.appName; px: 13.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
                 }
                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.dontAsk = !root.dontAsk }
             }
             Row {
                 anchors.right: parent.right
                 spacing: 8
-                FBtn { height: 42; padX: 18; text: "Hủy · Esc"; onClicked: root.cancel() }
-                FBtn { height: 42; padX: 18; kind: "danger"; text: "Đóng ngay"; onClicked: root.confirm() }
+                FBtn { height: 42; padX: 18; text: Fz.tr("Hủy · Esc"); onClicked: root.cancel() }
+                FBtn { height: 42; padX: 18; kind: "danger"; text: Fz.tr("Đóng ngay"); onClicked: root.confirm() }
             }
         }
     }

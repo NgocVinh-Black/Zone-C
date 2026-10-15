@@ -10,12 +10,12 @@ Item {
     anchors.fill: parent
     visible: false
 
-    property string title: "Mở tệp"
+    property string title: Fz.tr("Mở tệp")
     property string subtitle: "Zone-C"
     property string mode: "open"             // "open" | "save" | "folder"
     property bool modeSwitch: true           // the Mở / Lưu switch in the header (off for portal requests)
     property var exts: []                    // ["png", "jpg"]; empty = everything
-    property string filterLabel: "Tất cả tệp"
+    property string filterLabel: Fz.tr("Tất cả tệp")
     property string dir: home
     property var history: []
     property var entries: []
@@ -28,9 +28,9 @@ Item {
     signal canceled()
 
     function show(t, e, start, m, saveName) {
-        title = t || "Mở tệp";
+        title = t || Fz.tr("Mở tệp");
         exts = e || [];
-        filterLabel = exts.length ? "Tệp phù hợp (" + exts.map(x => "*." + x).join(", ") + ")" : "Tất cả tệp";
+        filterLabel = exts.length ? Fz.tr("Tệp phù hợp (") + exts.map(x => "*." + x).join(", ") + ")" : Fz.tr("Tất cả tệp");
         mode = m || "open";
         nameField.text = saveName || "";
         allFiles = false;
@@ -58,7 +58,7 @@ Item {
         return exts.some(x => n.endsWith("." + x));
     }
     readonly property var crumbs: {
-        if (dir === "recent:") return ["Gần đây"];
+        if (dir === "recent:") return [Fz.tr("Gần đây")];
         let rel = dir.indexOf(home) === 0 ? user + dir.slice(home.length) : dir;
         return rel.split("/").filter(s => s !== "");
     }
@@ -91,8 +91,8 @@ Item {
         let d = new Date(epoch * 1000), now = new Date();
         let day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         let hm = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-        if (d >= day0) return "Hôm nay " + hm;
-        if (d >= new Date(day0 - 86400000)) return "Hôm qua";
+        if (d >= day0) return Fz.tr("Hôm nay ") + hm;
+        if (d >= new Date(day0 - 86400000)) return Fz.tr("Hôm qua");
         return String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0") + "/" + d.getFullYear();
     }
     function fmtSize(b) {
@@ -120,11 +120,11 @@ Item {
                 let x = parts[0].trim().split("\n");
                 let h = root.home;
                 root.places = [
-                    { n: "Thư mục cá nhân", i: "p-home", p: h },
-                    { n: "Màn hình nền", i: "p-desk", p: x[0] || h + "/Desktop" },
-                    { n: "Tải xuống", i: "p-down", p: x[1] || h + "/Downloads" },
-                    { n: "Tài liệu", i: "p-doc", p: x[2] || h + "/Documents" },
-                    { n: "Hình ảnh", i: "p-image", p: x[3] || h + "/Pictures" }
+                    { n: Fz.tr("Thư mục cá nhân"), i: "p-home", p: h },
+                    { n: Fz.tr("Màn hình nền"), i: "p-desk", p: x[0] || h + "/Desktop" },
+                    { n: Fz.tr("Tải xuống"), i: "p-down", p: x[1] || h + "/Downloads" },
+                    { n: Fz.tr("Tài liệu"), i: "p-doc", p: x[2] || h + "/Documents" },
+                    { n: Fz.tr("Hình ảnh"), i: "p-image", p: x[3] || h + "/Pictures" }
                 ];
                 root.devices = (parts[1] || "").trim().split("\n").filter(s => s !== "").map(p => ({ n: p.split("/").pop(), i: "p-usb", p: p }));
             }
@@ -186,13 +186,13 @@ Item {
             Column {
                 x: 20; anchors.verticalCenter: parent.verticalCenter
                 FText { text: root.title; px: 15; weight: Font.DemiBold }
-                FText { text: "Yêu cầu từ " + root.subtitle + " · xdg-desktop-portal"; color: Fz.sub; px: 12 }
+                FText { text: Fz.tr("Yêu cầu từ ") + root.subtitle + " · xdg-desktop-portal"; color: Fz.sub; px: 12 }
             }
             Row {
                 anchors.right: parent.right; anchors.rightMargin: 14; anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                FSeg { visible: root.modeSwitch && root.mode !== "folder"; options: ["Mở tệp", "Lưu tệp"]; current: root.mode === "save" ? 1 : 0; onPicked: (i) => root.mode = i === 1 ? "save" : "open"; anchors.verticalCenter: parent.verticalCenter }
-                FIconBtn { ghost: true; icon: "p-x"; iconSize: 15; label: "Đóng"; onClicked: root.close(false); anchors.verticalCenter: parent.verticalCenter }
+                FSeg { visible: root.modeSwitch && root.mode !== "folder"; options: [Fz.tr("Mở tệp"), Fz.tr("Lưu tệp")]; current: root.mode === "save" ? 1 : 0; onPicked: (i) => root.mode = i === 1 ? "save" : "open"; anchors.verticalCenter: parent.verticalCenter }
+                FIconBtn { ghost: true; icon: "p-x"; iconSize: 15; label: Fz.tr("Đóng"); onClicked: root.close(false); anchors.verticalCenter: parent.verticalCenter }
             }
         }
 
@@ -206,13 +206,13 @@ Item {
                 x: 10; y: 8
                 width: parent.width - 20
                 spacing: 1
-                NavRow { label: "Gần đây"; icon: "p-clock"; on: root.dir === "recent:"; onClicked: root.go("recent:") }
-                FText { leftPadding: 10; topPadding: 12; bottomPadding: 4; text: "VỊ TRÍ"; color: Fz.dim; px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.09 }
+                NavRow { label: Fz.tr("Gần đây"); icon: "p-clock"; on: root.dir === "recent:"; onClicked: root.go("recent:") }
+                FText { leftPadding: 10; topPadding: 12; bottomPadding: 4; text: Fz.tr("VỊ TRÍ"); color: Fz.dim; px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.09 }
                 Repeater {
                     model: root.places
                     delegate: NavRow { required property var modelData; label: modelData.n; icon: modelData.i; on: root.dir === modelData.p; onClicked: root.go(modelData.p) }
                 }
-                FText { visible: root.devices.length > 0; leftPadding: 10; topPadding: 12; bottomPadding: 4; text: "THIẾT BỊ"; color: Fz.dim; px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.09 }
+                FText { visible: root.devices.length > 0; leftPadding: 10; topPadding: 12; bottomPadding: 4; text: Fz.tr("THIẾT BỊ"); color: Fz.dim; px: 10.5; weight: Font.DemiBold; font.letterSpacing: 10.5 * 0.09 }
                 Repeater {
                     model: root.devices
                     delegate: NavRow { required property var modelData; label: modelData.n; icon: modelData.i; on: root.dir === modelData.p; onClicked: root.go(modelData.p) }
@@ -232,9 +232,9 @@ Item {
                 Row {
                     x: 14; anchors.verticalCenter: parent.verticalCenter
                     spacing: 6
-                    FIconBtn { ghost: true; icon: "p-left"; label: "Quay lại"; anchors.verticalCenter: parent.verticalCenter
+                    FIconBtn { ghost: true; icon: "p-left"; label: Fz.tr("Quay lại"); anchors.verticalCenter: parent.verticalCenter
                         onClicked: if (root.history.length) { let h = root.history.slice(); let p = h.pop(); root.history = h; root.go(p, false); } }
-                    FIconBtn { ghost: true; icon: "p-up"; label: "Lên một cấp"; anchors.verticalCenter: parent.verticalCenter
+                    FIconBtn { ghost: true; icon: "p-up"; label: Fz.tr("Lên một cấp"); anchors.verticalCenter: parent.verticalCenter
                         onClicked: if (root.dir !== "/" && root.dir !== "recent:") root.go(root.dir.replace(/\/[^/]*\/?$/, "") || "/") }
                     Row {
                         width: tools.width - 14 - 36 - 36 - 12 - 200 - 6 - 36 - 6 - 14 - 6
@@ -263,12 +263,12 @@ Item {
                             Item {
                                 width: 160; height: 20; anchors.verticalCenter: parent.verticalCenter
                                 TextInput { id: search; anchors.fill: parent; verticalAlignment: TextInput.AlignVCenter; color: Fz.tx; font.family: Fz.font; font.pointSize: 13 * 0.75; clip: true; onTextChanged: root.query = text }
-                                FText { visible: search.text === ""; anchors.verticalCenter: parent.verticalCenter; text: "Tìm…"; color: Fz.dim; px: 13 }
+                                FText { visible: search.text === ""; anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Tìm…"); color: Fz.dim; px: 13 }
                             }
                         }
                     }
-                    FIconBtn { icon: "p-plus"; label: "Thư mục mới"; anchors.verticalCenter: parent.verticalCenter
-                        onClicked: if (root.dir !== "recent:") { mkdir.command = ["bash", "-c", "cd -- \"$1\" && n='Thư mục mới'; i=2; while [ -e \"$n\" ]; do n=\"Thư mục mới $i\"; i=$((i+1)); done; mkdir -- \"$n\"", "_", root.dir]; mkdir.running = true; } }
+                    FIconBtn { icon: "p-plus"; label: Fz.tr("Thư mục mới"); anchors.verticalCenter: parent.verticalCenter
+                        onClicked: if (root.dir !== "recent:") { mkdir.command = ["bash", "-c", Fz.tr("cd -- \"$1\" && n='Thư mục mới'; i=2; while [ -e \"$n\" ]; do n=\"Thư mục mới $i\"; i=$((i+1)); done; mkdir -- \"$n\""), "_", root.dir]; mkdir.running = true; } }
                 }
             }
 
@@ -279,9 +279,9 @@ Item {
                 Row {
                     x: 20; anchors.verticalCenter: parent.verticalCenter
                     spacing: 10
-                    FText { width: colHead.width - 40 - 130 - 90 - 20; text: "Tên"; color: Fz.sub; px: 11.5; weight: Font.DemiBold }
-                    FText { width: 130; text: "Ngày sửa"; color: Fz.sub; px: 11.5; weight: Font.DemiBold }
-                    FText { width: 90; text: "Kích thước"; color: Fz.sub; px: 11.5; weight: Font.DemiBold; horizontalAlignment: Text.AlignRight }
+                    FText { width: colHead.width - 40 - 130 - 90 - 20; text: Fz.tr("Tên"); color: Fz.sub; px: 11.5; weight: Font.DemiBold }
+                    FText { width: 130; text: Fz.tr("Ngày sửa"); color: Fz.sub; px: 11.5; weight: Font.DemiBold }
+                    FText { width: 90; text: Fz.tr("Kích thước"); color: Fz.sub; px: 11.5; weight: Font.DemiBold; horizontalAlignment: Text.AlignRight }
                 }
             }
 
@@ -313,13 +313,13 @@ Item {
                             FText { width: parent.width - 27; elide: Text.ElideRight; text: modelData.name; px: 13; color: on ? Fz.ink : Fz.tx; anchors.verticalCenter: parent.verticalCenter }
                         }
                         FText { width: 130; text: root.fmtDate(modelData.t); px: 13; color: on ? Fz.ink : Fz.sub }
-                        FText { width: 90; mono: true; text: modelData.dir ? modelData.size + " mục" : root.fmtSize(modelData.size); px: 12; color: on ? Fz.ink : Fz.sub; horizontalAlignment: Text.AlignRight }
+                        FText { width: 90; mono: true; text: modelData.dir ? modelData.size + Fz.tr(" mục") : root.fmtSize(modelData.size); px: 12; color: on ? Fz.ink : Fz.sub; horizontalAlignment: Text.AlignRight }
                     }
                     MouseArea { id: rowMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                         onClicked: root.sel = index
                         onDoubleClicked: root.pick(modelData) }
                 }
-                FText { anchors.centerIn: parent; visible: root.shown.length === 0; text: root.query ? "Không có tệp nào khớp “" + root.query + "”" : "Thư mục trống"; color: Fz.sub; px: 13 }
+                FText { anchors.centerIn: parent; visible: root.shown.length === 0; text: root.query ? Fz.tr("Không có tệp nào khớp “") + root.query + "”" : Fz.tr("Thư mục trống"); color: Fz.sub; px: 13 }
             }
 
             // footer
@@ -338,15 +338,15 @@ Item {
                     Row {
                         visible: root.mode === "save"
                         width: parent.width; spacing: 10
-                        FText { width: 70; text: "Tên tệp"; color: Fz.sub; px: 13; anchors.verticalCenter: parent.verticalCenter }
+                        FText { width: 70; text: Fz.tr("Tên tệp"); color: Fz.sub; px: 13; anchors.verticalCenter: parent.verticalCenter }
                         FInput { id: nameField; width: parent.width - 80; height: 38; onAccepted: root.confirm() }
                     }
                     Row {
                         width: parent.width; spacing: 10
-                        FText { width: 70; text: "Loại"; color: Fz.sub; px: 13; anchors.verticalCenter: parent.verticalCenter }
-                        FSelect { width: parent.width - 70 - 10 - cancelB.width - 10 - okB.width - 10; options: [root.filterLabel, "Tất cả tệp"]; current: root.allFiles ? 1 : 0; onPicked: (i) => root.allFiles = i === 1; anchors.verticalCenter: parent.verticalCenter }
-                        FBtn { id: cancelB; height: 38; text: "Hủy"; onClicked: root.close(false) }
-                        FBtn { id: okB; height: 38; width: Math.max(110, implicitWidth); kind: "pri"; text: root.mode === "save" ? "Lưu" : root.mode === "folder" ? "Chọn thư mục" : "Mở"; onClicked: root.confirm() }
+                        FText { width: 70; text: Fz.tr("Loại"); color: Fz.sub; px: 13; anchors.verticalCenter: parent.verticalCenter }
+                        FSelect { width: parent.width - 70 - 10 - cancelB.width - 10 - okB.width - 10; options: [root.filterLabel, Fz.tr("Tất cả tệp")]; current: root.allFiles ? 1 : 0; onPicked: (i) => root.allFiles = i === 1; anchors.verticalCenter: parent.verticalCenter }
+                        FBtn { id: cancelB; height: 38; text: Fz.tr("Hủy"); onClicked: root.close(false) }
+                        FBtn { id: okB; height: 38; width: Math.max(110, implicitWidth); kind: "pri"; text: root.mode === "save" ? Fz.tr("Lưu") : root.mode === "folder" ? Fz.tr("Chọn thư mục") : Fz.tr("Mở"); onClicked: root.confirm() }
                     }
                 }
             }

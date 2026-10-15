@@ -43,7 +43,7 @@ Item {
     // ---------- data ----------
     readonly property var player: MprisController.activePlayer
     readonly property bool hasMedia: player !== null && player.trackTitle !== ""
-    readonly property string mediaText: hasMedia ? (player.trackTitle + (player.trackArtist ? " · " + player.trackArtist : "")) : "Không phát nhạc"
+    readonly property string mediaText: hasMedia ? (player.trackTitle + (player.trackArtist ? " · " + player.trackArtist : "")) : Fz.tr("Không phát nhạc")
 
     readonly property string ssid: {
         let devs = Networking.devices ? (Networking.devices.values || []) : [];
@@ -105,7 +105,7 @@ Item {
             id: launcherIt
             visible: root.shown("left")
             padX: 9
-            label: "Zone-C: mở launcher"
+            label: Fz.tr("Zone-C: mở launcher")
             on: root.launcherOpen
             onClicked: Fz.open("launcher")
             FIcon { name: "b-zc"; size: 19; color: launcherIt.on ? Fz.ink : Fz.acc; anchors.verticalCenter: parent.verticalCenter }
@@ -115,7 +115,7 @@ Item {
             id: wsIt
             visible: root.shown("workspaces")
             padX: 8
-            label: "Không gian làm việc " + root.activeWs + " trên " + root.wsCount
+            label: Fz.tr("Không gian làm việc ") + root.activeWs + Fz.tr(" trên ") + root.wsCount
             onClicked: Fz.open("overview")
             onWheel: (steps) => Hyprland.dispatch("hl.dsp.focus({ workspace = \"" + (steps > 0 ? "e-1" : "e+1") + "\" })")
             Row {
@@ -193,7 +193,7 @@ Item {
             id: actIt
             visible: root.shown("actions")
             padX: 9
-            label: "Chụp màn hình"
+            label: Fz.tr("Chụp màn hình")
             onClicked: Fz.open("screenshot")
             onRightClicked: Quickshell.execDetached(["zone-c", "screenshot", "--record"])
             FIcon { name: "t-shot"; size: 15; color: actIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
@@ -211,7 +211,7 @@ Item {
 
         BarItem {
             visible: root.recording
-            label: "Đang quay màn hình"
+            label: Fz.tr("Đang quay màn hình")
             onClicked: Fz.open("screenshot")
             FIcon { name: "b-rec"; size: 11; color: "#ff9b9b"; anchors.verticalCenter: parent.verticalCenter }
             FText { mono: true; text: Rec.elapsed; color: "#ff9b9b"; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
@@ -221,7 +221,7 @@ Item {
             // running timer from Quick actions (Settings → Thanh bar → Ghi hình/Hẹn giờ)
             id: timerIt
             visible: TimerState.isActive && root.shown("info")
-            label: "Hẹn giờ " + TimerState.timeFormatted
+            label: Fz.tr("Hẹn giờ ") + TimerState.timeFormatted
             onClicked: FloatingController.setIndex("timer", null)
             FIcon { name: "a-timer"; size: 15; color: timerIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
             FText { mono: true; text: TimerState.timeFormatted; color: timerIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
@@ -231,7 +231,7 @@ Item {
             id: clockIt
             visible: root.shown("timedate")
             on: root.openWidget === "calendar"
-            label: "Mở lịch"
+            label: Fz.tr("Mở lịch")
             onClicked: Fz.open("calendar")
             FText { mono: true; text: DateTime.timeShort; color: clockIt.fgColor; px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
             FText { id: dateTxt; visible: root.showDate && !root.tight; text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
@@ -241,7 +241,7 @@ Item {
             id: weatherIt
             visible: root.shown("weather")
             on: root.openWidget === "calendar"
-            label: "Thời tiết"
+            label: Fz.tr("Thời tiết")
             onClicked: Fz.open("calendar")
             FIcon { name: Fz.weatherIcon(Weather.currentIcon); size: 15; color: weatherIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
             FText { text: Weather.currentTemp !== "" ? Math.round(Number(Weather.currentTemp)) + "°" : "--°"; color: weatherIt.fgColor; px: 13; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
@@ -310,7 +310,7 @@ Item {
                 id: kbIt
                 visible: root.shown("kb")
                 padX: 9
-                label: root.kbLayout === "VI" ? "Bộ gõ Tiếng Việt" : "Bàn phím " + root.kbLayout
+                label: root.kbLayout === "VI" ? Fz.tr("Bộ gõ Tiếng Việt") : Fz.tr("Bàn phím ") + root.kbLayout
                 onClicked: { Quickshell.execDetached(["fcitx5-remote", "-t"]); kbPoll.running = true; }
                 FText { text: root.kbLayout; color: kbIt.fgColor; px: 12; weight: Font.Bold; font.letterSpacing: 0.5; anchors.verticalCenter: parent.verticalCenter }
             }
@@ -327,15 +327,15 @@ Item {
                 readonly property bool offline: root.wifiOn && root.ssid === ""
                 readonly property color tint: offline && !on ? Fz.redTx : fgColor
                 FIcon { name: root.wifiOn && root.ssid !== "" ? "b-wifi" : "x-wifioff"; size: 15; color: wifiIt.tint; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); width: Math.min(implicitWidth, 120); elide: Text.ElideRight; color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: !root.wifiOn ? Fz.tr("Tắt") : (root.ssid !== "" ? root.ssid : Fz.tr("Ngoại tuyến")); width: Math.min(implicitWidth, 120); elide: Text.ElideRight; color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
                 id: btIt
                 visible: root.shown("bt")
-                label: "Bluetooth, " + root.btConnected + " thiết bị đã kết nối"
+                label: "Bluetooth, " + root.btConnected + Fz.tr(" thiết bị đã kết nối")
                 onClicked: Fz.open("network", "bt")
                 FIcon { name: root.btOn ? "b-bt" : "x-btoff"; size: 15; color: btIt.fgColor; opacity: root.btOn || btIt.on ? 1 : 0.55; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: root.btOn ? "Bluetooth" : "Tắt"; opacity: root.btOn || btIt.on ? 1 : 0.55; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: root.btOn ? "Bluetooth" : Fz.tr("Tắt"); opacity: root.btOn || btIt.on ? 1 : 0.55; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
                 Rectangle {
                     visible: root.btConnected > 0
                     width: Math.max(16, btBadge.implicitWidth + 8); height: 16; radius: 8
@@ -349,7 +349,7 @@ Item {
                 visible: root.shown("vol")
                 padX: 9
                 on: root.openWidget === "volume"
-                label: "Âm lượng " + root.volume + " phần trăm"
+                label: Fz.tr("Âm lượng ") + root.volume + Fz.tr(" phần trăm")
                 onClicked: Fz.open("volume")
                 onRightClicked: if (Audio.defaultSink) Audio.toggleMute(Audio.defaultSink)
                 onWheel: (steps) => { if (Audio.defaultSink) Audio.setVolume(Audio.defaultSink, Math.max(0, Math.min(150, root.volume + steps * 5))); }
@@ -360,7 +360,7 @@ Item {
                 id: batIt
                 visible: root.shown("bat") && (root.hasBattery)
                 on: root.openWidget === "system"
-                label: "Pin " + root.battery + " phần trăm, mở bảng hệ thống"
+                label: "Pin " + root.battery + Fz.tr(" phần trăm, mở bảng hệ thống")
                 onClicked: Fz.open("system")
                 Item {
                     width: 24; height: 12
@@ -379,7 +379,7 @@ Item {
                 id: acIt
                 visible: root.shown("bat") && !root.hasBattery
                 on: root.openWidget === "system"
-                label: "Nguồn điện AC, mở bảng hệ thống"
+                label: Fz.tr("Nguồn điện AC, mở bảng hệ thống")
                 onClicked: Fz.open("system")
                 FIcon { name: "x-plug"; size: 15; color: acIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
                 FText { text: "AC"; color: acIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
@@ -388,7 +388,7 @@ Item {
             BarItem {
                 id: notifIt
                 on: root.openWidget === "system"
-                label: root.notifCount + " thông báo"
+                label: root.notifCount + Fz.tr(" thông báo")
                 onClicked: Fz.open("system")
                 FIcon { name: "b-bell"; size: 15; color: notifIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
                 Rectangle {
@@ -403,7 +403,7 @@ Item {
                 id: gearIt
                 padX: 9
                 on: root.openWidget === "guide"
-                label: "Cài đặt"
+                label: Fz.tr("Cài đặt")
                 onClicked: Fz.open("guide")
                 FIcon { name: "b-gear"; size: 15; color: gearIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
             }

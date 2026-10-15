@@ -23,7 +23,7 @@ Scope {
         active: app.open
         FloatingWindow {
             id: win
-            title: "Zone-C · Giám sát hệ thống"
+            title: Fz.tr("Zone-C · Giám sát hệ thống")
             implicitWidth: 1320
             implicitHeight: 810
             minimumSize: Qt.size(980, 600)
@@ -84,19 +84,19 @@ Scope {
                 if (!d) return out;
                 let m = d.mem, cores = info.threads || d.cores.length;
                 out.push({ k: "cpu", n: "CPU", v: Math.round(d.cpu) + "%" + (d.temp ? " · " + d.temp + "°C" : ""), big: Math.round(d.cpu) + "%",
-                           desc: (info.cpuModel || "CPU") + " · " + cores + " luồng",
-                           kv: [["Tiến trình", String(d.procs)], ["Luồng", d.threads.toLocaleString("vi-VN")], ["Nhiệt độ", d.temp ? d.temp + "°C" : "–"], ["Uptime", uptime(d.uptime)]] });
-                out.push({ k: "ram", n: "Bộ nhớ", v: gib(m.used) + " / " + Math.round(m.total / 1073741824) + " GiB", big: Math.round(m.used / m.total * 100) + "%",
+                           desc: (info.cpuModel || "CPU") + " · " + cores + Fz.tr(" luồng"),
+                           kv: [[Fz.tr("Tiến trình"), String(d.procs)], [Fz.tr("Luồng"), d.threads.toLocaleString("vi-VN")], [Fz.tr("Nhiệt độ"), d.temp ? d.temp + "°C" : "–"], ["Uptime", uptime(d.uptime)]] });
+                out.push({ k: "ram", n: Fz.tr("Bộ nhớ"), v: gib(m.used) + " / " + Math.round(m.total / 1073741824) + " GiB", big: Math.round(m.used / m.total * 100) + "%",
                            desc: "RAM " + Math.round(m.total / 1073741824) + " GiB",
-                           kv: [["Đang dùng", gib(m.used) + " GiB"], ["Đệm", gib(m.cache) + " GiB"], ["Swap", gib(m.swapUsed) + " / " + gib(m.swapTotal) + " GiB"], ["Trống", gib(m.avail) + " GiB"]] });
-                if (d.disk) out.push({ k: "disk", n: "Ổ đĩa", v: d.disk.name + " · " + d.disk.busy + "%", big: d.disk.busy + "%",
+                           kv: [[Fz.tr("Đang dùng"), gib(m.used) + " GiB"], [Fz.tr("Đệm"), gib(m.cache) + " GiB"], ["Swap", gib(m.swapUsed) + " / " + gib(m.swapTotal) + " GiB"], [Fz.tr("Trống"), gib(m.avail) + " GiB"]] });
+                if (d.disk) out.push({ k: "disk", n: Fz.tr("Ổ đĩa"), v: d.disk.name + " · " + d.disk.busy + "%", big: d.disk.busy + "%",
                            desc: (d.disk.model || d.disk.name) + " · " + Math.round(d.disk.size / 1e9) + " GB",
-                           kv: [["Đọc", rate(d.disk.read)], ["Ghi", rate(d.disk.write)], ["Thiết bị", d.disk.name], ["Dung lượng", Math.round(d.disk.size / 1e9) + " GB"]] });
-                out.push({ k: "net", n: d.net.wifi ? "Wi-Fi" : "Mạng", v: "↓ " + (d.net.rx / 1048576).toFixed(1) + " · ↑ " + (d.net.tx / 1048576).toFixed(1) + " MB/s", big: rate(d.net.rx),
-                           desc: d.net.iface || "Không có kết nối",
-                           kv: [["Nhận", rate(d.net.rx)], ["Gửi", rate(d.net.tx)], ["IPv4", d.net.ip || "–"], ["Giao diện", d.net.iface || "–"]] });
+                           kv: [[Fz.tr("Đọc"), rate(d.disk.read)], ["Ghi", rate(d.disk.write)], [Fz.tr("Thiết bị"), d.disk.name], [Fz.tr("Dung lượng"), Math.round(d.disk.size / 1e9) + " GB"]] });
+                out.push({ k: "net", n: d.net.wifi ? "Wi-Fi" : Fz.tr("Mạng"), v: "↓ " + (d.net.rx / 1048576).toFixed(1) + " · ↑ " + (d.net.tx / 1048576).toFixed(1) + " MB/s", big: rate(d.net.rx),
+                           desc: d.net.iface || Fz.tr("Không có kết nối"),
+                           kv: [[Fz.tr("Nhận"), rate(d.net.rx)], [Fz.tr("Gửi"), rate(d.net.tx)], ["IPv4", d.net.ip || "–"], [Fz.tr("Giao diện"), d.net.iface || "–"]] });
                 if (d.gpu) out.push({ k: "gpu", n: "GPU", v: d.gpu.busy + "%" + (d.gpu.temp ? " · " + d.gpu.temp + "°C" : ""), big: d.gpu.busy + "%", desc: "GPU",
-                           kv: [["Video RAM", mem(d.gpu.vram)], ["Nhiệt độ", d.gpu.temp ? d.gpu.temp + "°C" : "–"], ["Tải", d.gpu.busy + "%"], ["", ""]] });
+                           kv: [["Video RAM", mem(d.gpu.vram)], [Fz.tr("Nhiệt độ"), d.gpu.temp ? d.gpu.temp + "°C" : "–"], [Fz.tr("Tải"), d.gpu.busy + "%"], ["", ""]] });
                 return out;
             }
             readonly property var curRes: resources[Math.min(res, resources.length - 1)] || null
@@ -105,11 +105,11 @@ Scope {
             // ---------------- services & boot ----------------
             readonly property var sysUnits: ["NetworkManager.service", "bluetooth.service", "sddm.service", "ufw.service", "firewalld.service", "cups.service", "power-profiles-daemon.service", "upower.service", "snapper-timeline.timer", "reflector.timer", "paccache.timer", "fstrim.timer"]
             readonly property var userUnits: ["pipewire.service", "wireplumber.service", "pipewire-pulse.service", "xdg-desktop-portal.service", "gnome-keyring-daemon.service", "zone-c-notify.service"]
-            readonly property var unitDesc: ({ "NetworkManager.service": "Quản lý mạng", "bluetooth.service": "Bluetooth (bluez)", "sddm.service": "Màn hình đăng nhập", "ufw.service": "Tường lửa",
-                "firewalld.service": "Tường lửa", "cups.service": "In ấn", "power-profiles-daemon.service": "Chế độ năng lượng", "upower.service": "Pin & nguồn",
-                "snapper-timeline.timer": "Snapshot định kỳ", "reflector.timer": "Xếp hạng mirror", "paccache.timer": "Dọn bộ đệm pacman", "fstrim.timer": "TRIM ổ SSD",
-                "pipewire.service": "Máy chủ âm thanh", "wireplumber.service": "Quản lý phiên âm thanh", "pipewire-pulse.service": "Tương thích PulseAudio",
-                "xdg-desktop-portal.service": "Cổng ứng dụng (portal)", "gnome-keyring-daemon.service": "Kho khóa", "zone-c-notify.service": "Thông báo Zone-C" })
+            readonly property var unitDesc: ({ "NetworkManager.service": Fz.tr("Quản lý mạng"), "bluetooth.service": "Bluetooth (bluez)", "sddm.service": Fz.tr("Màn hình đăng nhập"), "ufw.service": Fz.tr("Tường lửa"),
+                "firewalld.service": Fz.tr("Tường lửa"), "cups.service": Fz.tr("In ấn"), "power-profiles-daemon.service": Fz.tr("Chế độ năng lượng"), "upower.service": Fz.tr("Pin & nguồn"),
+                "snapper-timeline.timer": Fz.tr("Snapshot định kỳ"), "reflector.timer": Fz.tr("Xếp hạng mirror"), "paccache.timer": Fz.tr("Dọn bộ đệm pacman"), "fstrim.timer": Fz.tr("TRIM ổ SSD"),
+                "pipewire.service": Fz.tr("Máy chủ âm thanh"), "wireplumber.service": Fz.tr("Quản lý phiên âm thanh"), "pipewire-pulse.service": Fz.tr("Tương thích PulseAudio"),
+                "xdg-desktop-portal.service": Fz.tr("Cổng ứng dụng (portal)"), "gnome-keyring-daemon.service": Fz.tr("Kho khóa"), "zone-c-notify.service": Fz.tr("Thông báo Zone-C") })
             property var units: []
             property var boot: ({ total: "", parts: "", blame: [] })
             Process {
@@ -180,9 +180,9 @@ Scope {
                     x: 16; anchors.verticalCenter: parent.verticalCenter
                     spacing: 10
                     FIcon { name: "TaskManager:m-pulse"; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
-                    FText { text: "Giám sát hệ thống"; px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+                    FText { text: Fz.tr("Giám sát hệ thống"); px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
                     Item { width: 10; height: 1 }
-                    FSeg { options: ["Tiến trình", "Hiệu năng", "Dịch vụ", "Khởi động"]; current: win.tab; onPicked: (i) => win.tab = i; anchors.verticalCenter: parent.verticalCenter }
+                    FSeg { options: [Fz.tr("Tiến trình"), Fz.tr("Hiệu năng"), Fz.tr("Dịch vụ"), Fz.tr("Khởi động")]; current: win.tab; onPicked: (i) => win.tab = i; anchors.verticalCenter: parent.verticalCenter }
                 }
                 Row {
                     anchors.right: parent.right; anchors.rightMargin: 10; anchors.verticalCenter: parent.verticalCenter
@@ -191,11 +191,11 @@ Scope {
                         id: search
                         width: 240; height: 36; radius: 11; fontSize: 13; icon: "TaskManager:m-search"
                         color: Fz.well(0.25); border.color: input.activeFocus ? Fz.glow : Fz.line
-                        placeholder: "Tìm tiến trình"
+                        placeholder: Fz.tr("Tìm tiến trình")
                         onTextChanged: { win.q = text; if (text) win.tab = 0; }
                         Keys.onEscapePressed: { text = ""; keys.forceActiveFocus(); }
                     }
-                    FIconBtn { ghost: true; icon: "TaskManager:m-x"; iconSize: 15; label: "Đóng"; onClicked: app.open = false }
+                    FIconBtn { ghost: true; icon: "TaskManager:m-x"; iconSize: 15; label: Fz.tr("Đóng"); onClicked: app.open = false }
                 }
             }
 
@@ -319,7 +319,7 @@ Scope {
                             }
                             Item {
                                 width: parent.width; height: 16
-                                FText { text: "60 giây trước"; mono: true; px: 11.5; color: Fz.dim }
+                                FText { text: Fz.tr("60 giây trước"); mono: true; px: 11.5; color: Fz.dim }
                                 FText { anchors.right: parent.right; text: "0"; mono: true; px: 11.5; color: Fz.dim }
                             }
                             Grid {
@@ -389,11 +389,11 @@ Scope {
                                 FChip {
                                     id: chip; anchors.verticalCenter: parent.verticalCenter
                                     kind: waiting ? "" : running ? "ok" : "bad"
-                                    text: waiting ? "Chờ hẹn giờ" : running ? "Đang chạy" : modelData.active === "failed" ? "Lỗi" : "Đã dừng"
+                                    text: waiting ? Fz.tr("Chờ hẹn giờ") : running ? Fz.tr("Đang chạy") : modelData.active === "failed" ? Fz.tr("Lỗi") : Fz.tr("Đã dừng")
                                 }
                                 FBtn {
                                     id: btn; height: 30; fontSize: 12; anchors.verticalCenter: parent.verticalCenter
-                                    text: running ? "Khởi động lại" : "Khởi động"
+                                    text: running ? Fz.tr("Khởi động lại") : Fz.tr("Khởi động")
                                     onClicked: { act.command = ["systemctl"].concat(modelData.user ? ["--user"] : []).concat([running ? "restart" : "start", modelData.id]); act.running = true; }
                                 }
                             }
@@ -412,7 +412,7 @@ Scope {
                             x: 16; anchors.verticalCenter: parent.verticalCenter
                             spacing: 30
                             Column {
-                                FText { text: "Thời gian khởi động"; px: 12; color: Fz.sub }
+                                FText { text: Fz.tr("Thời gian khởi động"); px: 12; color: Fz.sub }
                                 FText { text: win.boot.total || "–"; mono: true; px: 26 }
                             }
                             FText { anchors.verticalCenter: parent.verticalCenter; text: win.boot.parts; mono: true; px: 12.5; color: Fz.sub2 }
@@ -442,15 +442,15 @@ Scope {
                 Rectangle { width: parent.width; height: 1; color: Fz.line }
                 FText {
                     x: 20; anchors.verticalCenter: parent.verticalCenter; px: 12.5; color: Fz.sub
-                    text: win.tab === 0 ? (win.s ? win.procs.length + " tiến trình · CPU " + Math.round(win.s.cpu) + "% · RAM " + win.gib(win.s.mem.used) + " GiB" : "Đang đọc…")
-                        : win.tab === 2 ? "systemd · " + win.units.length + " đơn vị hiển thị" : win.tab === 3 ? "systemd-analyze blame" : "Cập nhật mỗi giây"
+                    text: win.tab === 0 ? (win.s ? win.procs.length + Fz.tr(" tiến trình · CPU ") + Math.round(win.s.cpu) + "% · RAM " + win.gib(win.s.mem.used) + " GiB" : Fz.tr("Đang đọc…"))
+                        : win.tab === 2 ? "systemd · " + win.units.length + Fz.tr(" đơn vị hiển thị") : win.tab === 3 ? "systemd-analyze blame" : Fz.tr("Cập nhật mỗi giây")
                 }
                 Row {
                     visible: win.tab === 0
                     anchors.right: parent.right; anchors.rightMargin: 20; anchors.verticalCenter: parent.verticalCenter
                     spacing: 10
-                    FBtn { text: "Chi tiết"; onClicked: details.show() }
-                    FBtn { kind: "danger"; icon: "TaskManager:m-stop"; iconSize: 14; text: "Kết thúc tiến trình"; onClicked: win.kill() }
+                    FBtn { text: Fz.tr("Chi tiết"); onClicked: details.show() }
+                    FBtn { kind: "danger"; icon: "TaskManager:m-stop"; iconSize: 14; text: Fz.tr("Kết thúc tiến trình"); onClicked: win.kill() }
                 }
             }
 
@@ -504,8 +504,8 @@ Scope {
                             columns: 2; columnSpacing: 20; rowSpacing: 8
                             width: parent.width
                             Repeater {
-                                model: details.p ? [["PID", String(details.p.pid)], ["Số tiến trình", String(details.p.n)], ["Luồng", String(details.p.threads)], ["CPU", details.p.cpu.toFixed(1) + "%"],
-                                                    ["Bộ nhớ", win.mem(details.p.rss)], ["Đĩa", win.rate(details.p.io)], ["Bắt đầu", details.started || "–"], ["Người dùng", details.p.user]] : []
+                                model: details.p ? [["PID", String(details.p.pid)], [Fz.tr("Số tiến trình"), String(details.p.n)], [Fz.tr("Luồng"), String(details.p.threads)], ["CPU", details.p.cpu.toFixed(1) + "%"],
+                                                    [Fz.tr("Bộ nhớ"), win.mem(details.p.rss)], [Fz.tr("Đĩa"), win.rate(details.p.io)], [Fz.tr("Bắt đầu"), details.started || "–"], [Fz.tr("Người dùng"), details.p.user]] : []
                                 delegate: Item {
                                     required property var modelData
                                     width: (dcol.width - 20) / 2; height: 22
@@ -517,8 +517,8 @@ Scope {
                         Row {
                             anchors.right: parent.right
                             spacing: 8
-                            FBtn { text: "Đóng"; onClicked: details.visible = false }
-                            FBtn { kind: "danger"; text: "Kết thúc tiến trình"; onClicked: { details.visible = false; win.kill(); } }
+                            FBtn { text: Fz.tr("Đóng"); onClicked: details.visible = false }
+                            FBtn { kind: "danger"; text: Fz.tr("Kết thúc tiến trình"); onClicked: { details.visible = false; win.kill(); } }
                         }
                     }
                 }
@@ -562,7 +562,7 @@ Scope {
             spacing: 10
             Item {
                 width: pr.nameW; height: 24
-                FText { visible: pr.header; anchors.verticalCenter: parent.verticalCenter; text: "Tiến trình"; px: 12; weight: Font.DemiBold; color: Fz.sub }
+                FText { visible: pr.header; anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Tiến trình"); px: 12; weight: Font.DemiBold; color: Fz.sub }
                 Row {
                     visible: !pr.header
                     spacing: 10
@@ -574,9 +574,9 @@ Scope {
             }
             Num { head: pr.header; width: 80; text: pr.header ? "PID" : pr.p ? String(pr.p.pid) : "" }
             Num { head: pr.header; width: 90; text: pr.header ? "CPU ▾" : pr.p ? pr.p.cpu.toFixed(1) + "%" : ""; hot: !pr.header && pr.p && pr.p.cpu > 5 }
-            Num { head: pr.header; width: 90; text: pr.header ? "Bộ nhớ" : pr.p ? win_mem(pr.p.rss) : "" }
-            Num { head: pr.header; width: 90; text: pr.header ? "Đĩa" : pr.p ? win_rate(pr.p.io) : "" }
-            Num { head: pr.header; width: 80; text: pr.header ? "Mạng" : "–" }
+            Num { head: pr.header; width: 90; text: pr.header ? Fz.tr("Bộ nhớ") : pr.p ? win_mem(pr.p.rss) : "" }
+            Num { head: pr.header; width: 90; text: pr.header ? Fz.tr("Đĩa") : pr.p ? win_rate(pr.p.io) : "" }
+            Num { head: pr.header; width: 80; text: pr.header ? Fz.tr("Mạng") : "–" }
         }
         function win_mem(b) { return b >= 1073741824 ? (b / 1073741824).toFixed(1) + " GB" : Math.round(b / 1048576) + " MB"; }
         function win_rate(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + " MB/s" : b >= 1024 ? Math.round(b / 1024) + " KB/s" : (b > 0 ? b + " B/s" : "0"); }

@@ -48,15 +48,15 @@ Column {
         }
     }
 
-    H3 { text: "Đồng bộ" }
+    H3 { text: Fz.tr("Đồng bộ") }
     Grp {
         width: parent.width
         SRow {
-            title: "Tự động đặt giờ"; sub: "systemd-timesyncd" + (page.d.NTPSynchronized === "yes" ? " · đã đồng bộ" : "")
+            title: Fz.tr("Tự động đặt giờ"); sub: "systemd-timesyncd" + (page.d.NTPSynchronized === "yes" ? Fz.tr(" · đã đồng bộ") : "")
             FToggle { on: page.d.NTP === "yes"; onToggled: (v) => { run.command = ["timedatectl", "set-ntp", v ? "true" : "false"]; run.running = true; } }
         }
         SRow {
-            title: "Múi giờ"
+            title: Fz.tr("Múi giờ")
             FSelect {
                 width: 260
                 options: page.zoneList.map(z => z === page.zone ? z + " (" + page.offset + ")" : z)
@@ -66,11 +66,11 @@ Column {
         }
     }
 
-    H3 { text: "Hiển thị" }
+    H3 { text: Fz.tr("Hiển thị") }
     Grp {
         width: parent.width
         SRow {
-            title: "Định dạng 24 giờ"
+            title: Fz.tr("Định dạng 24 giờ")
             FToggle {
                 on: page.h24
                 onToggled: (v) => {
@@ -80,6 +80,6 @@ Column {
                 }
             }
         }
-        SRow { title: "Tuần bắt đầu vào"; CfgSelect { key: "datetime.weekStart"; def: 1; options: ["Thứ Hai", "Chủ Nhật"]; values: [1, 0] } }
+        SRow { title: Fz.tr("Tuần bắt đầu vào"); CfgSelect { key: "datetime.weekStart"; def: 1; options: [Fz.tr("Thứ Hai"), Fz.tr("Chủ Nhật")]; values: [1, 0] } }
     }
 }

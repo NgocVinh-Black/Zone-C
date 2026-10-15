@@ -39,8 +39,8 @@ Scope {
         if (lowShown) return;
         lowShown = true;
         let mins = bat.timeToEmpty > 0 ? Math.round(bat.timeToEmpty / 60) : 0;
-        alert("bat", "Pin yếu · " + Math.round(bat.percentage * 100) + "%", (mins ? "Còn khoảng " + mins + " phút. " : "") + "Hãy cắm sạc sớm.",
-              [["saver", "Bật tiết kiệm pin"], ["settings", "Cài đặt nguồn"]],
+        alert("bat", Fz.tr("Pin yếu · ") + Math.round(bat.percentage * 100) + "%", (mins ? Fz.tr("Còn khoảng ") + mins + Fz.tr(" phút. ") : "") + Fz.tr("Hãy cắm sạc sớm."),
+              [["saver", Fz.tr("Bật tiết kiệm pin")], ["settings", Fz.tr("Cài đặt nguồn")]],
               a => { if (a === "saver") PowerProfiles.profile = PowerProfile.PowerSaver; else Fz.open("settings", "power"); }, "critical");
     }
 
@@ -62,8 +62,8 @@ Scope {
     Process { id: usbSize; property string target; property var info
         stdout: StdioCollector { onStreamFinished: {
             let sz = this.text.trim(), name = usbSize.target.split("/").pop();
-            root.alert("usb", "Đã cắm USB · " + name + (sz ? " " + sz : ""), usbSize.info.fs + " · " + usbSize.target,
-                       [["open", "Mở trong Tệp"], ["eject", "Tháo an toàn"]],
+            root.alert("usb", Fz.tr("Đã cắm USB · ") + name + (sz ? " " + sz : ""), usbSize.info.fs + " · " + usbSize.target,
+                       [["open", Fz.tr("Mở trong Tệp")], ["eject", Fz.tr("Tháo an toàn")]],
                        a => { if (a === "open") Fz.open("files", usbSize.target); else Quickshell.execDetached(["bash", "-c", "udisksctl unmount -b \"$1\" && udisksctl power-off -b \"$1\"", "_", usbSize.info.dev]); });
         } } }
     function usbAdded(target, info) {
@@ -83,8 +83,8 @@ Scope {
                 if (!t || root.restartShown) return;
                 root.restartShown = true;
                 let p = t.split("|");
-                root.alert("restart", "Cập nhật xong" + (Number(p[0]) > 0 ? " " + p[0] + " gói" : ""), "Kernel mới " + (p[1] || "") + " cần khởi động lại.",
-                           [["reboot", "Khởi động lại"], ["later", "Để sau"]], a => { if (a === "reboot") Fz.open("power", "reboot"); });
+                root.alert("restart", Fz.tr("Cập nhật xong") + (Number(p[0]) > 0 ? " " + p[0] + Fz.tr(" gói") : ""), Fz.tr("Kernel mới ") + (p[1] || "") + Fz.tr(" cần khởi động lại."),
+                           [["reboot", Fz.tr("Khởi động lại")], ["later", Fz.tr("Để sau")]], a => { if (a === "reboot") Fz.open("power", "reboot"); });
             }
         }
     }
@@ -104,7 +104,7 @@ Scope {
                 root.lastHot = Date.now();
                 let perf = PowerProfiles.profile === PowerProfile.Performance;
                 if (perf) PowerProfiles.profile = PowerProfile.Balanced;
-                root.alert("hot", "CPU đang nóng · " + t + "°C", perf ? "Đã chuyển sang chế độ Cân bằng" : "Hãy để máy nghỉ một chút", [], null);
+                root.alert("hot", Fz.tr("CPU đang nóng · ") + t + "°C", perf ? Fz.tr("Đã chuyển sang chế độ Cân bằng") : Fz.tr("Hãy để máy nghỉ một chút"), [], null);
             }
         }
     }

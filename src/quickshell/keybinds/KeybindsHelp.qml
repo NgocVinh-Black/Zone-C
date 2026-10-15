@@ -20,77 +20,77 @@ PanelWindow {
 
     // col: cot hien thi (0..2). k: cac phim, "|" = cach khac, "+" = bam cung luc.
     readonly property var sections: [
-        { col: 0, icon: "󰀻", title: "Mở ứng dụng", accent: "blue", rows: [
-            { k: "Super (nhấn rồi thả)|Super+D", d: "Launcher tìm ứng dụng" },
+        { col: 0, icon: "󰀻", title: Fz.tr("Mở ứng dụng"), accent: "blue", rows: [
+            { k: Fz.tr("Super (nhấn rồi thả)|Super+D"), d: Fz.tr("Launcher tìm ứng dụng") },
             { k: "Super+T|Super+Enter", d: "Terminal (foot)" },
             { k: "Super+W|Super+G", d: "Chrome" },
             { k: "Super+C", d: "VS Code" },
-            { k: "Super+E", d: "Trình quản lý file" },
-            { k: "Ctrl+Alt+V", d: "Chỉnh âm thanh" },
-            { k: "Super+.", d: "Emoji & ký tự" },
-            { k: "Super+/", d: "Bảng phím tắt này" } ] },
-        { col: 0, icon: "󰕮", title: "Bảng của Zone-C", accent: "mauve", rows: [
-            { k: "Super+V", d: "Lịch sử clipboard" },
-            { k: "Super+M|Super+B", d: "Nhạc / bảng hệ thống" },
-            { k: "Super+S|Super+N", d: "Lịch / mạng" },
-            { k: "Super+Shift+V", d: "Âm lượng" },
-            { k: "Super+Shift+W", d: "Chọn hình nền" },
-            { k: "Super+H", d: "Cài đặt / hướng dẫn" },
-            { k: "Super+A|Super+R", d: "Tự ẩn bar / tải lại shell" } ] },
-        { col: 2, icon: "󰄀", title: "Chụp & quay màn hình", accent: "peach", rows: [
-            { k: "Print|Shift+Print", d: "Chụp / chụp rồi sửa" },
-            { k: "Super+Print|Super+Shift+Print", d: "Toàn màn hình / rồi sửa" },
+            { k: "Super+E", d: Fz.tr("Trình quản lý file") },
+            { k: "Ctrl+Alt+V", d: Fz.tr("Chỉnh âm thanh") },
+            { k: "Super+.", d: Fz.tr("Emoji & ký tự") },
+            { k: "Super+/", d: Fz.tr("Bảng phím tắt này") } ] },
+        { col: 0, icon: "󰕮", title: Fz.tr("Bảng của Zone-C"), accent: "mauve", rows: [
+            { k: "Super+V", d: Fz.tr("Lịch sử clipboard") },
+            { k: "Super+M|Super+B", d: Fz.tr("Nhạc / bảng hệ thống") },
+            { k: "Super+S|Super+N", d: Fz.tr("Lịch / mạng") },
+            { k: "Super+Shift+V", d: Fz.tr("Âm lượng") },
+            { k: "Super+Shift+W", d: Fz.tr("Chọn hình nền") },
+            { k: "Super+H", d: Fz.tr("Cài đặt / hướng dẫn") },
+            { k: "Super+A|Super+R", d: Fz.tr("Tự ẩn bar / tải lại shell") } ] },
+        { col: 2, icon: "󰄀", title: Fz.tr("Chụp & quay màn hình"), accent: "peach", rows: [
+            { k: "Print|Shift+Print", d: Fz.tr("Chụp / chụp rồi sửa") },
+            { k: "Super+Print|Super+Shift+Print", d: Fz.tr("Toàn màn hình / rồi sửa") },
             { k: "Super+Shift+S", d: "Flameshot" },
-            { k: "Super+Shift+Alt+S", d: "Chụp vùng (zone-c)" },
-            { k: "Super+Alt+R", d: "Quay màn hình" } ] },
-        { col: 2, icon: "󰄛", title: "Con mèo (float-cat)", accent: "yellow", rows: [
-            { k: "Super+Shift+K|Phím Copilot", d: "Bật / tắt con mèo" },
-            { k: "Super+K", d: "Rồi kéo bằng chuột để dời chỗ" } ] },
-        { col: 1, icon: "󰖲", title: "Cửa sổ", accent: "sapphire", rows: [
-            { k: "Super+Q", d: "Đóng (hỏi Yes/No)" },
-            { k: "Super+Shift+Q", d: "Đóng ngay, không hỏi" },
-            { k: "Super+F|Super+Alt+F", d: "Toàn màn hình / phóng to" },
-            { k: "Super+Shift+F|Super+Alt+Space", d: "Cửa sổ nổi" },
-            { k: "Super+P", d: "Ghim ở mọi workspace" },
-            { k: "Super+Alt+\\", d: "Chế độ PiP" },
-            { k: "Ctrl+Super+\\", d: "Đưa ra giữa" },
-            { k: "Ctrl+Super+Alt+\\", d: "Cỡ 55×70% và ra giữa" },
-            { k: "Super+←↑↓→", d: "Chuyển sang cửa sổ bên cạnh" },
-            { k: "Super+Shift+←↑↓→", d: "Di chuyển cửa sổ" },
-            { k: "Super+Alt+←↑↓→", d: "Đổi kích thước" },
-            { k: "Super+=|Super+-", d: "Rộng ra / hẹp lại" },
-            { k: "Super+Shift+=|Super+Shift+-", d: "Cao lên / thấp xuống" },
-            { k: "Super+Chuột trái|Super+Z", d: "Kéo cửa sổ" },
-            { k: "Super+Chuột phải|Super+X", d: "Kéo đổi kích thước" } ] },
-        { col: 1, icon: "󰓩", title: "Nhóm cửa sổ (tab)", accent: "teal", rows: [
-            { k: "Alt+Tab", d: "Chuyển ứng dụng (thả Alt để mở)" },
-            { k: "Shift+Alt+Tab", d: "Chuyển cửa sổ ngược lại" },
-            { k: "Super+,", d: "Gộp / bỏ nhóm" },
-            { k: "Super+U", d: "Tách khỏi nhóm" },
-            { k: "Super+Shift+,", d: "Khoá nhóm" },
-            { k: "Ctrl+Alt+Tab|Ctrl+Shift+Alt+Tab", d: "Tab kế tiếp / trước" } ] },
+            { k: "Super+Shift+Alt+S", d: Fz.tr("Chụp vùng (zone-c)") },
+            { k: "Super+Alt+R", d: Fz.tr("Quay màn hình") } ] },
+        { col: 2, icon: "󰄛", title: Fz.tr("Con mèo (float-cat)"), accent: "yellow", rows: [
+            { k: Fz.tr("Super+Shift+K|Phím Copilot"), d: Fz.tr("Bật / tắt con mèo") },
+            { k: "Super+K", d: Fz.tr("Rồi kéo bằng chuột để dời chỗ") } ] },
+        { col: 1, icon: "󰖲", title: Fz.tr("Cửa sổ"), accent: "sapphire", rows: [
+            { k: "Super+Q", d: Fz.tr("Đóng (hỏi Yes/No)") },
+            { k: "Super+Shift+Q", d: Fz.tr("Đóng ngay, không hỏi") },
+            { k: "Super+F|Super+Alt+F", d: Fz.tr("Toàn màn hình / phóng to") },
+            { k: "Super+Shift+F|Super+Alt+Space", d: Fz.tr("Cửa sổ nổi") },
+            { k: "Super+P", d: Fz.tr("Ghim ở mọi workspace") },
+            { k: "Super+Alt+\\", d: Fz.tr("Chế độ PiP") },
+            { k: "Ctrl+Super+\\", d: Fz.tr("Đưa ra giữa") },
+            { k: "Ctrl+Super+Alt+\\", d: Fz.tr("Cỡ 55×70% và ra giữa") },
+            { k: "Super+←↑↓→", d: Fz.tr("Chuyển sang cửa sổ bên cạnh") },
+            { k: "Super+Shift+←↑↓→", d: Fz.tr("Di chuyển cửa sổ") },
+            { k: "Super+Alt+←↑↓→", d: Fz.tr("Đổi kích thước") },
+            { k: "Super+=|Super+-", d: Fz.tr("Rộng ra / hẹp lại") },
+            { k: "Super+Shift+=|Super+Shift+-", d: Fz.tr("Cao lên / thấp xuống") },
+            { k: Fz.tr("Super+Chuột trái|Super+Z"), d: Fz.tr("Kéo cửa sổ") },
+            { k: Fz.tr("Super+Chuột phải|Super+X"), d: Fz.tr("Kéo đổi kích thước") } ] },
+        { col: 1, icon: "󰓩", title: Fz.tr("Nhóm cửa sổ (tab)"), accent: "teal", rows: [
+            { k: "Alt+Tab", d: Fz.tr("Chuyển ứng dụng (thả Alt để mở)") },
+            { k: "Shift+Alt+Tab", d: Fz.tr("Chuyển cửa sổ ngược lại") },
+            { k: "Super+,", d: Fz.tr("Gộp / bỏ nhóm") },
+            { k: "Super+U", d: Fz.tr("Tách khỏi nhóm") },
+            { k: "Super+Shift+,", d: Fz.tr("Khoá nhóm") },
+            { k: "Ctrl+Alt+Tab|Ctrl+Shift+Alt+Tab", d: Fz.tr("Tab kế tiếp / trước") } ] },
         { col: 2, icon: "󰍺", title: "Workspace", accent: "green", rows: [
-            { k: "Super+Tab", d: "Tổng quan cửa sổ" },
+            { k: "Super+Tab", d: Fz.tr("Tổng quan cửa sổ") },
             { k: "Super+1…0", d: "Sang workspace 1–10" },
-            { k: "Super+Shift+1…0|Super+Alt+1…0", d: "Chuyển cửa sổ sang đó" },
-            { k: "Ctrl+Super+1…0", d: "Sang nhóm workspace" },
-            { k: "Ctrl+Super+Alt+1…0", d: "Chuyển cửa sổ sang nhóm" },
-            { k: "Ctrl+Super+←→|Super+PgUp/PgDn", d: "Workspace trước / sau" },
-            { k: "Super+Cuộn", d: "Workspace trước / sau" },
-            { k: "Ctrl+Super+Cuộn", d: "Nhảy 10 workspace" },
-            { k: "Vuốt ngang 3 ngón", d: "Đổi workspace (touchpad)" },
-            { k: "Ctrl+Super+Shift+←→", d: "Mang cửa sổ sang trước / sau" },
-            { k: "Super+Alt+PgUp/PgDn|Super+Alt+Cuộn", d: "Mang cửa sổ sang trước / sau" },
-            { k: "Super+Alt+S|Ctrl+Super+Shift+↑", d: "Cất vào workspace ẩn" },
-            { k: "Ctrl+Super+Shift+↓", d: "Lấy ra từ workspace ẩn" } ] },
-        { col: 0, icon: "󰝚", title: "Hệ thống & media", accent: "pink", rows: [
-            { k: "Super+L|Nút nguồn", d: "Khoá màn hình" },
-            { k: "Super+Shift+L", d: "Ngủ" },
-            { k: "Super+Space|Ctrl+Super+Space", d: "Phát / dừng nhạc" },
-            { k: "Ctrl+Super+=|Ctrl+Super+-", d: "Bài tiếp / bài trước" },
-            { k: "Super+Shift+M|Mute", d: "Tắt tiếng loa" },
-            { k: "Phím âm lượng|Phím độ sáng", d: "Âm lượng / độ sáng" },
-            { k: "Phím Mic", d: "Tắt / bật micro" } ] }
+            { k: "Super+Shift+1…0|Super+Alt+1…0", d: Fz.tr("Chuyển cửa sổ sang đó") },
+            { k: "Ctrl+Super+1…0", d: Fz.tr("Sang nhóm workspace") },
+            { k: "Ctrl+Super+Alt+1…0", d: Fz.tr("Chuyển cửa sổ sang nhóm") },
+            { k: "Ctrl+Super+←→|Super+PgUp/PgDn", d: Fz.tr("Workspace trước / sau") },
+            { k: Fz.tr("Super+Cuộn"), d: Fz.tr("Workspace trước / sau") },
+            { k: Fz.tr("Ctrl+Super+Cuộn"), d: Fz.tr("Nhảy 10 workspace") },
+            { k: Fz.tr("Vuốt ngang 3 ngón"), d: Fz.tr("Đổi workspace (touchpad)") },
+            { k: "Ctrl+Super+Shift+←→", d: Fz.tr("Mang cửa sổ sang trước / sau") },
+            { k: Fz.tr("Super+Alt+PgUp/PgDn|Super+Alt+Cuộn"), d: Fz.tr("Mang cửa sổ sang trước / sau") },
+            { k: "Super+Alt+S|Ctrl+Super+Shift+↑", d: Fz.tr("Cất vào workspace ẩn") },
+            { k: "Ctrl+Super+Shift+↓", d: Fz.tr("Lấy ra từ workspace ẩn") } ] },
+        { col: 0, icon: "󰝚", title: Fz.tr("Hệ thống & media"), accent: "pink", rows: [
+            { k: Fz.tr("Super+L|Nút nguồn"), d: Fz.tr("Khoá màn hình") },
+            { k: "Super+Shift+L", d: Fz.tr("Ngủ") },
+            { k: "Super+Space|Ctrl+Super+Space", d: Fz.tr("Phát / dừng nhạc") },
+            { k: "Ctrl+Super+=|Ctrl+Super+-", d: Fz.tr("Bài tiếp / bài trước") },
+            { k: "Super+Shift+M|Mute", d: Fz.tr("Tắt tiếng loa") },
+            { k: Fz.tr("Phím âm lượng|Phím độ sáng"), d: Fz.tr("Âm lượng / độ sáng") },
+            { k: Fz.tr("Phím Mic"), d: Fz.tr("Tắt / bật micro") } ] }
     ]
 
     function norm(t) {
@@ -156,7 +156,7 @@ PanelWindow {
             id: header
             width: parent.width
             spacing: 16
-            FText { width: parent.width - 16 * 2 - search.width - hint.width; text: "Phím tắt"; px: 28; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+            FText { width: parent.width - 16 * 2 - search.width - hint.width; text: Fz.tr("Phím tắt"); px: 28; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
             Rectangle {
                 id: search
                 width: 360; height: 44; radius: 14
@@ -174,7 +174,7 @@ PanelWindow {
                             onTextChanged: root.query = text
                             Keys.onEscapePressed: root.close()
                         }
-                        FText { anchors.verticalCenter: parent.verticalCenter; visible: searchInput.text === ""; text: "Tìm phím tắt…"; color: Fz.dim; px: 14.5 }
+                        FText { anchors.verticalCenter: parent.verticalCenter; visible: searchInput.text === ""; text: Fz.tr("Tìm phím tắt…"); color: Fz.dim; px: 14.5 }
                     }
                 }
             }
@@ -183,7 +183,7 @@ PanelWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 4
                 FKbd { text: "Super" } FKbd { text: "/" }
-                FText { text: "để đóng"; px: 13; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: Fz.tr("để đóng"); px: 13; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
             }
         }
 

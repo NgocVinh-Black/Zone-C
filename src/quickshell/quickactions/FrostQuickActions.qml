@@ -52,13 +52,13 @@ Scope {
             tm.left = Math.max(0, tm.left - 1);
             if (tm.left > 0) return;
             if (tm.mode === 0) {
-                Quickshell.execDetached(["notify-send", "-a", "Hẹn giờ", tm.onBreak ? "Hết giờ nghỉ" : "Xong phiên tập trung " + tm.session + "/4", tm.onBreak ? "Bắt đầu phiên tiếp theo." : "Nghỉ 5 phút nhé."]);
+                Quickshell.execDetached(["notify-send", "-a", Fz.tr("Hẹn giờ"), tm.onBreak ? Fz.tr("Hết giờ nghỉ") : Fz.tr("Xong phiên tập trung ") + tm.session + "/4", tm.onBreak ? Fz.tr("Bắt đầu phiên tiếp theo.") : Fz.tr("Nghỉ 5 phút nhé.")]);
                 if (tm.onBreak) { tm.onBreak = false; tm.session = tm.session % 4 + 1; tm.total = 25 * 60; }
                 else { tm.onBreak = true; tm.total = (tm.session === 4 ? 15 : 5) * 60; }
                 tm.left = tm.total;
             } else {
                 tm.running = false;
-                Quickshell.execDetached(["notify-send", "-a", "Hẹn giờ", "Hết giờ", "Đếm ngược đã xong."]);
+                Quickshell.execDetached(["notify-send", "-a", Fz.tr("Hẹn giờ"), Fz.tr("Hết giờ"), Fz.tr("Đếm ngược đã xong.")]);
             }
         }
     }
@@ -140,7 +140,7 @@ Scope {
                     }
                 }
                 Repeater {
-                    model: [["timer", "Hẹn giờ", "a-timer"], ["usage", "Tài nguyên", "a-pulse"], ["draw", "Vẽ", "a-pen"]]
+                    model: [["timer", Fz.tr("Hẹn giờ"), "a-timer"], ["usage", Fz.tr("Tài nguyên"), "a-pulse"], ["draw", Fz.tr("Vẽ"), "a-pen"]]
                     delegate: Rectangle {
                         required property var modelData
                         readonly property bool on: modelData[0] === "timer" ? qa.timerOpen : modelData[0] === "usage" ? qa.usageOpen : qa.drawOpen
@@ -174,7 +174,7 @@ Scope {
                 spacing: 14
                 FSeg {
                     width: parent.width; btnWidth: (parent.width - 6 - 4) / 3; fontSize: 12.5
-                    options: ["Pomodoro", "Đếm ngược", "Bấm giờ"]
+                    options: ["Pomodoro", Fz.tr("Đếm ngược"), Fz.tr("Bấm giờ")]
                     current: tm.mode
                     onPicked: (i) => { tm.mode = i; if (i === 1 && tm.total === 0) tm.total = 10 * 60; tm.reset(); }
                 }
@@ -187,7 +187,7 @@ Scope {
                         FText { anchors.horizontalCenter: parent.horizontalCenter; mono: true; text: tm.text; px: 40; weight: Font.Medium }
                         FText {
                             anchors.horizontalCenter: parent.horizontalCenter; px: 12; color: Fz.sub
-                            text: tm.mode === 0 ? (tm.onBreak ? "Giờ nghỉ" : "Phiên tập trung " + tm.session + "/4") : tm.mode === 1 ? "Đếm ngược" : "Bấm giờ"
+                            text: tm.mode === 0 ? (tm.onBreak ? Fz.tr("Giờ nghỉ") : Fz.tr("Phiên tập trung ") + tm.session + "/4") : tm.mode === 1 ? Fz.tr("Đếm ngược") : Fz.tr("Bấm giờ")
                         }
                     }
                 }
@@ -198,14 +198,14 @@ Scope {
                     Repeater {
                         model: [5, 10, 15, 30]
                         delegate: FBtn { required property var modelData; height: 30; padX: 10; fontSize: 12; kind: tm.total === modelData * 60 ? "pri" : ""
-                                         text: modelData + " phút"; onClicked: { tm.total = modelData * 60; tm.left = tm.total; } }
+                                         text: modelData + Fz.tr(" phút"); onClicked: { tm.total = modelData * 60; tm.left = tm.total; } }
                     }
                 }
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
                     spacing: 10
-                    FIconBtn { width: 46; height: 46; radius: 23; icon: "a-reset"; label: "Đặt lại"; onClicked: tm.reset() }
-                    FIconBtn { width: 64; height: 46; radius: 23; on: true; icon: tm.running ? "a-pause" : "a-play"; label: tm.running ? "Tạm dừng" : "Bắt đầu"; onClicked: tm.running = !tm.running }
+                    FIconBtn { width: 46; height: 46; radius: 23; icon: "a-reset"; label: Fz.tr("Đặt lại"); onClicked: tm.reset() }
+                    FIconBtn { width: 64; height: 46; radius: 23; on: true; icon: tm.running ? "a-pause" : "a-play"; label: tm.running ? Fz.tr("Tạm dừng") : Fz.tr("Bắt đầu"); onClicked: tm.running = !tm.running }
                 }
             }
         }
@@ -250,9 +250,9 @@ Scope {
                     spacing: 8
                     UsageRow { label: "RAM"; value: SysData.ramPercent / 100; text: SysData.ramGb.toFixed(1) + " / " + Math.round(SystemInfo.totalRamGb || 0) + " GB" }
                     UsageRow { visible: qa.gpu !== ""; label: "GPU"; value: parseInt(qa.gpu) / 100; text: qa.gpu }
-                    UsageRow { label: "Ổ đĩa"; value: SysData.diskPercent / 100; text: Math.round(SysData.diskGb) + " / " + Math.round(SysData.diskTotalGb) + " GB" }
+                    UsageRow { label: Fz.tr("Ổ đĩa"); value: SysData.diskPercent / 100; text: Math.round(SysData.diskGb) + " / " + Math.round(SysData.diskTotalGb) + " GB" }
                     Row {
-                        FText { width: 80; text: "Mạng"; px: 12.5; color: Fz.sub }
+                        FText { width: 80; text: Fz.tr("Mạng"); px: 12.5; color: Fz.sub }
                         FText { mono: true; px: 12.5; text: "↓ " + qa.rate(qa.rx) + " · ↑ " + qa.rate(qa.tx) }
                     }
                 }
@@ -316,9 +316,9 @@ Scope {
                 id: drow
                 x: 12; anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                FText { text: "Vẽ trên màn hình"; px: 13; weight: Font.DemiBold; rightPadding: 4; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: Fz.tr("Vẽ trên màn hình"); px: 13; weight: Font.DemiBold; rightPadding: 4; anchors.verticalCenter: parent.verticalCenter }
                 Repeater {
-                    model: [["Xanh băng", Fz.glow], ["Trắng", Fz.tx], ["Đỏ", Fz.red], ["Vàng", Fz.yellow], ["Xanh lá", Fz.green]]
+                    model: [[Fz.tr("Xanh băng"), Fz.glow], [Fz.tr("Trắng"), Fz.tx], [Fz.tr("Đỏ"), Fz.red], [Fz.tr("Vàng"), Fz.yellow], [Fz.tr("Xanh lá"), Fz.green]]
                     delegate: Item {
                         required property var modelData
                         width: 28; height: 28
@@ -332,8 +332,8 @@ Scope {
                     }
                 }
                 Rectangle { width: 1; height: 26; color: Fz.line2; anchors.verticalCenter: parent.verticalCenter }
-                FIconBtn { icon: "a-eraser"; label: "Tẩy"; on: draw.eraser; onClicked: draw.eraser = !draw.eraser; anchors.verticalCenter: parent.verticalCenter }
-                FIconBtn { icon: "a-trash"; label: "Xóa hết"; onClicked: { draw.strokes = []; board.requestPaint(); }
+                FIconBtn { icon: "a-eraser"; label: Fz.tr("Tẩy"); on: draw.eraser; onClicked: draw.eraser = !draw.eraser; anchors.verticalCenter: parent.verticalCenter }
+                FIconBtn { icon: "a-trash"; label: Fz.tr("Xóa hết"); onClicked: { draw.strokes = []; board.requestPaint(); }
                            anchors.verticalCenter: parent.verticalCenter }
                 FKbd { text: "Esc"; anchors.verticalCenter: parent.verticalCenter }
             }

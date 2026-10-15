@@ -556,7 +556,7 @@ PanelWindow {
                 Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 150 } }
                 FText {
                     anchors.centerIn: parent
-                    text: root.isVideoMode ? "Kéo để chọn vùng cần quay" : "Kéo để chọn vùng cần chụp"
+                    text: root.isVideoMode ? Fz.tr("Kéo để chọn vùng cần quay") : Fz.tr("Kéo để chọn vùng cần chụp")
                     px: 22; weight: Font.DemiBold; color: "#edf3f6"
                 }
             }
@@ -619,7 +619,7 @@ PanelWindow {
                 color: Fz.surf(0.9)
                 FText {
                     id: dimT; anchors.centerIn: parent; mono: true; px: 12
-                    text: Math.round(root.selW) + " × " + Math.round(root.selH) + " · x " + Math.round(root.selX) + " y " + Math.round(root.selY)
+                    text: Math.round(root.selW) + Fz.tr(" × ") + Math.round(root.selH) + " · x " + Math.round(root.selX) + " y " + Math.round(root.selY)
                 }
             }
         }
@@ -1606,7 +1606,7 @@ PanelWindow {
             x: 10; y: 10
             spacing: 6
             Repeater {
-                model: [["region", "Vùng", "s-region"], ["window", "Cửa sổ", "s-window"], ["screen", "Màn hình", "s-screen"], ["rec", "Quay", "s-rec"]]
+                model: [["region", Fz.tr("Vùng"), "s-region"], ["window", Fz.tr("Cửa sổ"), "s-window"], ["screen", Fz.tr("Màn hình"), "s-screen"], ["rec", Fz.tr("Quay"), "s-rec"]]
                 delegate: Rectangle {
                     required property var modelData
                     readonly property bool on: modelData[0] === "rec" ? root.isVideoMode : (!root.isVideoMode && root.shotMode === modelData[0])
@@ -1625,19 +1625,19 @@ PanelWindow {
             FBtn {
                 anchors.verticalCenter: parent.verticalCenter
                 icon: "s-timer"; iconSize: 15
-                text: root.delaySec > 0 ? root.delaySec + " giây" : "Ngay"
+                text: root.delaySec > 0 ? root.delaySec + Fz.tr(" giây") : Fz.tr("Ngay")
                 onClicked: root.delaySec = ({ 0: 3, 3: 5, 5: 10, 10: 0 })[root.delaySec]
             }
-            FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "s-cursor"; label: "Hiện con trỏ"; on: root.withCursor; onClicked: root.withCursor = !root.withCursor }
-            FIconBtn { visible: root.isVideoMode; anchors.verticalCenter: parent.verticalCenter; icon: "s-mic"; label: "Ghi âm micro"; on: !root.micMute; onClicked: root.micMute = !root.micMute }
+            FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "s-cursor"; label: Fz.tr("Hiện con trỏ"); on: root.withCursor; onClicked: root.withCursor = !root.withCursor }
+            FIconBtn { visible: root.isVideoMode; anchors.verticalCenter: parent.verticalCenter; icon: "s-mic"; label: Fz.tr("Ghi âm micro"); on: !root.micMute; onClicked: root.micMute = !root.micMute }
             Rectangle { width: 1; height: 40; color: Fz.line2; anchors.verticalCenter: parent.verticalCenter }
             FBtn {
                 anchors.verticalCenter: parent.verticalCenter
                 kind: "pri"; height: 46; padX: 22; fontSize: 14
-                text: root.isVideoMode ? "Bắt đầu quay" : "Chụp"
+                text: root.isVideoMode ? Fz.tr("Bắt đầu quay") : Fz.tr("Chụp")
                 onClicked: root.executeCapture(false, root.isVideoMode)
             }
-            FIconBtn { anchors.verticalCenter: parent.verticalCenter; width: 46; height: 46; radius: 15; icon: "s-x"; label: "Hủy"; onClicked: root.deactivate() }
+            FIconBtn { anchors.verticalCenter: parent.verticalCenter; width: 46; height: 46; radius: 15; icon: "s-x"; label: Fz.tr("Hủy"); onClicked: root.deactivate() }
         }
     }
     Row {
@@ -1646,10 +1646,10 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         y: parent.height - 14 - 22
         spacing: 6
-        FText { text: "Kéo để chọn vùng ·"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("Kéo để chọn vùng ·"); px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
         FKbd { text: "Space" }
-        FText { text: "di chuyển ·"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("di chuyển ·"); px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
         FKbd { text: "Esc" }
-        FText { text: "hủy · lưu vào ~/Ảnh/Screenshots"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("hủy · lưu vào ~/Ảnh/Screenshots"); px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
     }
 }

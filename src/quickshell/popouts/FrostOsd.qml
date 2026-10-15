@@ -35,11 +35,11 @@ PanelWindow {
         return "t-kbd";
     }
     readonly property string text: {
-        if (kind === "capslock") return OsdController.stateVal === "on" ? "Caps Lock đang bật" : "Caps Lock đã tắt";
-        if (kind === "numlock") return OsdController.stateVal === "on" ? "Num Lock đang bật" : "Num Lock đã tắt";
-        if (kind === "mic") return "Micro đã tắt";
-        if (kind === "airplane") return OsdController.stateVal === "on" ? "Chế độ máy bay đang bật" : "Chế độ máy bay đã tắt";
-        if (kind === "ime") return OsdController.stateVal === "unikey" ? "Tiếng Việt · Unikey" : "English · US";
+        if (kind === "capslock") return OsdController.stateVal === "on" ? Fz.tr("Caps Lock đang bật") : Fz.tr("Caps Lock đã tắt");
+        if (kind === "numlock") return OsdController.stateVal === "on" ? Fz.tr("Num Lock đang bật") : Fz.tr("Num Lock đã tắt");
+        if (kind === "mic") return Fz.tr("Micro đã tắt");
+        if (kind === "airplane") return OsdController.stateVal === "on" ? Fz.tr("Chế độ máy bay đang bật") : Fz.tr("Chế độ máy bay đã tắt");
+        if (kind === "ime") return OsdController.stateVal === "unikey" ? Fz.tr("Tiếng Việt · Unikey") : "English · US";
         return "";
     }
 

@@ -100,20 +100,20 @@ PanelWindow {
             out.push({ name: e.name, desc: e.comment || e.genericName || "", icon: appIcon(e), score: score(e), run: () => { e.execute(); Quickshell.execDetached(["python3", Caching.qsDir + "/launcher/app_rank.py", "--log-launch", "--name", e.name]); } });
         }
         // shell panels open from here too (Cài đặt, Hình nền, Giám sát hệ thống…)
-        const shellApps = [["Cài đặt", "Cài đặt Zone-C và hệ thống", "l-gear", "guide"], ["Hình nền", "Chọn hình nền và video nền", "l-image", "wallpaper"],
-                           ["Giám sát hệ thống", "Tiến trình, hiệu năng, dịch vụ", "l-pulse", "taskmanager"], ["Tệp", "Quản lý tệp · Máy tính này", "l-folder", "files"],
-                           ["Cửa hàng ứng dụng", "pacman · AUR · Flatpak", "l-box", "appstore"], ["Nhạc", "Trình phát nhạc & equalizer", "l-music", "music"]];
+        const shellApps = [[Fz.tr("Cài đặt"), Fz.tr("Cài đặt Zone-C và hệ thống"), "l-gear", "guide"], [Fz.tr("Hình nền"), Fz.tr("Chọn hình nền và video nền"), "l-image", "wallpaper"],
+                           [Fz.tr("Giám sát hệ thống"), Fz.tr("Tiến trình, hiệu năng, dịch vụ"), "l-pulse", "taskmanager"], [Fz.tr("Tệp"), Fz.tr("Quản lý tệp · Máy tính này"), "l-folder", "files"],
+                           [Fz.tr("Cửa hàng ứng dụng"), "pacman · AUR · Flatpak", "l-box", "appstore"], [Fz.tr("Nhạc"), Fz.tr("Trình phát nhạc & equalizer"), "l-music", "music"]];
         for (const s of shellApps) if (!seen[s[0]]) out.push({ name: s[0], desc: s[1], icon: s[2], score: (ranks.launch || {})[s[0]] || 0, run: () => Fz.open(s[3]) });
         return out.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "vi"));
     }
     readonly property var actions: [
-        { name: "Khóa màn hình", desc: "Super + L", icon: "l-gear", run: () => Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]) },
-        { name: "Bảng phím tắt", desc: "Super + /", icon: "l-gear", run: () => Quickshell.execDetached(["bash", "-c", "quickshell -p \"$MAIN_QML\" ipc call keybinds toggle"]) },
-        { name: "Chụp vùng màn hình", desc: "Super + Shift + S", icon: "l-image", run: () => Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh"]) },
-        { name: "Đổi chế độ sáng/tối", desc: "zonetheme mode toggle", icon: "l-gear", run: () => ZoneStyle.setMode("toggle") },
-        { name: "Chỉnh widget màn hình", desc: "Thêm, sắp xếp và đổi preset widget", icon: "l-image", run: () => Quickshell.execDetached(["bash", "-c", "quickshell -p \"$MAIN_QML\" ipc call desktop edit"]) },
-        { name: "Tổng quan cửa sổ", desc: "Super + Tab", icon: "l-gear", run: () => Fz.open("overview") },
-        { name: "Menu nguồn", desc: "Khóa · Ngủ · Khởi động lại · Tắt máy", icon: "l-gear", run: () => Fz.open("power") }
+        { name: Fz.tr("Khóa màn hình"), desc: "Super + L", icon: "l-gear", run: () => Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]) },
+        { name: Fz.tr("Bảng phím tắt"), desc: "Super + /", icon: "l-gear", run: () => Quickshell.execDetached(["bash", "-c", "quickshell -p \"$MAIN_QML\" ipc call keybinds toggle"]) },
+        { name: Fz.tr("Chụp vùng màn hình"), desc: "Super + Shift + S", icon: "l-image", run: () => Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh"]) },
+        { name: Fz.tr("Đổi chế độ sáng/tối"), desc: "zonetheme mode toggle", icon: "l-gear", run: () => ZoneStyle.setMode("toggle") },
+        { name: Fz.tr("Chỉnh widget màn hình"), desc: Fz.tr("Thêm, sắp xếp và đổi preset widget"), icon: "l-image", run: () => Quickshell.execDetached(["bash", "-c", "quickshell -p \"$MAIN_QML\" ipc call desktop edit"]) },
+        { name: Fz.tr("Tổng quan cửa sổ"), desc: "Super + Tab", icon: "l-gear", run: () => Fz.open("overview") },
+        { name: Fz.tr("Menu nguồn"), desc: Fz.tr("Khóa · Ngủ · Khởi động lại · Tắt máy"), icon: "l-gear", run: () => Fz.open("power") }
     ]
     function calc(q) {
         if (!/^[\d\s+\-*/().,%^]+$/.test(q) || !/\d/.test(q) || !/[+\-*/%^]/.test(q)) return null;
@@ -142,7 +142,7 @@ PanelWindow {
         if (cmdMode) return [];
         let q = query.trim(), out = [];
         let c = calc(q);
-        if (c !== null && scope === 0) out.push({ name: q + " = " + c, desc: "Kết quả tính · Enter để sao chép", icon: "l-terminal", run: () => Quickshell.execDetached(["wl-copy", "--", c]) });
+        if (c !== null && scope === 0) out.push({ name: q + " = " + c, desc: Fz.tr("Kết quả tính · Enter để sao chép"), icon: "l-terminal", run: () => Quickshell.execDetached(["wl-copy", "--", c]) });
         if (scope === 0) out = out.concat(match(apps, q));
         else if (scope === 1) out = fileHits;
         else out = match(actions, q);
@@ -150,7 +150,7 @@ PanelWindow {
     }
     onResultsChanged: sel = 0
 
-    readonly property string fileScript: "import os,sys,json,time\nq=sys.argv[1].lower().strip()\nh=os.path.expanduser('~')\nres=[]\nnow=time.time()\ndef ago(t):\n d=(now-t)/3600\n return 'sửa %d phút trước'%max(1,int(d*60)) if d<1 else ('sửa %d giờ trước'%int(d) if d<24 else ('hôm qua' if d<48 else '%d ngày trước'%int(d/24)))\nfor r,ds,fs in os.walk(h):\n ds[:]=[d for d in ds if not d.startswith('.') and d not in('node_modules','target','build')]\n if r[len(h):].count(os.sep)>=3: ds.clear()\n for f in fs:\n  if f.startswith('.') or (q and q not in f.lower()): continue\n  p=os.path.join(r,f)\n  try: t=os.path.getmtime(p)\n  except: continue\n  res.append((t,f,p))\nres.sort(reverse=True)\nprint(json.dumps([{'n':f,'d':'~'+os.path.dirname(p)[len(h):]+' · '+ago(t),'p':p} for t,f,p in res[:7]]))"
+    readonly property string fileScript: "import os,sys,json,time\nq=sys.argv[1].lower().strip()\nh=os.path.expanduser('~')\nres=[]\nnow=time.time()\nen=len(sys.argv)>2 and sys.argv[2]=='en'\ndef ago(t):\n d=(now-t)/3600\n if en: return 'edited %d min ago'%max(1,int(d*60)) if d<1 else ('edited %d h ago'%int(d) if d<24 else ('yesterday' if d<48 else '%d days ago'%int(d/24)))\n return 'sửa %d phút trước'%max(1,int(d*60)) if d<1 else ('sửa %d giờ trước'%int(d) if d<24 else ('hôm qua' if d<48 else '%d ngày trước'%int(d/24)))\nfor r,ds,fs in os.walk(h):\n ds[:]=[d for d in ds if not d.startswith('.') and d not in('node_modules','target','build')]\n if r[len(h):].count(os.sep)>=3: ds.clear()\n for f in fs:\n  if f.startswith('.') or (q and q not in f.lower()): continue\n  p=os.path.join(r,f)\n  try: t=os.path.getmtime(p)\n  except: continue\n  res.append((t,f,p))\nres.sort(reverse=True)\nprint(json.dumps([{'n':f,'d':'~'+os.path.dirname(p)[len(h):]+' · '+ago(t),'p':p} for t,f,p in res[:7]]))"
     Process {
         id: fileProc
         stdout: StdioCollector {
@@ -165,7 +165,7 @@ PanelWindow {
             }
         }
     }
-    Timer { id: fileDebounce; interval: 180; onTriggered: { fileProc.command = ["python3", "-c", win.fileScript, win.query]; fileProc.running = true; } }
+    Timer { id: fileDebounce; interval: 180; onTriggered: { fileProc.command = ["python3", "-c", win.fileScript, win.query, Fz.en ? "en" : "vi"]; fileProc.running = true; } }
     onQueryChanged: if (scope === 1 && !cmdMode) fileDebounce.restart()
     onScopeChanged: { sel = 0; if (scope === 1) fileDebounce.restart(); }
 
@@ -230,7 +230,7 @@ PanelWindow {
                                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) { win.activate(); e.accepted = true; }
                             }
                         }
-                        FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: "Tìm ứng dụng… gõ > để chạy lệnh"; px: 19; color: Fz.dim }
+                        FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""; text: Fz.tr("Tìm ứng dụng… gõ > để chạy lệnh"); px: 19; color: Fz.dim }
                     }
                     FKbd { id: superKey; text: "Super"; anchors.verticalCenter: parent.verticalCenter }
                 }
@@ -239,7 +239,7 @@ PanelWindow {
             FSeg {
                 width: parent.width
                 btnWidth: (parent.width - 6 - 4) / 3
-                options: ["Ứng dụng", "Tệp", "Thao tác"]
+                options: [Fz.tr("Ứng dụng"), Fz.tr("Tệp"), Fz.tr("Thao tác")]
                 current: win.scope
                 onPicked: (i) => { win.scope = i; field.forceActiveFocus(); }
             }
@@ -249,12 +249,12 @@ PanelWindow {
                 visible: win.cmdMode
                 width: parent.width
                 spacing: 2
-                ResultRow { width: parent.width; first: true; mono: true; icon: "l-terminal"; title: win.cmd || "lệnh…"; desc: "Chạy trong terminal · " + win.terminal; onClicked: win.activate() }
+                ResultRow { width: parent.width; first: true; mono: true; icon: "l-terminal"; title: win.cmd || Fz.tr("lệnh…"); desc: Fz.tr("Chạy trong terminal · ") + win.terminal; onClicked: win.activate() }
                 FText {
                     visible: win.history.length > 0
                     leftPadding: 12; topPadding: 4; bottomPadding: 4
                     textFormat: Text.StyledText
-                    text: "Lịch sử: " + win.history.slice(0, 3).map(h => "<span style=\"font-family:'Geist Mono'\">" + h.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</span>").join(" · ")
+                    text: Fz.tr("Lịch sử: ") + win.history.slice(0, 3).map(h => "<span style=\"font-family:'Geist Mono'\">" + h.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</span>").join(" · ")
                     px: 12.5; color: Fz.sub
                 }
             }
@@ -287,8 +287,8 @@ PanelWindow {
                         FIcon { name: "x-search"; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
-                            FText { text: "Không có ứng dụng \"" + win.query.trim() + "\""; px: 13; weight: Font.DemiBold }
-                            FText { text: (win.suggestion ? "Có phải bạn muốn: " + win.suggestion.name + " · " : "") + "Gõ > để chạy lệnh"; px: 12; color: Fz.sub }
+                            FText { text: Fz.tr("Không có ứng dụng \"") + win.query.trim() + "\""; px: 13; weight: Font.DemiBold }
+                            FText { text: (win.suggestion ? Fz.tr("Có phải bạn muốn: ") + win.suggestion.name + " · " : "") + Fz.tr("Gõ > để chạy lệnh"); px: 12; color: Fz.sub }
                         }
                     }
                     MouseArea { anchors.fill: parent; enabled: win.suggestion !== null; cursorShape: Qt.PointingHandCursor; onClicked: { field.text = win.suggestion.name; } }
@@ -299,9 +299,9 @@ PanelWindow {
                     Row {
                         anchors.centerIn: parent
                         spacing: 6
-                        FText { text: win.scope === 1 && win.query === "" ? "Gõ tên tệp để tìm." : "Không có kết quả. Thử gõ"; color: Fz.sub; px: 14; anchors.verticalCenter: parent.verticalCenter }
-                        FKbd { visible: !(win.scope === 1 && win.query === ""); text: "> lệnh"; anchors.verticalCenter: parent.verticalCenter }
-                        FText { visible: !(win.scope === 1 && win.query === ""); text: "để chạy trong terminal."; color: Fz.sub; px: 14; anchors.verticalCenter: parent.verticalCenter }
+                        FText { text: win.scope === 1 && win.query === "" ? Fz.tr("Gõ tên tệp để tìm.") : Fz.tr("Không có kết quả. Thử gõ"); color: Fz.sub; px: 14; anchors.verticalCenter: parent.verticalCenter }
+                        FKbd { visible: !(win.scope === 1 && win.query === ""); text: Fz.tr("> lệnh"); anchors.verticalCenter: parent.verticalCenter }
+                        FText { visible: !(win.scope === 1 && win.query === ""); text: Fz.tr("để chạy trong terminal."); color: Fz.sub; px: 14; anchors.verticalCenter: parent.verticalCenter }
                     }
                 }
             }
@@ -314,11 +314,11 @@ PanelWindow {
                 Row {
                     x: 6; y: 6 + 4
                     spacing: 14
-                    Row { spacing: 4; FKbd { text: "↑↓" } FText { text: "chọn"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-                    Row { spacing: 4; FKbd { text: "Enter" } FText { text: "mở"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-                    Row { spacing: 4; FKbd { text: "Tab" } FText { text: "đổi phạm vi"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                    Row { spacing: 4; FKbd { text: "↑↓" } FText { text: Fz.tr("chọn"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                    Row { spacing: 4; FKbd { text: "Enter" } FText { text: Fz.tr("mở"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
+                    Row { spacing: 4; FKbd { text: "Tab" } FText { text: Fz.tr("đổi phạm vi"); px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
                 }
-                FText { anchors.right: parent.right; anchors.rightMargin: 6; y: 6 + 8; text: "Xếp theo tần suất dùng · Unikey tự tắt khi gõ"; px: 12; color: Fz.sub }
+                FText { anchors.right: parent.right; anchors.rightMargin: 6; y: 6 + 8; text: Fz.tr("Xếp theo tần suất dùng · Unikey tự tắt khi gõ"); px: 12; color: Fz.sub }
             }
         }
     }
@@ -357,7 +357,7 @@ PanelWindow {
             spacing: 4
             opacity: 0.8
             FIcon { name: "l-enter"; size: 14; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: rr.mono ? "Enter" : "Mở"; px: 11.5; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: rr.mono ? "Enter" : Fz.tr("Mở"); px: 11.5; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
         }
         MouseArea { id: rrMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rr.clicked() }
     }

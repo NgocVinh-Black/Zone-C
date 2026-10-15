@@ -40,14 +40,14 @@ Item {
                     width: parent.width - 150 - 36 - 40
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
-                    FText { text: (root.has ? (MprisController.isPlaying ? "Đang phát" : "Tạm dừng") + (root.player.identity ? " · " + root.player.identity : "") : "Trình phát nhạc").toUpperCase()
+                    FText { text: (root.has ? (MprisController.isPlaying ? Fz.tr("Đang phát") : Fz.tr("Tạm dừng")) + (root.player.identity ? " · " + root.player.identity : "") : Fz.tr("Trình phát nhạc")).toUpperCase()
                             color: Fz.sub; px: 11; weight: Font.DemiBold; font.letterSpacing: 11 * 0.08 }
-                    FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackTitle : "Không phát nhạc"; px: 22; weight: Font.DemiBold }
-                    FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackArtist : "Mở Spotify hoặc trình phát bất kỳ"; px: 14; color: Fz.sub }
+                    FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackTitle : Fz.tr("Không phát nhạc"); px: 22; weight: Font.DemiBold }
+                    FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackArtist : Fz.tr("Mở Spotify hoặc trình phát bất kỳ"); px: 14; color: Fz.sub }
                     FBtn {
                         visible: !root.has
                         readonly property var spotify: DesktopEntries.heuristicLookup("spotify")
-                        text: spotify ? "Mở Spotify" : "Mở trình phát"
+                        text: spotify ? Fz.tr("Mở Spotify") : Fz.tr("Mở trình phát")
                         onClicked: spotify ? spotify.execute() : Fz.open("launcher")
                     }
                     Row {
@@ -57,7 +57,7 @@ Item {
                         FChip { visible: root.album !== ""; text: "Album: " + root.album }
                     }
                 }
-                FIconBtn { ghost: !root.liked; on: root.liked; icon: "u-heart"; label: "Yêu thích"; anchors.verticalCenter: parent.verticalCenter; onClicked: root.liked = !root.liked }
+                FIconBtn { ghost: !root.liked; on: root.liked; icon: "u-heart"; label: Fz.tr("Yêu thích"); anchors.verticalCenter: parent.verticalCenter; onClicked: root.liked = !root.liked }
             }
 
             Row {
@@ -102,14 +102,14 @@ Item {
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 12
-                FIconBtn { ghost: !(root.player && root.player.shuffle); on: root.player ? root.player.shuffle === true : false; icon: "u-shuffle"; label: "Trộn bài"
+                FIconBtn { ghost: !(root.player && root.player.shuffle); on: root.player ? root.player.shuffle === true : false; icon: "u-shuffle"; label: Fz.tr("Trộn bài")
                            onClicked: if (root.player && root.player.shuffleSupported) root.player.shuffle = !root.player.shuffle }
-                FIconBtn { icon: "u-prev"; label: "Bài trước"; onClicked: if (root.player && root.player.canGoPrevious) root.player.previous() }
-                FIconBtn { on: true; width: 60; height: 44; icon: MprisController.isPlaying ? "u-pause" : "u-play"; label: MprisController.isPlaying ? "Tạm dừng" : "Phát"
+                FIconBtn { icon: "u-prev"; label: Fz.tr("Bài trước"); onClicked: if (root.player && root.player.canGoPrevious) root.player.previous() }
+                FIconBtn { on: true; width: 60; height: 44; icon: MprisController.isPlaying ? "u-pause" : "u-play"; label: MprisController.isPlaying ? Fz.tr("Tạm dừng") : Fz.tr("Phát")
                            onClicked: if (root.player && root.player.canTogglePlaying) root.player.togglePlaying() }
-                FIconBtn { icon: "u-next"; label: "Bài tiếp"; onClicked: if (root.player && root.player.canGoNext) root.player.next() }
+                FIconBtn { icon: "u-next"; label: Fz.tr("Bài tiếp"); onClicked: if (root.player && root.player.canGoNext) root.player.next() }
                 FIconBtn { readonly property bool looping: root.player ? root.player.loopState !== MprisLoopState.None : false
-                           ghost: !looping; on: looping; icon: "u-repeat"; label: "Lặp lại"
+                           ghost: !looping; on: looping; icon: "u-repeat"; label: Fz.tr("Lặp lại")
                            onClicked: if (root.player && root.player.loopSupported) root.player.loopState = looping ? MprisLoopState.None : MprisLoopState.Playlist }
             }
         }

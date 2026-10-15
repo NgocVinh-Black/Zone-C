@@ -43,11 +43,11 @@ PanelWindow {
         let s = store; delete s[uid]; store = s;
         NotificationManager.removePopup(uid);
     }
-    function ago(ts) { let m = Math.floor((Date.now() - ts) / 60000); return m < 1 ? "bây giờ" : m < 60 ? m + " phút" : Math.floor(m / 60) + " giờ"; }
+    function ago(ts) { let m = Math.floor((Date.now() - ts) / 60000); return m < 1 ? Fz.tr("bây giờ") : m < 60 ? m + Fz.tr(" phút") : Math.floor(m / 60) + Fz.tr(" giờ"); }
     function kind(m, n) {
         if (n && n.hints && n.hints["x-zone-c-alert"]) return "alert";
         let app = (m.appName || "").toLowerCase();
-        if (app === "weather" || app === "thời tiết") return "weather";
+        if (app === "weather" || app === Fz.tr("thời tiết")) return "weather";
         if (n && n.hints && n.hints.value !== undefined) return "progress";
         if (/screenshot|ảnh chụp|screen recorder/.test(app)) return "shot";
         if (n && n.hasInlineReply) return "reply";
@@ -145,7 +145,7 @@ PanelWindow {
                             FBar { visible: d.k === "progress"; width: parent.width; value: d.n && d.n.hints ? Number(d.n.hints.value) / 100 : 0 }
                             FText { visible: d.k === "progress"; width: parent.width; elide: Text.ElideRight; mono: true; text: d.model.body; color: Fz.sub; px: 11.5 }
                         }
-                        FIconBtn { visible: !d.ak; width: 26; height: 26; ghost: true; icon: "t-x"; iconSize: 13; label: "Đóng"; onClicked: win.drop(d.uid) }
+                        FIconBtn { visible: !d.ak; width: 26; height: 26; ghost: true; icon: "t-x"; iconSize: 13; label: Fz.tr("Đóng"); onClicked: win.drop(d.uid) }
                     }
 
                     // screenshot preview and actions
@@ -159,11 +159,11 @@ PanelWindow {
                         width: parent.width
                         spacing: 6
                         readonly property string file: d.n && d.n.hints ? String(d.n.hints["image-path"] || "").replace(/^file:\/\//, "") : ""
-                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; kind: "pri"; text: "Chỉnh sửa"
+                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; kind: "pri"; text: Fz.tr("Chỉnh sửa")
                                onClicked: { if (d.n && d.n.actions && d.n.actions.length) d.n.actions[0].invoke(); win.drop(d.uid); } }
-                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; text: "Mở thư mục"
+                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; text: Fz.tr("Mở thư mục")
                                onClicked: { if (parent.file) Quickshell.execDetached(["xdg-open", parent.file.replace(/\/[^/]*$/, "")]); win.drop(d.uid); } }
-                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; text: "Xóa"
+                        FBtn { width: (parent.width - 12) / 3; height: 32; fontSize: 12.5; text: Fz.tr("Xóa")
                                onClicked: { if (parent.file) Quickshell.execDetached(["rm", "-f", "--", parent.file]); win.drop(d.uid); } }
                     }
 
@@ -175,11 +175,11 @@ PanelWindow {
                         FInput {
                             id: reply
                             width: parent.width - 6 - 36; height: 36; fontSize: 13
-                            placeholder: d.n && d.n.inlineReplyPlaceholder ? d.n.inlineReplyPlaceholder : "Trả lời nhanh…"
+                            placeholder: d.n && d.n.inlineReplyPlaceholder ? d.n.inlineReplyPlaceholder : Fz.tr("Trả lời nhanh…")
                             input.onActiveFocusChanged: win.replying = input.activeFocus
                             onAccepted: send.clicked()
                         }
-                        FIconBtn { id: send; on: true; icon: "t-send"; iconSize: 15; label: "Gửi"
+                        FIconBtn { id: send; on: true; icon: "t-send"; iconSize: 15; label: Fz.tr("Gửi")
                                    onClicked: { if (d.n && reply.text.trim() !== "") { d.n.sendInlineReply(reply.text.trim()); win.drop(d.uid); } } }
                     }
 

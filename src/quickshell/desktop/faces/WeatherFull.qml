@@ -10,7 +10,7 @@ Glass {
     readonly property var today: (Weather.forecast && Weather.forecast.length) ? Weather.forecast[0] : null
     readonly property string city: (Weather.activeLocation && Weather.activeLocation.city) ? Weather.activeLocation.city : ""
     readonly property var hours: {
-        let out = [{ t: "Bây giờ", i: Weather.currentIcon, v: Weather.currentTemp, cur: true }];
+        let out = [{ t: Fz.tr("Bây giờ"), i: Weather.currentIcon, v: Weather.currentTemp, cur: true }];
         let fc = Weather.forecast || [], nowH = DateTime.now.getHours();
         for (let d = 0; d < fc.length && out.length < 6; d++) {
             let hs = fc[d].hourly || [];
@@ -38,7 +38,7 @@ Glass {
                 id: info
                 FText { text: (root.city ? root.city + " · " : "") + Fz.weekdays[DateTime.now.getDay()]; color: Fz.sub; px: 13 }
                 FText { topPadding: 6; text: Fz.deg(Weather.currentTemp); px: 56; weight: Font.Light; font.letterSpacing: -2; lineHeight: 1 }
-                FText { topPadding: 6; text: Fz.weatherDesc(Weather.currentIcon) + (root.today ? " · Cao " + Fz.deg(root.today.max) + " Thấp " + Fz.deg(root.today.min) : ""); color: Fz.sub2; px: 13.5 }
+                FText { topPadding: 6; text: Fz.weatherDesc(Weather.currentIcon) + (root.today ? Fz.tr(" · Cao ") + Fz.deg(root.today.max) + Fz.tr(" Thấp ") + Fz.deg(root.today.min) : ""); color: Fz.sub2; px: 13.5 }
             }
             FIcon { anchors.right: parent.right; name: Fz.weatherIcon(Weather.currentIcon); size: 52; strokeWidth: 1.2; color: Fz.acc }
         }
@@ -69,7 +69,7 @@ Glass {
             spacing: 8
             FChip { icon: "m-wind"; text: (root.today ? Math.round(Number(root.today.wind)) : "--") + " km/h" }
             FChip { icon: "m-drop"; text: (root.today ? root.today.humidity : "--") + "%" }
-            FChip { text: "Cảm giác " + (root.today ? Fz.deg(root.today.feels_like) : "--°") }
+            FChip { text: Fz.tr("Cảm giác ") + (root.today ? Fz.deg(root.today.feels_like) : "--°") }
         }
     }
 }

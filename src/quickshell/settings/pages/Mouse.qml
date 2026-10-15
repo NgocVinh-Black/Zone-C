@@ -27,19 +27,19 @@ Column {
         Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "cursor-theme", theme]);
     }
 
-    H3 { first: true; text: "Chuột" }
+    H3 { first: true; text: Fz.tr("Chuột") }
     Grp {
         width: parent.width
-        SRow { title: "Nút chính"; FSeg { options: ["Trái", "Phải"]; current: HyprConf.get("input.left_handed", false) ? 1 : 0; onPicked: (i) => HyprConf.set("input.left_handed", i === 1) } }
+        SRow { title: Fz.tr("Nút chính"); FSeg { options: [Fz.tr("Trái"), Fz.tr("Phải")]; current: HyprConf.get("input.left_handed", false) ? 1 : 0; onPicked: (i) => HyprConf.set("input.left_handed", i === 1) } }
         SRow {
-            title: "Tốc độ con trỏ"
+            title: Fz.tr("Tốc độ con trỏ")
             FSlider { id: ptr; width: 220; from: -1; to: 1; step: 0.05; value: HyprConf.get("input.sensitivity", 0); anchors.verticalCenter: parent.verticalCenter; onMoved: (v) => ptrSave.restart() }
             Timer { id: ptrSave; interval: 300; onTriggered: HyprConf.set("input.sensitivity", Math.round(ptr.value * 100) / 100) }
         }
-        SRow { title: "Tăng tốc"; FToggle { on: HyprConf.get("input.accel_profile", "flat") !== "flat"; onToggled: (v) => HyprConf.set("input.accel_profile", v ? "adaptive" : "flat") } }
-        SRow { title: "Cuộn tự nhiên"; FToggle { on: HyprConf.get("input.natural_scroll", false); onToggled: (v) => HyprConf.set("input.natural_scroll", v) } }
+        SRow { title: Fz.tr("Tăng tốc"); FToggle { on: HyprConf.get("input.accel_profile", "flat") !== "flat"; onToggled: (v) => HyprConf.set("input.accel_profile", v ? "adaptive" : "flat") } }
+        SRow { title: Fz.tr("Cuộn tự nhiên"); FToggle { on: HyprConf.get("input.natural_scroll", false); onToggled: (v) => HyprConf.set("input.natural_scroll", v) } }
         SRow {
-            title: "Con trỏ"
+            title: Fz.tr("Con trỏ")
             FSelect {
                 options: page.cursors.map(c => c + " · " + page.cursorSize)
                 current: Math.max(0, page.cursors.indexOf(page.cursor))
@@ -48,23 +48,23 @@ Column {
         }
     }
 
-    H3 { text: "Touchpad & cử chỉ" }
+    H3 { text: Fz.tr("Touchpad & cử chỉ") }
     Grp {
         width: parent.width
-        SRow { title: "Chạm để nhấp"; FToggle { on: HyprConf.get("input.touchpad.tap_to_click", true); onToggled: (v) => HyprConf.set("input.touchpad.tap_to_click", v) } }
-        SRow { title: "Tắt khi đang gõ"; FToggle { on: HyprConf.get("input.touchpad.disable_while_typing", false); onToggled: (v) => HyprConf.set("input.touchpad.disable_while_typing", v) } }
+        SRow { title: Fz.tr("Chạm để nhấp"); FToggle { on: HyprConf.get("input.touchpad.tap_to_click", true); onToggled: (v) => HyprConf.set("input.touchpad.tap_to_click", v) } }
+        SRow { title: Fz.tr("Tắt khi đang gõ"); FToggle { on: HyprConf.get("input.touchpad.disable_while_typing", false); onToggled: (v) => HyprConf.set("input.touchpad.disable_while_typing", v) } }
         SRow {
-            title: "Vuốt 3 ngón ngang"
+            title: Fz.tr("Vuốt 3 ngón ngang")
             FSelect {
-                options: ["Chuyển workspace", "Không làm gì"]
+                options: [Fz.tr("Chuyển workspace"), Fz.tr("Không làm gì")]
                 current: Config.getSetting("hypr_gestures.horizontal", true) !== false ? 0 : 1
                 onPicked: (i) => HyprConf.setGesture("horizontal", i === 0)
             }
         }
         SRow {
-            title: "Vuốt 3 ngón lên"
+            title: Fz.tr("Vuốt 3 ngón lên")
             FSelect {
-                options: ["Mở launcher", "Tổng quan", "Không làm gì"]
+                options: [Fz.tr("Mở launcher"), Fz.tr("Tổng quan"), Fz.tr("Không làm gì")]
                 readonly property var values: ["launcher", "overview", "none"]
                 current: Math.max(0, values.indexOf(Config.getSetting("hypr_gestures.up", "launcher")))
                 onPicked: (i) => HyprConf.setGesture("up", values[i])

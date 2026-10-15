@@ -32,7 +32,7 @@ Column {
         }
     }
     Process { id: run; onExited: probe.running = true }
-    function terminal(sh) { Quickshell.execDetached(["bash", "-c", page.term + " bash -c \"$1\"", "_", sh + "; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'"]); }
+    function terminal(sh) { Quickshell.execDetached(["bash", "-c", page.term + " bash -c \"$1\"", "_", sh + Fz.tr("; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'")]); }
     readonly property bool wheel: /\bwheel\b/.test(d.groups || "")
     readonly property var themes: (d.themes || "").split(",").filter(x => x)
 
@@ -48,22 +48,22 @@ Column {
                 FText { text: SystemInfo.username; px: 18; weight: Font.DemiBold }
                 FText { width: page.width - 116 - 180; elide: Text.ElideMiddle; text: "uid " + (page.d.uid || "") + " · " + Quickshell.env("HOME"); mono: true; px: 12.5; color: Fz.sub }
                 Item { width: 1; height: 4 }
-                FChip { kind: page.wheel ? "acc" : ""; text: page.wheel ? "Quản trị (wheel)" : "Tiêu chuẩn" }
+                FChip { kind: page.wheel ? "acc" : ""; text: page.wheel ? Fz.tr("Quản trị (wheel)") : Fz.tr("Tiêu chuẩn") }
             }
-            FBtn { anchors.right: parent.right; anchors.rightMargin: 20; anchors.verticalCenter: parent.verticalCenter; text: "Đổi mật khẩu"; onClicked: page.terminal("passwd") }
+            FBtn { anchors.right: parent.right; anchors.rightMargin: 20; anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Đổi mật khẩu"); onClicked: page.terminal("passwd") }
         }
     }
 
-    H3 { text: "Đăng nhập" }
+    H3 { text: Fz.tr("Đăng nhập") }
     Grp {
         width: parent.width
         SRow {
-            icon: "s-finger"; title: "Vân tay"
-            sub: page.d.fp === undefined ? "Cần gói fprintd" : Number(page.d.fp) > 0 ? "fprintd · " + page.d.fp + " ngón đã đăng ký" : "fprintd · chưa đăng ký"
-            FBtn { enabled: page.d.fp !== undefined; opacity: enabled ? 1 : 0.5; text: "Quản lý"; onClicked: page.terminal("fprintd-enroll") }
+            icon: "s-finger"; title: Fz.tr("Vân tay")
+            sub: page.d.fp === undefined ? Fz.tr("Cần gói fprintd") : Number(page.d.fp) > 0 ? "fprintd · " + page.d.fp + Fz.tr(" ngón đã đăng ký") : Fz.tr("fprintd · chưa đăng ký")
+            FBtn { enabled: page.d.fp !== undefined; opacity: enabled ? 1 : 0.5; text: Fz.tr("Quản lý"); onClicked: page.terminal("fprintd-enroll") }
         }
         SRow {
-            title: "Tự động đăng nhập"; sub: "Bỏ qua SDDM"
+            title: Fz.tr("Tự động đăng nhập"); sub: Fz.tr("Bỏ qua SDDM")
             FToggle {
                 on: page.d.auto === SystemInfo.username
                 onToggled: (v) => { run.command = ["pkexec", "bash", "-c", v ? "mkdir -p /etc/sddm.conf.d && printf '[Autologin]\\nUser=%s\\nSession=hyprland\\n' \"$1\" > /etc/sddm.conf.d/50-zone-c-autologin.conf" : "rm -f /etc/sddm.conf.d/50-zone-c-autologin.conf", "_", SystemInfo.username]; run.running = true; }
@@ -73,14 +73,14 @@ Column {
             title: "Theme SDDM"
             FSelect {
                 enabled_: page.themes.length > 0
-                options: page.themes.length ? page.themes : ["Không có theme"]
+                options: page.themes.length ? page.themes : [Fz.tr("Không có theme")]
                 current: Math.max(0, page.themes.indexOf(page.d.theme))
                 onPicked: (i) => { run.command = ["pkexec", "bash", "-c", "mkdir -p /etc/sddm.conf.d && printf '[Theme]\\nCurrent=%s\\n' \"$1\" > /etc/sddm.conf.d/60-zone-c-theme.conf", "_", page.themes[i]]; run.running = true; }
             }
         }
     }
 
-    H3 { text: "Người dùng khác" }
+    H3 { text: Fz.tr("Người dùng khác") }
     Grp {
         width: parent.width
         Repeater {
@@ -88,15 +88,15 @@ Column {
             delegate: SRow {
                 required property var modelData
                 iconText: modelData.name.charAt(0).toUpperCase(); title: modelData.full || modelData.name; sub: modelData.name
-                FBtn { text: "Quản lý"; onClicked: page.terminal("echo 'Nhóm của " + modelData.name + ":'; id -nG " + modelData.name + "; echo; echo 'Đổi mật khẩu: sudo passwd " + modelData.name + "'; echo 'Xóa: sudo userdel -r " + modelData.name + "'; exec bash") }
+                FBtn { text: Fz.tr("Quản lý"); onClicked: page.terminal(Fz.tr("echo 'Nhóm của ") + modelData.name + ":'; id -nG " + modelData.name + Fz.tr("; echo; echo 'Đổi mật khẩu: sudo passwd ") + modelData.name + Fz.tr("'; echo 'Xóa: sudo userdel -r ") + modelData.name + "'; exec bash") }
             }
         }
-        SRow { visible: page.others.length === 0; title: "Chỉ có tài khoản của bạn" }
-        SRow { title: "Tài khoản khách"; sub: "Không có trên Arch mặc định"; FToggle { enabled: false; opacity: 0.5 } }
+        SRow { visible: page.others.length === 0; title: Fz.tr("Chỉ có tài khoản của bạn") }
+        SRow { title: Fz.tr("Tài khoản khách"); sub: Fz.tr("Không có trên Arch mặc định"); FToggle { enabled: false; opacity: 0.5 } }
         SRow {
-            title: "Thêm người dùng…"
-            FInput { id: newUser; width: 160; height: 36; placeholder: "tên đăng nhập" }
-            FBtn { icon: "s-plus"; iconSize: 14; text: "Thêm"; onClicked: { let n = newUser.text.trim().toLowerCase().replace(/[^a-z0-9_-]/g, ""); if (n) page.terminal("sudo useradd -m -G users " + n + " && sudo passwd " + n); newUser.text = ""; } }
+            title: Fz.tr("Thêm người dùng…")
+            FInput { id: newUser; width: 160; height: 36; placeholder: Fz.tr("tên đăng nhập") }
+            FBtn { icon: "s-plus"; iconSize: 14; text: Fz.tr("Thêm"); onClicked: { let n = newUser.text.trim().toLowerCase().replace(/[^a-z0-9_-]/g, ""); if (n) page.terminal("sudo useradd -m -G users " + n + " && sudo passwd " + n); newUser.text = ""; } }
         }
     }
 }

@@ -22,9 +22,9 @@ Item {
 
     // design swatches -> colour buckets of scripts/wallpaper/indexer.py (navy = dark blues)
     readonly property var swatches: [
-        { k: "all", l: "Tất cả", c: Fz.s2 }, { k: "white", l: "Trắng", c: Fz.tx }, { k: "blue", l: "Xanh băng", c: Fz.glow },
-        { k: "navy", l: "Xanh đậm", c: "#2F5D72" }, { k: "green", l: "Xanh lá", c: "#6FAE8A" }, { k: "amber", l: "Hổ phách", c: "#D8A65A" },
-        { k: "red", l: "Đỏ", c: "#D46A6A" }, { k: "violet", l: "Tím", c: "#8C7BC0" }
+        { k: "all", l: Fz.tr("Tất cả"), c: Fz.s2 }, { k: "white", l: Fz.tr("Trắng"), c: Fz.tx }, { k: "blue", l: Fz.tr("Xanh băng"), c: Fz.glow },
+        { k: "navy", l: Fz.tr("Xanh đậm"), c: "#2F5D72" }, { k: "green", l: Fz.tr("Xanh lá"), c: "#6FAE8A" }, { k: "amber", l: Fz.tr("Hổ phách"), c: "#D8A65A" },
+        { k: "red", l: Fz.tr("Đỏ"), c: "#D46A6A" }, { k: "violet", l: Fz.tr("Tím"), c: "#8C7BC0" }
     ]
     function lum(hex) { let h = (hex || "#808080").replace("#", ""); return (parseInt(h.substr(0, 2), 16) * 0.299 + parseInt(h.substr(2, 2), 16) * 0.587 + parseInt(h.substr(4, 2), 16) * 0.114) / 255; }
     function matches(it) {
@@ -115,14 +115,14 @@ Item {
             x: 8; y: 8
             spacing: 6
             FSeg {
-                options: ["Ảnh", "Video"]
+                options: [Fz.tr("Ảnh"), "Video"]
                 current: root.videos ? 1 : 0
                 anchors.verticalCenter: parent.verticalCenter
                 onPicked: (i) => { root.videos = i === 1; root.idx = 0; }
             }
-            FIconBtn { icon: "g-grid"; label: "Dạng lưới"; on: root.gridView; onClicked: root.gridView = !root.gridView; anchors.verticalCenter: parent.verticalCenter }
+            FIconBtn { icon: "g-grid"; label: Fz.tr("Dạng lưới"); on: root.gridView; onClicked: root.gridView = !root.gridView; anchors.verticalCenter: parent.verticalCenter }
             FIconBtn {
-                icon: "g-clock"; label: "Gần đây"; on: root.recentFirst
+                icon: "g-clock"; label: Fz.tr("Gần đây"); on: root.recentFirst
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: { root.recentFirst = !root.recentFirst; root.idx = 0; }
             }
@@ -144,8 +144,8 @@ Item {
                 }
             }
             Rectangle { width: 1; height: 24; color: Fz.line2; anchors.verticalCenter: parent.verticalCenter }
-            FIconBtn { icon: "g-folder"; label: "Thư mục"; onClicked: Quickshell.execDetached(["xdg-open", root.srcDir]); anchors.verticalCenter: parent.verticalCenter }
-            FIconBtn { icon: "g-search"; label: "Tìm hình nền"; onClicked: Fz.open("guide", "theme"); anchors.verticalCenter: parent.verticalCenter }
+            FIconBtn { icon: "g-folder"; label: Fz.tr("Thư mục"); onClicked: Quickshell.execDetached(["xdg-open", root.srcDir]); anchors.verticalCenter: parent.verticalCenter }
+            FIconBtn { icon: "g-search"; label: Fz.tr("Tìm hình nền"); onClicked: Fz.open("guide", "theme"); anchors.verticalCenter: parent.verticalCenter }
         }
     }
 
@@ -188,21 +188,21 @@ Item {
                 Rectangle { width: parent.width; height: 24; color: parent.color }
                 Column {
                     x: 22; anchors.bottom: parent.bottom; anchors.bottomMargin: 18
-                    FText { text: root.cur ? root.cur.fileName : "Chưa có hình nền"; px: 18; weight: Font.DemiBold; width: 380; elide: Text.ElideMiddle }
+                    FText { text: root.cur ? root.cur.fileName : Fz.tr("Chưa có hình nền"); px: 18; weight: Font.DemiBold; width: 380; elide: Text.ElideMiddle }
                     FText {
-                        text: !root.cur ? root.srcDir : (sizer.status === Image.Ready ? sizer.implicitWidth + "×" + sizer.implicitHeight + " · " : "") + root.size(root.cur.size) + (root.cur.isVideo ? " · video" : "")
+                        text: !root.cur ? root.srcDir : (sizer.status === Image.Ready ? sizer.implicitWidth + Fz.tr("×") + sizer.implicitHeight + " · " : "") + root.size(root.cur.size) + (root.cur.isVideo ? " · video" : "")
                         mono: true; px: 12; color: Fz.sub2
                     }
                 }
                 FBtn { anchors.right: parent.right; anchors.rightMargin: 22; anchors.bottom: parent.bottom; anchors.bottomMargin: 18
-                       kind: "pri"; icon: "g-check"; iconSize: 15; text: "Đặt làm hình nền"; onClicked: root.apply() }
+                       kind: "pri"; icon: "g-check"; iconSize: 15; text: Fz.tr("Đặt làm hình nền"); onClicked: root.apply() }
             }
             Image { id: sizer; visible: false; source: root.cur && !root.cur.isVideo ? root.cur.fileUrl : ""; sourceSize: Qt.size(-1, -1); asynchronous: true }
         }
     }
-    FIconBtn { visible: !root.gridView; x: (parent.width - 1440) / 2 + 200; y: 374 - 52; width: 46; height: 46; radius: 23; icon: "g-l"; label: "Hình trước"
+    FIconBtn { visible: !root.gridView; x: (parent.width - 1440) / 2 + 200; y: 374 - 52; width: 46; height: 46; radius: 23; icon: "g-l"; label: Fz.tr("Hình trước")
                onClicked: root.idx = (root.idx + root.list.length - 1) % Math.max(1, root.list.length) }
-    FIconBtn { visible: !root.gridView; x: (parent.width + 1440) / 2 - 200 - 46; y: 374 - 52; width: 46; height: 46; radius: 23; icon: "g-r"; label: "Hình sau"
+    FIconBtn { visible: !root.gridView; x: (parent.width + 1440) / 2 - 200 - 46; y: 374 - 52; width: 46; height: 46; radius: 23; icon: "g-r"; label: Fz.tr("Hình sau")
                onClicked: root.idx = (root.idx + 1) % Math.max(1, root.list.length) }
 
     // ---------- grid view ----------
@@ -254,8 +254,8 @@ Item {
         y: parent.height - 30 - 18
         spacing: 6
         FKbd { text: "←" } FKbd { text: "→" }
-        FText { text: "duyệt ·"; px: 12.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("duyệt ·"); px: 12.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
         FKbd { text: "Enter" }
-        FText { text: "áp dụng · màu nhấn tự lấy từ hình (matugen)"; px: 12.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+        FText { text: Fz.tr("áp dụng · màu nhấn tự lấy từ hình (matugen)"); px: 12.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
     }
 }

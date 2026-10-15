@@ -29,7 +29,7 @@ Item {
         for (const n of Audio.apps) {
             let p = props(n);
             if (p["media.class"] && p["media.class"] !== "Stream/Output/Audio") continue;
-            let name = p["application.name"] || (n.name || "").replace(/PC$/, "") || "Ứng dụng";
+            let name = p["application.name"] || (n.name || "").replace(/PC$/, "") || Fz.tr("Ứng dụng");
             if (/quickshell|cava/i.test(name)) continue;
             if (!g[name]) { g[name] = []; order.push(name); }
             g[name].push(n);
@@ -65,13 +65,13 @@ Item {
             Row {
                 width: parent.width
                 spacing: 12
-                FIconBtn { on: root.muted; icon: root.muted ? "v-mute" : "Volume:v-vol"; label: "Tắt tiếng"; anchors.verticalCenter: parent.verticalCenter
+                FIconBtn { on: root.muted; icon: root.muted ? "v-mute" : "Volume:v-vol"; label: Fz.tr("Tắt tiếng"); anchors.verticalCenter: parent.verticalCenter
                            onClicked: if (root.sink) Audio.toggleMute(root.sink) }
                 Column {
                     width: parent.width - 36 - 24 - masterT.implicitWidth
                     anchors.verticalCenter: parent.verticalCenter
-                    FText { text: "Âm lượng chính"; px: 15; weight: Font.DemiBold }
-                    FText { width: parent.width; elide: Text.ElideRight; text: root.sink ? root.devName(root.sink) : "Không có thiết bị ra"; color: Fz.sub; px: 12 }
+                    FText { text: Fz.tr("Âm lượng chính"); px: 15; weight: Font.DemiBold }
+                    FText { width: parent.width; elide: Text.ElideRight; text: root.sink ? root.devName(root.sink) : Fz.tr("Không có thiết bị ra"); color: Fz.sub; px: 12 }
                 }
                 FText { id: masterT; mono: true; text: root.master + "%"; px: 22; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
@@ -82,7 +82,7 @@ Item {
                 onMoved: (v) => { if (root.sink) { if (root.muted) Audio.toggleMute(root.sink); Audio.setVolume(root.sink, v / 100); } }
             }
 
-            Caps { px: 11; text: "Đầu ra" }
+            Caps { px: 11; text: Fz.tr("Đầu ra") }
             Grp {
                 width: parent.width
                 Repeater {
@@ -107,7 +107,7 @@ Item {
                 }
             }
 
-            Caps { px: 11; text: "Ứng dụng"; visible: root.appGroups.length > 0 }
+            Caps { px: 11; text: Fz.tr("Ứng dụng"); visible: root.appGroups.length > 0 }
             Grp {
                 visible: root.appGroups.length > 0
                 width: parent.width
@@ -150,8 +150,8 @@ Item {
                         spacing: 6
                         Item {
                             width: parent.width; height: 16
-                            FText { width: parent.width - 50; elide: Text.ElideRight; text: root.source ? root.devName(root.source) : "Không có micro"; px: 13; weight: Font.Medium }
-                            FText { anchors.right: parent.right; mono: true; text: mic.off ? "Tắt" : mic.v + "%"; color: Fz.sub; px: 13 }
+                            FText { width: parent.width - 50; elide: Text.ElideRight; text: root.source ? root.devName(root.source) : Fz.tr("Không có micro"); px: 13; weight: Font.Medium }
+                            FText { anchors.right: parent.right; mono: true; text: mic.off ? Fz.tr("Tắt") : mic.v + "%"; color: Fz.sub; px: 13 }
                         }
                         Row {
                             width: parent.width
@@ -170,7 +170,7 @@ Item {
                 }
             }
 
-            FBtn { width: parent.width; text: "Cài đặt âm thanh · PipeWire"; onClicked: Fz.open("guide", "sound") }
+            FBtn { width: parent.width; text: Fz.tr("Cài đặt âm thanh · PipeWire"); onClicked: Fz.open("guide", "sound") }
         }
     }
 }

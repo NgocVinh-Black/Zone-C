@@ -24,6 +24,6 @@ Glass {
                 FIcon { anchors.centerIn: parent; name: "music"; size: 34; color: Fz.acc } }
         }
         FText { anchors.horizontalCenter: parent.horizontalCenter; width: Math.min(implicitWidth, 160); elide: Text.ElideRight
-            text: MprisController.trackTitle || "Không phát nhạc"; px: 12.5; weight: Font.DemiBold }
+            text: MprisController.trackTitle || Fz.tr("Không phát nhạc"); px: 12.5; weight: Font.DemiBold }
     }
 }

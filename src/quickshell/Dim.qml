@@ -69,15 +69,15 @@ Scope {
                     Column {
                         width: parent.width
                         spacing: 6
-                        FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Màn hình sắp khóa"; px: 20; weight: Font.DemiBold }
+                        FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Màn hình sắp khóa"); px: 20; weight: Font.DemiBold }
                         FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; px: 14; color: Fz.sub2
-                                text: "Không có hoạt động trong " + dimScope.idleMinutes + " phút. Di chuột hoặc nhấn phím để tiếp tục." }
+                                text: Fz.tr("Không có hoạt động trong ") + dimScope.idleMinutes + Fz.tr(" phút. Di chuột hoặc nhấn phím để tiếp tục.") }
                     }
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 8
-                        FBtn { height: 42; padX: 18; kind: "pri"; text: "Tôi vẫn ở đây"; onClicked: dimScope.previewing = false }
-                        FBtn { height: 42; padX: 18; text: "Khóa ngay"; onClicked: Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]) }
+                        FBtn { height: 42; padX: 18; kind: "pri"; text: Fz.tr("Tôi vẫn ở đây"); onClicked: dimScope.previewing = false }
+                        FBtn { height: 42; padX: 18; text: Fz.tr("Khóa ngay"); onClicked: Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/lock.sh"]) }
                     }
                 }
             }

@@ -29,7 +29,7 @@ Scope {
         active: app.open
         FloatingWindow {
             id: win
-            title: "Zone-C · Tệp"
+            title: Fz.tr("Zone-C · Tệp")
             implicitWidth: 1392
             implicitHeight: 828
             minimumSize: Qt.size(900, 560)
@@ -105,19 +105,19 @@ Scope {
                 function refreshAll() { places.running = false; places.running = true; if (!isPc) list(); }
 
                 readonly property string crumb: {
-                    if (isPc) return "Máy tính này";
-                    if (dir === home) return "Thư mục cá nhân";
-                    if (dir === trashDir) return "Thùng rác";
+                    if (isPc) return Fz.tr("Máy tính này");
+                    if (dir === home) return Fz.tr("Thư mục cá nhân");
+                    if (dir === trashDir) return Fz.tr("Thùng rác");
                     for (const p of placeList) if (p.p === dir) return p.n;
                     return dir.split("/").pop() || "/";
                 }
                 readonly property string crumbIcon: isPc ? "f-pc" : (dir === home ? "f-home" : (dir === trashDir ? "f-trash" : (placeList.find(p => p.p === dir) || { i: "f-folder" }).i))
                 readonly property var placeList: [
-                    { n: "Màn hình nền", i: "f-desk", p: xdg.DESKTOP || home + "/Desktop" },
-                    { n: "Tải xuống", i: "f-down", p: xdg.DOWNLOAD || home + "/Downloads" },
-                    { n: "Tài liệu", i: "f-doc", p: xdg.DOCUMENTS || home + "/Documents" },
-                    { n: "Hình ảnh", i: "f-image", p: xdg.PICTURES || home + "/Pictures" },
-                    { n: "Nhạc", i: "f-music", p: xdg.MUSIC || home + "/Music" },
+                    { n: Fz.tr("Màn hình nền"), i: "f-desk", p: xdg.DESKTOP || home + "/Desktop" },
+                    { n: Fz.tr("Tải xuống"), i: "f-down", p: xdg.DOWNLOAD || home + "/Downloads" },
+                    { n: Fz.tr("Tài liệu"), i: "f-doc", p: xdg.DOCUMENTS || home + "/Documents" },
+                    { n: Fz.tr("Hình ảnh"), i: "f-image", p: xdg.PICTURES || home + "/Pictures" },
+                    { n: Fz.tr("Nhạc"), i: "f-music", p: xdg.MUSIC || home + "/Music" },
                     { n: "Video", i: "f-video", p: xdg.VIDEOS || home + "/Videos" },
                     { n: "Zone-C", i: "f-code", p: home + "/Zone-C" }
                 ]
@@ -126,8 +126,8 @@ Scope {
                     let d = new Date(epoch * 1000), now = new Date();
                     let day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                     let hm = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-                    if (d >= day0) return "Hôm nay " + hm;
-                    if (d >= new Date(day0 - 86400000)) return "Hôm qua";
+                    if (d >= day0) return Fz.tr("Hôm nay ") + hm;
+                    if (d >= new Date(day0 - 86400000)) return Fz.tr("Hôm qua");
                     return String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0") + "/" + d.getFullYear();
                 }
                 function fmtSize(b) {
@@ -138,21 +138,21 @@ Scope {
                 }
                 function gb(b) { return Math.round(b / 1073741824); }
                 readonly property var kinds: [
-                    [/\.(png|jpe?g|webp|gif|svg|bmp|avif|heic)$/, "f-image", "Ảnh"], [/\.(mp4|mkv|webm|mov|avi)$/, "f-video", "Video"],
-                    [/\.(mp3|flac|ogg|opus|wav|m4a)$/, "f-music", "Âm thanh"], [/\.(lua|qml|js|ts|py|sh|c|cpp|h|rs|go|java|nix|toml|ya?ml|conf|ini|css|html)$/, "f-code", ""],
-                    [/^\.(bashrc|zshrc|profile|bash_profile)$/, "f-code", "Shell"], [/\.(zip|tar|gz|xz|zst|7z|rar)$/, "f-folder", "Tệp nén"]
+                    [/\.(png|jpe?g|webp|gif|svg|bmp|avif|heic)$/, "f-image", Fz.tr("Ảnh")], [/\.(mp4|mkv|webm|mov|avi)$/, "f-video", "Video"],
+                    [/\.(mp3|flac|ogg|opus|wav|m4a)$/, "f-music", Fz.tr("Âm thanh")], [/\.(lua|qml|js|ts|py|sh|c|cpp|h|rs|go|java|nix|toml|ya?ml|conf|ini|css|html)$/, "f-code", ""],
+                    [/^\.(bashrc|zshrc|profile|bash_profile)$/, "f-code", "Shell"], [/\.(zip|tar|gz|xz|zst|7z|rar)$/, "f-folder", Fz.tr("Tệp nén")]
                 ]
                 function kind(e) {
-                    if (e.dir) return { i: "f-folder", t: "Thư mục" };
+                    if (e.dir) return { i: "f-folder", t: Fz.tr("Thư mục") };
                     let n = e.name.toLowerCase(), ext = n.indexOf(".") > 0 ? n.split(".").pop() : "";
                     for (const k of kinds) if (k[0].test(n)) {
-                        let label = k[2] === "Ảnh" ? "Ảnh " + ext.toUpperCase() : k[2] === "Video" ? "Video " + ext.toUpperCase() : k[2] === "Âm thanh" ? "Âm thanh " + ext.toUpperCase() : (k[2] || ({ lua: "Lua", qml: "QML", js: "JavaScript", py: "Python", sh: "Shell", json: "JSON" })[ext] || ext.toUpperCase());
+                        let label = k[2] === Fz.tr("Ảnh") ? Fz.tr("Ảnh ") + ext.toUpperCase() : k[2] === "Video" ? "Video " + ext.toUpperCase() : k[2] === Fz.tr("Âm thanh") ? Fz.tr("Âm thanh ") + ext.toUpperCase() : (k[2] || ({ lua: "Lua", qml: "QML", js: "JavaScript", py: "Python", sh: "Shell", json: "JSON" })[ext] || ext.toUpperCase());
                         return { i: k[1], t: label };
                     }
-                    if (/\.(odt|docx?|pdf|txt|md|json|xlsx?|ods|pptx?)$/.test(n)) return { i: "f-doc", t: ({ odt: "Tài liệu", doc: "Tài liệu", docx: "Tài liệu", pdf: "PDF", txt: "Văn bản", md: "Markdown", json: "JSON" })[ext] || "Tài liệu" };
-                    return { i: "f-doc", t: ext ? ext.toUpperCase() : "Tệp" };
+                    if (/\.(odt|docx?|pdf|txt|md|json|xlsx?|ods|pptx?)$/.test(n)) return { i: "f-doc", t: ({ odt: Fz.tr("Tài liệu"), doc: Fz.tr("Tài liệu"), docx: Fz.tr("Tài liệu"), pdf: "PDF", txt: Fz.tr("Văn bản"), md: "Markdown", json: "JSON" })[ext] || Fz.tr("Tài liệu") };
+                    return { i: "f-doc", t: ext ? ext.toUpperCase() : Fz.tr("Tệp") };
                 }
-                function sub(e) { return e.dir ? e.size + " mục" : fmtSize(e.size); }
+                function sub(e) { return e.dir ? e.size + Fz.tr(" mục") : fmtSize(e.size); }
                 function perms(m) { let s = ""; for (let i = 2; i >= 0; i--) { let v = (parseInt(m, 8) >> (i * 3)) & 7; s += (v & 4 ? "r" : "-") + (v & 2 ? "w" : "-") + (v & 1 ? "x" : "-"); } return s; }
             }
             Timer { id: refreshSoon; interval: 400; onTriggered: fm.refreshAll() }
@@ -200,13 +200,13 @@ Scope {
                                 if (seen[key] || !(t === "/" || t === "/home" || t.indexOf("/boot") === 0 || t.indexOf("/efi") === 0 || t.indexOf("/run/media/") === 0 || t.indexOf("/mnt/") === 0)) return;
                                 seen[key] = true;
                                 let removable = t.indexOf("/run/media/") === 0;
-                                let name = t === "/" ? "Hệ thống" : t === "/home" ? "Thư mục cá nhân" : (fs === "vfat" && /boot|efi/.test(t)) ? "EFI" : (lbl || t.split("/").pop());
+                                let name = t === "/" ? Fz.tr("Hệ thống") : t === "/home" ? Fz.tr("Thư mục cá nhân") : (fs === "vfat" && /boot|efi/.test(t)) ? "EFI" : (lbl || t.split("/").pop());
                                 let devName = dev.split("/").pop();
                                 if (t === "/") { fm.rootFree = size - used; fm.rootSize = size; }
-                                let kv = [["Hệ tập tin", fs + (fs === "btrfs" ? " (subvol)" : "")], ["Gắn tại", t]];
-                                if (enc) kv.push(["Mã hóa", "LUKS"]);
-                                if (tran) kv.push([removable ? "Cổng" : "Giao tiếp", tran.toUpperCase()]);
-                                kv.push(["Đã dùng", size < 2147483648 ? Math.round(used / 1048576) + " / " + Math.round(size / 1048576) + " MB" : fm.gb(used) + " / " + fm.gb(size) + " GB"]);
+                                let kv = [[Fz.tr("Hệ tập tin"), fs + (fs === "btrfs" ? " (subvol)" : "")], [Fz.tr("Gắn tại"), t]];
+                                if (enc) kv.push([Fz.tr("Mã hóa"), "LUKS"]);
+                                if (tran) kv.push([removable ? Fz.tr("Cổng") : Fz.tr("Giao tiếp"), tran.toUpperCase()]);
+                                kv.push([Fz.tr("Đã dùng"), size < 2147483648 ? Math.round(used / 1048576) + " / " + Math.round(size / 1048576) + " MB" : fm.gb(used) + " / " + fm.gb(size) + " GB"]);
                                 drives.push({ i: t === "/home" ? "f-home" : (tran === "usb" || removable ? "f-usb" : "f-ssd"), n: name, m: t + " · " + devName + " · " + fs,
                                               path: t, lock: enc, size: size, used: used, removable: removable, dev: dev, kv: kv });
                             } else if (c[0] === "G") {
@@ -216,7 +216,7 @@ Scope {
                                 let share = (b.match(/share=([^,]+)/) || [])[1] || "";
                                 let item = { i: isPhone ? "f-phone" : (b.indexOf("google-drive") === 0 ? "f-cloud" : "f-nas"), n: isPhone ? decodeURIComponent(host.replace(/_/g, " ")) : host,
                                              m: b.split(":")[0] + "://" + host + (share ? "/" + share : ""), path: g };
-                                if (isPhone) drives.push({ i: "f-phone", n: item.n, m: "MTP · Bộ nhớ trong", path: g, lock: false, size: 0, used: 0, kv: [["Giao thức", "MTP"]] });
+                                if (isPhone) drives.push({ i: "f-phone", n: item.n, m: Fz.tr("MTP · Bộ nhớ trong"), path: g, lock: false, size: 0, used: 0, kv: [[Fz.tr("Giao thức"), "MTP"]] });
                                 else net.push(item);
                             }
                         });
@@ -237,9 +237,9 @@ Scope {
                     x: 16; anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - 26
                     spacing: 6
-                    FIconBtn { ghost: true; icon: "f-left"; label: "Quay lại"; opacity: fm.back_.length ? 1 : 0.4; onClicked: fm.back() }
-                    FIconBtn { ghost: true; icon: "f-right"; label: "Tiếp"; opacity: fm.fwd.length ? 1 : 0.4; onClicked: fm.forward() }
-                    FIconBtn { ghost: true; icon: "f-up"; label: "Lên một cấp"; opacity: fm.isPc ? 0.4 : 1; onClicked: fm.up() }
+                    FIconBtn { ghost: true; icon: "f-left"; label: Fz.tr("Quay lại"); opacity: fm.back_.length ? 1 : 0.4; onClicked: fm.back() }
+                    FIconBtn { ghost: true; icon: "f-right"; label: Fz.tr("Tiếp"); opacity: fm.fwd.length ? 1 : 0.4; onClicked: fm.forward() }
+                    FIconBtn { ghost: true; icon: "f-up"; label: Fz.tr("Lên một cấp"); opacity: fm.isPc ? 0.4 : 1; onClicked: fm.up() }
                     Rectangle {
                         width: parent.width - 3 * 42 - 246 - viewSeg.width - 42 - 42 - 6
                         height: 36; radius: 11
@@ -260,7 +260,7 @@ Scope {
                         id: search
                         width: 240; height: 36; radius: 11; fontSize: 13; icon: "f-search"
                         color: Fz.well(0.25); border.color: input.activeFocus ? Fz.glow : Fz.line
-                        placeholder: "Tìm trong " + fm.crumb
+                        placeholder: Fz.tr("Tìm trong ") + fm.crumb
                         onTextChanged: { fm.query = text; fm.sel = 0; }
                         Keys.onEscapePressed: { text = ""; keys.forceActiveFocus(); }
                     }
@@ -270,8 +270,8 @@ Scope {
                         current: fm.isPc || fm.grid ? 0 : 1
                         onPicked: (i) => fm.grid = i === 0
                     }
-                    FIconBtn { icon: "f-folderplus"; label: "Thư mục mới"; onClicked: { if (fm.isPc) fm.go(fm.home); dlg.ask("mkdir", null); } }
-                    FIconBtn { ghost: true; icon: "f-x"; iconSize: 15; label: "Đóng"; onClicked: app.open = false }
+                    FIconBtn { icon: "f-folderplus"; label: Fz.tr("Thư mục mới"); onClicked: { if (fm.isPc) fm.go(fm.home); dlg.ask("mkdir", null); } }
+                    FIconBtn { ghost: true; icon: "f-x"; iconSize: 15; label: Fz.tr("Đóng"); onClicked: app.open = false }
                 }
             }
 
@@ -285,19 +285,19 @@ Scope {
                     x: 10; y: 8
                     width: parent.width - 20
                     spacing: 1
-                    Nv { text: "Máy tính này"; icon: "f-pc"; on: fm.isPc; onClicked: fm.go("computer:") }
-                    Gh { text: "Truy cập nhanh" }
-                    Nv { text: "Thư mục cá nhân"; icon: "f-home"; on: fm.dir === fm.home; onClicked: fm.go(fm.home) }
+                    Nv { text: Fz.tr("Máy tính này"); icon: "f-pc"; on: fm.isPc; onClicked: fm.go("computer:") }
+                    Gh { text: Fz.tr("Truy cập nhanh") }
+                    Nv { text: Fz.tr("Thư mục cá nhân"); icon: "f-home"; on: fm.dir === fm.home; onClicked: fm.go(fm.home) }
                     Repeater {
                         model: fm.placeList.filter(p => p.n !== "Video" && (p.n !== "Zone-C" || fm.counts[p.p] !== undefined))
                         delegate: Nv {
                             required property var modelData
                             text: modelData.n; icon: modelData.i; on: fm.dir === modelData.p
-                            badge: modelData.n === "Tải xuống" && fm.newDownloads > 0 ? fm.newDownloads + " mới" : ""
+                            badge: modelData.n === Fz.tr("Tải xuống") && fm.newDownloads > 0 ? fm.newDownloads + Fz.tr(" mới") : ""
                             onClicked: fm.go(modelData.p)
                         }
                     }
-                    Gh { text: "Thiết bị" }
+                    Gh { text: Fz.tr("Thiết bị") }
                     Repeater {
                         model: fm.drives.filter(d => d.path !== "/home" && !/^(\/boot|\/efi)/.test(d.path))
                         delegate: Nv {
@@ -308,7 +308,7 @@ Scope {
                             onClicked: fm.go(modelData.path)
                         }
                     }
-                    Gh { visible: fm.netPlaces.length > 0; text: "Mạng" }
+                    Gh { visible: fm.netPlaces.length > 0; text: Fz.tr("Mạng") }
                     Repeater {
                         model: fm.netPlaces
                         delegate: Nv { required property var modelData; text: modelData.n; icon: modelData.i; on: fm.dir === modelData.path; onClicked: fm.go(modelData.path) }
@@ -317,7 +317,7 @@ Scope {
                 Nv {
                     x: 10; anchors.bottom: parent.bottom; anchors.bottomMargin: 8
                     width: parent.width - 20
-                    text: "Thùng rác"; icon: "f-trash"; on: fm.dir === fm.trashDir
+                    text: Fz.tr("Thùng rác"); icon: "f-trash"; on: fm.dir === fm.trashDir
                     badge: fm.trashBytes > 0 ? fm.fmtSize(fm.trashBytes) : ""
                     onClicked: fm.go(fm.trashDir)
                 }
@@ -332,10 +332,10 @@ Scope {
                 Rectangle { width: 1; height: parent.height; color: Fz.line }
                 readonly property var d: fm.isPc ? (fm.drives[fm.driveSel] || null) : null
                 readonly property var info: fm.isPc
-                    ? (d ? { i: d.i, n: d.n, m: d.m, kv: d.kv } : { i: "f-pc", n: "Máy tính này", m: "computer:///", kv: [] })
+                    ? (d ? { i: d.i, n: d.n, m: d.m, kv: d.kv } : { i: "f-pc", n: Fz.tr("Máy tính này"), m: "computer:///", kv: [] })
                     : (fm.cur ? { i: fm.kind(fm.cur).i, n: fm.cur.name, m: fm.cur.path,
-                                  kv: [["Loại", fm.kind(fm.cur).t], [fm.cur.dir ? "Nội dung" : "Kích thước", fm.sub(fm.cur)], ["Sửa lúc", fm.fmtDate(fm.cur.t)], ["Quyền", fm.perms(fm.cur.mode)]] }
-                              : { i: fm.crumbIcon, n: fm.crumb, m: fm.dir, kv: [["Nội dung", fm.entries.length + " mục"]] })
+                                  kv: [[Fz.tr("Loại"), fm.kind(fm.cur).t], [fm.cur.dir ? Fz.tr("Nội dung") : Fz.tr("Kích thước"), fm.sub(fm.cur)], [Fz.tr("Sửa lúc"), fm.fmtDate(fm.cur.t)], [Fz.tr("Quyền"), fm.perms(fm.cur.mode)]] }
+                              : { i: fm.crumbIcon, n: fm.crumb, m: fm.dir, kv: [[Fz.tr("Nội dung"), fm.entries.length + Fz.tr(" mục")]] })
                 Column {
                     x: 20; y: 20
                     width: parent.width - 40
@@ -367,8 +367,8 @@ Scope {
                 Row {
                     x: 20; anchors.bottom: parent.bottom; anchors.bottomMargin: 20
                     spacing: 6
-                    FBtn { width: 117; text: "Mở"; onClicked: { if (fm.isPc) { if (aside.d) fm.go(aside.d.path); } else if (fm.cur) fm.activate(fm.cur); } }
-                    FBtn { width: 117; text: "Dung lượng"; onClicked: Fz.open("settings", "storage") }
+                    FBtn { width: 117; text: Fz.tr("Mở"); onClicked: { if (fm.isPc) { if (aside.d) fm.go(aside.d.path); } else if (fm.cur) fm.activate(fm.cur); } }
+                    FBtn { width: 117; text: Fz.tr("Dung lượng"); onClicked: Fz.open("settings", "storage") }
                 }
             }
 
@@ -390,22 +390,22 @@ Scope {
                         id: pcCol
                         x: 24; y: 20
                         width: parent.width - 48
-                        H3 { text: "Thư mục"; first: true }
+                        H3 { text: Fz.tr("Thư mục"); first: true }
                         Grid {
                             columns: 4; spacing: 10
                             width: parent.width
                             Repeater {
-                                model: fm.placeList.filter(p => fm.counts[p.p] !== undefined).concat([{ n: "Thùng rác", i: "f-trash", p: fm.trashDir, trash: true }])
+                                model: fm.placeList.filter(p => fm.counts[p.p] !== undefined).concat([{ n: Fz.tr("Thùng rác"), i: "f-trash", p: fm.trashDir, trash: true }])
                                 delegate: Fd {
                                     required property var modelData
                                     width: (pcCol.width - 30) / 4
                                     icon: modelData.i; text: modelData.n
-                                    sub: modelData.trash ? (fm.trashBytes > 0 ? fm.fmtSize(fm.trashBytes) : "Trống") : fm.counts[modelData.p] + " mục"
+                                    sub: modelData.trash ? (fm.trashBytes > 0 ? fm.fmtSize(fm.trashBytes) : Fz.tr("Trống")) : fm.counts[modelData.p] + Fz.tr(" mục")
                                     onClicked: fm.go(modelData.p)
                                 }
                             }
                         }
-                        H3 { text: "Ổ đĩa & thiết bị" }
+                        H3 { text: Fz.tr("Ổ đĩa & thiết bị") }
                         Grid {
                             columns: 3; spacing: 10
                             width: parent.width
@@ -440,8 +440,8 @@ Scope {
                                         FBar { width: parent.width; height: 6; value: dv.pct / 100; fill: dv.pct > 70 ? Fz.yellow : Fz.acc }
                                         FText {
                                             px: 12; color: Fz.sub2
-                                            text: dv.modelData.size === 0 ? "Thiết bị di động" : (dv.modelData.size - dv.modelData.used >= 1073741824
-                                                  ? "Trống " + fm.gb(dv.modelData.size - dv.modelData.used) + " GB" : "Trống " + Math.round((dv.modelData.size - dv.modelData.used) / 1048576) + " MB") + " · đã dùng " + dv.pct + "%"
+                                            text: dv.modelData.size === 0 ? Fz.tr("Thiết bị di động") : (dv.modelData.size - dv.modelData.used >= 1073741824
+                                                  ? Fz.tr("Trống ") + fm.gb(dv.modelData.size - dv.modelData.used) + " GB" : Fz.tr("Trống ") + Math.round((dv.modelData.size - dv.modelData.used) / 1048576) + " MB") + Fz.tr(" · đã dùng ") + dv.pct + "%"
                                         }
                                     }
                                     MouseArea { id: dvMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
@@ -449,7 +449,7 @@ Scope {
                                 }
                             }
                         }
-                        H3 { text: "Vị trí mạng" }
+                        H3 { text: Fz.tr("Vị trí mạng") }
                         Grid {
                             columns: 3; spacing: 10
                             width: parent.width
@@ -457,7 +457,7 @@ Scope {
                                 model: fm.netPlaces
                                 delegate: Fd { required property var modelData; width: (pcCol.width - 20) / 3; icon: modelData.i; text: modelData.n; sub: modelData.m; subMono: true; onClicked: fm.go(modelData.path) }
                             }
-                            Fd { width: (pcCol.width - 20) / 3; dashed: true; icon: "f-plus"; text: "Kết nối máy chủ…"; sub: "SMB, SFTP, WebDAV"; onClicked: dlg.ask("connect", null) }
+                            Fd { width: (pcCol.width - 20) / 3; dashed: true; icon: "f-plus"; text: Fz.tr("Kết nối máy chủ…"); sub: "SMB, SFTP, WebDAV"; onClicked: dlg.ask("connect", null) }
                         }
                     }
                 }
@@ -473,10 +473,10 @@ Scope {
                         width: parent.width; height: 32
                         leftPadding: 12; rightPadding: 12; spacing: 10
                         readonly property real nameW: width - 24 - 150 - 110 - 90 - 30
-                        FText { width: parent.nameW; text: "Tên"; px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
-                        FText { width: 150; text: "Ngày sửa"; px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
-                        FText { width: 110; text: "Loại"; px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
-                        FText { width: 90; horizontalAlignment: Text.AlignRight; text: "Kích thước"; px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                        FText { width: parent.nameW; text: Fz.tr("Tên"); px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                        FText { width: 150; text: Fz.tr("Ngày sửa"); px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                        FText { width: 110; text: Fz.tr("Loại"); px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                        FText { width: 90; horizontalAlignment: Text.AlignRight; text: Fz.tr("Kích thước"); px: 12; weight: Font.DemiBold; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
                     }
                     ListView {
                         id: listView
@@ -545,7 +545,7 @@ Scope {
                 FText {
                     visible: !fm.isPc && fm.shown.length === 0 && !lister.running
                     anchors.centerIn: parent
-                    text: fm.query ? "Không có tệp khớp “" + fm.query + "”." : "Thư mục trống."
+                    text: fm.query ? Fz.tr("Không có tệp khớp “") + fm.query + "”." : Fz.tr("Thư mục trống.")
                     px: 13; color: Fz.sub
                 }
             }
@@ -558,12 +558,12 @@ Scope {
                 Rectangle { width: parent.width; height: 1; color: Fz.line }
                 FText {
                     x: 16; anchors.verticalCenter: parent.verticalCenter; px: 12; color: Fz.sub
-                    text: fm.isPc ? (Object.keys(fm.counts).length + 1) + " thư mục · " + fm.drives.length + " ổ đĩa · " + fm.netPlaces.length + " vị trí mạng"
-                                  : fm.shown.length + " mục" + (fm.cur ? " · đã chọn " + fm.cur.name : "")
+                    text: fm.isPc ? (Object.keys(fm.counts).length + 1) + Fz.tr(" thư mục · ") + fm.drives.length + Fz.tr(" ổ đĩa · ") + fm.netPlaces.length + Fz.tr(" vị trí mạng")
+                                  : fm.shown.length + Fz.tr(" mục") + (fm.cur ? Fz.tr(" · đã chọn ") + fm.cur.name : "")
                 }
                 FText {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    text: "trống " + fm.gb(fm.rootFree) + " GB / " + fm.gb(fm.rootSize) + " GB"; mono: true; px: 12; color: Fz.sub
+                    text: Fz.tr("trống ") + fm.gb(fm.rootFree) + " GB / " + fm.gb(fm.rootSize) + " GB"; mono: true; px: 12; color: Fz.sub
                 }
             }
 
@@ -574,12 +574,12 @@ Scope {
                 visible: false
                 property var item: null
                 function popup(it, p) { item = it; x = Math.min(p.x, win.width - width - 8); y = Math.min(p.y, win.height - height - 8); visible = true; }
-                FMenuItem { text: "Mở"; icon: "f-right"; onTriggered: { menu.visible = false; fm.activate(menu.item); } }
-                FMenuItem { visible: menu.item && menu.item.dir; text: "Mở trong terminal"; icon: "f-code"; onTriggered: { menu.visible = false; Quickshell.execDetached(["bash", "-c", "cd -- \"$1\" && exec ${TERMINAL:-kitty}", "_", menu.item.path]); } }
-                FMenuItem { text: "Đổi tên"; hint: "F2"; onTriggered: { menu.visible = false; dlg.ask("rename", menu.item); } }
-                FMenuItem { text: "Sao chép đường dẫn"; onTriggered: { menu.visible = false; Quickshell.execDetached(["wl-copy", menu.item.path]); } }
+                FMenuItem { text: Fz.tr("Mở"); icon: "f-right"; onTriggered: { menu.visible = false; fm.activate(menu.item); } }
+                FMenuItem { visible: menu.item && menu.item.dir; text: Fz.tr("Mở trong terminal"); icon: "f-code"; onTriggered: { menu.visible = false; Quickshell.execDetached(["bash", "-c", "cd -- \"$1\" && exec ${TERMINAL:-kitty}", "_", menu.item.path]); } }
+                FMenuItem { text: Fz.tr("Đổi tên"); hint: "F2"; onTriggered: { menu.visible = false; dlg.ask("rename", menu.item); } }
+                FMenuItem { text: Fz.tr("Sao chép đường dẫn"); onTriggered: { menu.visible = false; Quickshell.execDetached(["wl-copy", menu.item.path]); } }
                 FMenuSep {}
-                FMenuItem { text: fm.dir === fm.trashDir ? "Xóa vĩnh viễn" : "Chuyển vào thùng rác"; icon: "f-trash"; hint: "Del"; danger: true
+                FMenuItem { text: fm.dir === fm.trashDir ? Fz.tr("Xóa vĩnh viễn") : Fz.tr("Chuyển vào thùng rác"); icon: "f-trash"; hint: "Del"; danger: true
                             onTriggered: { menu.visible = false; if (fm.dir === fm.trashDir) { runner.command = ["gio", "remove", menu.item.path]; runner.running = true; } else fm.trash(menu.item); } }
             }
 
@@ -593,7 +593,7 @@ Scope {
                 property var target: null
                 function ask(k, t) {
                     kind = k; target = t;
-                    field.text = k === "rename" ? t.name : (k === "mkdir" ? "Thư mục mới" : "smb://");
+                    field.text = k === "rename" ? t.name : (k === "mkdir" ? Fz.tr("Thư mục mới") : "smb://");
                     visible = true;
                     field.input.forceActiveFocus(); field.input.selectAll();
                 }
@@ -617,14 +617,14 @@ Scope {
                         x: 22; y: 22
                         width: parent.width - 44
                         spacing: 14
-                        FText { text: dlg.kind === "mkdir" ? "Thư mục mới" : dlg.kind === "rename" ? "Đổi tên" : "Kết nối máy chủ"; px: 16; weight: Font.DemiBold }
+                        FText { text: dlg.kind === "mkdir" ? Fz.tr("Thư mục mới") : dlg.kind === "rename" ? Fz.tr("Đổi tên") : Fz.tr("Kết nối máy chủ"); px: 16; weight: Font.DemiBold }
                         FInput { id: field; width: parent.width; onAccepted: dlg.done(); Keys.onEscapePressed: { dlg.visible = false; keys.forceActiveFocus(); } }
-                        FText { visible: dlg.kind === "connect"; text: "Ví dụ: smb://192.168.1.10/share, sftp://máy-chủ, dav://…"; px: 12; color: Fz.sub }
+                        FText { visible: dlg.kind === "connect"; text: Fz.tr("Ví dụ: smb://192.168.1.10/share, sftp://máy-chủ, dav://…"); px: 12; color: Fz.sub }
                         Row {
                             anchors.right: parent.right
                             spacing: 8
-                            FBtn { text: "Hủy"; onClicked: { dlg.visible = false; keys.forceActiveFocus(); } }
-                            FBtn { kind: "pri"; text: dlg.kind === "connect" ? "Kết nối" : dlg.kind === "rename" ? "Đổi tên" : "Tạo"; onClicked: dlg.done() }
+                            FBtn { text: Fz.tr("Hủy"); onClicked: { dlg.visible = false; keys.forceActiveFocus(); } }
+                            FBtn { kind: "pri"; text: dlg.kind === "connect" ? Fz.tr("Kết nối") : dlg.kind === "rename" ? Fz.tr("Đổi tên") : Fz.tr("Tạo"); onClicked: dlg.done() }
                         }
                     }
                 }

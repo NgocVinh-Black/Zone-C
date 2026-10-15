@@ -29,7 +29,7 @@ Glass {
             visible: img.status !== Image.Ready
             spacing: 8
             FIcon { anchors.horizontalCenter: parent.horizontalCenter; name: "w-image"; size: 34; color: Fz.acc }
-            FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Chọn ảnh trong chế độ chỉnh widget"; color: Fz.sub; px: 12.5 }
+            FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Chọn ảnh trong chế độ chỉnh widget"); color: Fz.sub; px: 12.5 }
         }
     }
 }

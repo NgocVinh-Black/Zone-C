@@ -15,7 +15,7 @@ Glass {
         width: root.width - 40
         Repeater {
             model: [["CPU", SysData.cpu, SysData.cpu + "%"], ["RAM", SysData.ramPercent, SysData.ramPercent + "%"],
-                    ["Ổ đĩa", SysData.diskPercent, SysData.diskPercent + "%"], ["Nhiệt", SysData.temp, SysData.temp + "°"]]
+                    [Fz.tr("Ổ đĩa"), SysData.diskPercent, SysData.diskPercent + "%"], [Fz.tr("Nhiệt"), SysData.temp, SysData.temp + "°"]]
             delegate: Column {
                 required property var modelData
                 width: (root.width - 40) / 4

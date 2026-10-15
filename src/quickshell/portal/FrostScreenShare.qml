@@ -32,9 +32,9 @@ PanelWindow {
         let a = String(w.addr || "").replace(/^0x/, "").toLowerCase();
         return tops.find(t => String(t.address).toLowerCase() === a) || null;
     }
-    readonly property var sources: tab === 0 ? screens.map(s => ({ kind: "screen", value: s.name, name: s.name + (s.model ? " · " + s.model : ""), desc: s.width + "×" + s.height, icon: "s-display", screen: s }))
+    readonly property var sources: tab === 0 ? screens.map(s => ({ kind: "screen", value: s.name, name: s.name + (s.model ? " · " + s.model : ""), desc: s.width + Fz.tr("×") + s.height, icon: "s-display", screen: s }))
                                   : tab === 1 ? windows.map(w => ({ kind: "window", value: w.id, name: w.title || w.cls, desc: w.cls, icon: /code/i.test(w.cls) ? "s-code" : /foot|kitty|term/i.test(w.cls) ? "s-terminal" : /nautilus|files|thunar/i.test(w.cls) ? "s-folder" : "s-browser", top: topFor(w) }))
-                                  : [{ kind: "region", value: "", name: "Chọn vùng…", desc: "Kéo trên màn hình để chọn", icon: "s-region" }]
+                                  : [{ kind: "region", value: "", name: Fz.tr("Chọn vùng…"), desc: Fz.tr("Kéo trên màn hình để chọn"), icon: "s-region" }]
 
     function answer(obj) {
         Quickshell.execDetached(["bash", "-c", "printf '%s' \"$2\" > \"$1.tmp\" && mv \"$1.tmp\" \"$1\"", "_", reqFile + ".out", JSON.stringify(obj)]);
@@ -82,12 +82,12 @@ PanelWindow {
                             FIcon { anchors.centerIn: parent; name: "s-cast"; size: 22; color: Fz.ink } }
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
-                    FText { text: "Chia sẻ màn hình"; px: 19; weight: Font.DemiBold }
-                    FText { text: "Một ứng dụng muốn ghi hình nội dung bạn chọn · xdg-desktop-portal-hyprland"; px: 13; color: Fz.sub2 }
+                    FText { text: Fz.tr("Chia sẻ màn hình"); px: 19; weight: Font.DemiBold }
+                    FText { text: Fz.tr("Một ứng dụng muốn ghi hình nội dung bạn chọn · xdg-desktop-portal-hyprland"); px: 13; color: Fz.sub2 }
                 }
             }
             FSeg {
-                options: [{ label: "Màn hình", icon: "s-display" }, { label: "Cửa sổ", icon: "s-browser" }, { label: "Vùng", icon: "s-region" }]
+                options: [{ label: Fz.tr("Màn hình"), icon: "s-display" }, { label: Fz.tr("Cửa sổ"), icon: "s-browser" }, { label: Fz.tr("Vùng"), icon: "s-region" }]
                 current: win.tab
                 onPicked: (i) => { win.tab = i; win.sel = 0; }
             }
@@ -139,20 +139,20 @@ PanelWindow {
                     }
                 }
             }
-            FText { visible: win.tab === 1 && win.windows.length === 0; text: "Không có cửa sổ nào để chia sẻ."; px: 13; color: Fz.sub }
+            FText { visible: win.tab === 1 && win.windows.length === 0; text: Fz.tr("Không có cửa sổ nào để chia sẻ."); px: 13; color: Fz.sub }
             Grp {
                 width: parent.width
-                GRow { Lbl { width: col.width - 32 - 14 - 44; title: "Chia sẻ cả âm thanh"; sub: "Ứng dụng tự xử lý âm thanh khi chia sẻ qua portal" } FToggle { enabled: false; opacity: 0.5; anchors.verticalCenter: parent.verticalCenter } }
-                GRow { Lbl { width: col.width - 32 - 14 - 44; title: "Ghi nhớ lựa chọn cho trang này"; sub: "Không hỏi lại lần sau" } FToggle { on: win.remember; onToggled: (v) => win.remember = v; anchors.verticalCenter: parent.verticalCenter } }
+                GRow { Lbl { width: col.width - 32 - 14 - 44; title: Fz.tr("Chia sẻ cả âm thanh"); sub: Fz.tr("Ứng dụng tự xử lý âm thanh khi chia sẻ qua portal") } FToggle { enabled: false; opacity: 0.5; anchors.verticalCenter: parent.verticalCenter } }
+                GRow { Lbl { width: col.width - 32 - 14 - 44; title: Fz.tr("Ghi nhớ lựa chọn cho trang này"); sub: Fz.tr("Không hỏi lại lần sau") } FToggle { on: win.remember; onToggled: (v) => win.remember = v; anchors.verticalCenter: parent.verticalCenter } }
             }
             Item {
                 width: parent.width; height: 42
-                FText { anchors.verticalCenter: parent.verticalCenter; text: "Khi đang chia sẻ, thanh bar hiện chấm đỏ và nút dừng"; px: 12.5; color: Fz.sub }
+                FText { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Khi đang chia sẻ, thanh bar hiện chấm đỏ và nút dừng"); px: 12.5; color: Fz.sub }
                 Row {
                     anchors.right: parent.right
                     spacing: 8
-                    FBtn { height: 42; text: "Hủy"; onClicked: win.answer({ kind: "cancel" }) }
-                    FBtn { height: 42; width: Math.max(130, implicitWidth); kind: "pri"; text: "Chia sẻ"; onClicked: win.share() }
+                    FBtn { height: 42; text: Fz.tr("Hủy"); onClicked: win.answer({ kind: "cancel" }) }
+                    FBtn { height: 42; width: Math.max(130, implicitWidth); kind: "pri"; text: Fz.tr("Chia sẻ"); onClicked: win.share() }
                 }
             }
         }

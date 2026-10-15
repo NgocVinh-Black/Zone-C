@@ -20,7 +20,7 @@ Column {
     property var info: ({})               // ip, rate, freq, autoconnect, mac, hotspot
     property string openNet: ""
     property bool hiddenOpen: false
-    function sec(n) { return ({ 0: "Mạng mở", 1: "WEP", 2: "WPA", 3: "WPA2", 4: "WPA3", 5: "WPA2/WPA3", 6: "WPA2-Enterprise", 7: "OWE" })[n ? n.security : 0] || ""; }
+    function sec(n) { return ({ 0: Fz.tr("Mạng mở"), 1: "WEP", 2: "WPA", 3: "WPA2", 4: "WPA3", 5: "WPA2/WPA3", 6: "WPA2-Enterprise", 7: "OWE" })[n ? n.security : 0] || ""; }
     function strength(n) { let s = n ? (n.signalStrength || 0) : 0; return s > 1 ? s / 100 : s; }
 
     Process {
@@ -41,12 +41,12 @@ Column {
         width: parent.width
         SRow {
             icon: "s-wifi"; iconOn: Networking.wifiEnabled; title: "Wi-Fi"
-            sub: !Networking.wifiEnabled ? "Đang tắt" : page.current ? "Đã kết nối với " + page.current.name : "Chưa kết nối"
+            sub: !Networking.wifiEnabled ? Fz.tr("Đang tắt") : page.current ? Fz.tr("Đã kết nối với ") + page.current.name : Fz.tr("Chưa kết nối")
             FToggle { on: Networking.wifiEnabled; onToggled: (v) => Networking.wifiEnabled = v }
         }
     }
 
-    H3 { visible: page.current !== null; text: "Đang dùng" }
+    H3 { visible: page.current !== null; text: Fz.tr("Đang dùng") }
     Grp {
         visible: page.current !== null
         width: parent.width
@@ -54,12 +54,12 @@ Column {
             title: page.current ? page.current.name : ""
             sub: [page.sec(page.current), page.info.freq ? (parseInt(page.info.freq) >= 4900 ? "5 GHz" : "2.4 GHz") : "", page.info.rate ? page.info.rate.replace(" Mbit/s", " Mb/s") : "", page.info.ip || ""].filter(x => x).join(" · ")
             FIcon { name: "s-wifi"; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
-            FChip { kind: "ok"; text: "Đã kết nối"; anchors.verticalCenter: parent.verticalCenter }
-            FBtn { text: "Ngắt"; onClicked: page.current.disconnect() }
+            FChip { kind: "ok"; text: Fz.tr("Đã kết nối"); anchors.verticalCenter: parent.verticalCenter }
+            FBtn { text: Fz.tr("Ngắt"); onClicked: page.current.disconnect() }
         }
     }
 
-    H3 { visible: Networking.wifiEnabled; text: "Mạng khả dụng" }
+    H3 { visible: Networking.wifiEnabled; text: Fz.tr("Mạng khả dụng") }
     Grp {
         visible: Networking.wifiEnabled
         width: parent.width
@@ -71,15 +71,15 @@ Column {
                 readonly property bool locked: modelData.security > 0 && modelData.security !== 7 && !modelData.known
                 width: parent.width
                 SRow {
-                    title: nr.modelData.name; sub: page.sec(nr.modelData) + (nr.modelData.known ? " · đã lưu" : "")
+                    title: nr.modelData.name; sub: page.sec(nr.modelData) + (nr.modelData.known ? Fz.tr(" · đã lưu") : "")
                     FIcon { name: "s-wifi"; color: Fz.acc; opacity: 0.4 + 0.6 * page.strength(nr.modelData); anchors.verticalCenter: parent.verticalCenter }
-                    FBtn { text: "Kết nối"; onClicked: { if (nr.locked) page.openNet = page.openNet === nr.modelData.name ? "" : nr.modelData.name; else nr.modelData.connect(); } }
+                    FBtn { text: Fz.tr("Kết nối"); onClicked: { if (nr.locked) page.openNet = page.openNet === nr.modelData.name ? "" : nr.modelData.name; else nr.modelData.connect(); } }
                 }
                 Row {
                     visible: page.openNet === nr.modelData.name
                     x: 16; spacing: 8; bottomPadding: 12
-                    FInput { id: pw; width: 280; height: 36; password: true; placeholder: "Mật khẩu"; onAccepted: { nr.modelData.connectWithPsk(text); page.openNet = ""; } }
-                    FBtn { kind: "pri"; text: "Kết nối"; onClicked: { nr.modelData.connectWithPsk(pw.text); page.openNet = ""; } }
+                    FInput { id: pw; width: 280; height: 36; password: true; placeholder: Fz.tr("Mật khẩu"); onAccepted: { nr.modelData.connectWithPsk(text); page.openNet = ""; } }
+                    FBtn { kind: "pri"; text: Fz.tr("Kết nối"); onClicked: { nr.modelData.connectWithPsk(pw.text); page.openNet = ""; } }
                 }
             }
         }
@@ -89,7 +89,7 @@ Column {
                 width: parent.width; height: hidRow.height
                 SRow {
                     id: hidRow
-                    icon: "s-plus"; title: "Kết nối mạng ẩn…"
+                    icon: "s-plus"; title: Fz.tr("Kết nối mạng ẩn…")
                     FIcon { name: "s-chev"; color: Fz.sub; rotation: page.hiddenOpen ? 90 : 0; anchors.verticalCenter: parent.verticalCenter }
                 }
                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.hiddenOpen = !page.hiddenOpen }
@@ -97,31 +97,31 @@ Column {
             Row {
                 visible: page.hiddenOpen
                 x: 16; spacing: 8; bottomPadding: 12
-                FInput { id: hidSsid; width: 200; height: 36; placeholder: "Tên mạng (SSID)" }
-                FInput { id: hidPw; width: 200; height: 36; password: true; placeholder: "Mật khẩu (nếu có)" }
-                FBtn { kind: "pri"; text: "Kết nối"; onClicked: { page.run(["device", "wifi", "connect", hidSsid.text, "hidden", "yes"].concat(hidPw.text ? ["password", hidPw.text] : [])); page.hiddenOpen = false; } }
+                FInput { id: hidSsid; width: 200; height: 36; placeholder: Fz.tr("Tên mạng (SSID)") }
+                FInput { id: hidPw; width: 200; height: 36; password: true; placeholder: Fz.tr("Mật khẩu (nếu có)") }
+                FBtn { kind: "pri"; text: Fz.tr("Kết nối"); onClicked: { page.run(["device", "wifi", "connect", hidSsid.text, "hidden", "yes"].concat(hidPw.text ? ["password", hidPw.text] : [])); page.hiddenOpen = false; } }
             }
         }
     }
 
-    H3 { text: "Tùy chọn" }
+    H3 { text: Fz.tr("Tùy chọn") }
     Grp {
         width: parent.width
         SRow {
-            title: "Tự kết nối mạng đã biết"; sub: page.info.conn ? "Áp dụng cho " + page.info.conn : ""
+            title: Fz.tr("Tự kết nối mạng đã biết"); sub: page.info.conn ? Fz.tr("Áp dụng cho ") + page.info.conn : ""
             FToggle { on: page.info.auto !== "no"; onToggled: (v) => { if (page.info.conn) page.run(["connection", "modify", page.info.conn, "connection.autoconnect", v ? "yes" : "no"]); } }
         }
         SRow {
-            title: "Địa chỉ MAC ngẫu nhiên"
+            title: Fz.tr("Địa chỉ MAC ngẫu nhiên")
             FSelect {
-                options: ["Riêng cho từng mạng", "Đổi mỗi lần kết nối", "Dùng MAC thật"]
+                options: [Fz.tr("Riêng cho từng mạng"), Fz.tr("Đổi mỗi lần kết nối"), Fz.tr("Dùng MAC thật")]
                 readonly property var values: ["stable", "random", "permanent"]
                 current: Math.max(0, values.indexOf(page.info.mac || "permanent"))
                 onPicked: (i) => { if (page.info.conn) page.run(["connection", "modify", page.info.conn, "802-11-wireless.cloned-mac-address", values[i]]); }
             }
         }
         SRow {
-            title: "Điểm phát sóng"; sub: "“zone-c-hotspot”"
+            title: Fz.tr("Điểm phát sóng"); sub: "“zone-c-hotspot”"
             FToggle {
                 on: page.info.hotspot === "1"
                 onToggled: (v) => page.run(v ? ["device", "wifi", "hotspot", "ssid", "zone-c-hotspot", "password", "zonec-" + Quickshell.env("USER")] : ["connection", "down", "Hotspot"])

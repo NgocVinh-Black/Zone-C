@@ -23,23 +23,23 @@ Column {
     }
     function kind(d) {
         let i = (d.icon || "").toLowerCase();
-        return /head|ear/.test(i) ? "Tai nghe" : /mouse/.test(i) ? "Chuột" : /keyboard/.test(i) ? "Bàn phím" : /speaker|audio/.test(i) ? "Loa" : /phone/.test(i) ? "Điện thoại" : "Thiết bị";
+        return /head|ear/.test(i) ? "Tai nghe" : /mouse/.test(i) ? Fz.tr("Chuột") : /keyboard/.test(i) ? Fz.tr("Bàn phím") : /speaker|audio/.test(i) ? "Loa" : /phone/.test(i) ? Fz.tr("Điện thoại") : Fz.tr("Thiết bị");
     }
 
     Grp {
         width: parent.width
         SRow {
             icon: "s-bt"; iconOn: page.adapter !== null && page.adapter.enabled; title: "Bluetooth"
-            sub: page.adapter ? "Hiển thị với tên “" + (page.adapter.name || "zone-c") + "”" : "Không tìm thấy bộ điều hợp"
+            sub: page.adapter ? Fz.tr("Hiển thị với tên “") + (page.adapter.name || "zone-c") + "”" : Fz.tr("Không tìm thấy bộ điều hợp")
             FToggle { on: page.adapter !== null && page.adapter.enabled; onToggled: (v) => { if (page.adapter) page.adapter.enabled = v; } }
         }
         SRow {
-            title: "Cho phép thiết bị khác tìm thấy"
+            title: Fz.tr("Cho phép thiết bị khác tìm thấy")
             FToggle { on: page.adapter !== null && page.adapter.discoverable; onToggled: (v) => { if (page.adapter) page.adapter.discoverable = v; } }
         }
     }
 
-    H3 { text: "Thiết bị của tôi" }
+    H3 { text: Fz.tr("Thiết bị của tôi") }
     Grp {
         width: parent.width
         Repeater {
@@ -47,16 +47,16 @@ Column {
             delegate: SRow {
                 required property var modelData
                 icon: page.icon(modelData); title: modelData.name || modelData.address
-                sub: modelData.connected ? (modelData.batteryAvailable ? "Pin " + Math.round(modelData.battery * 100) + "%" : page.kind(modelData)) : "Chưa kết nối"
-                FChip { visible: modelData.connected; kind: "ok"; text: "Đã kết nối"; anchors.verticalCenter: parent.verticalCenter }
-                FBtn { text: modelData.connected ? "Ngắt" : "Kết nối"; onClicked: { modelData.trusted = true; modelData.connected ? modelData.disconnect() : modelData.connect(); } }
-                FIconBtn { ghost: true; icon: "s-trash"; iconSize: 15; label: "Quên thiết bị"; onClicked: modelData.forget() }
+                sub: modelData.connected ? (modelData.batteryAvailable ? "Pin " + Math.round(modelData.battery * 100) + "%" : page.kind(modelData)) : Fz.tr("Chưa kết nối")
+                FChip { visible: modelData.connected; kind: "ok"; text: Fz.tr("Đã kết nối"); anchors.verticalCenter: parent.verticalCenter }
+                FBtn { text: modelData.connected ? Fz.tr("Ngắt") : Fz.tr("Kết nối"); onClicked: { modelData.trusted = true; modelData.connected ? modelData.disconnect() : modelData.connect(); } }
+                FIconBtn { ghost: true; icon: "s-trash"; iconSize: 15; label: Fz.tr("Quên thiết bị"); onClicked: modelData.forget() }
             }
         }
-        SRow { visible: page.paired.length === 0; title: "Chưa ghép nối thiết bị nào" }
+        SRow { visible: page.paired.length === 0; title: Fz.tr("Chưa ghép nối thiết bị nào") }
     }
 
-    H3 { text: "Lân cận" + (page.adapter && page.adapter.discovering ? " · đang quét…" : "") }
+    H3 { text: Fz.tr("Lân cận") + (page.adapter && page.adapter.discovering ? Fz.tr(" · đang quét…") : "") }
     Grp {
         width: parent.width
         Repeater {
@@ -64,9 +64,9 @@ Column {
             delegate: SRow {
                 required property var modelData
                 icon: page.icon(modelData); title: modelData.name; sub: page.kind(modelData)
-                FBtn { kind: "pri"; text: modelData.pairing ? "Đang ghép…" : "Ghép nối"; onClicked: { modelData.trusted = true; modelData.pair(); } }
+                FBtn { kind: "pri"; text: modelData.pairing ? Fz.tr("Đang ghép…") : Fz.tr("Ghép nối"); onClicked: { modelData.trusted = true; modelData.pair(); } }
             }
         }
-        SRow { visible: page.nearby.length === 0; title: page.adapter && page.adapter.enabled ? "Đang tìm thiết bị…" : "Bật Bluetooth để tìm thiết bị" }
+        SRow { visible: page.nearby.length === 0; title: page.adapter && page.adapter.enabled ? Fz.tr("Đang tìm thiết bị…") : Fz.tr("Bật Bluetooth để tìm thiết bị") }
     }
 }

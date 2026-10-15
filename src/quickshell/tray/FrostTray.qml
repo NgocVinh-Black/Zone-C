@@ -41,8 +41,8 @@ PanelWindow {
         if (/cat|claude/.test(s)) return "t-cat";
         return "";
     }
-    function label(it) { return it.title || it.tooltipTitle || it.id || "Ứng dụng"; }
-    function status(it) { return it.tooltipDescription || it.tooltipTitle || (it.status === Status.NeedsAttention ? "Cần chú ý" : "Đang chạy"); }
+    function label(it) { return it.title || it.tooltipTitle || it.id || Fz.tr("Ứng dụng"); }
+    function status(it) { return it.tooltipDescription || it.tooltipTitle || (it.status === Status.NeedsAttention ? Fz.tr("Cần chú ý") : Fz.tr("Đang chạy")); }
 
     MouseArea { anchors.fill: parent; onClicked: win.open = false }
     Shortcut { sequence: "Escape"; enabled: win.open; onActivated: win.open = false }
@@ -60,7 +60,7 @@ PanelWindow {
             id: gcol
             x: 8; y: 8
             spacing: 8
-            Caps { px: 10.5; leftPadding: 6; topPadding: 2; text: "Khay hệ thống" }
+            Caps { px: 10.5; leftPadding: 6; topPadding: 2; text: Fz.tr("Khay hệ thống") }
             Grid {
                 columns: 4
                 spacing: 4
@@ -84,7 +84,7 @@ PanelWindow {
                     }
                 }
             }
-            FText { visible: win.items.length === 0; leftPadding: 6; text: "Không có ứng dụng nào trong khay"; px: 12.5; color: Fz.sub }
+            FText { visible: win.items.length === 0; leftPadding: 6; text: Fz.tr("Không có ứng dụng nào trong khay"); px: 12.5; color: Fz.sub }
         }
     }
 
@@ -106,8 +106,8 @@ PanelWindow {
                 FText { text: win.sel ? win.status(win.sel) : ""; px: 11.5; color: Fz.sub }
             }
         }
-        FMenuItem { visible: win.menuStack.length > 0; icon: "t-chev"; text: "Quay lại"; onTriggered: win.menuStack = win.menuStack.slice(0, -1) }
-        FMenuItem { visible: win.menuStack.length === 0 && win.sel !== null; icon: "t-open"; text: "Mở " + (win.sel ? win.label(win.sel) : ""); onTriggered: { win.sel.activate(); win.open = false; } }
+        FMenuItem { visible: win.menuStack.length > 0; icon: "t-chev"; text: Fz.tr("Quay lại"); onTriggered: win.menuStack = win.menuStack.slice(0, -1) }
+        FMenuItem { visible: win.menuStack.length === 0 && win.sel !== null; icon: "t-open"; text: Fz.tr("Mở ") + (win.sel ? win.label(win.sel) : ""); onTriggered: { win.sel.activate(); win.open = false; } }
         Repeater {
             model: opener.children
             delegate: Loader {
@@ -139,7 +139,7 @@ PanelWindow {
         FMenuItem {
             visible: trayMenu.quitEntry !== null && win.menuStack.length === 0
             danger: true; icon: "t-x"
-            text: "Thoát " + (win.sel ? win.label(win.sel) : "")
+            text: Fz.tr("Thoát ") + (win.sel ? win.label(win.sel) : "")
             onTriggered: { trayMenu.quitEntry.triggered(); win.open = false; }
         }
     }

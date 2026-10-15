@@ -29,10 +29,10 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 let r; try { r = JSON.parse(this.text); } catch (e) { win.answer({ cancel: true }); return; }
-                picker.subtitle = r.app || "Ứng dụng";
+                picker.subtitle = r.app || Fz.tr("Ứng dụng");
                 picker.modeSwitch = false;
                 win.open = true;
-                picker.show(r.title || (r.mode === "save" ? "Lưu tệp" : r.mode === "folder" ? "Chọn thư mục" : "Mở tệp"),
+                picker.show(r.title || (r.mode === "save" ? Fz.tr("Lưu tệp") : r.mode === "folder" ? Fz.tr("Chọn thư mục") : Fz.tr("Mở tệp")),
                             r.exts || [], r.folder || "", r.mode || "open", r.name || "");
                 if (r.filterLabel) picker.filterLabel = r.filterLabel;
             }

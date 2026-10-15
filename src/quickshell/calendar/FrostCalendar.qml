@@ -43,7 +43,7 @@ Item {
     readonly property string skyLine: {
         let d = Fz.weatherDesc(Weather.currentIcon);
         let laterRain = hourly.some(h => parseInt(h.time) > DateTime.now.getHours() && Fz.weatherIcon(h.icon) === "rain");
-        return laterRain && Fz.weatherIcon(Weather.currentIcon) !== "rain" ? d + " · mưa rào " + (DateTime.now.getHours() < 12 ? "chiều" : "tối") : d;
+        return laterRain && Fz.weatherIcon(Weather.currentIcon) !== "rain" ? d + Fz.tr(" · mưa rào ") + (DateTime.now.getHours() < 12 ? Fz.tr("chiều") : Fz.tr("tối")) : d;
     }
 
     Glass {
@@ -61,10 +61,10 @@ Item {
             Row {
                 width: parent.width
                 spacing: 8
-                FIconBtn { icon: "c-l"; label: "Tháng trước"; onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() - 1, 1) }
+                FIconBtn { icon: "c-l"; label: Fz.tr("Tháng trước"); onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() - 1, 1) }
                 FText { width: parent.width - 36 * 2 - 16; anchors.verticalCenter: parent.verticalCenter; horizontalAlignment: Text.AlignHCenter
                         text: Fz.monthYear(root.shown); px: 16; weight: Font.DemiBold; font.letterSpacing: 16 * 0.02 }
-                FIconBtn { icon: "c-r"; label: "Tháng sau"; onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() + 1, 1) }
+                FIconBtn { icon: "c-r"; label: Fz.tr("Tháng sau"); onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() + 1, 1) }
             }
             Grid {
                 id: grid
@@ -115,9 +115,9 @@ Item {
                 Item {
                     width: parent.width; height: 28
                     Caps { anchors.verticalCenter: parent.verticalCenter; px: 11
-                           text: root.same(root.selected, DateTime.now) ? "Hôm nay · " + root.selected.getDate() + "/" + (root.selected.getMonth() + 1)
-                                                                       : "Ngày " + root.selected.getDate() + "/" + (root.selected.getMonth() + 1) }
-                    FIconBtn { anchors.right: parent.right; width: 28; height: 28; ghost: true; icon: "c-plus"; iconSize: 15; label: "Thêm sự kiện"
+                           text: root.same(root.selected, DateTime.now) ? Fz.tr("Hôm nay · ") + root.selected.getDate() + "/" + (root.selected.getMonth() + 1)
+                                                                       : Fz.tr("Ngày ") + root.selected.getDate() + "/" + (root.selected.getMonth() + 1) }
+                    FIconBtn { anchors.right: parent.right; width: 28; height: 28; ghost: true; icon: "c-plus"; iconSize: 15; label: Fz.tr("Thêm sự kiện")
                                onClicked: { root.adding = !root.adding; if (root.adding) newTime.input.forceActiveFocus(); } }
                 }
                 Repeater {
@@ -128,20 +128,20 @@ Item {
                         FText { width: 40; mono: true; text: modelData.time || "—"; px: 12; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
                         Rectangle { width: 3; height: 24; radius: 2; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
                         FText { width: evCol.width - 40 - 3 - 20 - 24; elide: Text.ElideRight; text: modelData.title; px: 13; anchors.verticalCenter: parent.verticalCenter }
-                        FIconBtn { width: 24; height: 24; ghost: true; icon: "x"; iconSize: 12; label: "Xóa sự kiện"; anchors.verticalCenter: parent.verticalCenter
+                        FIconBtn { width: 24; height: 24; ghost: true; icon: "x"; iconSize: 12; label: Fz.tr("Xóa sự kiện"); anchors.verticalCenter: parent.verticalCenter
                                    onClicked: Agenda.remove(modelData.id) }
                     }
                 }
-                FText { visible: root.dayEvents.length === 0 && !root.adding; text: "Không có sự kiện."; px: 13; color: Fz.sub }
+                FText { visible: root.dayEvents.length === 0 && !root.adding; text: Fz.tr("Không có sự kiện."); px: 13; color: Fz.sub }
                 Row {
                     visible: root.adding
                     width: parent.width
                     spacing: 6
                     FInput { id: newTime; width: 66; height: 34; fontSize: 13; placeholder: "10:30"; onAccepted: newTitle.input.forceActiveFocus() }
-                    FInput { id: newTitle; width: parent.width - 66 - 6 - 6 - saveBtn.width; height: 34; fontSize: 13; placeholder: "Tên sự kiện"
+                    FInput { id: newTitle; width: parent.width - 66 - 6 - 6 - saveBtn.width; height: 34; fontSize: 13; placeholder: Fz.tr("Tên sự kiện")
                              onAccepted: saveBtn.clicked() }
                     FBtn {
-                        id: saveBtn; height: 34; kind: "pri"; text: "Lưu"
+                        id: saveBtn; height: 34; kind: "pri"; text: Fz.tr("Lưu")
                         onClicked: {
                             if (newTitle.text.trim() === "") return;
                             let tm = newTime.text.trim().replace(/^(\d{1,2})[h.:]?(\d{2})?$/, (m, h, mm) => String(h).padStart(2, "0") + ":" + (mm || "00"));
@@ -168,7 +168,7 @@ Item {
                 spacing: 6
                 FText { anchors.horizontalCenter: parent.horizontalCenter; mono: true; text: DateTime.timeLong; px: 92; font.letterSpacing: -4 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter
-                        text: Fz.dateLong(DateTime.now) + ", " + DateTime.now.getFullYear() + " · Tuần " + root.isoWeek(DateTime.now); px: 17; color: Fz.sub2 }
+                        text: Fz.dateLong(DateTime.now) + ", " + DateTime.now.getFullYear() + Fz.tr(" · Tuần ") + root.isoWeek(DateTime.now); px: 17; color: Fz.sub2 }
             }
             Canvas {
                 id: chart
@@ -229,7 +229,7 @@ Item {
                 width: parent.width; height: wcol.implicitHeight
                 Column {
                     id: wcol
-                    Caps { px: 11; text: "Hôm nay" }
+                    Caps { px: 11; text: Fz.tr("Hôm nay") }
                     FText { topPadding: 8; text: Fz.deg(Weather.currentTemp); px: 72; weight: Font.Light; font.letterSpacing: -3 }
                     FText { topPadding: 8; text: root.city; px: 15; weight: Font.DemiBold }
                     FText { text: root.skyLine; px: 13.5; color: Fz.sub2 }
@@ -242,10 +242,10 @@ Item {
                 columnSpacing: 8; rowSpacing: 8
                 Repeater {
                     model: [
-                        { i: "c-wind", v: (root.today ? Math.round(Number(root.today.wind)) : "--") + " km/h", l: "Gió" },
-                        { i: "c-drop", v: (root.today ? root.today.humidity : "--") + "%", l: "Độ ẩm" },
-                        { i: "c-umb", v: (root.today ? root.today.pop : "--") + "%", l: "Khả năng mưa" },
-                        { i: "c-therm", v: root.today ? Fz.deg(root.today.feels_like) : "--°", l: "Cảm giác" }
+                        { i: "c-wind", v: (root.today ? Math.round(Number(root.today.wind)) : "--") + " km/h", l: Fz.tr("Gió") },
+                        { i: "c-drop", v: (root.today ? root.today.humidity : "--") + "%", l: Fz.tr("Độ ẩm") },
+                        { i: "c-umb", v: (root.today ? root.today.pop : "--") + "%", l: Fz.tr("Khả năng mưa") },
+                        { i: "c-therm", v: root.today ? Fz.deg(root.today.feels_like) : "--°", l: Fz.tr("Cảm giác") }
                     ]
                     delegate: Card {
                         required property var modelData
@@ -280,7 +280,7 @@ Item {
                             id: dcol
                             anchors.centerIn: parent
                             spacing: 6
-                            FText { anchors.horizontalCenter: parent.horizontalCenter; text: index === 0 ? "Hôm nay" : (root.dayNames[modelData.day] || modelData.day); px: 12; color: index === 0 ? Fz.tx : Fz.sub2 }
+                            FText { anchors.horizontalCenter: parent.horizontalCenter; text: index === 0 ? Fz.tr("Hôm nay") : (root.dayNames[modelData.day] || modelData.day); px: 12; color: index === 0 ? Fz.tx : Fz.sub2 }
                             FIcon { anchors.horizontalCenter: parent.horizontalCenter; name: Fz.weatherIcon(modelData.icon); color: index === 0 ? Fz.tx : Fz.sub2 }
                             FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.deg(modelData.max); px: 12; weight: Font.DemiBold }
                             FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.deg(modelData.min); px: 12; color: Fz.sub }

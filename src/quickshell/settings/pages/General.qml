@@ -36,44 +36,44 @@ Column {
         width: parent.width
         SRow {
             image: page.avatar
-            title: "Ảnh đại diện"; sub: page.short(Config.getSetting("general.avatarPath", "") || page.home + "/.face"); subMono: true
-            FBtn { text: "Chọn"; onClicked: { page.picking = true; page.picker.show("Chọn ảnh đại diện", ["png", "jpg", "jpeg", "webp"], page.home + "/Pictures", "open", ""); } }
+            title: Fz.tr("Ảnh đại diện"); sub: page.short(Config.getSetting("general.avatarPath", "") || page.home + "/.face"); subMono: true
+            FBtn { text: Fz.tr("Chọn"); onClicked: { page.picking = true; page.picker.show(Fz.tr("Chọn ảnh đại diện"), ["png", "jpg", "jpeg", "webp"], page.home + "/Pictures", "open", ""); } }
         }
         SRow {
-            title: "Ngôn ngữ giao diện"
+            title: Fz.tr("Ngôn ngữ giao diện")
             CfgSelect {
                 key: "general.language"; def: "vi"
-                options: ["Tiếng Việt", "English", "Deutsch", "Español", "Italiano", "한국어", "Português", "Русский", "Українська", "Azərbaycan", "Հայերեն"]
+                options: [Fz.tr("Tiếng Việt"), "English", "Deutsch", Fz.tr("Español"), "Italiano", "한국어", Fz.tr("Português"), Fz.tr("Русский"), Fz.tr("Українська"), Fz.tr("Azərbaycan"), Fz.tr("Հայերեն")]
                 values: ["vi", "en", "de", "es", "it", "ko", "pt", "ru", "ua", "az", "hy"]
             }
         }
         SRow {
-            title: "Tỷ lệ giao diện"; sub: "Áp dụng khi Zone-C khởi động lại"
+            title: Fz.tr("Tỷ lệ giao diện"); sub: Fz.tr("Áp dụng khi Zone-C khởi động lại")
             CfgSeg { key: "general.uiScale"; def: 100; options: ["90%", "100%", "110%", "125%"]; values: [90, 100, 110, 125] }
         }
-        SRow { title: "Thao tác nhanh"; sub: "Lớp phủ quick actions nổi"; CfgToggle { key: "general.quickactions"; def: true } }
-        SRow { title: "Chụp vùng khi thả chuột"; CfgToggle { key: "general.screenshotCaptureOnRelease" } }
+        SRow { title: Fz.tr("Thao tác nhanh"); sub: Fz.tr("Lớp phủ quick actions nổi"); CfgToggle { key: "general.quickactions"; def: true } }
+        SRow { title: Fz.tr("Chụp vùng khi thả chuột"); CfgToggle { key: "general.screenshotCaptureOnRelease" } }
     }
 
-    H3 { text: "Vị trí & thời tiết" }
+    H3 { text: Fz.tr("Vị trí & thời tiết") }
     Grp {
         width: parent.width
         SRow {
             icon: "s-pin"
-            title: Location.city && Location.city !== "Unknown" ? Location.city : "Chưa xác định"
+            title: Location.city && Location.city !== "Unknown" ? Location.city : Fz.tr("Chưa xác định")
             sub: Location.latitude.toFixed(4) + ", " + Location.longitude.toFixed(4); subMono: true
-            FBtn { text: Location.isDetecting ? "Đang tìm…" : "Tự động phát hiện"; onClicked: Location.detectAuto() }
+            FBtn { text: Location.isDetecting ? Fz.tr("Đang tìm…") : Fz.tr("Tự động phát hiện"); onClicked: Location.detectAuto() }
         }
-        SRow { title: "Tần suất cập nhật thời tiết"; CfgSelect { key: "general.weatherInterval"; def: 15; options: ["15 phút", "30 phút", "60 phút"]; values: [15, 30, 60] } }
-        SRow { title: "Đơn vị nhiệt độ"; CfgSeg { key: "general.weatherUnit"; def: "metric"; options: ["°C", "°F", "K"]; values: ["metric", "imperial", "standard"] } }
+        SRow { title: Fz.tr("Tần suất cập nhật thời tiết"); CfgSelect { key: "general.weatherInterval"; def: 15; options: [Fz.tr("15 phút"), Fz.tr("30 phút"), Fz.tr("60 phút")]; values: [15, 30, 60] } }
+        SRow { title: Fz.tr("Đơn vị nhiệt độ"); CfgSeg { key: "general.weatherUnit"; def: "metric"; options: ["°C", "°F", "K"]; values: ["metric", "imperial", "standard"] } }
     }
 
-    H3 { text: "Sao lưu" }
+    H3 { text: Fz.tr("Sao lưu") }
     Grp {
         width: parent.width
         SRow {
-            title: "Sao chép cài đặt"; sub: page.short(Config.settingsJsonPath); subMono: true
-            FBtn { icon: "s-copy"; iconSize: 14; text: "Sao chép JSON"; onClicked: Quickshell.execDetached(["bash", "-c", "wl-copy < \"$1\"", "_", Config.settingsJsonPath]) }
+            title: Fz.tr("Sao chép cài đặt"); sub: page.short(Config.settingsJsonPath); subMono: true
+            FBtn { icon: "s-copy"; iconSize: 14; text: Fz.tr("Sao chép JSON"); onClicked: Quickshell.execDetached(["bash", "-c", "wl-copy < \"$1\"", "_", Config.settingsJsonPath]) }
         }
     }
 }

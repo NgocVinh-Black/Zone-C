@@ -16,7 +16,7 @@ Glass {
         Row {
             spacing: 8
             FIcon { name: "m-cal"; size: 15; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: "HÔM NAY"; color: Fz.sub; px: 11; weight: Font.DemiBold; font.letterSpacing: 11 * 0.08; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: Fz.tr("HÔM NAY"); color: Fz.sub; px: 11; weight: Font.DemiBold; font.letterSpacing: 11 * 0.08; anchors.verticalCenter: parent.verticalCenter }
         }
         Repeater {
             model: Agenda.today.slice(0, 3)
@@ -33,6 +33,6 @@ Glass {
                 }
             }
         }
-        FText { visible: Agenda.today.length === 0; text: "Không có sự kiện nào hôm nay"; color: Fz.sub; px: 13 }
+        FText { visible: Agenda.today.length === 0; text: Fz.tr("Không có sự kiện nào hôm nay"); color: Fz.sub; px: 13 }
     }
 }

@@ -91,10 +91,10 @@ PanelWindow {
                     FIcon { id: logo; anchors.fill: parent; name: "wl-zc"; size: 120; color: Fz.acc; layer.enabled: true
                             layer.effect: MultiEffect { shadowEnabled: true; shadowColor: Fz.glowA(0.45); shadowBlur: 1; blurMax: 30 } }
                 }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Chào mừng đến với Zone-C"; px: 40; weight: Font.DemiBold; font.letterSpacing: -1 }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Chào mừng đến với Zone-C"); px: 40; weight: Font.DemiBold; font.letterSpacing: -1 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter; width: 520; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.5
-                        text: "Desktop shell cho Hyprland, viết bằng Quickshell. Vài bước để chọn ngôn ngữ, giao diện và bố cục."; px: 16; color: Fz.sub2 }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; text: "bởi @NgocVinh-Black · v" + Updater.localVersion; px: 13; color: Fz.sub }
+                        text: Fz.tr("Desktop shell cho Hyprland, viết bằng Quickshell. Vài bước để chọn ngôn ngữ, giao diện và bố cục."); px: 16; color: Fz.sub2 }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("bởi @NgocVinh-Black · v") + Updater.localVersion; px: 13; color: Fz.sub }
             }
 
             // 1 · theme
@@ -102,11 +102,11 @@ PanelWindow {
                 visible: win.step === 1
                 width: parent.width
                 spacing: 24
-                FText { text: "Chọn theme"; px: 26; weight: Font.DemiBold }
+                FText { text: Fz.tr("Chọn theme"); px: 26; weight: Font.DemiBold }
                 Row {
                     width: parent.width; spacing: 14
                     Repeater {
-                        model: [["Zone Thunder", "Video sấm sét · viền điện chạy", "#0A1633", "#3D9BFF", 0.25], ["Zone Crystal", "Ảnh tĩnh · pha lê xanh", "#0B1C36", "#38B6FF", 0.35], ["Zone Frost", "Tuyết · panel kính mờ", "", "", 0.85]]
+                        model: [["Zone Thunder", Fz.tr("Video sấm sét · viền điện chạy"), "#0A1633", "#3D9BFF", 0.25], ["Zone Crystal", Fz.tr("Ảnh tĩnh · pha lê xanh"), "#0B1C36", "#38B6FF", 0.35], ["Zone Frost", Fz.tr("Tuyết · panel kính mờ"), "", "", 0.85]]
                         delegate: Opt {
                             required property var modelData
                             width: (col.width - 28) / 3
@@ -125,8 +125,8 @@ PanelWindow {
                 }
                 Item {
                     width: parent.width; height: 36
-                    FText { anchors.verticalCenter: parent.verticalCenter; text: "Chế độ"; px: 14 }
-                    FSeg { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; options: ["Tối", "Sáng"]; current: ZoneStyle.isLight ? 1 : 0; onPicked: (i) => ZoneStyle.setMode(i === 1 ? "light" : "dark") }
+                    FText { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Chế độ"); px: 14 }
+                    FSeg { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; options: [Fz.tr("Tối"), Fz.tr("Sáng")]; current: ZoneStyle.isLight ? 1 : 0; onPicked: (i) => ZoneStyle.setMode(i === 1 ? "light" : "dark") }
                 }
             }
 
@@ -135,11 +135,11 @@ PanelWindow {
                 visible: win.step === 2
                 width: parent.width
                 spacing: 24
-                FText { text: "Bố cục bar"; px: 26; weight: Font.DemiBold }
+                FText { text: Fz.tr("Bố cục bar"); px: 26; weight: Font.DemiBold }
                 Row {
                     width: parent.width; spacing: 14
                     Repeater {
-                        model: [["pills", "Pill tách rời", "Mỗi mô-đun một viên"], ["solid", "Đặc", "Một thanh liền"], ["side", "Bên trái", "Thanh dọc"]]
+                        model: [["pills", Fz.tr("Pill tách rời"), Fz.tr("Mỗi mô-đun một viên")], ["solid", Fz.tr("Đặc"), Fz.tr("Một thanh liền")], ["side", Fz.tr("Bên trái"), Fz.tr("Thanh dọc")]]
                         delegate: Opt {
                             required property var modelData
                             width: (col.width - 28) / 3
@@ -166,15 +166,15 @@ PanelWindow {
                 spacing: 14
                 Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: 80; height: 80; radius: 40; color: Fz.acc
                             FIcon { anchors.centerIn: parent; name: "wl-check"; size: 38; color: Fz.ink } }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Đã sẵn sàng"; px: 30; weight: Font.DemiBold }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Đã sẵn sàng"); px: 30; weight: Font.DemiBold }
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter; spacing: 5
-                    FText { text: "Nhấn"; px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                    FText { text: Fz.tr("Nhấn"); px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
                     FKbd { text: "Super"; anchors.verticalCenter: parent.verticalCenter }
-                    FText { text: "để mở launcher,"; px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                    FText { text: Fz.tr("để mở launcher,"); px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
                     FKbd { text: "Super"; anchors.verticalCenter: parent.verticalCenter }
                     FKbd { text: "/"; anchors.verticalCenter: parent.verticalCenter }
-                    FText { text: "để xem phím tắt."; px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                    FText { text: Fz.tr("để xem phím tắt."); px: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
                 }
             }
 
@@ -183,16 +183,16 @@ PanelWindow {
                 FSelect {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 160
-                    options: ["Tiếng Việt", "English", "Deutsch", "Русский"]
+                    options: [Fz.tr("Tiếng Việt"), "English", "Deutsch", Fz.tr("Русский")]
                     readonly property var values: ["vi", "en", "de", "ru"]
                     current: Math.max(0, values.indexOf(Config.getSetting("general.language", "vi")))
                     onPicked: (i) => Config.setSetting("general.language", values[i])
                 }
                 Row {
                     anchors.right: parent.right; spacing: 10
-                    FBtn { visible: win.step > 0; height: 44; padX: 20; text: "Quay lại"; onClicked: win.step-- }
+                    FBtn { visible: win.step > 0; height: 44; padX: 20; text: Fz.tr("Quay lại"); onClicked: win.step-- }
                     FBtn { height: 44; padX: 20; kind: "pri"; icon: "wl-r"; iconSize: 16; iconRight: true
-                           text: win.step === 0 ? "Bắt đầu" : win.step === 3 ? "Vào desktop" : "Tiếp tục"
+                           text: win.step === 0 ? Fz.tr("Bắt đầu") : win.step === 3 ? Fz.tr("Vào desktop") : Fz.tr("Tiếp tục")
                            onClicked: win.step < 3 ? win.step++ : win.finish() }
                 }
             }

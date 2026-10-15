@@ -80,16 +80,16 @@ PanelWindow {
                 spacing: 6
                 FText {
                     width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap
-                    text: win.req && win.req.type === "authorize" ? "Cho phép " + win.devName + " kết nối?" : "Ghép nối với " + win.devName + "?"
+                    text: win.req && win.req.type === "authorize" ? Fz.tr("Cho phép ") + win.devName + Fz.tr(" kết nối?") : Fz.tr("Ghép nối với ") + win.devName + "?"
                     px: 20; weight: Font.DemiBold
                 }
                 FText {
                     width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap
                     color: Fz.sub2; px: 14
-                    text: !win.req ? "" : win.req.type === "confirm" ? "Kiểm tra mã này trùng với mã trên " + (win.devIcon === "p-phone" ? "điện thoại" : "thiết bị") + "."
-                        : win.req.type === "display" ? "Nhập mã này trên " + win.devName + " rồi nhấn Enter."
-                        : (win.req.type === "pin" || win.req.type === "passkey") ? "Nhập mã PIN hiển thị trên " + win.devName + "."
-                        : "Thiết bị muốn dùng một dịch vụ Bluetooth trên máy này."
+                    text: !win.req ? "" : win.req.type === "confirm" ? Fz.tr("Kiểm tra mã này trùng với mã trên ") + (win.devIcon === "p-phone" ? Fz.tr("điện thoại") : Fz.tr("thiết bị")) + "."
+                        : win.req.type === "display" ? Fz.tr("Nhập mã này trên ") + win.devName + Fz.tr(" rồi nhấn Enter.")
+                        : (win.req.type === "pin" || win.req.type === "passkey") ? Fz.tr("Nhập mã PIN hiển thị trên ") + win.devName + "."
+                        : Fz.tr("Thiết bị muốn dùng một dịch vụ Bluetooth trên máy này.")
                 }
             }
             Row {
@@ -110,18 +110,18 @@ PanelWindow {
                 id: input
                 visible: !!win.req && (win.req.type === "pin" || win.req.type === "passkey")
                 width: parent.width; height: 46
-                placeholder: win.req && win.req.type === "passkey" ? "Mã 6 số" : "Mã PIN"
+                placeholder: win.req && win.req.type === "passkey" ? Fz.tr("Mã 6 số") : Fz.tr("Mã PIN")
                 onAccepted: win.accept()
             }
             Row {
                 visible: !!win.req
                 width: parent.width
                 spacing: 8
-                FBtn { width: (parent.width - 8) / 2; height: 46; text: win.req && win.req.type === "display" ? "Hủy" : "Từ chối"; onClicked: win.reject() }
+                FBtn { width: (parent.width - 8) / 2; height: 46; text: win.req && win.req.type === "display" ? Fz.tr("Hủy") : Fz.tr("Từ chối"); onClicked: win.reject() }
                 FBtn {
                     visible: !win.req || win.req.type !== "display"
                     width: (parent.width - 8) / 2; height: 46; kind: "pri"
-                    text: !win.req ? "" : win.req.type === "confirm" ? "Mã trùng khớp · Ghép nối" : win.req.type === "authorize" ? "Cho phép" : "Ghép nối"
+                    text: !win.req ? "" : win.req.type === "confirm" ? Fz.tr("Mã trùng khớp · Ghép nối") : win.req.type === "authorize" ? Fz.tr("Cho phép") : Fz.tr("Ghép nối")
                     onClicked: win.accept()
                 }
             }
@@ -142,8 +142,8 @@ PanelWindow {
                 visible: !win.req
                 width: parent.width
                 spacing: 6
-                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Đã ghép nối " + win.doneName; px: 20; weight: Font.DemiBold }
-                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Thiết bị sẽ tự kết nối lần sau."; px: 14; color: Fz.sub2 }
+                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Đã ghép nối ") + win.doneName; px: 20; weight: Font.DemiBold }
+                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Thiết bị sẽ tự kết nối lần sau."); px: 14; color: Fz.sub2 }
             }
             FBtn {
                 visible: !win.req

@@ -78,22 +78,22 @@ Column {
         property var list: []
         property string cur: ""
         FSelect {
-            options: dr.list.length ? dr.list.map(e => e.name) : ["Chưa có ứng dụng"]
+            options: dr.list.length ? dr.list.map(e => e.name) : [Fz.tr("Chưa có ứng dụng")]
             current: Math.max(0, dr.list.findIndex(e => page.idOf(e) === dr.cur))
             onPicked: (i) => { if (dr.list[i]) page.setDefault(dr.kind, dr.list[i]); }
         }
     }
 
-    H3 { first: true; text: "Ứng dụng mặc định · mimeapps.list" }
+    H3 { first: true; text: Fz.tr("Ứng dụng mặc định · mimeapps.list") }
     Grp {
         width: parent.width
-        DefaultRow { title: "Trình duyệt"; kind: "browser"; list: page.browsers; cur: page.defs.browser || "" }
+        DefaultRow { title: Fz.tr("Trình duyệt"); kind: "browser"; list: page.browsers; cur: page.defs.browser || "" }
         DefaultRow { title: "Terminal"; kind: "term"; list: page.terminals; cur: page.defs.term || "" }
-        DefaultRow { title: "Trình soạn thảo"; kind: "text"; list: page.editors; cur: page.defs.text || "" }
-        DefaultRow { title: "Quản lý tệp"; kind: "files"; list: page.fileManagers; cur: page.defs.files || "" }
+        DefaultRow { title: Fz.tr("Trình soạn thảo"); kind: "text"; list: page.editors; cur: page.defs.text || "" }
+        DefaultRow { title: Fz.tr("Quản lý tệp"); kind: "files"; list: page.fileManagers; cur: page.defs.files || "" }
     }
 
-    H3 { text: "Khởi động cùng hệ thống" }
+    H3 { text: Fz.tr("Khởi động cùng hệ thống") }
     Grp {
         width: parent.width
         Repeater {
@@ -104,10 +104,10 @@ Column {
                 FToggle { on: modelData.on; onToggled: (v) => page.setAutostart(modelData, v) }
             }
         }
-        SRow { visible: page.autostart.length === 0; title: "Chưa có ứng dụng tự khởi động"; sub: "~/.config/autostart"; subMono: true }
+        SRow { visible: page.autostart.length === 0; title: Fz.tr("Chưa có ứng dụng tự khởi động"); sub: "~/.config/autostart"; subMono: true }
     }
 
-    H3 { text: "Đã cài đặt · " + page.pkgCount + " gói" }
+    H3 { text: Fz.tr("Đã cài đặt · ") + page.pkgCount + Fz.tr(" gói") }
     Grp {
         width: parent.width
         Repeater {
@@ -117,7 +117,7 @@ Column {
                 icon: "s-box"; title: modelData.name; sub: modelData.name + " " + modelData.version; subMono: true
                 FChip { text: modelData.src; anchors.verticalCenter: parent.verticalCenter }
                 FText { width: 64; horizontalAlignment: Text.AlignRight; text: modelData.size; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
-                FBtn { text: "Gỡ"; onClicked: Fz.open("appstore", "installed") }
+                FBtn { text: Fz.tr("Gỡ"); onClicked: Fz.open("appstore", "installed") }
             }
         }
     }

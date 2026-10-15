@@ -63,10 +63,10 @@ PanelWindow {
             Column {
                 width: parent.width
                 spacing: 6
-                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Cần xác thực"; px: 20; weight: Font.DemiBold }
+                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Cần xác thực"); px: 20; weight: Font.DemiBold }
                 FText {
                     width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.25
-                    text: win.flow && win.flow.message ? win.flow.message : "Một ứng dụng cần quyền quản trị."
+                    text: win.flow && win.flow.message ? win.flow.message : Fz.tr("Một ứng dụng cần quyền quản trị.")
                     px: 14; color: Fz.sub2
                 }
             }
@@ -84,7 +84,7 @@ PanelWindow {
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
                         FText { text: SystemInfo.username; px: 14; weight: Font.Medium }
-                        FText { text: win.wheel ? "Quản trị (wheel)" : "Người dùng"; px: 12; color: Fz.sub }
+                        FText { text: win.wheel ? Fz.tr("Quản trị (wheel)") : Fz.tr("Người dùng"); px: 12; color: Fz.sub }
                     }
                 }
             }
@@ -92,7 +92,7 @@ PanelWindow {
                 id: pw
                 width: parent.width; height: 46
                 password: !(win.flow && win.flow.responseVisible)
-                placeholder: win.flow && win.flow.inputPrompt ? win.flow.inputPrompt.replace(/:\s*$/, "").replace(/^Password$/i, "Mật khẩu") : "Mật khẩu"
+                placeholder: win.flow && win.flow.inputPrompt ? win.flow.inputPrompt.replace(/:\s*$/, "").replace(/^Password$/i, Fz.tr("Mật khẩu")) : Fz.tr("Mật khẩu")
                 onAccepted: win.submit()
             }
             FText {
@@ -106,14 +106,14 @@ PanelWindow {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 8
                 FIcon { name: "dg-finger"; size: 16; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: "Hoặc chạm cảm biến vân tay"; px: 13; color: Fz.sub2 }
+                FText { text: Fz.tr("Hoặc chạm cảm biến vân tay"); px: 13; color: Fz.sub2 }
             }
             FText { anchors.horizontalCenter: parent.horizontalCenter; text: win.flow ? win.flow.actionId : ""; mono: true; px: 11.5; color: Fz.dim }
             Row {
                 width: parent.width
                 spacing: 8
-                FBtn { width: (parent.width - 8) / 2; height: 44; text: "Hủy"; onClicked: PolkitService.cancel() }
-                FBtn { width: (parent.width - 8) / 2; height: 44; kind: "pri"; text: win.busy ? "Đang xác thực…" : "Xác thực"; onClicked: win.submit() }
+                FBtn { width: (parent.width - 8) / 2; height: 44; text: Fz.tr("Hủy"); onClicked: PolkitService.cancel() }
+                FBtn { width: (parent.width - 8) / 2; height: 44; kind: "pri"; text: win.busy ? Fz.tr("Đang xác thực…") : Fz.tr("Xác thực"); onClicked: win.submit() }
             }
         }
     }

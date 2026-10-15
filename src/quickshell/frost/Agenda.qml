@@ -26,7 +26,7 @@ Item {
         t.setHours(Number(p[0]), Number(p[1]), 0, 0);
         let m = Math.round((t - DateTime.now) / 60000);
         if (m <= 0 || m > 180) return "";
-        return m < 60 ? "Còn " + m + " phút" : "Còn " + Math.floor(m / 60) + " giờ " + (m % 60) + " phút";
+        return m < 60 ? Fz.tr("Còn ") + m + Fz.tr(" phút") : Fz.tr("Còn ") + Math.floor(m / 60) + Fz.tr(" giờ ") + (m % 60) + Fz.tr(" phút");
     }
 
     function add(dateKey, time, title, note) {

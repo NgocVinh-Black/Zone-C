@@ -11,7 +11,7 @@ Column {
     property var app
     width: parent ? parent.width : 0
 
-    readonly property var accents: [["#D6E6EC", "Băng giá"], ["#BFE3F5", "Bầu trời"], ["#CFE4D8", "Bạc hà"], ["#E3DCCF", "Cát"], ["#DCD3EE", "Oải hương"], ["#F0D3DA", "Hồng phấn"]]
+    readonly property var accents: [["#D6E6EC", Fz.tr("Băng giá")], ["#BFE3F5", Fz.tr("Bầu trời")], ["#CFE4D8", Fz.tr("Bạc hà")], ["#E3DCCF", Fz.tr("Cát")], ["#DCD3EE", Fz.tr("Oải hương")], ["#F0D3DA", Fz.tr("Hồng phấn")]]
     readonly property string accent: Config.getSetting("theme.accent", "") || "#D6E6EC"
     readonly property string activePreset: Config.getSetting("theme.activePreset", "Zone Frost")
     readonly property bool matugen: Config.getSetting("theme.matugen", false) === true
@@ -57,7 +57,7 @@ Column {
         }
     }
     function saveCurrent(name) {
-        let n = name.replace(/[^a-zA-Z0-9_\- ]/g, "").trim() || "Chủ đề của tôi";
+        let n = name.replace(/[^a-zA-Z0-9_\- ]/g, "").trim() || Fz.tr("Chủ đề của tôi");
         let obj = { name: n, isCustom: true, category: "user", colors: Config.getSetting("theme.colors", {}) };
         Quickshell.execDetached(["bash", "-c", "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$1/$3.json\"", "_", Caching.stateDir + "/themes", JSON.stringify(obj, null, 2), n]);
         presets = presets.concat([obj]);
@@ -66,11 +66,11 @@ Column {
     Grp {
         width: parent.width
         SRow {
-            title: "Chế độ"; sub: "Zone Frost có bảng màu tối và sáng"
-            FSeg { options: ["Tối", "Sáng"]; current: ZoneStyle.isLight ? 1 : 0; onPicked: (i) => ZoneStyle.setMode(i === 1 ? "light" : "dark") }
+            title: Fz.tr("Chế độ"); sub: Fz.tr("Zone Frost có bảng màu tối và sáng")
+            FSeg { options: [Fz.tr("Tối"), Fz.tr("Sáng")]; current: ZoneStyle.isLight ? 1 : 0; onPicked: (i) => ZoneStyle.setMode(i === 1 ? "light" : "dark") }
         }
         SRow {
-            title: "Màu nhấn"; sub: (page.accents.find(a => a[0].toLowerCase() === page.accent.toLowerCase()) || ["", "Tùy chỉnh"])[1]
+            title: Fz.tr("Màu nhấn"); sub: (page.accents.find(a => a[0].toLowerCase() === page.accent.toLowerCase()) || ["", Fz.tr("Tùy chỉnh")])[1]
             Row {
                 spacing: 10
                 Repeater {
@@ -90,12 +90,12 @@ Column {
             }
         }
         SRow {
-            title: "Lấy màu từ hình nền"; sub: "Matugen · tạo bảng màu tự động"
+            title: Fz.tr("Lấy màu từ hình nền"); sub: Fz.tr("Matugen · tạo bảng màu tự động")
             FToggle { on: page.matugen; onToggled: (v) => page.setMatugen(v) }
         }
     }
 
-    H3 { text: "Chủ đề màu sắc" }
+    H3 { text: Fz.tr("Chủ đề màu sắc") }
     Grid {
         width: parent.width
         columns: 4; spacing: 10
@@ -127,21 +127,21 @@ Column {
     Item { width: 1; height: 10 }
     Row {
         spacing: 8
-        FBtn { visible: !page.naming; icon: "s-plus"; iconSize: 14; text: "Tạo chủ đề mới"; onClicked: { page.naming = true; nameField.text = ""; nameField.input.forceActiveFocus(); } }
-        FInput { id: nameField; visible: page.naming; width: 240; height: 36; placeholder: "Tên chủ đề (lưu màu hiện tại)"; onAccepted: { page.saveCurrent(text); page.naming = false; } }
-        FBtn { visible: page.naming; kind: "pri"; text: "Lưu"; onClicked: { page.saveCurrent(nameField.text); page.naming = false; } }
+        FBtn { visible: !page.naming; icon: "s-plus"; iconSize: 14; text: Fz.tr("Tạo chủ đề mới"); onClicked: { page.naming = true; nameField.text = ""; nameField.input.forceActiveFocus(); } }
+        FInput { id: nameField; visible: page.naming; width: 240; height: 36; placeholder: Fz.tr("Tên chủ đề (lưu màu hiện tại)"); onAccepted: { page.saveCurrent(text); page.naming = false; } }
+        FBtn { visible: page.naming; kind: "pri"; text: Fz.tr("Lưu"); onClicked: { page.saveCurrent(nameField.text); page.naming = false; } }
         FText {
             anchors.verticalCenter: parent.verticalCenter
-            text: page.showAll ? "Thu gọn" : page.presets.length + " chủ đề có sẵn"; px: 13.5; color: tm.containsMouse ? Fz.tx : Fz.sub
+            text: page.showAll ? Fz.tr("Thu gọn") : page.presets.length + Fz.tr(" chủ đề có sẵn"); px: 13.5; color: tm.containsMouse ? Fz.tx : Fz.sub
             MouseArea { id: tm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: page.showAll = !page.showAll }
         }
     }
 
-    H3 { text: "Kiểu chữ & hình dạng" }
+    H3 { text: Fz.tr("Kiểu chữ & hình dạng") }
     Grp {
         width: parent.width
         SRow {
-            title: "Phông chữ"; sub: "Phông mặc định cho zone-c"
+            title: Fz.tr("Phông chữ"); sub: Fz.tr("Phông mặc định cho zone-c")
             CfgSelect {
                 key: "theme.frostFont"; def: "Geist"
                 readonly property var installed: ["Geist", "Google Sans", "Inter Display", "Inter", "Noto Sans", "Roboto", "Cantarell"].filter(f => f === "Geist" || Qt.fontFamilies().indexOf(f) !== -1)
@@ -149,21 +149,21 @@ Column {
             }
         }
         SRow {
-            title: "Bán kính viền"; sub: "Góc bo của thành phần giao diện"
+            title: Fz.tr("Bán kính viền"); sub: Fz.tr("Góc bo của thành phần giao diện")
             CfgRange { key: "theme.borderRadius"; from: 0; to: 24; def: 14; unit: "px"; sliderWidth: 200 }
         }
         SRow {
-            title: "Hiệu ứng viền focus"; sub: "Viền sáng quanh cửa sổ đang dùng"
+            title: Fz.tr("Hiệu ứng viền focus"); sub: Fz.tr("Viền sáng quanh cửa sổ đang dùng")
             FSeg {
-                options: ["Tĩnh", "Tia điện", "Tắt"]
+                options: [Fz.tr("Tĩnh"), Fz.tr("Tia điện"), Fz.tr("Tắt")]
                 current: ZoneStyle.borderOff ? 2 : ZoneStyle.plainBorder ? 0 : 1
                 onPicked: (i) => Config.setSetting("theme.focusBorder", ["still", "bolt", "off"][i])
             }
         }
         SRow {
-            title: "Thư mục hình nền"; subMono: true
+            title: Fz.tr("Thư mục hình nền"); subMono: true
             sub: { let d = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || "~/Pictures/Wallpapers"; let h = Quickshell.env("HOME"); return d.indexOf(h) === 0 ? "~" + d.slice(h.length) : d; }
-            FBtn { text: "Chọn hình nền"; onClicked: Fz.open("wallpaper") }
+            FBtn { text: Fz.tr("Chọn hình nền"); onClicked: Fz.open("wallpaper") }
         }
     }
 }

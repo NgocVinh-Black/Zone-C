@@ -55,7 +55,7 @@ Column {
         rnOn = on;
     }
 
-    H3 { first: true; text: "Đầu ra" }
+    H3 { first: true; text: Fz.tr("Đầu ra") }
     Grp {
         width: parent.width
         Repeater {
@@ -77,39 +77,39 @@ Column {
     Grp {
         width: parent.width
         SRow {
-            title: "Âm lượng"
+            title: Fz.tr("Âm lượng")
             FSlider { id: volS; width: 220; from: 0; to: 150; value: page.vol; anchors.verticalCenter: parent.verticalCenter; onMoved: (v) => Audio.setVolume(page.sink, v) }
             FText { width: 44; horizontalAlignment: Text.AlignRight; text: Math.round(page.vol) + "%"; mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
         }
         SRow {
-            title: "Cân bằng trái / phải"
+            title: Fz.tr("Cân bằng trái / phải")
             FText { text: "T"; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
             FSlider { width: 220; from: 0; to: 100; value: page.balance; anchors.verticalCenter: parent.verticalCenter; onMoved: (v) => page.setBalance(v) }
             FText { text: "P"; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
         }
     }
 
-    H3 { text: "Đầu vào" }
+    H3 { text: Fz.tr("Đầu vào") }
     Grp {
         width: parent.width
         SRow {
-            icon: "s-mic"; title: page.source ? Fz.audioName(page.source) : "Không có micro"
+            icon: "s-mic"; title: page.source ? Fz.audioName(page.source) : Fz.tr("Không có micro")
             FSlider { width: 220; from: 0; to: 100; value: page.source && page.source.audio ? page.source.audio.volume * 100 : 0; anchors.verticalCenter: parent.verticalCenter
                       onMoved: (v) => Audio.setVolume(page.source, v) }
             FText { width: 44; horizontalAlignment: Text.AlignRight; text: Math.round(page.source && page.source.audio ? page.source.audio.volume * 100 : 0) + "%"; mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
         }
         SRow {
-            title: "Khử tiếng ồn"; sub: page.rnAvailable ? "RNNoise qua PipeWire" : "Cần gói noise-suppression-for-voice"
+            title: Fz.tr("Khử tiếng ồn"); sub: page.rnAvailable ? Fz.tr("RNNoise qua PipeWire") : Fz.tr("Cần gói noise-suppression-for-voice")
             FToggle { enabled: page.rnAvailable; opacity: enabled ? 1 : 0.5; on: page.rnOn; onToggled: (v) => page.setRn(v) }
         }
     }
 
-    H3 { text: "Hiệu ứng âm thanh Zone-C" }
+    H3 { text: Fz.tr("Hiệu ứng âm thanh Zone-C") }
     Grp {
         width: parent.width
-        SRow { title: "Tắt hiệu ứng âm thanh"; sub: "Click, toggle, mở popup…"; CfgToggle { key: "general.muteSfx" } }
-        SRow { title: "Âm lượng hiệu ứng"; sub: "Không ảnh hưởng âm thanh hệ thống"; CfgRange { key: "general.sfxVolume"; from: 0; to: 100; def: 100; unit: "%" } }
+        SRow { title: Fz.tr("Tắt hiệu ứng âm thanh"); sub: Fz.tr("Click, toggle, mở popup…"); CfgToggle { key: "general.muteSfx" } }
+        SRow { title: Fz.tr("Âm lượng hiệu ứng"); sub: Fz.tr("Không ảnh hưởng âm thanh hệ thống"); CfgRange { key: "general.sfxVolume"; from: 0; to: 100; def: 100; unit: "%" } }
     }
     Item { width: 1; height: 12 }
-    FBtn { text: "Mở Equalizer"; onClicked: Fz.open("music") }
+    FBtn { text: Fz.tr("Mở Equalizer"); onClicked: Fz.open("music") }
 }

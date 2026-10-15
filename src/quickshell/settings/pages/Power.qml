@@ -17,7 +17,7 @@ Column {
     readonly property bool hasBat: dev.ready && dev.isLaptopBattery
     readonly property int pct: hasBat ? Math.round(dev.percentage * 100) : 0
     readonly property bool charging: dev.state === UPowerDeviceState.Charging || dev.state === UPowerDeviceState.FullyCharged || dev.state === UPowerDeviceState.PendingCharge
-    function hm(s) { let h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60); return h > 0 ? h + " giờ " + m + " phút" : m + " phút"; }
+    function hm(s) { let h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60); return h > 0 ? h + Fz.tr(" giờ ") + m + Fz.tr(" phút") : m + Fz.tr(" phút"); }
     property var sys: ({})            // cycles, limit, lid, key, bat
     property var hist: []             // 24 × { v, c }
 
@@ -63,14 +63,14 @@ Column {
                 FText { text: page.hasBat ? page.pct + "%" : "AC"; px: 44; weight: Font.Light; anchors.bottom: parent.bottom }
                 FText {
                     width: parent.width - 120 - 160 - 32; anchors.bottom: parent.bottom; anchors.bottomMargin: 6
-                    text: !page.hasBat ? "Máy dùng nguồn điện trực tiếp" : page.dev.state === UPowerDeviceState.FullyCharged ? "Đã sạc đầy" : page.dev.state === UPowerDeviceState.PendingCharge ? "Đã cắm sạc · tạm ngừng sạc" : page.charging ? (page.dev.timeToFull > 0 ? "Đang sạc · đầy sau khoảng " + page.hm(page.dev.timeToFull) : "Đang sạc")
-                          : "Đang dùng pin" + (page.dev.timeToEmpty > 0 ? " · còn khoảng " + page.hm(page.dev.timeToEmpty) : "")
+                    text: !page.hasBat ? Fz.tr("Máy dùng nguồn điện trực tiếp") : page.dev.state === UPowerDeviceState.FullyCharged ? Fz.tr("Đã sạc đầy") : page.dev.state === UPowerDeviceState.PendingCharge ? Fz.tr("Đã cắm sạc · tạm ngừng sạc") : page.charging ? (page.dev.timeToFull > 0 ? Fz.tr("Đang sạc · đầy sau khoảng ") + page.hm(page.dev.timeToFull) : Fz.tr("Đang sạc"))
+                          : Fz.tr("Đang dùng pin") + (page.dev.timeToEmpty > 0 ? Fz.tr(" · còn khoảng ") + page.hm(page.dev.timeToEmpty) : "")
                     px: 13.5; color: Fz.sub; wrapMode: Text.Wrap
                 }
                 Column {
                     width: 160; anchors.bottom: parent.bottom
-                    FText { anchors.right: parent.right; textFormat: Text.StyledText; text: "Tình trạng pin <b><font color=\"" + Fz.tx + "\">" + (page.dev.healthSupported ? Math.round(page.dev.healthPercentage) + "%" : "–") + "</font></b>"; px: 12.5; color: Fz.sub }
-                    FText { anchors.right: parent.right; text: page.sys.cycles ? page.sys.cycles + " chu kỳ" : ""; px: 12.5; color: Fz.sub }
+                    FText { anchors.right: parent.right; textFormat: Text.StyledText; text: Fz.tr("Tình trạng pin <b><font color=\"") + Fz.tx + "\">" + (page.dev.healthSupported ? Math.round(page.dev.healthPercentage) + "%" : "–") + "</font></b>"; px: 12.5; color: Fz.sub }
+                    FText { anchors.right: parent.right; text: page.sys.cycles ? page.sys.cycles + Fz.tr(" chu kỳ") : ""; px: 12.5; color: Fz.sub }
                 }
             }
             Row {
@@ -93,44 +93,44 @@ Column {
         }
     }
 
-    H3 { text: "Chế độ nguồn" }
+    H3 { text: Fz.tr("Chế độ nguồn") }
     Grp {
         width: parent.width
         SRow {
-            title: "Cấu hình hiệu năng"; sub: "power-profiles-daemon"
+            title: Fz.tr("Cấu hình hiệu năng"); sub: "power-profiles-daemon"
             FSeg {
                 readonly property var values: [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance]
-                options: PowerProfiles.hasPerformanceProfile ? ["Tiết kiệm", "Cân bằng", "Hiệu năng"] : ["Tiết kiệm", "Cân bằng"]
+                options: PowerProfiles.hasPerformanceProfile ? [Fz.tr("Tiết kiệm"), Fz.tr("Cân bằng"), Fz.tr("Hiệu năng")] : [Fz.tr("Tiết kiệm"), Fz.tr("Cân bằng")]
                 current: Math.max(0, values.indexOf(PowerProfiles.profile))
                 onPicked: (i) => PowerProfiles.profile = values[i]
             }
         }
     }
 
-    H3 { text: "Tiết kiệm năng lượng" }
+    H3 { text: Fz.tr("Tiết kiệm năng lượng") }
     Grp {
         width: parent.width
         SRow {
-            title: "Khi gập máy"
+            title: Fz.tr("Khi gập máy")
             FSelect {
-                options: ["Ngủ", "Ngủ đông", "Không làm gì"]
+                options: [Fz.tr("Ngủ"), Fz.tr("Ngủ đông"), Fz.tr("Không làm gì")]
                 readonly property var values: ["suspend", "hibernate", "ignore"]
                 current: Math.max(0, values.indexOf(page.sys.lid || "suspend"))
                 onPicked: (i) => page.logind("HandleLidSwitch", values[i])
             }
         }
         SRow {
-            title: "Nút nguồn"
+            title: Fz.tr("Nút nguồn")
             FSelect {
-                options: ["Hiện menu nguồn", "Ngủ", "Tắt máy"]
+                options: [Fz.tr("Hiện menu nguồn"), Fz.tr("Ngủ"), Fz.tr("Tắt máy")]
                 readonly property var values: ["ignore", "suspend", "poweroff"]
                 current: Math.max(0, values.indexOf(page.sys.key || "poweroff"))
                 onPicked: (i) => page.logind("HandlePowerKey", values[i])
             }
         }
-        SRow { title: "Tự tiết kiệm pin dưới 20%"; CfgToggle { key: "power.autoSaver"; def: true } }
+        SRow { title: Fz.tr("Tự tiết kiệm pin dưới 20%"); CfgToggle { key: "power.autoSaver"; def: true } }
         SRow {
-            title: "Giới hạn sạc 80%"; sub: page.sys.limit ? "Kéo dài tuổi thọ pin · hiện " + page.sys.limit + "%" : "Máy không hỗ trợ giới hạn sạc"
+            title: Fz.tr("Giới hạn sạc 80%"); sub: page.sys.limit ? Fz.tr("Kéo dài tuổi thọ pin · hiện ") + page.sys.limit + "%" : Fz.tr("Máy không hỗ trợ giới hạn sạc")
             FToggle {
                 enabled: !!page.sys.limit; opacity: enabled ? 1 : 0.5
                 on: page.sys.limit !== undefined && Number(page.sys.limit) <= 80
@@ -141,8 +141,8 @@ Column {
     Item { width: 1; height: 10 }
     Row {
         spacing: 4
-        FText { text: "Thời gian chờ màn hình và ngủ được đặt trong"; px: 13.5; color: Fz.sub }
-        FText { text: "Chờ & khóa"; px: 13.5; color: Fz.glow; font.underline: true
+        FText { text: Fz.tr("Thời gian chờ màn hình và ngủ được đặt trong"); px: 13.5; color: Fz.sub }
+        FText { text: Fz.tr("Chờ & khóa"); px: 13.5; color: Fz.glow; font.underline: true
                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.app.page = "idle" } }
         FText { text: "."; px: 13.5; color: Fz.sub }
     }

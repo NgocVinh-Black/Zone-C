@@ -172,11 +172,11 @@ Item {
                         width: parent.width - 84 - 16 - 36 - 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 4
-                        Caps { px: 11; text: mcard.has ? (MprisController.isPlaying ? "Đang phát" : "Tạm dừng") + (mcard.player.identity ? " · " + mcard.player.identity : "") : "Trình phát nhạc" }
-                        FText { width: parent.width; elide: Text.ElideRight; text: mcard.has ? MprisController.trackTitle : "Không có gì đang phát"; px: 17; weight: Font.DemiBold }
-                        FText { width: parent.width; elide: Text.ElideRight; text: mcard.has ? MprisController.trackArtist : "Mở một ứng dụng nghe nhạc"; px: 13; color: Fz.sub }
+                        Caps { px: 11; text: mcard.has ? (MprisController.isPlaying ? Fz.tr("Đang phát") : Fz.tr("Tạm dừng")) + (mcard.player.identity ? " · " + mcard.player.identity : "") : Fz.tr("Trình phát nhạc") }
+                        FText { width: parent.width; elide: Text.ElideRight; text: mcard.has ? MprisController.trackTitle : Fz.tr("Không có gì đang phát"); px: 17; weight: Font.DemiBold }
+                        FText { width: parent.width; elide: Text.ElideRight; text: mcard.has ? MprisController.trackArtist : Fz.tr("Mở một ứng dụng nghe nhạc"); px: 13; color: Fz.sub }
                     }
-                    FIconBtn { ghost: true; icon: "v-heart"; label: "Yêu thích"; anchors.verticalCenter: parent.verticalCenter }
+                    FIconBtn { ghost: true; icon: "v-heart"; label: Fz.tr("Yêu thích"); anchors.verticalCenter: parent.verticalCenter }
                 }
                 Row {
                     width: parent.width; height: 28; spacing: 3
@@ -203,11 +203,11 @@ Item {
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
                     spacing: 10
-                    FIconBtn { ghost: !(mcard.player && mcard.player.shuffle); on: mcard.player ? mcard.player.shuffle === true : false; icon: "v-shuffle"; label: "Trộn bài"; onClicked: if (mcard.player) mcard.player.shuffle = !mcard.player.shuffle }
-                    FIconBtn { icon: "v-prev"; label: "Bài trước"; onClicked: if (mcard.player) mcard.player.previous() }
-                    FIconBtn { width: 56; height: 42; on: true; icon: MprisController.isPlaying ? "v-pause" : "v-play"; label: MprisController.isPlaying ? "Tạm dừng" : "Phát"; onClicked: if (mcard.player) mcard.player.togglePlaying() }
-                    FIconBtn { icon: "v-next"; label: "Bài tiếp"; onClicked: if (mcard.player) mcard.player.next() }
-                    FIconBtn { ghost: true; icon: "v-repeat"; label: "Lặp lại"; onClicked: if (mcard.player) mcard.player.loopState = mcard.player.loopState === MprisLoopState.None ? MprisLoopState.Playlist : MprisLoopState.None }
+                    FIconBtn { ghost: !(mcard.player && mcard.player.shuffle); on: mcard.player ? mcard.player.shuffle === true : false; icon: "v-shuffle"; label: Fz.tr("Trộn bài"); onClicked: if (mcard.player) mcard.player.shuffle = !mcard.player.shuffle }
+                    FIconBtn { icon: "v-prev"; label: Fz.tr("Bài trước"); onClicked: if (mcard.player) mcard.player.previous() }
+                    FIconBtn { width: 56; height: 42; on: true; icon: MprisController.isPlaying ? "v-pause" : "v-play"; label: MprisController.isPlaying ? Fz.tr("Tạm dừng") : Fz.tr("Phát"); onClicked: if (mcard.player) mcard.player.togglePlaying() }
+                    FIconBtn { icon: "v-next"; label: Fz.tr("Bài tiếp"); onClicked: if (mcard.player) mcard.player.next() }
+                    FIconBtn { ghost: true; icon: "v-repeat"; label: Fz.tr("Lặp lại"); onClicked: if (mcard.player) mcard.player.loopState = mcard.player.loopState === MprisLoopState.None ? MprisLoopState.Playlist : MprisLoopState.None }
                 }
             }
         }

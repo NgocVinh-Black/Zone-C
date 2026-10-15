@@ -127,7 +127,7 @@ Item {
     }
 
     function weatherDesc(glyph) {
-        return ({ sun: "Nắng", moon: "Trời quang", rain: "Có mưa", "w-fog": "Sương mù", "w-storm": "Giông bão", "w-snow": "Có tuyết" })[weatherIcon(glyph)] || "Nhiều mây";
+        return ({ sun: tr("Nắng"), moon: tr("Trời quang"), rain: tr("Có mưa"), "w-fog": tr("Sương mù"), "w-storm": tr("Giông bão"), "w-snow": tr("Có tuyết") })[weatherIcon(glyph)] || tr("Nhiều mây");
     }
     function deg(v) { return (v === undefined || v === null || v === "") ? "--°" : Math.round(Number(v)) + "°"; }
 
@@ -147,14 +147,14 @@ Item {
         if ((n.name || "").indexOf("easyeffects") === 0) return "Easy Effects";
         if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return d;
         if (/hdmi|displayport/i.test(prof || d)) return (prof || d).replace(/ Output.*$/, "").replace(/^.*(HDMI)/i, "$1");
-        if (/speaker/i.test(prof || d)) return "Loa tích hợp";
+        if (/speaker/i.test(prof || d)) return tr("Loa tích hợp");
         if (/headphone/i.test(prof || d)) return "Tai nghe 3.5 mm";
-        if (/mic/i.test(prof || d)) return "Micro tích hợp";
+        if (/mic/i.test(prof || d)) return tr("Micro tích hợp");
         return d;
     }
     function audioSub(n) {
         let p = ((n && n.properties) || {}), d = (n.description || "") + " " + (p["device.profile.description"] || "");
-        if ((n.name || "").indexOf("easyeffects") === 0) return "Bộ xử lý âm thanh";
+        if ((n.name || "").indexOf("easyeffects") === 0) return tr("Bộ xử lý âm thanh");
         if (p["device.api"] === "bluez5" || (n.name || "").indexOf("bluez") !== -1) return "Bluetooth" + (p["api.bluez5.codec"] ? " · " + String(p["api.bluez5.codec"]).toUpperCase() : "");
         if (/hdmi|displayport/i.test(d)) return "HDMI";
         return "Analog stereo";
@@ -163,13 +163,13 @@ Item {
     // "Thứ Tư 14/10" (bar) and "Thứ Tư, 14 tháng 10" (desktop, lock screen)
     // English: "Wed 14 Oct" / "Wednesday, October 14"
     readonly property var weekdays: en ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-                                       : ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
+                                       : [tr("Chủ Nhật"), tr("Thứ Hai"), tr("Thứ Ba"), tr("Thứ Tư"), tr("Thứ Năm"), tr("Thứ Sáu"), tr("Thứ Bảy")]
     readonly property var months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     function dayShort(d) { return en ? weekdays[d.getDay()].slice(0, 3) : (d.getDay() === 0 ? "CN" : "T" + (d.getDay() + 1)); }
     function dateShort(d) { return en ? weekdays[d.getDay()].slice(0, 3) + " " + d.getDate() + " " + months[d.getMonth()].slice(0, 3) : weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }
-    function dateLong(d) { return en ? weekdays[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate() : weekdays[d.getDay()] + ", " + d.getDate() + " tháng " + (d.getMonth() + 1); }
-    function dayMonth(d) { return en ? months[d.getMonth()] + " " + d.getDate() : d.getDate() + " tháng " + (d.getMonth() + 1); }
-    function monthYear(d) { return en ? months[d.getMonth()] + " " + d.getFullYear() : "Tháng " + (d.getMonth() + 1) + ", " + d.getFullYear(); }
+    function dateLong(d) { return en ? weekdays[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate() : weekdays[d.getDay()] + ", " + d.getDate() + tr(" tháng ") + (d.getMonth() + 1); }
+    function dayMonth(d) { return en ? months[d.getMonth()] + " " + d.getDate() : d.getDate() + tr(" tháng ") + (d.getMonth() + 1); }
+    function monthYear(d) { return en ? months[d.getMonth()] + " " + d.getFullYear() : tr("Tháng ") + (d.getMonth() + 1) + ", " + d.getFullYear(); }
 
     // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
     // listen for this; everything else opens through the popup host like the bar always has.

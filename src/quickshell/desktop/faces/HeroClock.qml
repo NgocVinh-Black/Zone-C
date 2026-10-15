@@ -11,7 +11,7 @@ Item {
 
     readonly property string greetingWord: {
         let h = DateTime.now.getHours();
-        return h < 11 ? "Chào buổi sáng" : h < 14 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+        return h < 11 ? Fz.tr("Chào buổi sáng") : h < 14 ? Fz.tr("Chào buổi trưa") : h < 18 ? Fz.tr("Chào buổi chiều") : Fz.tr("Chào buổi tối");
     }
     readonly property string userName: Fz.displayName
     readonly property int eventCount: Agenda.today.length
@@ -47,7 +47,7 @@ Item {
         }
         FText {
             text: root.greetingWord + (root.userName ? ", " + root.userName : "")
-                  + (root.eventCount > 0 ? " — hôm nay có " + root.eventCount + " sự kiện" : " — hôm nay không có sự kiện")
+                  + (root.eventCount > 0 ? Fz.tr(" — hôm nay có ") + root.eventCount + Fz.tr(" sự kiện") : Fz.tr(" — hôm nay không có sự kiện"))
             color: Fz.light ? Fz.sub2 : Fz.hi
             px: 18
         }

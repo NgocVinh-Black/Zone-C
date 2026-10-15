@@ -45,15 +45,15 @@ Item {
     function closePanel() { Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "close"]); }
 
     readonly property var tiles: [
-        { k: "night", l: "Đèn ngủ", i: "q-moon", on: nightOn, f: () => BlueLight.setEnabled("", !nightOn) },
+        { k: "night", l: Fz.tr("Đèn ngủ"), i: "q-moon", on: nightOn, f: () => BlueLight.setEnabled("", !nightOn) },
         { k: "caffeine", l: "Caffeine", i: "q-coffee", on: caffeine, f: () => setCfg("idle", "manualInhibit", !caffeine) },
         { k: "wifi", l: "Wi-Fi", i: "q-wifi", on: Networking.wifiEnabled, f: () => Networking.wifiEnabled = !Networking.wifiEnabled },
         { k: "bt", l: "Bluetooth", i: "q-bt", on: bt ? bt.enabled : false, f: () => { if (bt) bt.enabled = !bt.enabled; } },
-        { k: "plane", l: "Máy bay", i: "q-plane", on: airplane, f: () => { let on = !airplane; Networking.wifiEnabled = !on; if (bt) bt.enabled = !on; } },
-        { k: "dnd", l: "Im lặng", i: "q-dnd", on: dnd, f: () => setCfg("notifications", "dnd", !dnd) },
-        { k: "rec", l: "Quay MH", i: "q-rec", on: Rec.active, f: () => { closePanel(); Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh", "--record"]); } },
-        { k: "mic", l: "Micro", i: "q-mic", on: micOn, f: () => { if (Audio.defaultSource) Audio.toggleMute(Audio.defaultSource); } },
-        { k: "shot", l: "Chụp MH", i: "q-shot", on: false, f: () => { closePanel(); Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh"]); } },
+        { k: "plane", l: Fz.tr("Máy bay"), i: "q-plane", on: airplane, f: () => { let on = !airplane; Networking.wifiEnabled = !on; if (bt) bt.enabled = !on; } },
+        { k: "dnd", l: Fz.tr("Im lặng"), i: "q-dnd", on: dnd, f: () => setCfg("notifications", "dnd", !dnd) },
+        { k: "rec", l: Fz.tr("Quay MH"), i: "q-rec", on: Rec.active, f: () => { closePanel(); Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh", "--record"]); } },
+        { k: "mic", l: Fz.tr("Micro"), i: "q-mic", on: micOn, f: () => { if (Audio.defaultSource) Audio.toggleMute(Audio.defaultSource); } },
+        { k: "shot", l: Fz.tr("Chụp MH"), i: "q-shot", on: false, f: () => { closePanel(); Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/screenshot.sh"]); } },
         { k: "qa", l: "Quick act.", i: "q-eye", on: quickActions, f: () => setCfg("general", "quickactions", !quickActions) }
     ]
 
@@ -62,10 +62,10 @@ Item {
     property bool muted: dnd
     function ago(ts) {
         let m = Math.floor((Date.now() - ts) / 60000);
-        if (m < 1) return "vừa xong";
-        if (m < 60) return m + " phút";
+        if (m < 1) return Fz.tr("vừa xong");
+        if (m < 60) return m + Fz.tr(" phút");
         let h = Math.floor(m / 60);
-        return h < 24 ? h + " giờ" : Math.floor(h / 24) + " ngày";
+        return h < 24 ? h + Fz.tr(" giờ") : Math.floor(h / 24) + Fz.tr(" ngày");
     }
     function appIcon(app) {
         let a = (app || "").toLowerCase();
@@ -85,13 +85,13 @@ Item {
     FileView { id: uptimeFile; path: "/proc/uptime"; onLoaded: root.uptimeSec = Math.floor(Number(text().split(" ")[0])) }
     Timer { interval: 60000; repeat: true; running: !root.hasBattery && root.visible; triggeredOnStart: true; onTriggered: uptimeFile.reload() }
     readonly property string batLeft: {
-        if (!hasBattery) { let u = root.uptimeSec, h = Math.floor(u / 3600), m = Math.floor(u % 3600 / 60); return "Không có pin · bật " + (h > 0 ? h + " giờ " : "") + m + " phút"; }
-        if (dev.state === UPowerDeviceState.FullyCharged) return "Đã sạc đầy";
+        if (!hasBattery) { let u = root.uptimeSec, h = Math.floor(u / 3600), m = Math.floor(u % 3600 / 60); return Fz.tr("Không có pin · bật ") + (h > 0 ? h + Fz.tr(" giờ ") : "") + m + Fz.tr(" phút"); }
+        if (dev.state === UPowerDeviceState.FullyCharged) return Fz.tr("Đã sạc đầy");
         let charging = dev.state === UPowerDeviceState.Charging;
         let s = charging ? dev.timeToFull : dev.timeToEmpty;
-        if (s <= 0) return charging ? "Đang sạc" : "Đang dùng pin";
+        if (s <= 0) return charging ? Fz.tr("Đang sạc") : Fz.tr("Đang dùng pin");
         let h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
-        return (charging ? "đầy sau " : "còn ") + (h > 0 ? h + " giờ " : "") + m + " phút";
+        return (charging ? Fz.tr("đầy sau ") : Fz.tr("còn ")) + (h > 0 ? h + Fz.tr(" giờ ") : "") + m + Fz.tr(" phút");
     }
 
     Glass {
@@ -127,7 +127,7 @@ Item {
                     FSeg {
                         id: modeSeg
                         anchors.verticalCenter: parent.verticalCenter
-                        options: [{ label: "Tối", icon: "q-moon" }, { label: "Sáng", icon: "q-sun" }]
+                        options: [{ label: Fz.tr("Tối"), icon: "q-moon" }, { label: Fz.tr("Sáng"), icon: "q-sun" }]
                         current: Fz.light ? 1 : 0
                         onPicked: (i) => ZoneStyle.setMode(i === 1 ? "light" : "dark")
                     }
@@ -143,11 +143,11 @@ Item {
                     width: parent.width - 22
                     spacing: 8
                     BigSlider {
-                        width: parent.width; icon: "q-vol"; value: root.vol; label: "Âm lượng"
+                        width: parent.width; icon: "q-vol"; value: root.vol; label: Fz.tr("Âm lượng")
                         onMoved: (v) => { if (Audio.defaultSink) { if (Audio.defaultSink.audio.muted) Audio.toggleMute(Audio.defaultSink); Audio.setVolume(Audio.defaultSink, v / 100); } }
                     }
                     BigSlider {
-                        width: parent.width; icon: "q-sun"; value: root.bri; label: "Độ sáng"
+                        width: parent.width; icon: "q-sun"; value: root.bri; label: Fz.tr("Độ sáng")
                         onMoved: (v) => { root.bri = v; briWrite.v = v; briWrite.restart(); }
                     }
                 }
@@ -193,15 +193,15 @@ Item {
                     width: parent.width - 28; height: 34
                     Row {
                         anchors.verticalCenter: parent.verticalCenter
-                        FText { text: "Thông báo"; px: 14; weight: Font.DemiBold }
+                        FText { text: Fz.tr("Thông báo"); px: 14; weight: Font.DemiBold }
                         FText { text: " · " + (root.history ? root.history.count : 0); color: Fz.sub; px: 14 }
                     }
                     Row {
                         anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                         spacing: 8
-                        FBtn { height: 30; padX: 10; fontSize: 12; text: "Xóa hết"; onClicked: NotificationManager.clearNotifications() }
+                        FBtn { height: 30; padX: 10; fontSize: 12; text: Fz.tr("Xóa hết"); onClicked: NotificationManager.clearNotifications() }
                         FBtn { height: 30; padX: 10; fontSize: 12; iconSize: 13; icon: "q-bell"; kind: root.dnd ? "pri" : ""
-                            text: root.dnd ? "Đã tắt tiếng" : "Tắt tiếng"; onClicked: root.setCfg("notifications", "dnd", !root.dnd) }
+                            text: root.dnd ? Fz.tr("Đã tắt tiếng") : Fz.tr("Tắt tiếng"); onClicked: root.setCfg("notifications", "dnd", !root.dnd) }
                     }
                 }
 
@@ -267,7 +267,7 @@ Item {
                                     }
                                 }
                             }
-                            FIconBtn { width: 26; height: 26; ghost: true; icon: "q-x"; iconSize: 13; label: "Bỏ qua"; onClicked: NotificationManager.dismissNotification(nt.model.uid) }
+                            FIconBtn { width: 26; height: 26; ghost: true; icon: "q-x"; iconSize: 13; label: Fz.tr("Bỏ qua"); onClicked: NotificationManager.dismissNotification(nt.model.uid) }
                         }
                     }
                 }
@@ -281,9 +281,9 @@ Item {
                         width: 64; height: 64; radius: 32; color: Fz.accA(0.1)
                         FIcon { anchors.centerIn: parent; name: "q-check"; size: 28; color: Fz.acc }
                     }
-                    FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Bạn đã xem hết thông báo"; px: 16; weight: Font.DemiBold }
+                    FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Bạn đã xem hết thông báo"); px: 16; weight: Font.DemiBold }
                     FText { anchors.horizontalCenter: parent.horizontalCenter; width: 300; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.45
-                            text: "Thông báo mới sẽ xuất hiện ở đây. Bật Không làm phiền để tạm ẩn."; color: Fz.sub; px: 13 }
+                            text: Fz.tr("Thông báo mới sẽ xuất hiện ở đây. Bật Không làm phiền để tạm ẩn."); color: Fz.sub; px: 13 }
                 }
             }
 
@@ -293,8 +293,8 @@ Item {
                 spacing: 8
                 Repeater {
                     model: [
-                        { i: "q-lock", l: "Khóa", c: "lock" }, { i: "q-zzz", l: "Ngủ", c: "suspend" }, { i: "q-moon", l: "Ngủ đông", c: "hibernate" },
-                        { i: "q-restart", l: "Khởi động lại", c: "reboot" }, { i: "q-off", l: "Tắt máy", c: "poweroff" }
+                        { i: "q-lock", l: Fz.tr("Khóa"), c: "lock" }, { i: "q-zzz", l: Fz.tr("Ngủ"), c: "suspend" }, { i: "q-moon", l: Fz.tr("Ngủ đông"), c: "hibernate" },
+                        { i: "q-restart", l: Fz.tr("Khởi động lại"), c: "reboot" }, { i: "q-off", l: Fz.tr("Tắt máy"), c: "poweroff" }
                     ]
                     delegate: Rectangle {
                         required property var modelData

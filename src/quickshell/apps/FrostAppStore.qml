@@ -22,42 +22,42 @@ Scope {
 
     // curated catalogue: name, description, letter, tile colour, source, package / Flatpak id, category
     readonly property var catalog: [
-        ["Blender", "Dựng hình 3D", "B", "peach", "pacman", "blender", "gfx"],
-        ["Visual Studio Code", "Trình soạn thảo mã", "C", "#BFE3F5", "AUR", "visual-studio-code-bin", "dev"],
-        ["GIMP", "Chỉnh sửa ảnh", "G", "yellow", "pacman", "gimp", "gfx"],
-        ["Obsidian", "Ghi chú Markdown", "O", "#DCD3EE", "Flatpak", "md.obsidian.Obsidian", "office"],
-        ["Spotify", "Nghe nhạc", "S", "green", "Flatpak", "com.spotify.Client", "media"],
-        ["Steam", "Chơi game", "S", "glow", "pacman", "steam", "game"],
-        ["LibreOffice", "Bộ văn phòng", "L", "#CFE4D8", "pacman", "libreoffice-fresh", "office"],
-        ["Discord", "Trò chuyện", "D", "#C9D2F5", "Flatpak", "com.discordapp.Discord", "chat"],
-        ["btop", "Giám sát tài nguyên", "b", "#F0D3DA", "pacman", "btop", "tool"],
-        ["Inkscape", "Đồ họa vector", "I", "#DCD3EE", "pacman", "inkscape", "gfx"],
-        ["Krita", "Vẽ kỹ thuật số", "K", "#F0D3DA", "pacman", "krita", "gfx"],
-        ["Neovim", "Trình soạn thảo trong terminal", "N", "#CFE4D8", "pacman", "neovim", "dev"],
-        ["Zed", "Trình soạn thảo mã nhanh", "Z", "#BFE3F5", "pacman", "zed", "dev"],
+        ["Blender", Fz.tr("Dựng hình 3D"), "B", "peach", "pacman", "blender", "gfx"],
+        ["Visual Studio Code", Fz.tr("Trình soạn thảo mã"), "C", "#BFE3F5", "AUR", "visual-studio-code-bin", "dev"],
+        ["GIMP", Fz.tr("Chỉnh sửa ảnh"), "G", "yellow", "pacman", "gimp", "gfx"],
+        ["Obsidian", Fz.tr("Ghi chú Markdown"), "O", "#DCD3EE", "Flatpak", "md.obsidian.Obsidian", "office"],
+        ["Spotify", Fz.tr("Nghe nhạc"), "S", "green", "Flatpak", "com.spotify.Client", "media"],
+        ["Steam", Fz.tr("Chơi game"), "S", "glow", "pacman", "steam", "game"],
+        ["LibreOffice", Fz.tr("Bộ văn phòng"), "L", "#CFE4D8", "pacman", "libreoffice-fresh", "office"],
+        ["Discord", Fz.tr("Trò chuyện"), "D", "#C9D2F5", "Flatpak", "com.discordapp.Discord", "chat"],
+        ["btop", Fz.tr("Giám sát tài nguyên"), "b", "#F0D3DA", "pacman", "btop", "tool"],
+        ["Inkscape", Fz.tr("Đồ họa vector"), "I", "#DCD3EE", "pacman", "inkscape", "gfx"],
+        ["Krita", Fz.tr("Vẽ kỹ thuật số"), "K", "#F0D3DA", "pacman", "krita", "gfx"],
+        ["Neovim", Fz.tr("Trình soạn thảo trong terminal"), "N", "#CFE4D8", "pacman", "neovim", "dev"],
+        ["Zed", Fz.tr("Trình soạn thảo mã nhanh"), "Z", "#BFE3F5", "pacman", "zed", "dev"],
         ["Docker", "Container", "D", "#C9D2F5", "pacman", "docker", "dev"],
-        ["mpv", "Trình phát video", "m", "#DCD3EE", "pacman", "mpv", "media"],
-        ["OBS Studio", "Quay & phát trực tiếp", "O", "peach", "pacman", "obs-studio", "media"],
-        ["Kdenlive", "Dựng phim", "K", "#BFE3F5", "pacman", "kdenlive", "media"],
-        ["Lutris", "Quản lý game", "L", "yellow", "pacman", "lutris", "game"],
+        ["mpv", Fz.tr("Trình phát video"), "m", "#DCD3EE", "pacman", "mpv", "media"],
+        ["OBS Studio", Fz.tr("Quay & phát trực tiếp"), "O", "peach", "pacman", "obs-studio", "media"],
+        ["Kdenlive", Fz.tr("Dựng phim"), "K", "#BFE3F5", "pacman", "kdenlive", "media"],
+        ["Lutris", Fz.tr("Quản lý game"), "L", "yellow", "pacman", "lutris", "game"],
         ["Heroic", "Epic & GOG", "H", "#F0D3DA", "Flatpak", "com.heroicgameslauncher.hgl", "game"],
-        ["Telegram", "Nhắn tin", "T", "#BFE3F5", "pacman", "telegram-desktop", "chat"],
-        ["Thunderbird", "Thư điện tử", "T", "#C9D2F5", "pacman", "thunderbird", "chat"],
-        ["Zotero", "Quản lý tài liệu tham khảo", "Z", "#F0D3DA", "Flatpak", "org.zotero.Zotero", "office"],
-        ["Okular", "Đọc PDF", "O", "#CFE4D8", "pacman", "okular", "office"],
-        ["GParted", "Phân vùng ổ đĩa", "G", "peach", "pacman", "gparted", "tool"],
-        ["Timeshift", "Sao lưu hệ thống", "T", "green", "pacman", "timeshift", "tool"],
-        ["Flatseal", "Quyền ứng dụng Flatpak", "F", "#BFE3F5", "Flatpak", "com.github.tchx84.Flatseal", "tool"]
+        ["Telegram", Fz.tr("Nhắn tin"), "T", "#BFE3F5", "pacman", "telegram-desktop", "chat"],
+        ["Thunderbird", Fz.tr("Thư điện tử"), "T", "#C9D2F5", "pacman", "thunderbird", "chat"],
+        ["Zotero", Fz.tr("Quản lý tài liệu tham khảo"), "Z", "#F0D3DA", "Flatpak", "org.zotero.Zotero", "office"],
+        ["Okular", Fz.tr("Đọc PDF"), "O", "#CFE4D8", "pacman", "okular", "office"],
+        ["GParted", Fz.tr("Phân vùng ổ đĩa"), "G", "peach", "pacman", "gparted", "tool"],
+        ["Timeshift", Fz.tr("Sao lưu hệ thống"), "T", "green", "pacman", "timeshift", "tool"],
+        ["Flatseal", Fz.tr("Quyền ứng dụng Flatpak"), "F", "#BFE3F5", "Flatpak", "com.github.tchx84.Flatseal", "tool"]
     ].map(a => ({ name: a[0], desc: a[1], letter: a[2], color: a[3], src: a[4], id: a[5], cat: a[6] }))
-    readonly property var cats: [["discover", "Khám phá", "AppStore:s-compass"], ["installed", "Đã cài", "AppStore:s-box"], ["updates", "Cập nhật", "AppStore:s-upd"],
-        ["dev", "Phát triển", "AppStore:s-code"], ["gfx", "Đồ họa", "AppStore:s-pen"], ["media", "Âm nhạc & video", "AppStore:s-music"], ["game", "Trò chơi", "AppStore:s-game"],
-        ["chat", "Liên lạc", "AppStore:s-chat"], ["office", "Văn phòng", "AppStore:s-doc"], ["tool", "Tiện ích hệ thống", "AppStore:s-wrench"]]
+    readonly property var cats: [["discover", Fz.tr("Khám phá"), "AppStore:s-compass"], ["installed", Fz.tr("Đã cài"), "AppStore:s-box"], ["updates", Fz.tr("Cập nhật"), "AppStore:s-upd"],
+        ["dev", Fz.tr("Phát triển"), "AppStore:s-code"], ["gfx", Fz.tr("Đồ họa"), "AppStore:s-pen"], ["media", Fz.tr("Âm nhạc & video"), "AppStore:s-music"], ["game", Fz.tr("Trò chơi"), "AppStore:s-game"],
+        ["chat", Fz.tr("Liên lạc"), "AppStore:s-chat"], ["office", Fz.tr("Văn phòng"), "AppStore:s-doc"], ["tool", Fz.tr("Tiện ích hệ thống"), "AppStore:s-wrench"]]
 
     LazyLoader {
         active: app.open
         FloatingWindow {
             id: win
-            title: "Zone-C · Cửa hàng ứng dụng"
+            title: Fz.tr("Zone-C · Cửa hàng ứng dụng")
             implicitWidth: 1320
             implicitHeight: 810
             minimumSize: Qt.size(1000, 600)
@@ -96,7 +96,7 @@ Scope {
                 let ql = q.trim().toLowerCase();
                 return base.filter(a => (src === "all" || a.src === src) && (ql.length >= 2 || !ql || a.name.toLowerCase().indexOf(ql) !== -1)).map(decorate);
             }
-            readonly property string listTitle: (q.trim().length >= 2 ? "Kết quả cho “" + q.trim() + "”" : app.cats.find(c => c[0] === cat)[1]) + " · " + list.length + " ứng dụng"
+            readonly property string listTitle: (q.trim().length >= 2 ? Fz.tr("Kết quả cho “") + q.trim() + "”" : app.cats.find(c => c[0] === cat)[1]) + " · " + list.length + Fz.tr(" ứng dụng")
 
             // ---------------- queries ----------------
             function query(args, cb) {
@@ -136,7 +136,7 @@ Scope {
                 let k = key(a), inst = isInstalled(a), cmd;
                 if (jobs[k]) return;
                 if (a.src === "AUR") {
-                    let sh = (inst ? "yay -Rns " : "yay -S ") + a.id + "; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'";
+                    let sh = (inst ? "yay -Rns " : "yay -S ") + a.id + Fz.tr("; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'");
                     Quickshell.execDetached(["bash", "-c", win.terminal + " bash -c \"$1\"", "_", sh]);
                     watchAur.restart();
                     return;
@@ -167,7 +167,7 @@ Scope {
                     }
                     onExited: (code) => {
                         let j = Object.assign({}, win.jobs); delete j[jobKey]; win.jobs = j;
-                        if (code !== 0) Quickshell.execDetached(["notify-send", "-a", "Cửa hàng", "Không thực hiện được", jobKey.split(":")[1] + " · mã lỗi " + code]);
+                        if (code !== 0) Quickshell.execDetached(["notify-send", "-a", Fz.tr("Cửa hàng"), Fz.tr("Không thực hiện được"), jobKey.split(":")[1] + Fz.tr(" · mã lỗi ") + code]);
                         win.refreshStatus();
                         destroy();
                     }
@@ -175,9 +175,9 @@ Scope {
             }
             function btnLabel(a) {
                 let j = jobs[key(a)];
-                if (j) return j.kind === "install" ? "Đang cài…" : "Đang gỡ…";
-                if (cat === "updates" && q.trim().length < 2) return "Cập nhật";
-                return isInstalled(a) ? "Gỡ cài đặt" : "Cài đặt";
+                if (j) return j.kind === "install" ? Fz.tr("Đang cài…") : Fz.tr("Đang gỡ…");
+                if (cat === "updates" && q.trim().length < 2) return Fz.tr("Cập nhật");
+                return isInstalled(a) ? Fz.tr("Gỡ cài đặt") : Fz.tr("Cài đặt");
             }
             function cmdFor(a) {
                 if (cat === "updates") return a.src === "Flatpak" ? "flatpak update " + a.id : a.src === "AUR" ? "yay -S " + a.id : "sudo pacman -Syu";
@@ -188,7 +188,7 @@ Scope {
                 act(a);
             }
             function updateAll() {
-                let sh = (win.hasAur ? "yay -Syu" : "sudo pacman -Syu") + (win.hasFlatpak ? "; flatpak update -y" : "") + "; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'";
+                let sh = (win.hasAur ? "yay -Syu" : "sudo pacman -Syu") + (win.hasFlatpak ? "; flatpak update -y" : "") + Fz.tr("; echo; read -n1 -p 'Nhấn phím bất kỳ để đóng…'");
                 Quickshell.execDetached(["bash", "-c", win.terminal + " bash -c \"$1\"", "_", sh]);
             }
 
@@ -215,7 +215,7 @@ Scope {
                         leftPadding: 8; topPadding: 4; bottomPadding: 14
                         spacing: 10
                         Ico { width: 34; height: 34; on: true; icon: "AppStore:s-box" }
-                        FText { text: "Cửa hàng"; px: 15; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+                        FText { text: Fz.tr("Cửa hàng"); px: 15; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
                     }
                     Repeater {
                         model: app.cats
@@ -252,7 +252,7 @@ Scope {
                         x: 10; anchors.verticalCenter: parent.verticalCenter
                         spacing: 8
                         FIcon { name: "AppStore:s-shield"; size: 15; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
-                        FText { id: note; width: nav.width - 20 - 20 - 23; wrapMode: Text.Wrap; text: "Gói AUR do cộng đồng duy trì, hãy xem PKGBUILD"; px: 12; color: Fz.sub }
+                        FText { id: note; width: nav.width - 20 - 20 - 23; wrapMode: Text.Wrap; text: Fz.tr("Gói AUR do cộng đồng duy trì, hãy xem PKGBUILD"); px: 12; color: Fz.sub }
                     }
                 }
             }
@@ -270,13 +270,13 @@ Scope {
                         width: head.width - 40 - 20 - srcSeg.width - 36
                         height: 40; radius: 12; icon: "AppStore:s-search"
                         color: Fz.well(0.25); border.color: input.activeFocus ? Fz.glow : Fz.line
-                        placeholder: "Tìm trong pacman, AUR và Flatpak"
+                        placeholder: Fz.tr("Tìm trong pacman, AUR và Flatpak")
                         onTextChanged: win.q = text
                         Keys.onEscapePressed: text = ""
                     }
-                    FSeg { id: srcSeg; options: ["Tất cả", "pacman", "AUR", "Flatpak"]; current: ["all", "pacman", "AUR", "Flatpak"].indexOf(win.src)
+                    FSeg { id: srcSeg; options: [Fz.tr("Tất cả"), "pacman", "AUR", "Flatpak"]; current: ["all", "pacman", "AUR", "Flatpak"].indexOf(win.src)
                            onPicked: (i) => win.src = ["all", "pacman", "AUR", "Flatpak"][i]; anchors.verticalCenter: parent.verticalCenter }
-                    FIconBtn { ghost: true; icon: "AppStore:s-x"; iconSize: 15; label: "Đóng"; onClicked: app.open = false; anchors.verticalCenter: parent.verticalCenter }
+                    FIconBtn { ghost: true; icon: "AppStore:s-x"; iconSize: 15; label: Fz.tr("Đóng"); onClicked: app.open = false; anchors.verticalCenter: parent.verticalCenter }
                 }
             }
 
@@ -313,9 +313,9 @@ Scope {
                         Column {
                             x: 24; anchors.bottom: parent.bottom; anchors.bottomMargin: 24
                             spacing: 6
-                            FChip { kind: "acc"; text: "Nổi bật tuần này" }
+                            FChip { kind: "acc"; text: Fz.tr("Nổi bật tuần này") }
                             FText { text: "Blender"; px: 26; weight: Font.DemiBold }
-                            FText { text: "Dựng hình 3D, hoạt ảnh và dựng phim. Miễn phí, mã nguồn mở."; px: 13.5; color: Fz.sub2 }
+                            FText { text: Fz.tr("Dựng hình 3D, hoạt ảnh và dựng phim. Miễn phí, mã nguồn mở."); px: 13.5; color: Fz.sub2 }
                         }
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: win.pick(win.decorate(app.catalog[0])) }
                     }
@@ -325,11 +325,11 @@ Scope {
                         Row {
                             visible: win.cat === "updates" && win.q.trim().length < 2 && win.updatesList.length > 0
                             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                            FBtn { height: 30; fontSize: 12; kind: "pri"; text: "Cập nhật tất cả"; onClicked: win.updateAll() }
+                            FBtn { height: 30; fontSize: 12; kind: "pri"; text: Fz.tr("Cập nhật tất cả"); onClicked: win.updateAll() }
                         }
                     }
-                    FText { visible: win.searching; text: "Đang tìm trong pacman" + (win.hasAur ? ", AUR" : "") + (win.hasFlatpak ? " và Flathub" : "") + "…"; px: 13; color: Fz.sub }
-                    FText { visible: !win.searching && win.list.length === 0; text: win.cat === "updates" ? "Hệ thống đã được cập nhật." : "Không có ứng dụng nào."; px: 13; color: Fz.sub }
+                    FText { visible: win.searching; text: Fz.tr("Đang tìm trong pacman") + (win.hasAur ? ", AUR" : "") + (win.hasFlatpak ? Fz.tr(" và Flathub") : "") + "…"; px: 13; color: Fz.sub }
+                    FText { visible: !win.searching && win.list.length === 0; text: win.cat === "updates" ? Fz.tr("Hệ thống đã được cập nhật.") : Fz.tr("Không có ứng dụng nào."); px: 13; color: Fz.sub }
                     Grid {
                         width: parent.width
                         columns: 3; spacing: 10
@@ -432,13 +432,13 @@ Scope {
                             }
                         }
                         FText { width: parent.width; elide: Text.ElideRight; mono: true; px: 11.5; color: Fz.sub
-                                text: aside.job ? (aside.job.kind === "install" ? "Đang tải" : "Đang gỡ") + (aside.job.pct >= 0 ? " · " + aside.job.pct + "%" : "") + " · " + (aside.a ? aside.a.src : "") : "" }
+                                text: aside.job ? (aside.job.kind === "install" ? Fz.tr("Đang tải") : Fz.tr("Đang gỡ")) + (aside.job.pct >= 0 ? " · " + aside.job.pct + "%" : "") + " · " + (aside.a ? aside.a.src : "") : "" }
                     }
                     Column {
                         width: parent.width
                         Repeater {
-                            model: aside.a ? [["Nguồn", aside.a.src + (aside.d.repo ? " · " + aside.d.repo : "")], ["Phiên bản", aside.d.version || aside.a.version || win.status[aside.a.id] || "…"],
-                                              ["Dung lượng", aside.d.size || aside.a.size || "–"], ["Giấy phép", aside.d.license || "–"]] : []
+                            model: aside.a ? [[Fz.tr("Nguồn"), aside.a.src + (aside.d.repo ? " · " + aside.d.repo : "")], [Fz.tr("Phiên bản"), aside.d.version || aside.a.version || win.status[aside.a.id] || "…"],
+                                              [Fz.tr("Dung lượng"), aside.d.size || aside.a.size || "–"], [Fz.tr("Giấy phép"), aside.d.license || "–"]] : []
                             delegate: Item {
                                 required property var modelData
                                 required property int index
