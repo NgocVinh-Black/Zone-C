@@ -55,12 +55,13 @@ Desktop shell cho Hyprland, viết bằng Quickshell, theo chủ đề **sấm s
 
 ## Bot AI float-cat (Claude Code)
 
-Bot AI nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột: khung bo tròn, màn hình mặt với hai mắt,
-chớp mắt, liếc nhìn, nảy nhẹ. Màu lấy theo theme Frost (sáng / tối, màu nhấn) đang dùng.
+Bot AI nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột: đầu tròn kiểu mũ phi hành gia có ăng-ten,
+kính che mặt, hai mắt sáng và vòng cằm phát sáng. Nó lơ lửng, nheo mắt, chớp mắt, liếc nhìn, nghiêng đầu, rảnh lâu thì ngủ gật.
+Màu lấy theo theme Frost (sáng / tối, màu nhấn) đang dùng.
 
 Khi dùng [Claude Code](https://claude.com/claude-code), bot cho biết Claude đang làm gì:
-mắt nheo lại rồi màn hình chuyển thành sóng âm kèm điểm sáng bay lên khi đang chạy, dấu ✓ kèm nhảy lên và nháy mắt khi xong,
-"Cần bạn nè!" khi chờ bạn duyệt.
+mắt đảo đọc, ánh sáng chạy dọc vòng cằm và bong bóng ba chấm khi đang chạy; mắt cười, đèn xanh lá, nhảy lên và pháo giấy khi xong;
+nghiêng đầu, đèn vàng và "Cần bạn nè!" khi chờ bạn duyệt.
 
 Script cài đặt chép bot vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
 Để bot đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
