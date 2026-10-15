@@ -4,7 +4,6 @@ import Quickshell
 ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general", {}).performance)
     readonly property bool quickactionsEnabled: Config.getSetting("general", {}).quickactions !== false
-    readonly property bool dockEnabled: Config.getSetting("dock", {}).enabled !== false
     readonly property bool zoneAnimated: ZoneStyle.animated
 
     Connections {
@@ -31,10 +30,6 @@ ShellRoot {
     KeybindsHelp {}
     PopoutManager {}
 
-    Loader {
-        active: dockEnabled
-        sourceComponent: Dock {}
-    }
 
     Loader {
         active: !performanceMode
@@ -54,7 +49,7 @@ ShellRoot {
     }
     Loader {
         active: !performanceMode && quickactionsEnabled
-        sourceComponent: Floating {}
+        sourceComponent: FrostQuickActions {}
     }
 
     Component.onCompleted: {

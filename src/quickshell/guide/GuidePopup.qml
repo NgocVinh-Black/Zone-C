@@ -58,7 +58,7 @@ Item {
             ]
         },
         { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml", iconOffsetX: 0 },
-        { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml", iconOffsetX: 0 },
+        { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "", iconOffsetX: 0, hidden: true },
         { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml", iconOffsetX: 0 },
         { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml", iconOffsetX: 0 },
         { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml", iconOffsetX: 0 },        
@@ -1315,9 +1315,10 @@ Item {
 
                             Rectangle {
                                 id: tabDock
+                                visible: false  // the dock was removed; the slot keeps the tab indices stable
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: root.s(44)
-                                implicitHeight: root.s(44)
+                                Layout.preferredHeight: 0
+                                implicitHeight: 0
                                 radius: ThemeBackend.borderRadius
                                 z: 1
 

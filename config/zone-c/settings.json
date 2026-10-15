@@ -146,25 +146,6 @@
       }
     }
   },
-  "dock": {
-    "enabled": true,
-    "position": "bottom",
-    "onTop": true,
-    "elementSize": 44,
-    "floating": true,
-    "opacity": 100,
-    "exclusive": false,
-    "autohide": false,
-    "smartAutohide": true,
-    "autohideTimeout": 1000,
-    "editing": false,
-    "apps": [],
-    "overrideBoundsCorrection": false,
-    "enableScrolling": false,
-    "visibleElements": 7,
-    "hoverScale": 120,
-    "cascadeScale": false
-  },
   "widgets": {
     "hideBarInRedactor": true
   },
@@ -179,7 +160,6 @@
   "zoneStyle": {
     "savedLayout": {
       "bar.style": "solid",
-      "dock.floating": false,
       "bar.modules": {
         "left": [
           "left",

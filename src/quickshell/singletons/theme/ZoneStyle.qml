@@ -7,8 +7,8 @@ import "../../"
 // Zone-C: kieu hieu ung di kem preset mau.
 //   Zone Thunder -> hinh nen video + vien dien chay (dong)
 //   Zone Crystal -> hinh nen anh tinh + vien dung yen (tinh)
-//   Zone Frost   -> hinh nen tuyet + dock kinh mo
-// Doi preset chi doi mau / hinh nen / hieu ung; bo cuc bar, dock, launcher giu nguyen nhu ban dat.
+//   Zone Frost   -> hinh nen tuyet + kinh mo
+// Doi preset chi doi mau / hinh nen / hieu ung; bo cuc bar, launcher giu nguyen nhu ban dat.
 // Man hinh khoa dung chinh hinh nen hien tai nen tu dong/tinh theo.
 // Preset khac: giu nguyen hinh nen, vien chay nhu Thunder.
 Item {
@@ -30,14 +30,13 @@ Item {
             animated: false,
             wallpaper: "zone-c-frost.jpg",
             glow: "#9fd3e0", bolt: "#cfeaf2", core: "#ffffff", amp: 2.5,
-            dockGlass: true, dockTint: "#dce8ee", dockAlpha: 0.42,
             plainBorder: true, flatBar: true, artSuffix: "-frost",
             // Hai che do: dark (mac dinh) va light. Doi bang setMode() / zone-c ipc call zonetheme mode toggle
             palettes: {
                 "dark": { "base": "#333f45", "mantle": "#2c373c", "crust": "#252f34", "text": "#e9f1f4", "subtext0": "#93a7b1", "subtext1": "#b7c7cf", "surface0": "#3e4b52", "surface1": "#4a5960", "surface2": "#58686f", "overlay0": "#6d7f87", "overlay1": "#8597a0", "overlay2": "#9daeb6", "blue": "#d6e6ec", "sapphire": "#cfe1e8", "peach": "#e3dccf", "green": "#cfe4d8", "red": "#ff6b6b", "mauve": "#d6e6ec", "pink": "#d6e6ec", "yellow": "#ece0b0", "maroon": "#c9d9df", "teal": "#cfe6e6" },
                 "light": { "base": "#eef4f7", "mantle": "#e4ecf0", "crust": "#d6e2e8", "text": "#1f2d35", "subtext0": "#5d717b", "subtext1": "#44565f", "surface0": "#dde7ec", "surface1": "#cfdce3", "surface2": "#bccdd6", "overlay0": "#8fa3ad", "overlay1": "#768b95", "overlay2": "#5f747e", "blue": "#2f5d72", "sapphire": "#3a6c82", "peach": "#a8683a", "green": "#3f7a5c", "red": "#d64545", "mauve": "#2f5d72", "pink": "#3a6c82", "yellow": "#9a7d22", "maroon": "#4a7a8e", "teal": "#2f7277" }
             },
-            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff", dockTint: "#ffffff", dockAlpha: 0.55 }
+            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff" }
         }
     })
 
@@ -62,9 +61,6 @@ Item {
     readonly property color borderCore: style.core
     readonly property real borderAmplitude: style.amp
 
-    // Dock kinh mo (chi preset co dockGlass, vd Zone Frost)
-    readonly property bool dockGlass: styles[preset] ? styles[preset].dockGlass === true : false
-    readonly property color dockGlassColor: dockGlass ? Qt.alpha(style.dockTint, style.dockAlpha) : "transparent"
 
     // Vien focus la mot duong manh dung yen (khong tia dien)
     readonly property bool plainBorder: styles[preset] ? styles[preset].plainBorder === true : false

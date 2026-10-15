@@ -1,9 +1,8 @@
-Dock 1.0 dock/Dock.qml
 Dim 1.0 Dim.qml
 Main 1.0 Main.qml
 
 Bar 1.0 bar/Bar.qml
-Floating 1.0 quickactions/Floating.qml
+FrostQuickActions 1.0 quickactions/FrostQuickActions.qml
 Clipboard 1.0 clipboard/FrostClipboard.qml
 Launcher 1.0 launcher/FrostLauncher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
