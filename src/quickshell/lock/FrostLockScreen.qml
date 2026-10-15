@@ -211,12 +211,21 @@ FocusScope {
         }
     }
 
+    // "Đổi người dùng" needs a display manager with a greeter switch (LightDM's Seat API; SDDM has
+    // none) and a second account, otherwise the button would do nothing
+    property bool canSwitchUser: false
+    Process {
+        running: true
+        command: ["bash", "-c", "busctl --system list 2>/dev/null | grep -q org.freedesktop.DisplayManager && [ $(getent passwd | awk -F: '$3>=1000 && $3<60000' | wc -l) -gt 1 ] && echo yes"]
+        stdout: StdioCollector { onStreamFinished: root.canSwitchUser = this.text.trim() === "yes" }
+    }
+
     // ---------- session buttons ----------
     Row {
         anchors.right: parent.right; anchors.rightMargin: 28
         y: parent.height - 28 - 44
         spacing: 8
-        FBtn { height: 44; radius: 22; padX: 18; text: Fz.tr("Đổi người dùng")
+        FBtn { visible: root.canSwitchUser; height: 44; radius: 22; padX: 18; text: Fz.tr("Đổi người dùng")
                onClicked: Quickshell.execDetached(["busctl", "--system", "call", "org.freedesktop.DisplayManager", "/org/freedesktop/DisplayManager/Seat0", "org.freedesktop.DisplayManager.Seat", "SwitchToGreeter"]) }
         FIconBtn { width: 44; height: 44; radius: 22; icon: "k-moon"; label: Fz.tr("Ngủ"); onClicked: root.powerActions.sleep() }
         FIconBtn { width: 44; height: 44; radius: 22; icon: "k-restart"; label: Fz.tr("Khởi động lại"); onClicked: root.powerActions.reboot() }

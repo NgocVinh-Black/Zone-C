@@ -34,6 +34,34 @@ hl.config({
     },
   },
 
+  -- window groups (tabs) in the Frost palette: acc pill for the active tab, surface for the rest
+  group = {
+    col = {
+      border_active = "rgba(9fd3e0ff)",
+      border_inactive = "rgba(34424aff)",
+      border_locked_active = "rgba(ecdcaaff)",
+      border_locked_inactive = "rgba(34424aff)",
+    },
+    groupbar = {
+      font_family = "Geist",
+      font_size = 12,
+      height = 22,
+      gradients = true,
+      rounding = 8,
+      gradient_rounding = 8,
+      gaps_in = 4,
+      gaps_out = 4,
+      text_color = "rgba(162025ff)",
+      text_color_inactive = "rgba(c6d3d9ff)",
+      col = {
+        active = "rgba(d6e6ecff)",
+        inactive = "rgba(2a353bcc)",
+        locked_active = "rgba(ecdcaaff)",
+        locked_inactive = "rgba(2a353bcc)",
+      },
+    },
+  },
+
   misc = {
     focus_on_activate = false,
     font_family = "JetBrains Mono",

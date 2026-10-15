@@ -107,13 +107,13 @@ Scope {
         }
 
         property real railY: 300
-        // On a workspace with windows the rail tucks into the screen edge (a slim tab stays visible)
-        // and slides out on hover, so it never sits on top of an app; on an empty desktop it stays out
-        // like the artboard. Fullscreen windows hide it completely.
+        // The rail tucks into the screen edge (a slim tab stays visible) and slides out on hover or
+        // while one of its panels is open, so it never sits on top of an app or a desktop widget.
+        // Fullscreen windows hide it completely.
         readonly property var ws: Hyprland.focusedWorkspace
         readonly property bool busy: ws !== null && ws.toplevels && (ws.toplevels.values || []).length > 0
         readonly property bool fullscreen: Hyprland.activeToplevel !== null && Hyprland.activeToplevel.lastIpcObject && Hyprland.activeToplevel.lastIpcObject.fullscreen > 0
-        readonly property bool tucked: busy && !railHover.hovered && !qa.timerOpen && !qa.usageOpen && !qa.drawOpen
+        readonly property bool tucked: !railHover.hovered && !qa.timerOpen && !qa.usageOpen && !qa.drawOpen
         visible: !fullscreen
         Glass {
             id: railBox
