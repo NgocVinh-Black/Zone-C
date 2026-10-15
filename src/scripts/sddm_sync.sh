@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# Zone-C: dong bo man dang nhap SDDM (theme zone-thunder) voi theme dang dung cua shell.
+# Zone-C: dong bo man dang nhap SDDM (theme zone-frost / zone-thunder) voi theme dang dung cua shell.
 # Ghi bang mau + hinh nen hien tai vao <theme>/current/ (thu muc nay thuoc user, tao luc cai dat).
 # Dung: sddm_sync.sh [duong-dan-hinh-nen]
 #   Khong co tham so -> giu hinh nen da dong bo truoc do, chi cap nhat mau.
 
-THEME_DIR="${ZONE_C_SDDM_THEME:-/usr/share/sddm/themes/zone-thunder}"
+# every Zone-C login theme that has a user-owned current/ (zone-frost, zone-thunder)
+if [ -z "$ZONE_C_SDDM_THEME" ] && [ -z "$ZONE_C_SDDM_ONE" ]; then
+    for t in /usr/share/sddm/themes/zone-frost /usr/share/sddm/themes/zone-thunder; do
+        [ -d "$t/current" ] && ZONE_C_SDDM_ONE=1 ZONE_C_SDDM_THEME="$t" bash "$0" "$@"
+    done
+    exit 0
+fi
+THEME_DIR="$ZONE_C_SDDM_THEME"
 CUR="$THEME_DIR/current"
 SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/zone-c/settings.json"
 

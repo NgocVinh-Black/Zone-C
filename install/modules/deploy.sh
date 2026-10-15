@@ -181,29 +181,30 @@ setup_sddm() {
         sudo rm -f /etc/sddm.conf
     fi
 
-    local sddm_theme_src="$project_root/config/sddm/themes/zone-thunder"
-    local sddm_theme_dest="/usr/share/sddm/themes/zone-thunder"
-
-    if [ -d "$sddm_theme_src" ]; then
+    # zone-frost (the Frost design, default) and zone-thunder; current/ belongs to the user so the
+    # shell can sync the active wallpaper and colours into it (scripts/sddm_sync.sh). QML stays root's.
+    local theme_name
+    for theme_name in zone-frost zone-thunder; do
+        local sddm_theme_src="$project_root/config/sddm/themes/$theme_name"
+        local sddm_theme_dest="/usr/share/sddm/themes/$theme_name"
+        [ -d "$sddm_theme_src" ] || continue
         sudo mkdir -p "$sddm_theme_dest"
         sudo cp -r "$sddm_theme_src/." "$sddm_theme_dest/"
         sudo chmod -R 755 "$sddm_theme_dest"
-        # Thu muc current/ thuoc user: shell ghi bang mau + hinh nen cua theme dang dung vao day
-        # (scripts/sddm_sync.sh) de man dang nhap doi theo theme. Code QML van thuoc root.
         sudo install -d -o "$USER" -g "$(id -gn)" -m 755 "$sddm_theme_dest/current"
         if [ -d "$sddm_theme_src/font" ]; then
             sudo mkdir -p /usr/share/fonts/TTF
             sudo cp -r "$sddm_theme_src/font/"*.ttf /usr/share/fonts/TTF/ 2>/dev/null || true
-            fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
         fi
-    fi
+    done
+    fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
 
     sudo mkdir -p /etc/sddm.conf.d
 
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=zone-thunder
+Current=zone-frost
 ThemeDir=/usr/share/sddm/themes
 
 [General]
@@ -214,7 +215,7 @@ EOF
     else
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=zone-thunder
+Current=zone-frost
 ThemeDir=/usr/share/sddm/themes
 
 [General]
