@@ -14,10 +14,11 @@ Item {
         border.width: 1; border.color: Fz.fg(0.1)
     }
     Canvas {
+        id: groove
         anchors.fill: parent; anchors.margins: root.size * 0.1
         onPaint: { let c = getContext("2d"); c.reset(); c.strokeStyle = Fz.fg(Fz.light ? 0.2 : 0.18); c.lineWidth = 1; c.setLineDash([3, 3]);
                    c.beginPath(); c.arc(width / 2, height / 2, width / 2 - 0.5, 0, Math.PI * 2); c.stroke(); }
-        Connections { target: Fz; function onLightChanged() { parent.requestPaint(); } }
+        Connections { target: Fz; function onLightChanged() { groove.requestPaint(); } }
     }
     Rectangle {
         anchors.centerIn: parent

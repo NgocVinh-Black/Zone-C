@@ -162,6 +162,7 @@ Variants {
                 color: Fz.scrim
                 MouseArea { anchors.fill: parent; onClicked: win.selectedId = "" }
                 Canvas {
+                    id: editGrid
                     anchors.fill: parent
                     onPaint: {
                         let c = getContext("2d"); c.reset();
@@ -171,7 +172,7 @@ Variants {
                         for (let y = 0.5; y < height; y += 40) { c.moveTo(0, y); c.lineTo(width, y); }
                         c.stroke();
                     }
-                    Connections { target: Fz; function onLightChanged() { parent.requestPaint(); } }
+                    Connections { target: Fz; function onLightChanged() { editGrid.requestPaint(); } }
                 }
             }
 
