@@ -20,7 +20,7 @@ Column {
         id: probe
         running: true
         command: ["bash", "-c", "echo \"uid=$(id -u)\"; echo \"groups=$(id -nG)\"; command -v fprintd-list >/dev/null && echo \"fp=$(fprintd-list \"$USER\" 2>/dev/null | grep -c ' - #')\";"
-            + "echo \"auto=$(grep -rhs '^User=' /etc/sddm.conf /etc/sddm.conf.d/ 2>/dev/null | head -1 | cut -d= -f2)\"; echo \"theme=$(grep -rhs '^Current=' /etc/sddm.conf /etc/sddm.conf.d/ 2>/dev/null | head -1 | cut -d= -f2)\";"
+            + "echo \"auto=$(grep -hs '^User=' /etc/sddm.conf /etc/sddm.conf.d/*.conf 2>/dev/null | tail -1 | cut -d= -f2)\"; echo \"theme=$(grep -hs '^Current=' /etc/sddm.conf /etc/sddm.conf.d/*.conf 2>/dev/null | tail -1 | cut -d= -f2)\";"
             + "echo \"themes=$(ls /usr/share/sddm/themes 2>/dev/null | tr '\\n' ',')\";"
             + "getent passwd | awk -F: -v me=\"$USER\" '$3>=1000 && $3<60000 && $1!=me {print \"U\\t\"$1\"\\t\"$5}'"]
         stdout: StdioCollector {
