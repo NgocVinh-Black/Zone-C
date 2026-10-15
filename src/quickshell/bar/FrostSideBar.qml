@@ -100,7 +100,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, DateTime.is12Hour ? "hh" : "HH"); mono: true; px: 17; weight: Font.DemiBold; lineHeight: 1.1 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, "mm"); mono: true; px: 17; weight: Font.DemiBold; lineHeight: 1.1 }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; topPadding: 4; text: Fz.weekdays[DateTime.now.getDay()].replace("Thứ ", "T").replace("Chủ Nhật", "CN").replace("Hai", "2").replace("Ba", "3").replace("Tư", "4").replace("Năm", "5").replace("Sáu", "6").replace("Bảy", "7") + " " + DateTime.now.getDate(); px: 10; color: Fz.sub }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; topPadding: 4; text: Fz.dayShort(DateTime.now) + " " + DateTime.now.getDate(); px: 10; color: Fz.sub }
                 Item { width: 1; height: 8 }
                 Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: 20; height: 1; color: Fz.fg(0.1) }
                 Item { width: 1; height: 8 }

@@ -39,7 +39,7 @@ Item {
     readonly property var today: fc.length ? fc[0] : null
     readonly property string city: (Weather.activeLocation && Weather.activeLocation.city) ? Weather.activeLocation.city : ""
     readonly property var hourly: today && today.hourly ? today.hourly : []
-    readonly property var dayNames: ({ Mon: "T2", Tue: "T3", Wed: "T4", Thu: "T5", Fri: "T6", Sat: "T7", Sun: "CN" })
+    readonly property var dayNames: Fz.en ? ({ Mon: "Mon", Tue: "Tue", Wed: "Wed", Thu: "Thu", Fri: "Fri", Sat: "Sat", Sun: "Sun" }) : ({ Mon: "T2", Tue: "T3", Wed: "T4", Thu: "T5", Fri: "T6", Sat: "T7", Sun: "CN" })
     readonly property string skyLine: {
         let d = Fz.weatherDesc(Weather.currentIcon);
         let laterRain = hourly.some(h => parseInt(h.time) > DateTime.now.getHours() && Fz.weatherIcon(h.icon) === "rain");
@@ -63,7 +63,7 @@ Item {
                 spacing: 8
                 FIconBtn { icon: "c-l"; label: "Tháng trước"; onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() - 1, 1) }
                 FText { width: parent.width - 36 * 2 - 16; anchors.verticalCenter: parent.verticalCenter; horizontalAlignment: Text.AlignHCenter
-                        text: "Tháng " + (root.shown.getMonth() + 1) + ", " + root.shown.getFullYear(); px: 16; weight: Font.DemiBold; font.letterSpacing: 16 * 0.02 }
+                        text: Fz.monthYear(root.shown); px: 16; weight: Font.DemiBold; font.letterSpacing: 16 * 0.02 }
                 FIconBtn { icon: "c-r"; label: "Tháng sau"; onClicked: root.shown = new Date(root.shown.getFullYear(), root.shown.getMonth() + 1, 1) }
             }
             Grid {
@@ -72,7 +72,7 @@ Item {
                 columnSpacing: 3; rowSpacing: 3
                 readonly property real cw: (left.width - 18) / 7
                 Repeater {
-                    model: root.weekStart === 0 ? ["CN", "T2", "T3", "T4", "T5", "T6", "T7"] : ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+                    model: { let d = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(k => root.dayNames[k]); return root.weekStart === 0 ? [d[6]].concat(d.slice(0, 6)) : d; }
                     delegate: Item {
                         required property var modelData
                         width: grid.cw; height: 26

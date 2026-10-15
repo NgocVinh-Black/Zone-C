@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import "../"
+import "En.js" as En
 
 // Zone-C Frost: design tokens of the "Zone-C · Frost" canvas (zone.css), dark and light.
 // Every v2 surface reads its colours, fonts and radii from here so the two modes stay in step.
@@ -10,6 +11,16 @@ Item {
     visible: false
 
     readonly property bool light: ZoneStyle.isLight
+
+    // Interface language (Settings → Chung → Ngôn ngữ giao diện): the Frost UI is written in Vietnamese;
+    // any other language shows the English strings of En.js.
+    readonly property string lang: { let l = Config.getSetting("general.language", "vi"); return typeof l === "string" && l ? l : "vi"; }
+    readonly property bool en: lang !== "vi"
+    function tr(s) {
+        if (!en || typeof s !== "string") return s;
+        let t = En.map[s];
+        return t === undefined ? s : t;
+    }
 
     readonly property var dark: ({
         crust: "#1c2428", mantle: "#232d32", base: "#2a353b", s0: "#34424a", s1: "#415058", s2: "#53646d",
@@ -109,13 +120,14 @@ Item {
         if (c === 0xf185) return "sun";
         if (c === 0xf186) return "moon";
         if (c === 0xf0597) return "rain";
-        if (c === 0xf0591) return "wind";
-        if (c === 0xf0e7) return "zc";
+        if (c === 0xf0591) return "w-fog";
+        if (c === 0xf0e7) return "w-storm";
+        if (c === 0xf2dc) return "w-snow";
         return "cloud";
     }
 
     function weatherDesc(glyph) {
-        return ({ sun: "Nắng", moon: "Trời quang", rain: "Có mưa", wind: "Sương mù", zc: "Giông bão" })[weatherIcon(glyph)] || "Nhiều mây";
+        return ({ sun: "Nắng", moon: "Trời quang", rain: "Có mưa", "w-fog": "Sương mù", "w-storm": "Giông bão", "w-snow": "Có tuyết" })[weatherIcon(glyph)] || "Nhiều mây";
     }
     function deg(v) { return (v === undefined || v === null || v === "") ? "--°" : Math.round(Number(v)) + "°"; }
 
@@ -149,9 +161,15 @@ Item {
     }
 
     // "Thứ Tư 14/10" (bar) and "Thứ Tư, 14 tháng 10" (desktop, lock screen)
-    readonly property var weekdays: ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
-    function dateShort(d) { return weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }
-    function dateLong(d) { return weekdays[d.getDay()] + ", " + d.getDate() + " tháng " + (d.getMonth() + 1); }
+    // English: "Wed 14 Oct" / "Wednesday, October 14"
+    readonly property var weekdays: en ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                                       : ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
+    readonly property var months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    function dayShort(d) { return en ? weekdays[d.getDay()].slice(0, 3) : (d.getDay() === 0 ? "CN" : "T" + (d.getDay() + 1)); }
+    function dateShort(d) { return en ? weekdays[d.getDay()].slice(0, 3) + " " + d.getDate() + " " + months[d.getMonth()].slice(0, 3) : weekdays[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); }
+    function dateLong(d) { return en ? weekdays[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate() : weekdays[d.getDay()] + ", " + d.getDate() + " tháng " + (d.getMonth() + 1); }
+    function dayMonth(d) { return en ? months[d.getMonth()] + " " + d.getDate() : d.getDate() + " tháng " + (d.getMonth() + 1); }
+    function monthYear(d) { return en ? months[d.getMonth()] + " " + d.getFullYear() : "Tháng " + (d.getMonth() + 1) + ", " + d.getFullYear(); }
 
     // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
     // listen for this; everything else opens through the popup host like the bar always has.

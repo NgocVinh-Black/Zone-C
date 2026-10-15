@@ -18,7 +18,14 @@ PanelWindow {
     readonly property string hpos: pos.indexOf("left") !== -1 ? "left" : pos.indexOf("center") !== -1 ? "center" : "right"
     readonly property bool atBottom: pos.indexOf("bottom") === 0
     anchors { top: true; bottom: true; right: hpos !== "left"; left: hpos !== "right" }
-    margins { top: 64 - 40; bottom: 16 - 40; right: hpos === "right" ? 16 - 40 : 0; left: hpos === "left" ? 16 - 40 : 0 }
+    // keep clear of the bar wherever it sits (52px tall on top/bottom, 60px wide on the sides)
+    readonly property string barPos: Config.getSetting("bar.position", "top")
+    margins {
+        top: (barPos === "top" ? 64 : 16) - 40
+        bottom: (barPos === "bottom" ? 64 : 16) - 40
+        right: hpos === "right" ? (barPos === "right" ? 76 : 16) - 40 : 0
+        left: hpos === "left" ? (barPos === "left" ? 76 : 16) - 40 : 0
+    }
     implicitWidth: 380 + 80
     color: "transparent"
     visible: NotificationManager.activePopupsModel.count > 0 && !NotificationManager.sysPanelOpen

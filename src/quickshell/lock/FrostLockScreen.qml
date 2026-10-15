@@ -89,7 +89,7 @@ FocusScope {
         anchors.horizontalCenter: parent.horizontalCenter
         y: 110
         spacing: 6
-        FText { anchors.horizontalCenter: parent.horizontalCenter; text: (Fz.weekdays[DateTime.now.getDay()] + " · " + DateTime.now.getDate() + " tháng " + (DateTime.now.getMonth() + 1)).toUpperCase()
+        FText { anchors.horizontalCenter: parent.horizontalCenter; text: (Fz.weekdays[DateTime.now.getDay()] + " · " + Fz.dayMonth(DateTime.now)).toUpperCase()
                 px: 16; weight: Font.DemiBold; font.letterSpacing: 16 * 0.2; color: Fz.sub2 }
         Item {
             anchors.horizontalCenter: parent.horizontalCenter

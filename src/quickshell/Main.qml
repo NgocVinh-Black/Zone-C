@@ -95,6 +95,10 @@ PanelWindow {
             targetWidget = targetWidget || "";
             arg = arg || "";
 
+            // the notification centre lives in the Frost system panel
+            if (targetWidget === "notifications") targetWidget = "system";
+            if (cmd === "notifications") cmd = "system";
+
             // the old guide popup became the Frost settings window
             if (targetWidget === "guide" || targetWidget === "settings" || cmd === "guide" || cmd === "settings") {
                 Fz.openRequest("settings", (targetWidget === "guide" || targetWidget === "settings") ? arg : targetWidget);

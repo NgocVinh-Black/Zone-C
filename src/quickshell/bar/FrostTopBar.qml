@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import Quickshell.Bluetooth
 import Quickshell.Networking
 import Quickshell.Services.UPower
+import Quickshell.Services.SystemTray
 import "../"
 import "../frost"
 
@@ -85,6 +86,9 @@ Item {
     }
 
     readonly property bool recording: Rec.active
+    readonly property var trayItems: SystemTray.items ? (SystemTray.items.values || []).filter(i => i.status !== Status.Passive) : []
+    readonly property string focusTitle: Hyprland.activeToplevel ? (Hyprland.activeToplevel.title || "") : ""
+    Component.onCompleted: SysData.subscribe()
     // Settings → Thanh bar: modules dropped from every column of bar.modules are hidden
     readonly property var modulesOn: { let m = Config.getSetting("bar.modules", null); if (!m) return null; let out = []; for (const c of ["left", "center", "right"]) (m[c] || []).forEach(x => out = out.concat(Array.isArray(x) ? x : [x])); return out; }
     function shown(k) { return modulesOn === null || modulesOn.indexOf(k) !== -1; }
@@ -174,12 +178,35 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
+        BarSep { visible: focusIt.visible }
+        BarItem {
+            // active window (Settings → Thanh bar → Tiêu điểm)
+            id: focusIt
+            visible: root.shown("focus") && root.focusTitle !== ""
+            label: root.focusTitle
+            onClicked: Fz.open("overview")
+            FText { text: root.focusTitle; color: focusIt.fgColor; px: 13; width: Math.min(implicitWidth, 220); elide: Text.ElideRight; anchors.verticalCenter: parent.verticalCenter }
+        }
+        BarSep { visible: actIt.visible }
+        BarItem {
+            // quick actions (Settings → Thanh bar → Thao tác): screenshot, screen recording
+            id: actIt
+            visible: root.shown("actions")
+            padX: 9
+            label: "Chụp màn hình"
+            onClicked: Fz.open("screenshot")
+            onRightClicked: Quickshell.execDetached(["zone-c", "screenshot", "--record"])
+            FIcon { name: "t-shot"; size: 15; color: actIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+        }
     }
 
     // ---------- centre: clock · weather ----------
     BarPill {
         id: centerPill
-        anchors.horizontalCenter: parent.horizontalCenter
+        // centred, but pushed aside (and the date dropped) rather than drawn over the side groups
+        readonly property real leftEnd: leftPill.x + leftPill.width + 8
+        readonly property real rightStart: rightRow.x - 8
+        x: Math.max(leftEnd, Math.min((root.width - width) / 2, rightStart - width))
         anchors.verticalCenter: parent.verticalCenter
 
         BarItem {
@@ -191,13 +218,23 @@ Item {
         }
         BarSep { visible: root.recording }
         BarItem {
+            // running timer from Quick actions (Settings → Thanh bar → Ghi hình/Hẹn giờ)
+            id: timerIt
+            visible: TimerState.isActive && root.shown("info")
+            label: "Hẹn giờ " + TimerState.timeFormatted
+            onClicked: FloatingController.setIndex("timer", null)
+            FIcon { name: "a-timer"; size: 15; color: timerIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+            FText { mono: true; text: TimerState.timeFormatted; color: timerIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+        }
+        BarSep { visible: timerIt.visible }
+        BarItem {
             id: clockIt
             visible: root.shown("timedate")
             on: root.openWidget === "calendar"
             label: "Mở lịch"
             onClicked: Fz.open("calendar")
             FText { mono: true; text: DateTime.timeShort; color: clockIt.fgColor; px: 14; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
-            FText { visible: root.showDate; text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+            FText { id: dateTxt; visible: root.showDate && !root.tight; text: Fz.dateShort(DateTime.now); color: clockIt.fgColor; opacity: 0.75; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
         }
         BarSep {}
         BarItem {
@@ -211,12 +248,40 @@ Item {
         }
     }
 
+    // not enough room for the full centre group between the sides → drop the date
+    // (assigned, not bound: the full width is the same whether or not the date is showing, so no loop)
+    property bool tight: false
+    function recheck() {
+        let full = centerPill.width + (dateTxt.visible || !root.showDate ? 0 : dateTxt.implicitWidth + 8);
+        root.tight = rightRow.x - (leftPill.x + leftPill.width) - 16 < full;
+    }
+    Connections { target: rightRow; function onXChanged() { root.recheck(); } }
+    Connections { target: leftPill; function onWidthChanged() { root.recheck(); } }
+    Connections { target: centerPill; function onWidthChanged() { root.recheck(); } }
+    onWidthChanged: recheck()
+
     // ---------- right: clipboard · input method | wifi · bt · volume · battery | notifications · settings ----------
     Row {
+        id: rightRow
         anchors.right: parent.right
         anchors.rightMargin: 4
         anchors.verticalCenter: parent.verticalCenter
         spacing: 8
+
+        BarPill {
+            visible: root.shown("sysmon")
+            BarItem {
+                id: sysIt
+                on: root.openWidget === "taskmanager"
+                label: "CPU " + SysData.cpu + "%, RAM " + SysData.ramPercent + "%"
+                onClicked: Fz.open("taskmanager")
+                FIcon { name: "a-pulse"; size: 15; color: sysIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                FText { mono: true; text: SysData.cpu + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: "RAM"; color: sysIt.fgColor; opacity: 0.7; px: 11; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+                FText { mono: true; text: SysData.ramPercent + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
+                FText { visible: SysData.temp > 0; mono: true; text: SysData.temp + "°"; color: SysData.temp >= 85 ? Fz.yellow : sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
+            }
+        }
 
         BarPill {
             BarItem {
@@ -228,6 +293,18 @@ Item {
                 onClicked: Fz.open("clipboard")
                 onRightClicked: Fz.open("tray")
                 FIcon { name: "b-clip"; size: 15; color: clipIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+            }
+            // system tray icons (Settings → Thanh bar → Khay); left click activates, right click opens the tray menu
+            Repeater {
+                model: root.shown("tray") ? root.trayItems.slice(0, 6) : []
+                delegate: BarItem {
+                    required property var modelData
+                    padX: 7
+                    label: modelData.tooltipTitle || modelData.title || modelData.id
+                    onClicked: modelData.onlyMenu ? Fz.open("tray") : modelData.activate()
+                    onRightClicked: Fz.open("tray")
+                    Image { width: 16; height: 16; source: modelData.icon; sourceSize: Qt.size(32, 32); anchors.verticalCenter: parent.verticalCenter }
+                }
             }
             BarItem {
                 id: kbIt
@@ -250,7 +327,7 @@ Item {
                 readonly property bool offline: root.wifiOn && root.ssid === ""
                 readonly property color tint: offline && !on ? Fz.redTx : fgColor
                 FIcon { name: root.wifiOn && root.ssid !== "" ? "b-wifi" : "x-wifioff"; size: 15; color: wifiIt.tint; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); width: Math.min(implicitWidth, 120); elide: Text.ElideRight; color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
                 id: btIt
@@ -275,8 +352,9 @@ Item {
                 label: "Âm lượng " + root.volume + " phần trăm"
                 onClicked: Fz.open("volume")
                 onRightClicked: if (Audio.defaultSink) Audio.toggleMute(Audio.defaultSink)
-                onWheel: (steps) => { if (Audio.defaultSink) Audio.setVolume(Audio.defaultSink, Math.max(0, Math.min(1.5, Audio.defaultSink.audio.volume + steps * 0.05))); }
+                onWheel: (steps) => { if (Audio.defaultSink) Audio.setVolume(Audio.defaultSink, Math.max(0, Math.min(150, root.volume + steps * 5))); }
                 FIcon { name: root.muted ? "mute" : "b-vol"; size: 15; color: volIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                FText { mono: true; text: root.muted ? "–" : root.volume; color: volIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
                 id: batIt

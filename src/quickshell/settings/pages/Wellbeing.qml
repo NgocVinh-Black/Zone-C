@@ -22,7 +22,7 @@ Column {
     readonly property real weekMax: Math.max(3600, ...week.map(w => w.total))
     readonly property int total: stats ? stats.total : 0
     readonly property int yesterday: stats ? stats.yesterday : 0
-    readonly property var dayVi: ({ Mon: "T2", Tue: "T3", Wed: "T4", Thu: "T5", Fri: "T6", Sat: "T7", Sun: "CN" })
+    readonly property var dayVi: Fz.en ? ({ Mon: "Mon", Tue: "Tue", Wed: "Wed", Thu: "Thu", Fri: "Fri", Sat: "Sat", Sun: "Sun" }) : ({ Mon: "T2", Tue: "T3", Wed: "T4", Thu: "T5", Fri: "T6", Sat: "T7", Sun: "CN" })
     readonly property var topApps: stats ? stats.apps.slice(0, 4) : []
 
     Grp {

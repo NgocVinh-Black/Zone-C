@@ -79,18 +79,18 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             w: 430, h: 600, comp: "network/FrostNetwork.qml", 
             pos: { 
                 "top": { anchor: "top-right", mt: 58, mr: 120 }, 
-                "bottom": { anchor: "bottom-right", mb: 52, mr: 4 }, 
-                "left": { anchor: "bottom-left", ml: 52, mb: 4 }, 
-                "right": { anchor: "bottom-right", mr: 52, mb: 4 } 
+                "bottom": { anchor: "bottom-right", mb: 58, mr: 120 }, 
+                "left": { anchor: "bottom-left", ml: 70, mb: 10 }, 
+                "right": { anchor: "bottom-right", mr: 70, mb: 10 } 
             } 
         },
         "volume": { 
             w: 420, h: 580, comp: "volume/FrostVolume.qml", 
             pos: { 
                 "top": { anchor: "top-right", mt: 58, mr: 60 }, 
-                "bottom": { anchor: "bottom-right", mb: 52, mr: 5 }, 
-                "left": { anchor: "bottom-left", ml: 52, mb: 5 }, 
-                "right": { anchor: "bottom-right", mr: 52, mb: 5 } 
+                "bottom": { anchor: "bottom-right", mb: 58, mr: 60 }, 
+                "left": { anchor: "bottom-left", ml: 70, mb: 10 }, 
+                "right": { anchor: "bottom-right", mr: 70, mb: 10 } 
             } 
         },
         "guide": { 
@@ -106,7 +106,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             w: 1360, h: 560, comp: "calendar/FrostCalendar.qml", 
             pos: { 
                 "top": { anchor: "top-center", mt: 60 }, 
-                "bottom": { anchor: "bottom-center", mb: 52 }, 
+                "bottom": { anchor: "bottom-center", mb: 58 }, 
                 "left": { anchor: "top-center", mt: 12 }, 
                 "right": { anchor: "top-center", mt: 12 } 
             } 
@@ -115,18 +115,18 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             w: "fill", h: "fill", comp: "wallpaper/FrostWallpaper.qml", 
             pos: { 
                 "top": { anchor: "fill", mt: 52 }, 
-                "bottom": { anchor: "fill" }, 
-                "left": { anchor: "fill" }, 
-                "right": { anchor: "fill" } 
+                "bottom": { anchor: "fill", mb: 52 }, 
+                "left": { anchor: "fill", ml: 60 }, 
+                "right": { anchor: "fill", mr: 60 } 
             } 
         },
         "music": { 
             w: 600, h: 320, comp: "media/FrostMusic.qml", 
             pos: { 
                 "top": { anchor: "top-left", mt: 60, ml: 12 }, 
-                "bottom": { anchor: "bottom-left", mb: 52, ml: 5 }, 
-                "left": { anchor: "top-left", mt: 5, ml: 52 }, 
-                "right": { anchor: "top-right", mt: 5, mr: 52 } 
+                "bottom": { anchor: "bottom-left", mb: 58, ml: 12 }, 
+                "left": { anchor: "top-left", mt: 10, ml: 70 }, 
+                "right": { anchor: "top-right", mt: 10, mr: 70 } 
             } 
         },
         "notifications": { 
@@ -162,7 +162,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
     let t = base[name];
     let p = t.pos[barPosition] || t.pos["top"];
 
-    let finalW = t.w === "fill" ? mw : s(t.w, scale);
+    let finalW = t.w === "fill" ? mw - s(p.ml || 0, scale) - s(p.mr || 0, scale) : s(t.w, scale);
     let finalH = t.h === "fill" ? mh - s(p.mt || 0, scale) - s(p.mb || 0, scale) : s(t.h, scale);
 
     let rx = 0;
@@ -214,7 +214,7 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
             ry = Math.floor((mh / 2) - (finalH / 2));
             break;
         case "fill":
-            rx = 0;
+            rx = s(p.ml || 0, scale);
             ry = s(p.mt || 0, scale);
             break;
         case "hidden":

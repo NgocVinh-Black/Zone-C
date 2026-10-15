@@ -6,6 +6,4 @@ Item {
     id: root
 
     FrostOsd {}
-    TrayBase {}
-    SideMusicPopout {}
 }
