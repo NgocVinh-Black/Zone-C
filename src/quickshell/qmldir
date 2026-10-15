@@ -29,6 +29,7 @@ PairDialog 1.0 network/PairDialog.qml
 FrostOverview 1.0 overview/FrostOverview.qml
 FrostTray 1.0 tray/FrostTray.qml
 FrostEmoji 1.0 emoji/FrostEmoji.qml
+FrostPower 1.0 power/FrostPower.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

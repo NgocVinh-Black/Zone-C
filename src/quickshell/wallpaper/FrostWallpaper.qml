@@ -98,7 +98,7 @@ Item {
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: 960
         layer.enabled: true
-        layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 34; saturation: 0.1 }
+        layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 64; blurMultiplier: 1.6; saturation: 0.1 }
     }
     Rectangle { anchors.fill: parent; color: Fz.scrimDeep }
     MouseArea { anchors.fill: parent; onClicked: Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "close"]) }

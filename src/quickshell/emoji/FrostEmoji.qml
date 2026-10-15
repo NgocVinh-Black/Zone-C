@@ -71,6 +71,16 @@ PanelWindow {
     Connections { target: Fz; function onOpenRequest(name, arg) { if (name === "emoji") win.open ? (win.open = false) : win.show(); } }
     IpcHandler { target: "emoji"; function toggle(): void { win.open ? (win.open = false) : win.show(); } }
 
+    // "U+1F600": walk code points (the QML engine's Array.from splits surrogate pairs)
+    function codes(s) {
+        let out = [];
+        for (let i = 0; i < s.length && out.length < 3;) {
+            let cp = s.codePointAt(i);
+            out.push("U+" + cp.toString(16).toUpperCase());
+            i += cp > 0xffff ? 2 : 1;
+        }
+        return out.join(" ");
+    }
     function insert(item) {
         if (!item) return;
         if (tab === 0) {
@@ -184,7 +194,7 @@ PanelWindow {
                         anchors.verticalCenter: parent.verticalCenter
                         width: col.width - 12 - 40 - 24 - hint.width
                         FText { width: parent.width; elide: Text.ElideRight; text: win.cur ? win.cur[1].charAt(0).toUpperCase() + win.cur[1].slice(1) : ""; px: 13.5; weight: Font.DemiBold }
-                        FText { mono: true; px: 11.5; color: Fz.sub; text: win.cur ? Array.from(win.cur[0]).slice(0, 3).map(c => "U+" + c.codePointAt(0).toString(16).toUpperCase()).join(" ") : "" }
+                        FText { mono: true; px: 11.5; color: Fz.sub; text: win.cur ? win.codes(win.cur[0]) : "" }
                     }
                 }
                 Row { id: hint; anchors.right: parent.right; anchors.rightMargin: 6; y: 20; spacing: 4

@@ -112,7 +112,7 @@ PanelWindow {
             sourceSize.width: 960
             layer.enabled: true
             // `.wall.blur`: blur(34px) saturate(110%)
-            layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 34; saturation: 0.1 }
+            layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 64; blurMultiplier: 1.6; saturation: 0.1 }
         }
         Rectangle { anchors.fill: parent; color: Fz.scrimDeep }
         MouseArea { anchors.fill: parent; onClicked: win.hide() }
