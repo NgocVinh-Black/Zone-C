@@ -145,15 +145,22 @@ Scope {
 
             // Preset co plainBorder (Zone Frost) = `.win.focus` of the design: a 2px glow ring hugging the
             // window plus a soft 28px glow (box-shadow 0 0 0 2px glow, 0 0 28px glow/.35)
-            RectangularShadow {
-                visible: overlay.local !== null && ZoneStyle.plainBorder
-                x: overlay.local ? overlay.local.x : 0
-                y: overlay.local ? overlay.local.y : 0
-                width: overlay.local ? overlay.local.w : 0
-                height: overlay.local ? overlay.local.h : 0
-                radius: root.cornerRadius
-                blur: 28; spread: 0
-                color: Qt.alpha(root.glowColor, 0.35)
+            // soft 28px glow drawn as fading rings outside the window only (a filled shadow would
+            // tint the window itself, the overlay sits above it)
+            Repeater {
+                model: overlay.local !== null && ZoneStyle.plainBorder ? 14 : 0
+                delegate: Rectangle {
+                    required property int index
+                    readonly property real off: 2 + index * 2
+                    x: overlay.local ? overlay.local.x - off : 0
+                    y: overlay.local ? overlay.local.y - off : 0
+                    width: overlay.local ? overlay.local.w + 2 * off : 0
+                    height: overlay.local ? overlay.local.h + 2 * off : 0
+                    radius: root.cornerRadius + off
+                    color: "transparent"
+                    border.width: 2
+                    border.color: Qt.alpha(root.glowColor, 0.16 * Math.pow(1 - index / 14, 2))
+                }
             }
             Rectangle {
                 visible: overlay.local !== null && ZoneStyle.plainBorder

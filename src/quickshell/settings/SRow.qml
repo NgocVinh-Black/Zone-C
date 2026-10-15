@@ -19,7 +19,9 @@ Item {
     property real minH: 56
     default property alias content: right.data
     width: parent ? parent.width : 0
-    implicitHeight: Math.max(minH, lbl.implicitHeight + 20, right.implicitHeight + 20)
+    // when the controls would squeeze the label (narrow window), they move under it
+    readonly property bool stacked: right.implicitWidth > 0 && right.implicitWidth > (r.width - lbl.x - 16) * 0.6
+    implicitHeight: stacked ? lbl.implicitHeight + right.implicitHeight + 10 + 24 : Math.max(minH, lbl.implicitHeight + 20, right.implicitHeight + 20)
 
     Rectangle {
         id: ico
@@ -40,8 +42,8 @@ Item {
     Column {
         id: lbl
         x: img.visible ? 16 + 44 + 14 : ico.visible ? 16 + ico.width + 14 : 16
-        width: Math.max(40, r.width - x - 16 - (right.implicitWidth > 0 ? right.implicitWidth + 14 : 0))
-        anchors.verticalCenter: parent.verticalCenter
+        width: r.stacked ? r.width - x - 16 : Math.max(40, r.width - x - 16 - (right.implicitWidth > 0 ? right.implicitWidth + 14 : 0))
+        y: r.stacked ? 12 : (r.height - implicitHeight) / 2
         spacing: 2
         FText { width: parent.width; elide: Text.ElideRight; text: r.title; mono: r.titleMono; px: r.titleSize; weight: r.titleWeight }
         FText { width: parent.width; elide: Text.ElideRight; visible: r.sub !== ""; text: r.sub; mono: r.subMono; px: 12.5; color: Fz.sub }
@@ -49,7 +51,7 @@ Item {
     Row {
         id: right
         anchors.right: parent.right; anchors.rightMargin: 16
-        anchors.verticalCenter: parent.verticalCenter
+        y: r.stacked ? lbl.y + lbl.implicitHeight + 10 : (r.height - implicitHeight) / 2
         spacing: 14
     }
 }
