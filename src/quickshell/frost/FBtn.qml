@@ -9,6 +9,7 @@ Rectangle {
     property string kind: ""          // "" | "pri" | "danger"
     property real fontSize: 13
     property real padX: 14
+    property bool iconRight: false     // icon after the label (e.g. "Tiếp tục →")
     property bool hovered: mouse.containsMouse
     signal clicked()
 
@@ -26,6 +27,7 @@ Rectangle {
         id: row
         anchors.centerIn: parent
         spacing: 7
+        layoutDirection: root.iconRight ? Qt.RightToLeft : Qt.LeftToRight
         FIcon { visible: root.icon !== ""; name: root.icon; size: root.iconSize; color: root.fgColor; anchors.verticalCenter: parent.verticalCenter }
         FText { visible: root.text !== ""; text: root.text; color: root.fgColor; px: root.fontSize; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
     }

@@ -33,6 +33,7 @@ ShellRoot {
     WellbeingService {}
     PowerService {}
     AccessService {}
+    FrostWelcome {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}
