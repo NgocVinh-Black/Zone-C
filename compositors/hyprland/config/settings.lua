@@ -1,15 +1,16 @@
 hl.config({
   general = {
     border_size = 0,
-    gaps_in = 4,
-    gaps_out = 6,
+    -- Zone-C Frost Workspace artboard: 12px between windows and to the screen edge, 6px under the bar
+    gaps_in = 6,
+    gaps_out = { top = 6, right = 12, bottom = 12, left = 12 },
     float_gaps = 6,
     resize_on_border = true,
     extend_border_grab_area = 30,
   },
 
   decoration = {
-    rounding = 12,
+    rounding = 18,
     active_opacity = 1.0,
     inactive_opacity = 1.0,
     blur = {

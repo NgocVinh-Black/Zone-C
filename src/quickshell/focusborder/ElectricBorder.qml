@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -14,7 +15,7 @@ Scope {
     id: root
 
     // Hinh dang vien
-    property real cornerRadius: 12
+    property real cornerRadius: 18   // Hyprland decoration.rounding, the radius of the design windows
     property real outset: 2          // khoang cach tu mep cua so ra vien
     property real glowMargin: 40     // cho de ve quang sang
     property real amplitude: ZoneStyle.borderAmplitude // do rung cua tia dien (px), theo preset
@@ -109,7 +110,7 @@ Scope {
 
             // Lop chi to vua cua so + phan vien/quang sang (khong phu toan man hinh -> do ton bo nho do hoa);
             // khong co cua so thi an han.
-            readonly property real pad: ZoneStyle.plainBorder ? root.outset + 4 : root.outset + root.glowMargin
+            readonly property real pad: ZoneStyle.plainBorder ? 40 : root.outset + root.glowMargin
             readonly property rect area: {
                 let l = overlay.local;
                 if (!l) return Qt.rect(0, 0, 0, 0);
@@ -142,17 +143,28 @@ Scope {
             width: overlay.modelData.width
             height: overlay.modelData.height
 
-            // Preset co plainBorder (Zone Frost): chi la mot duong vien manh dung yen
+            // Preset co plainBorder (Zone Frost) = `.win.focus` of the design: a 2px glow ring hugging the
+            // window plus a soft 28px glow (box-shadow 0 0 0 2px glow, 0 0 28px glow/.35)
+            RectangularShadow {
+                visible: overlay.local !== null && ZoneStyle.plainBorder
+                x: overlay.local ? overlay.local.x : 0
+                y: overlay.local ? overlay.local.y : 0
+                width: overlay.local ? overlay.local.w : 0
+                height: overlay.local ? overlay.local.h : 0
+                radius: root.cornerRadius
+                blur: 28; spread: 0
+                color: Qt.alpha(root.glowColor, 0.35)
+            }
             Rectangle {
                 visible: overlay.local !== null && ZoneStyle.plainBorder
-                x: overlay.local ? overlay.local.x - root.outset : 0
-                y: overlay.local ? overlay.local.y - root.outset : 0
-                width: overlay.local ? overlay.local.w + 2 * root.outset : 0
-                height: overlay.local ? overlay.local.h + 2 * root.outset : 0
-                radius: root.cornerRadius + root.outset
+                x: overlay.local ? overlay.local.x - 2 : 0
+                y: overlay.local ? overlay.local.y - 2 : 0
+                width: overlay.local ? overlay.local.w + 4 : 0
+                height: overlay.local ? overlay.local.h + 4 : 0
+                radius: root.cornerRadius + 2
                 color: "transparent"
                 border.width: 2
-                border.color: Qt.alpha(root.boltColor, 0.85)
+                border.color: root.glowColor
             }
 
             ShaderEffect {
