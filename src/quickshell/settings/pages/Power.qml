@@ -122,7 +122,7 @@ Column {
         SRow {
             title: Fz.tr("Nút nguồn")
             FSelect {
-                options: [Fz.tr("Hiện menu nguồn"), Fz.tr("Ngủ"), Fz.tr("Tắt máy")]
+                options: [Fz.tr("Khóa màn hình"), Fz.tr("Ngủ"), Fz.tr("Tắt máy")]
                 readonly property var values: ["ignore", "suspend", "poweroff"]
                 current: Math.max(0, values.indexOf(page.sys.key || "poweroff"))
                 onPicked: (i) => page.logind("HandlePowerKey", values[i])

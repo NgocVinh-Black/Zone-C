@@ -2,7 +2,7 @@ local mainMod = _G.mainMod or "SUPER"
 local terminal = _G.terminal or "kitty"
 local browser = "google-chrome-stable"
 local editor = "code"
-local fileExplorer = "zone-c ipc call files toggle"
+local fileExplorer = "nautilus"
 local fn = require("config/functions")
 
 -- three-finger swipes: sideways switches workspace (as before) unless turned off in Zone-C Settings,
@@ -64,8 +64,8 @@ hl.bind("CTRL + SUPER + SHIFT + Down", hl.dsp.window.move({ workspace = "e+0" })
 hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" }))
 
 -- Window groups
--- Alt+Tab: dai ung dung cua Zone-C (tha Alt de chuyen); Super+Tab: tong quan cua so (Overview artboard)
-hl.bind("ALT + TAB", hl.dsp.exec_cmd("zone-c ipc call overview alttab"))
+hl.bind("ALT + TAB", hl.dsp.window.cycle_next(), { repeating = true })
+-- Super+Tab: tong quan cua so cua Zone-C (Overview artboard)
 hl.bind("SHIFT + ALT + TAB", hl.dsp.window.cycle_next({ next = false }), { repeating = true })
 hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("zone-c ipc call overview toggle"))
 hl.bind(mainMod .. " + PERIOD", hl.dsp.exec_cmd("zone-c ipc call emoji toggle"))
@@ -154,7 +154,7 @@ hl.bind("SUPER + SHIFT + ALT + S", hl.dsp.exec_cmd("zone-c screenshot"))
 hl.bind("SUPER + ALT + R", hl.dsp.exec_cmd("zone-c screenshot --record"))
 
 -- Lock / sleep
-hl.bind("XF86PowerOff", hl.dsp.exec_cmd("zone-c ipc call power toggle"), { locked = true })
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("zone-c lock"), { locked = true })
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("zone-c lock"), { locked = true })
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd("systemctl suspend-then-hibernate"), { locked = true })
 

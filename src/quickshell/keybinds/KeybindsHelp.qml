@@ -35,7 +35,7 @@ PanelWindow {
             { k: "Super+S|Super+N", d: Fz.tr("Lịch / mạng") },
             { k: "Super+Shift+V", d: Fz.tr("Âm lượng") },
             { k: "Super+Shift+W", d: Fz.tr("Chọn hình nền") },
-            { k: "Super+H", d: Fz.tr("Cài đặt / hướng dẫn") },
+            { k: "Super+I|Super+H", d: Fz.tr("Cài đặt") },
             { k: "Super+A|Super+R", d: Fz.tr("Tự ẩn bar / tải lại shell") } ] },
         { col: 2, icon: "󰄀", title: Fz.tr("Chụp & quay màn hình"), accent: "peach", rows: [
             { k: "Print|Shift+Print", d: Fz.tr("Chụp / chụp rồi sửa") },
@@ -63,7 +63,7 @@ PanelWindow {
             { k: Fz.tr("Super+Chuột trái|Super+Z"), d: Fz.tr("Kéo cửa sổ") },
             { k: Fz.tr("Super+Chuột phải|Super+X"), d: Fz.tr("Kéo đổi kích thước") } ] },
         { col: 1, icon: "󰓩", title: Fz.tr("Nhóm cửa sổ (tab)"), accent: "teal", rows: [
-            { k: "Alt+Tab", d: Fz.tr("Chuyển ứng dụng (thả Alt để mở)") },
+            { k: "Alt+Tab", d: Fz.tr("Chuyển sang cửa sổ bên cạnh") },
             { k: "Shift+Alt+Tab", d: Fz.tr("Chuyển cửa sổ ngược lại") },
             { k: "Super+,", d: Fz.tr("Gộp / bỏ nhóm") },
             { k: "Super+U", d: Fz.tr("Tách khỏi nhóm") },
