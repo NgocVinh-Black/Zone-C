@@ -256,9 +256,9 @@ EOF
     echo -e "  \e[32m$(t "installer.deploy.sddm_success")\e[0m"
 }
 
-# float-cat: con meo noi tren man hinh khi Claude Code chay (config/float-cat -> ~/.local/share/float-cat).
-# Chay ca khi cai day du lan cap nhat. Thu muc themed/ (to mau theo theme) tu sinh lai khi chay;
-# vi tri con meo (~/.local/state/float-cat) giu nguyen.
+# float-cat: bot AI noi tren man hinh khi Claude Code chay (config/float-cat -> ~/.local/share/float-cat).
+# Chay ca khi cai day du lan cap nhat. Mau lay truc tiep tu theme Frost;
+# vi tri bot (~/.local/state/float-cat) giu nguyen.
 deploy_float_cat() {
     local REPO_ROOT="$1"
     local BIN_DIR="$2"
@@ -268,7 +268,8 @@ deploy_float_cat() {
     [ -d "$src" ] || return 0
     mkdir -p "$dest" "$HOME/.local/state/float-cat" "$BIN_DIR"
     cp -r "$src/." "$dest/"
-    chmod +x "$dest/src/build-layers.sh" "$dest/src/tint.py" 2>/dev/null || true
+    # the cat's picture layers and tinting are gone: the bot is drawn in QML
+    rm -rf "$dest/gray" "$dest/src" "$dest/themed" "$dest/cat.svg"
 
     if [ -f "$REPO_ROOT/config/local-bin/float-cat" ]; then
         cp "$REPO_ROOT/config/local-bin/float-cat" "$BIN_DIR/float-cat"

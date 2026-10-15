@@ -50,19 +50,20 @@ Desktop shell cho Hyprland, viết bằng Quickshell, theo chủ đề **sấm s
 | `Super + F` | Toàn màn hình |
 | `Super + ←/→/↑/↓` | Chuyển cửa sổ |
 | `Super + Page Up/Down` | Chuyển workspace |
-| `Super + Shift + K` / phím Copilot | Bật / tắt con mèo float-cat |
-| `Super + K` | Rồi kéo con mèo bằng chuột để dời chỗ |
+| `Super + Shift + K` / phím Copilot | Bật / tắt bot AI float-cat |
+| `Super + K` | Rồi kéo bot bằng chuột để dời chỗ |
 
-## Con mèo float-cat (Claude Code)
+## Bot AI float-cat (Claude Code)
 
-Con mèo sấm nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột. Nó thở, chớp mắt, giật tai,
-nhai que bông, vung kiếm; đám mây trôi và phóng sét. Màu tự đổi theo theme đang dùng.
+Bot AI nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột: khung bo tròn, màn hình mặt với hai mắt,
+chớp mắt, liếc nhìn, nảy nhẹ. Màu lấy theo theme Frost (sáng / tối, màu nhấn) đang dùng.
 
-Khi dùng [Claude Code](https://claude.com/claude-code), con mèo cho biết Claude đang làm gì:
-khung suy nghĩ `• • •` khi đang chạy, dấu ✓ kèm nhảy lên khi xong, "Cần bạn nè!" khi chờ bạn duyệt.
+Khi dùng [Claude Code](https://claude.com/claude-code), bot cho biết Claude đang làm gì:
+mắt nheo lại rồi màn hình chuyển thành sóng âm kèm điểm sáng bay lên khi đang chạy, dấu ✓ kèm nhảy lên và nháy mắt khi xong,
+"Cần bạn nè!" khi chờ bạn duyệt.
 
-Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
-Để con mèo đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
+Script cài đặt chép bot vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
+Để bot đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
 
 ```json
 {
@@ -78,7 +79,7 @@ Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `fl
 ```
 
 Không dùng Claude Code thì vẫn bật / tắt tay được: `float-cat toggle` hoặc `Super + Shift + K`.
-Xoá `~/.local/state/float-cat/pos.json` để đưa con mèo về góc phải dưới.
+Xoá `~/.local/state/float-cat/pos.json` để đưa bot về góc phải dưới.
 
 ## Cài đặt (Arch Linux và các bản dựa trên Arch)
 

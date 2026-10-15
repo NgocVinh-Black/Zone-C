@@ -43,8 +43,8 @@ PanelWindow {
             { k: "Super+Shift+S", d: "Flameshot" },
             { k: "Super+Shift+Alt+S", d: Fz.tr("Chụp vùng (zone-c)") },
             { k: "Super+Alt+R", d: Fz.tr("Quay màn hình") } ] },
-        { col: 2, icon: "󰄛", title: Fz.tr("Con mèo (float-cat)"), accent: "yellow", rows: [
-            { k: Fz.tr("Super+Shift+K|Phím Copilot"), d: Fz.tr("Bật / tắt con mèo") },
+        { col: 2, icon: "󰚩", title: Fz.tr("Bot AI (float-cat)"), accent: "yellow", rows: [
+            { k: Fz.tr("Super+Shift+K|Phím Copilot"), d: Fz.tr("Bật / tắt bot AI") },
             { k: "Super+K", d: Fz.tr("Rồi kéo bằng chuột để dời chỗ") } ] },
         { col: 1, icon: "󰖲", title: Fz.tr("Cửa sổ"), accent: "sapphire", rows: [
             { k: "Super+Q", d: Fz.tr("Đóng (hỏi Yes/No)") },
