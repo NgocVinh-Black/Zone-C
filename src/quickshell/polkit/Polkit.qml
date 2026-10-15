@@ -1,274 +1,119 @@
 import QtQuick
-import QtQuick.Layouts
-import QtQuick.Controls
-import QtQuick.Effects
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
-import "../reusables"
 import "../"
+import "../frost"
 
+// Polkit authentication of the Frost design (Dialogs.dc.html, right dialog). PolkitService runs the agent.
 PanelWindow {
-    id: polkitWindow
-
+    id: win
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "zone-c-polkit"
     WlrLayershell.keyboardFocus: PolkitService.isActive ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
+    exclusionMode: ExclusionMode.Ignore
+    anchors { top: true; bottom: true; left: true; right: true }
     visible: PolkitService.isActive
-    color: PolkitService.isActive ? Qt.rgba(0, 0, 0, 0.55) : "transparent"
+    color: "transparent"
 
-    property var rootObj
-    function s(val) {
-        return (rootObj && typeof rootObj.s === "function") ? rootObj.s(val) : val;
-    }
+    readonly property var flow: PolkitService.flow
+    property bool busy: false
+    property bool wheel: false
+    property bool hasFingerprint: false
+    readonly property string avatar: SystemInfo.avatarPath ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
 
-    property real crLarge: ThemeBackend.borderRadius
-    property real crMedium: Math.max(0, ThemeBackend.borderRadius - 2)
-    property real crSmall: Math.max(0, ThemeBackend.borderRadius - 4)
-
-    property real toolbarHeight: s(32)
-    property real actionHeight: s(42)
-    property bool isAuthenticating: false
-
-    function grabInputFocus() {
-        passwordInput.forceInputFocus();
-    }
-
-    onVisibleChanged: {
-        if (visible) {
-            polkitWindow.isAuthenticating = false;
-            passwordInput.clear();
-            focusRetryTimer.restart();
-        }
-    }
-
-    Timer {
-        id: focusRetryTimer
-        interval: 50
-        repeat: false
-        onTriggered: {
-            polkitWindow.grabInputFocus();
-        }
-    }
-
-    Shortcut {
-        sequence: "Escape"
-        enabled: polkitWindow.visible
-        onActivated: PolkitService.cancel()
-    }
-
-    Shortcut {
-        sequences: ["Return", "Enter"]
-        enabled: polkitWindow.visible && passwordInput.text.length > 0
-        onActivated: polkitWindow.submitPassword()
-    }
-
-    function submitPassword() {
-        if (!PolkitService.flow || polkitWindow.isAuthenticating) return;
-        polkitWindow.isAuthenticating = true;
-        PolkitService.submit(passwordInput.text);
-    }
-
+    onVisibleChanged: if (visible) { busy = false; pw.text = ""; groups.running = true; focusTimer.restart(); }
+    Timer { id: focusTimer; interval: 50; onTriggered: pw.input.forceActiveFocus() }
+    Process { id: groups; command: ["bash", "-c", "id -nG; command -v fprintd-list >/dev/null && fprintd-list \"$USER\" 2>/dev/null | grep -q finger && echo FPRINT"]
+              stdout: StdioCollector { onStreamFinished: { win.wheel = /\bwheel\b/.test(this.text); win.hasFingerprint = this.text.indexOf("FPRINT") !== -1; } } }
     Connections {
         target: PolkitService
-
-        function onRequestStarted() {
-            polkitWindow.isAuthenticating = false;
-            passwordInput.clear();
-            focusRetryTimer.restart();
-        }
-
-        function onAuthenticationFailed() {
-            polkitWindow.isAuthenticating = false;
-            passwordInput.clear();
-            passwordInput.markError();
-            focusRetryTimer.restart();
-        }
+        function onAuthenticationFailed() { win.busy = false; pw.text = ""; shake.restart(); }
     }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: PolkitService.cancel()
+    function submit() {
+        if (!win.flow || win.busy || pw.text.length === 0) return;
+        win.busy = true;
+        PolkitService.submit(pw.text);
     }
+    Shortcut { sequence: "Escape"; enabled: win.visible; onActivated: PolkitService.cancel() }
 
-    Rectangle {
-        id: dialogCard
+    Rectangle { anchors.fill: parent; color: Fz.scrimNight; MouseArea { anchors.fill: parent } }
+
+    Solid {
+        id: dialog
         anchors.centerIn: parent
-        width: s(520)
-        implicitHeight: cardLayout.implicitHeight + (polkitWindow.s(18) * 2)
-        color: ThemeBackend.base
-        radius: polkitWindow.crLarge
-        border.color: ThemeBackend.surface0
-        border.width: 1
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: Qt.rgba(0, 0, 0, 0.4)
-            shadowVerticalOffset: polkitWindow.s(4)
-            shadowBlur: 0.5
+        width: 460
+        height: body.implicitHeight + 52
+        radius: 28
+        SequentialAnimation on anchors.horizontalCenterOffset {
+            id: shake; running: false
+            NumberAnimation { to: -10; duration: 50 } NumberAnimation { to: 10; duration: 70 } NumberAnimation { to: -6; duration: 60 } NumberAnimation { to: 0; duration: 50 }
         }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {}
-        }
-
-        ColumnLayout {
-            id: cardLayout
-            anchors.fill: parent
-            anchors.margins: polkitWindow.s(18)
-            spacing: polkitWindow.s(14)
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: polkitWindow.s(12)
-
-                Rectangle {
-                    Layout.preferredWidth: polkitWindow.s(44)
-                    Layout.preferredHeight: polkitWindow.s(44)
-                    Layout.alignment: Qt.AlignTop
-                    radius: polkitWindow.crMedium
-                    color: ThemeBackend.surface0
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: {
-                            if (!PolkitService.flow || !PolkitService.flow.iconName) return "󰌾";
-                            let name = PolkitService.flow.iconName.toLowerCase();
-                            if (name.indexOf("lock") !== -1 || name.indexOf("auth") !== -1) return "󰌾";
-                            if (name.indexOf("system") !== -1 || name.indexOf("package") !== -1) return "󰏗";
-                            if (name.indexOf("drive") !== -1 || name.indexOf("disk") !== -1) return "󰋊";
-                            if (name.indexOf("network") !== -1) return "󰖩";
-                            return "󰌾";
-                        }
-                        font.family: "Iosevka Nerd Font"
-                        font.pixelSize: polkitWindow.s(22)
-                        color: ThemeBackend.mauve
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                    spacing: polkitWindow.s(3)
-
-                    Text {
-                        text: {
-                            if (PolkitService.flow && PolkitService.flow.message) return PolkitService.flow.message;
-                            return typeof I18n !== "undefined" ? I18n.t("polkit.default_message") : "An application is requesting administrative rights.";
-                        }
-                        color: ThemeBackend.text
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: polkitWindow.s(14)
-                        font.weight: Font.Bold
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
-
-                    Text {
-                        text: {
-                            if (PolkitService.flow && PolkitService.flow.actionId) return PolkitService.flow.actionId;
-                            return typeof I18n !== "undefined" ? I18n.t("polkit.default_description") : "Authentication is needed to run this action as superuser.";
-                        }
-                        color: ThemeBackend.subtext0
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: polkitWindow.s(12)
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
-                }
-
-                IconButton {
-                    Layout.preferredWidth: polkitWindow.toolbarHeight
-                    Layout.preferredHeight: polkitWindow.toolbarHeight
-                    Layout.alignment: Qt.AlignTop
-                    cornerRadius: polkitWindow.crSmall
-                    buttonIcon: "󰅖"
-                    iconFontSize: polkitWindow.s(14)
-                    accentColor: ThemeBackend.surface1
-                    textColor: ThemeBackend.text
-                    onClicked: PolkitService.cancel()
-                }
-            }
+        Column {
+            id: body
+            x: 26; y: 26
+            width: parent.width - 52
+            spacing: 18
 
             Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: errorText.implicitHeight + polkitWindow.s(12)
-                radius: polkitWindow.crSmall
-                color: Qt.alpha(ThemeBackend.red, 0.12)
-                border.color: Qt.alpha(ThemeBackend.red, 0.4)
-                border.width: 1
-                visible: PolkitService.errorMessage !== ""
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: polkitWindow.s(6)
-                    spacing: polkitWindow.s(8)
-
-                    Text {
-                        text: "󰅚"
-                        font.family: "Iosevka Nerd Font"
-                        font.pixelSize: polkitWindow.s(14)
-                        color: ThemeBackend.red
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 64; height: 64; radius: 20; color: Fz.acc
+                FIcon { anchors.centerIn: parent; name: "dg-shield"; size: 32; color: Fz.ink }
+            }
+            Column {
+                width: parent.width
+                spacing: 6
+                FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Cần xác thực"; px: 20; weight: Font.DemiBold }
+                FText {
+                    width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.25
+                    text: win.flow && win.flow.message ? win.flow.message : "Một ứng dụng cần quyền quản trị."
+                    px: 14; color: Fz.sub2
+                }
+            }
+            Card {
+                width: parent.width; height: 54
+                Row {
+                    x: 14; anchors.verticalCenter: parent.verticalCenter
+                    spacing: 10
+                    Item {
+                        width: 34; height: 34
+                        RoundImage { anchors.fill: parent; radius: 17; source: win.avatar; visible: ready }
+                        Rectangle { anchors.fill: parent; radius: 17; color: Fz.acc; visible: win.avatar === ""
+                                    FIcon { anchors.centerIn: parent; name: "zc"; size: 20; color: Fz.ink } }
                     }
-
-                    Text {
-                        id: errorText
-                        text: PolkitService.errorMessage
-                        color: ThemeBackend.red
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: polkitWindow.s(12)
-                        font.weight: Font.Medium
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        FText { text: SystemInfo.username; px: 14; weight: Font.Medium }
+                        FText { text: win.wheel ? "Quản trị (wheel)" : "Người dùng"; px: 12; color: Fz.sub }
                     }
                 }
             }
-
-            PasswordInput {
-                id: passwordInput
-                Layout.fillWidth: true
-                Layout.preferredHeight: polkitWindow.toolbarHeight + polkitWindow.s(6)
-                visible: !PolkitService.flow || PolkitService.flow.isResponseRequired !== false
-
-                baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.text
-                subTextColor: ThemeBackend.subtext0
-                errorColor: ThemeBackend.red
-                busyColor: ThemeBackend.peach
-
-                cornerRadius: polkitWindow.crSmall
-                horizontalPadding: polkitWindow.s(10)
-                verticalPadding: polkitWindow.s(4)
-
-                fontFamily: ThemeBackend.fontFamily
-                fontPixelSize: polkitWindow.s(13)
-
-                showLockIcon: true
-                showSubmitButton: true
-                lockButtonSize: polkitWindow.toolbarHeight + polkitWindow.s(2)
-
-                hasError: PolkitService.errorMessage !== ""
-                isBusy: polkitWindow.isAuthenticating
-
-                placeholderText: {
-                    if (PolkitService.flow && PolkitService.flow.inputPrompt) {
-                        let p = PolkitService.flow.inputPrompt.trim();
-                        if (p.endsWith(":")) p = p.slice(0, -1);
-                        return p;
-                    }
-                    return typeof I18n !== "undefined" ? I18n.t("polkit.password_placeholder") : "Password";
-                }
-
-                onAccepted: polkitWindow.submitPassword()
+            FInput {
+                id: pw
+                width: parent.width; height: 46
+                password: !(win.flow && win.flow.responseVisible)
+                placeholder: win.flow && win.flow.inputPrompt ? win.flow.inputPrompt.replace(/:\s*$/, "").replace(/^Password$/i, "Mật khẩu") : "Mật khẩu"
+                onAccepted: win.submit()
+            }
+            FText {
+                visible: win.flow && win.flow.supplementaryMessage !== ""
+                width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap
+                text: win.flow ? win.flow.supplementaryMessage : ""
+                px: 12.5; color: win.flow && win.flow.supplementaryIsError ? Fz.redTx : Fz.sub2
+            }
+            Row {
+                visible: win.hasFingerprint
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 8
+                FIcon { name: "dg-finger"; size: 16; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: "Hoặc chạm cảm biến vân tay"; px: 13; color: Fz.sub2 }
+            }
+            FText { anchors.horizontalCenter: parent.horizontalCenter; text: win.flow ? win.flow.actionId : ""; mono: true; px: 11.5; color: Fz.dim }
+            Row {
+                width: parent.width
+                spacing: 8
+                FBtn { width: (parent.width - 8) / 2; height: 44; text: "Hủy"; onClicked: PolkitService.cancel() }
+                FBtn { width: (parent.width - 8) / 2; height: 44; kind: "pri"; text: win.busy ? "Đang xác thực…" : "Xác thực"; onClicked: win.submit() }
             }
         }
     }
