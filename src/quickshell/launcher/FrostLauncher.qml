@@ -119,6 +119,16 @@ PanelWindow {
         if (!/^[\d\s+\-*/().,%^]+$/.test(q) || !/\d/.test(q) || !/[+\-*/%^]/.test(q)) return null;
         try { let v = Function("return (" + q.replace(/,/g, ".").replace(/\^/g, "**") + ")")(); return isFinite(v) ? String(Math.round(v * 1e10) / 1e10) : null; } catch (e) { return null; }
     }
+    // closest app name by edit distance, for the no-result hint
+    readonly property var suggestion: {
+        let q = query.trim().toLowerCase();
+        if (q.length < 3 || cmdMode) return null;
+        let dist = (a, b) => { let d = []; for (let i = 0; i <= a.length; i++) { d[i] = [i]; } for (let j = 1; j <= b.length; j++) d[0][j] = j;
+            for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1)); return d[a.length][b.length]; };
+        let best = null, bd = 99;
+        for (const a of apps) { let n = a.name.toLowerCase().slice(0, q.length + 2); let dd = dist(q, n.slice(0, Math.max(q.length, Math.min(n.length, q.length + 1)))); if (dd < bd) { bd = dd; best = a; } }
+        return bd <= Math.max(2, Math.floor(q.length / 3)) ? best : null;
+    }
     function match(list, q) {
         q = q.toLowerCase();
         if (!q) return list;
@@ -267,8 +277,24 @@ PanelWindow {
                         onHoveredChanged: if (hovered) win.sel = index
                     }
                 }
+                // EmptyStates: "Không có ứng dụng …" with the closest app name
+                Card {
+                    visible: win.results.length === 0 && win.scope === 0 && win.query.trim() !== ""
+                    width: parent.width; height: 64
+                    Row {
+                        x: 12; anchors.verticalCenter: parent.verticalCenter
+                        spacing: 10
+                        FIcon { name: "x-search"; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            FText { text: "Không có ứng dụng \"" + win.query.trim() + "\""; px: 13; weight: Font.DemiBold }
+                            FText { text: (win.suggestion ? "Có phải bạn muốn: " + win.suggestion.name + " · " : "") + "Gõ > để chạy lệnh"; px: 12; color: Fz.sub }
+                        }
+                    }
+                    MouseArea { anchors.fill: parent; enabled: win.suggestion !== null; cursorShape: Qt.PointingHandCursor; onClicked: { field.text = win.suggestion.name; } }
+                }
                 Item {
-                    visible: win.results.length === 0
+                    visible: win.results.length === 0 && !(win.scope === 0 && win.query.trim() !== "")
                     width: parent.width; height: 80
                     Row {
                         anchors.centerIn: parent

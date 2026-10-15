@@ -246,16 +246,19 @@ Item {
                 on: root.openWidget === "network"
                 label: root.ssid !== "" ? "Wi-Fi " + root.ssid : "Wi-Fi"
                 onClicked: Fz.open("network", "wifi")
-                FIcon { name: root.wifiOn ? "b-wifi" : "wifioff"; size: 15; color: wifiIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); color: wifiIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                // EmptyStates: no network → red "Ngoại tuyến"
+                readonly property bool offline: root.wifiOn && root.ssid === ""
+                readonly property color tint: offline && !on ? Fz.redTx : fgColor
+                FIcon { name: root.wifiOn && root.ssid !== "" ? "b-wifi" : "x-wifioff"; size: 15; color: wifiIt.tint; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: !root.wifiOn ? "Tắt" : (root.ssid !== "" ? root.ssid : "Ngoại tuyến"); color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
                 id: btIt
                 visible: root.shown("bt")
                 label: "Bluetooth, " + root.btConnected + " thiết bị đã kết nối"
                 onClicked: Fz.open("network", "bt")
-                FIcon { name: root.btOn ? "b-bt" : "btoff"; size: 15; color: btIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: root.btOn ? "Bluetooth" : "Tắt"; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                FIcon { name: root.btOn ? "b-bt" : "x-btoff"; size: 15; color: btIt.fgColor; opacity: root.btOn || btIt.on ? 1 : 0.55; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: root.btOn ? "Bluetooth" : "Tắt"; opacity: root.btOn || btIt.on ? 1 : 0.55; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
                 Rectangle {
                     visible: root.btConnected > 0
                     width: Math.max(16, btBadge.implicitWidth + 8); height: 16; radius: 8
@@ -292,6 +295,16 @@ Item {
                     Rectangle { x: parent.width + 2; y: 4; width: 2; height: 4; radius: 1; color: batIt.fgColor }
                 }
                 FText { mono: true; text: root.battery; color: batIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
+            }
+            BarItem {
+                // desktop without a battery (EmptyStates): plug + AC
+                id: acIt
+                visible: root.shown("bat") && !root.hasBattery
+                on: root.openWidget === "system"
+                label: "Nguồn điện AC, mở bảng hệ thống"
+                onClicked: Fz.open("system")
+                FIcon { name: "x-plug"; size: 15; color: acIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                FText { text: "AC"; color: acIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
             }
             BarSep {}
             BarItem {

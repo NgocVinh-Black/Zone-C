@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Services.Mpris
 import "../"
 import "../frost"
@@ -43,6 +44,12 @@ Item {
                             color: Fz.sub; px: 11; weight: Font.DemiBold; font.letterSpacing: 11 * 0.08 }
                     FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackTitle : "Không phát nhạc"; px: 22; weight: Font.DemiBold }
                     FText { width: parent.width; elide: Text.ElideRight; text: root.has ? MprisController.trackArtist : "Mở Spotify hoặc trình phát bất kỳ"; px: 14; color: Fz.sub }
+                    FBtn {
+                        visible: !root.has
+                        readonly property var spotify: DesktopEntries.heuristicLookup("spotify")
+                        text: spotify ? "Mở Spotify" : "Mở trình phát"
+                        onClicked: spotify ? spotify.execute() : Fz.open("launcher")
+                    }
                     Row {
                         topPadding: 6
                         spacing: 6

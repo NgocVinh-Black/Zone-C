@@ -192,7 +192,16 @@ Item {
                 }
             }
 
-            Caps { visible: root.isWifi; px: 11; leftPadding: 4; topPadding: 4; text: Networking.wifiEnabled ? "Mạng khả dụng" : "Wi-Fi đang tắt" }
+            Caps { visible: root.isWifi && Networking.wifiEnabled && root.others.length > 0; px: 11; leftPadding: 4; topPadding: 4; text: "Mạng khả dụng" }
+            EmptyState {
+                visible: root.isWifi && (!Networking.wifiEnabled || (root.others.length === 0 && root.current === null))
+                width: parent.width
+                icon: "x-wifioff"; iconColor: Fz.red; iconBg: Fz.redA(0.12)
+                title: Networking.wifiEnabled ? "Không tìm thấy mạng nào" : "Wi-Fi đang tắt"
+                message: Networking.wifiEnabled ? "Không có mạng Wi-Fi trong vùng phủ sóng. Thử lại hoặc cắm cáp Ethernet." : "Bật Wi-Fi để tìm mạng gần đây."
+                button: Networking.wifiEnabled ? "Quét lại" : "Bật Wi-Fi"
+                onClicked: { if (!Networking.wifiEnabled) Networking.wifiEnabled = true; else if (root.wifiDev) root.wifiDev.scannerEnabled = true; }
+            }
 
             Column {
                 visible: root.isWifi && Networking.wifiEnabled
@@ -259,8 +268,18 @@ Item {
             }
 
             // ======== Bluetooth ========
+            EmptyState {
+                visible: !root.isWifi && root.adapter === null
+                width: parent.width
+                icon: "x-btoff"
+                title: "Không tìm thấy bộ điều hợp Bluetooth"
+                message: "Máy chưa có USB Bluetooth hoặc thiết bị đang bị chặn bởi rfkill."
+                code: "rfkill unblock bluetooth"
+                button: "Khởi động lại bluetooth.service"; buttonPrimary: false
+                onClicked: Quickshell.execDetached(["bash", "-c", "rfkill unblock bluetooth; systemctl restart bluetooth.service"])
+            }
             Item {
-                visible: !root.isWifi
+                visible: !root.isWifi && root.adapter !== null
                 width: parent.width; height: 40
                 Lbl { x: 4; width: parent.width - 60; anchors.verticalCenter: parent.verticalCenter
                       title: "Bluetooth"; sub: "Hiển thị với tên “" + (root.adapter ? (root.adapter.name || SystemInfo.hostname) : SystemInfo.hostname) + "”" }

@@ -80,8 +80,12 @@ Item {
     readonly property var dev: UPower.displayDevice
     readonly property int pct: dev.ready ? Math.round(dev.percentage * 100) : 0
     readonly property bool hasBattery: dev.ready && dev.isLaptopBattery
+    // uptime for the desktop-without-battery card (EmptyStates)
+    property int uptimeSec: 0
+    FileView { id: uptimeFile; path: "/proc/uptime"; onLoaded: root.uptimeSec = Math.floor(Number(text().split(" ")[0])) }
+    Timer { interval: 60000; repeat: true; running: !root.hasBattery && root.visible; triggeredOnStart: true; onTriggered: uptimeFile.reload() }
     readonly property string batLeft: {
-        if (!hasBattery) return "Nguồn điện AC";
+        if (!hasBattery) { let u = root.uptimeSec, h = Math.floor(u / 3600), m = Math.floor(u % 3600 / 60); return "Không có pin · bật " + (h > 0 ? h + " giờ " : "") + m + " phút"; }
         if (dev.state === UPowerDeviceState.FullyCharged) return "Đã sạc đầy";
         let charging = dev.state === UPowerDeviceState.Charging;
         let s = charging ? dev.timeToFull : dev.timeToEmpty;
@@ -277,7 +281,9 @@ Item {
                         width: 64; height: 64; radius: 32; color: Fz.accA(0.1)
                         FIcon { anchors.centerIn: parent; name: "q-check"; size: 28; color: Fz.acc }
                     }
-                    FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Bạn đã xem hết thông báo."; color: Fz.sub; px: 13 }
+                    FText { anchors.horizontalCenter: parent.horizontalCenter; text: "Bạn đã xem hết thông báo"; px: 16; weight: Font.DemiBold }
+                    FText { anchors.horizontalCenter: parent.horizontalCenter; width: 300; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.45
+                            text: "Thông báo mới sẽ xuất hiện ở đây. Bật Không làm phiền để tạm ẩn."; color: Fz.sub; px: 13 }
                 }
             }
 
@@ -323,7 +329,7 @@ Item {
                     Row {
                         x: 16; anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
-                        FIcon { name: root.hasBattery ? "q-bat" : "plug"; size: 26; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
+                        FIcon { name: root.hasBattery ? "q-bat" : "x-plug"; size: 26; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
                             FText { text: root.hasBattery ? root.pct + "%" : "AC"; px: 20; weight: Font.Bold; color: Fz.ink; lineHeight: 1 }

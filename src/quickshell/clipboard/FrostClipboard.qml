@@ -192,7 +192,13 @@ PanelWindow {
                                     onEntered: win.sel = ci.index; onClicked: win.paste(ci.modelData) }
                     }
                 }
-                FText { visible: win.shown.length === 0; width: parent.width; topPadding: 40; bottomPadding: 40; horizontalAlignment: Text.AlignHCenter; text: "Clipboard trống."; color: Fz.sub; px: 14 }
+                EmptyState {
+                    visible: win.shown.length === 0
+                    width: parent.width; topPadding: 24; bottomPadding: 24
+                    icon: "x-clip"
+                    title: win.query !== "" ? "Không có mục khớp" : "Clipboard trống"
+                    message: win.query !== "" ? "Thử từ khóa khác." : "Sao chép văn bản hoặc ảnh, chúng sẽ được lưu ở đây."
+                }
             }
 
             Item {

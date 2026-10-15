@@ -33,3 +33,4 @@ GRow 1.0 GRow.qml
 FMenu 1.0 FMenu.qml
 FMenuItem 1.0 FMenuItem.qml
 FMenuSep 1.0 FMenuSep.qml
+EmptyState 1.0 EmptyState.qml
