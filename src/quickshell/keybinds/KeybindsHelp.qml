@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import "../"
+import "../frost"
 
 // Bang phim tat (SUPER+/). Goi qua IPC: zone-c ipc call keybinds toggle
 PanelWindow {
@@ -26,6 +27,7 @@ PanelWindow {
             { k: "Super+C", d: "VS Code" },
             { k: "Super+E", d: "Trình quản lý file" },
             { k: "Ctrl+Alt+V", d: "Chỉnh âm thanh" },
+            { k: "Super+.", d: "Emoji & ký tự" },
             { k: "Super+/", d: "Bảng phím tắt này" } ] },
         { col: 0, icon: "󰕮", title: "Bảng của Zone-C", accent: "mauve", rows: [
             { k: "Super+V", d: "Lịch sử clipboard" },
@@ -61,12 +63,14 @@ PanelWindow {
             { k: "Super+Chuột trái|Super+Z", d: "Kéo cửa sổ" },
             { k: "Super+Chuột phải|Super+X", d: "Kéo đổi kích thước" } ] },
         { col: 1, icon: "󰓩", title: "Nhóm cửa sổ (tab)", accent: "teal", rows: [
-            { k: "Alt+Tab|Shift+Alt+Tab", d: "Chuyển cửa sổ" },
+            { k: "Alt+Tab", d: "Chuyển ứng dụng (thả Alt để mở)" },
+            { k: "Shift+Alt+Tab", d: "Chuyển cửa sổ ngược lại" },
             { k: "Super+,", d: "Gộp / bỏ nhóm" },
             { k: "Super+U", d: "Tách khỏi nhóm" },
             { k: "Super+Shift+,", d: "Khoá nhóm" },
             { k: "Ctrl+Alt+Tab|Ctrl+Shift+Alt+Tab", d: "Tab kế tiếp / trước" } ] },
         { col: 2, icon: "󰍺", title: "Workspace", accent: "green", rows: [
+            { k: "Super+Tab", d: "Tổng quan cửa sổ" },
             { k: "Super+1…0", d: "Sang workspace 1–10" },
             { k: "Super+Shift+1…0|Super+Alt+1…0", d: "Chuyển cửa sổ sang đó" },
             { k: "Ctrl+Super+1…0", d: "Sang nhóm workspace" },
@@ -117,7 +121,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: active ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
     anchors { top: true; bottom: true; left: true; right: true }
-    visible: active || card.opacity > 0
+    visible: active
     color: "transparent"
 
     IpcHandler {
@@ -130,310 +134,105 @@ PanelWindow {
 
     Timer { id: focusTimer; interval: 30; onTriggered: searchInput.forceActiveFocus() }
 
-    Rectangle {
-        anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.55)
-        opacity: root.active ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
-        MouseArea { anchors.fill: parent; enabled: root.active; onClicked: root.close() }
-    }
-
-    Rectangle {
-        id: card
-        anchors.centerIn: parent
-        width: Math.min(1320, root.width - 48)
-        height: Math.min(content.implicitHeight + 20 * 2, root.height - 32)
-        color: ThemeBackend.base
-        radius: root.crLarge
-        border.color: ThemeBackend.surface0
-        border.width: 1
-        clip: true
-
-        opacity: root.active ? 1 : 0
-        scale: root.active ? 1 : 0.96
-        Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-
+    // Keybinds.dc.html: blurred wallpaper under the night scrim, title + search, cards in three columns
+    Image {
+        anchors.fill: parent; anchors.margins: -60
+        source: { let p = Wallpaper.getWallpaperPath(""); return p && !ZoneStyle.isVideo(p) ? "file://" + p : ""; }
+        fillMode: Image.PreserveAspectCrop
+        sourceSize.width: 960
         layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: Qt.rgba(0, 0, 0, 0.45)
-            shadowVerticalOffset: 6
-            shadowBlur: 0.6
-        }
+        layer.effect: MultiEffect { blurEnabled: true; blur: 1.0; blurMax: 64; blurMultiplier: 1.6; saturation: 0.1 }
+    }
+    Rectangle { anchors.fill: parent; color: Fz.scrimNight; MouseArea { anchors.fill: parent; onClicked: root.close() } }
 
-        MouseArea { anchors.fill: parent }
+    Item {
+        id: page
+        x: 80 * root.width / 1440
+        y: 60
+        width: root.width - 2 * x
+        height: root.height - 120
 
-        ColumnLayout {
-            id: content
-            anchors.fill: parent
-            anchors.margins: 20
-            spacing: 12
-
-            // Tieu de + o tim kiem
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 14
-
-                Rectangle {
-                    Layout.preferredWidth: 44
-                    Layout.preferredHeight: 44
-                    radius: root.crMedium
-                    color: Qt.alpha(ThemeBackend.mauve, 0.14)
-                    border.color: Qt.alpha(ThemeBackend.mauve, 0.35)
-                    border.width: 1
-                    Text {
-                        anchors.centerIn: parent
-                        text: "󰌌"
-                        font.family: "Iosevka Nerd Font"
-                        font.pixelSize: 22
-                        color: ThemeBackend.mauve
-                    }
-                }
-
-                ColumnLayout {
-                    spacing: 2
-                    Text {
-                        text: "Phím tắt"
-                        color: ThemeBackend.text
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: 18
-                        font.weight: Font.Bold
-                    }
-                    Text {
-                        text: "Super = phím Windows"
-                        color: ThemeBackend.subtext0
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: 12
-                    }
-                }
-
-                Item { Layout.fillWidth: true }
-
-                Rectangle {
-                    Layout.preferredWidth: 320
-                    Layout.preferredHeight: 38
-                    radius: root.crMedium
-                    color: ThemeBackend.surface0
-                    border.color: searchInput.activeFocus ? Qt.alpha(ThemeBackend.mauve, 0.6) : "transparent"
-                    border.width: 1
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 8
-
-                        Text {
-                            text: "󰍉"
-                            font.family: "Iosevka Nerd Font"
-                            font.pixelSize: 15
-                            color: ThemeBackend.subtext0
-                        }
-
+        Row {
+            id: header
+            width: parent.width
+            spacing: 16
+            FText { width: parent.width - 16 * 2 - search.width - hint.width; text: "Phím tắt"; px: 28; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+            Rectangle {
+                id: search
+                width: 360; height: 44; radius: 14
+                color: Fz.well(0.3); border.width: 1; border.color: Fz.line2
+                anchors.verticalCenter: parent.verticalCenter
+                Row {
+                    x: 14; anchors.verticalCenter: parent.verticalCenter
+                    spacing: 10
+                    FIcon { name: "kb-search"; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+                    Item {
+                        width: 360 - 28 - 27; height: 22; anchors.verticalCenter: parent.verticalCenter
                         TextInput {
-                            id: searchInput
-                            Layout.fillWidth: true
-                            color: ThemeBackend.text
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: 13
-                            selectionColor: Qt.alpha(ThemeBackend.mauve, 0.4)
-                            clip: true
+                            id: searchInput; anchors.fill: parent; verticalAlignment: TextInput.AlignVCenter
+                            color: Fz.tx; font.family: Fz.font; font.pointSize: 14.5 * 0.75; clip: true
                             onTextChanged: root.query = text
-
-                            Text {
-                                anchors.fill: parent
-                                verticalAlignment: Text.AlignVCenter
-                                visible: searchInput.text === ""
-                                text: "Tìm phím tắt…"
-                                color: ThemeBackend.overlay1
-                                font: searchInput.font
-                            }
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Escape) {
-                                    if (searchInput.text !== "") searchInput.text = "";
-                                    else root.close();
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Slash && (event.modifiers & Qt.MetaModifier)) {
-                                    root.close();
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Down || event.key === Qt.Key_PageDown) {
-                                    flick.contentY = Math.min(flick.contentY + (event.key === Qt.Key_Down ? 60 : flick.height * 0.8),
-                                                              Math.max(0, flick.contentHeight - flick.height));
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Up || event.key === Qt.Key_PageUp) {
-                                    flick.contentY = Math.max(0, flick.contentY - (event.key === Qt.Key_Up ? 60 : flick.height * 0.8));
-                                    event.accepted = true;
-                                }
-                            }
+                            Keys.onEscapePressed: root.close()
                         }
+                        FText { anchors.verticalCenter: parent.verticalCenter; visible: searchInput.text === ""; text: "Tìm phím tắt…"; color: Fz.dim; px: 14.5 }
                     }
-                }
-
-                Rectangle {
-                    Layout.preferredWidth: 38
-                    Layout.preferredHeight: 38
-                    radius: root.crMedium
-                    color: closeHover.hovered ? ThemeBackend.surface1 : ThemeBackend.surface0
-                    Text {
-                        anchors.centerIn: parent
-                        text: "󰅖"
-                        font.family: "Iosevka Nerd Font"
-                        font.pixelSize: 15
-                        color: ThemeBackend.text
-                    }
-                    HoverHandler { id: closeHover }
-                    TapHandler { onTapped: root.close() }
                 }
             }
+            Row {
+                id: hint
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+                FKbd { text: "Super" } FKbd { text: "/" }
+                FText { text: "để đóng"; px: 13; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter }
+            }
+        }
 
-            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: ThemeBackend.surface0 }
-
-            Flickable {
-                id: flick
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                implicitHeight: columns.implicitHeight
-                contentHeight: columns.implicitHeight
-                clip: true
-                boundsBehavior: Flickable.StopAtBounds
-
-                RowLayout {
-                    id: columns
-                    width: flick.width
-                    spacing: 14
-
-                    Repeater {
-                        model: 3
-                        delegate: ColumnLayout {
-                            id: colItem
-                            required property int index
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 1
-                            Layout.alignment: Qt.AlignTop
-                            spacing: 10
-
-                            Repeater {
-                                model: root.sections.filter(sec => sec.col === colItem.index)
-                                delegate: Rectangle {
-                                    id: secCard
-                                    required property var modelData
-                                    readonly property var shown: modelData.rows.filter(r => root.rowMatches(r))
-                                    readonly property color accent: ThemeBackend[modelData.accent] || ThemeBackend.mauve
-
-                                    visible: shown.length > 0
-                                    Layout.fillWidth: true
-                                    implicitHeight: secLayout.implicitHeight + 12 * 2
-                                    radius: root.crMedium
-                                    color: ThemeBackend.mantle
-                                    border.color: ThemeBackend.surface0
-                                    border.width: 1
-
-                                    ColumnLayout {
-                                        id: secLayout
-                                        anchors.fill: parent
-                                        anchors.margins: 12
-                                        spacing: 5
-
-                                        RowLayout {
-                                            spacing: 8
-                                            Text {
-                                                text: secCard.modelData.icon
-                                                font.family: "Iosevka Nerd Font"
-                                                font.pixelSize: 15
-                                                color: secCard.accent
-                                            }
-                                            Text {
-                                                text: secCard.modelData.title.toUpperCase()
-                                                color: secCard.accent
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: 12
-                                                font.weight: Font.Bold
-                                                font.letterSpacing: 0.8
-                                            }
-                                        }
-
-                                        Repeater {
-                                            model: secCard.shown
-                                            delegate: RowLayout {
-                                                id: rowItem
-                                                required property var modelData
-                                                Layout.fillWidth: true
-                                                spacing: 10
-
-                                                Text {
-                                                    Layout.fillWidth: true
-                                                    Layout.alignment: Qt.AlignVCenter
-                                                    text: rowItem.modelData.d
-                                                    color: ThemeBackend.subtext1
-                                                    font.family: ThemeBackend.fontFamily
-                                                    font.pixelSize: 12
-                                                    wrapMode: Text.Wrap
-                                                }
-
-                                                Flow {
-                                                    id: keyFlow
-                                                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                                                    Layout.maximumWidth: secCard.width * 0.58
-                                                    Layout.preferredWidth: Math.min(implicitW, secCard.width * 0.58)
-                                                                                                        spacing: 4
-                                                    property real implicitW: 0
-
-                                                    Repeater {
-                                                        model: rowItem.modelData.k.split("|")
-                                                        delegate: Row {
-                                                            id: altRow
-                                                            required property string modelData
-                                                            required property int index
-                                                            spacing: 3
-                                                            layoutDirection: Qt.LeftToRight
-                                                            Component.onCompleted: keyFlow.implicitW += width + 4
-
-                                                            Repeater {
-                                                                model: root.splitKey(altRow.modelData)
-                                                                delegate: Rectangle {
-                                                                    required property string modelData
-                                                                    implicitWidth: Math.max(20, capText.implicitWidth + 12)
-                                                                    implicitHeight: 20
-                                                                    radius: root.crSmall
-                                                                    color: ThemeBackend.surface0
-                                                                    border.color: ThemeBackend.surface1
-                                                                    border.width: 1
-                                                                    Rectangle {
-                                                                        anchors.left: parent.left
-                                                                        anchors.right: parent.right
-                                                                        anchors.bottom: parent.bottom
-                                                                        anchors.margins: 1
-                                                                        height: 2
-                                                                        radius: 1
-                                                                        color: ThemeBackend.crust
-                                                                        opacity: 0.6
-                                                                    }
-                                                                    Text {
-                                                                        id: capText
-                                                                        anchors.centerIn: parent
-                                                                        anchors.verticalCenterOffset: -1
-                                                                        text: parent.modelData
-                                                                        color: ThemeBackend.text
-                                                                        font.family: ThemeBackend.fontFamily
-                                                                        font.pixelSize: 11
-                                                                        font.weight: Font.DemiBold
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            Text {
-                                                                visible: altRow.index < rowItem.modelData.k.split("|").length - 1
-                                                                anchors.verticalCenter: parent.verticalCenter
-                                                                text: "/"
-                                                                leftPadding: 2
-                                                                color: ThemeBackend.overlay0
-                                                                font.family: ThemeBackend.fontFamily
-                                                                font.pixelSize: 12
-                                                            }
-                                                        }
-                                                    }
+        Flickable {
+            y: header.height + 20
+            width: parent.width
+            height: parent.height - y
+            contentHeight: cols.height
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            Row {
+                id: cols
+                width: parent.width
+                spacing: 16
+                Repeater {
+                    model: 3
+                    delegate: Column {
+                        required property int index
+                        readonly property int colIndex: index
+                        width: (cols.width - 32) / 3
+                        spacing: 16
+                        Repeater {
+                            model: root.sections.filter(s => s.col === colIndex && s.rows.some(r => root.rowMatches(r)))
+                            delegate: Glass {
+                                required property var modelData
+                                width: parent.width
+                                height: sc.implicitHeight + 32
+                                radius: 20
+                                Column {
+                                    id: sc
+                                    x: 18; y: 16
+                                    width: parent.width - 36
+                                    Caps { px: 11; bottomPadding: 6; text: modelData.title }
+                                    Repeater {
+                                        model: modelData.rows.filter(r => root.rowMatches(r))
+                                        delegate: Item {
+                                            required property var modelData
+                                            required property int index
+                                            width: sc.width
+                                            height: Math.max(36, label.implicitHeight + 14)
+                                            Rectangle { visible: index > 0; width: parent.width; height: 1; color: Fz.fg(0.06) }
+                                            FText { id: label; width: parent.width - keys.width - 10; wrapMode: Text.Wrap; text: modelData.d; px: 13.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+                                            Row {
+                                                id: keys
+                                                anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+                                                spacing: 6
+                                                Repeater {
+                                                    model: modelData.k.split("|")
+                                                    delegate: FKbd { required property var modelData; text: modelData.split("+").join(" + ").replace(/ \+  \+ /g, " + +") }
                                                 }
                                             }
                                         }
@@ -443,15 +242,6 @@ PanelWindow {
                         }
                     }
                 }
-            }
-
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: "Gõ để tìm   ·   ↑ ↓ cuộn   ·   Esc / Super+/ để đóng"
-                color: ThemeBackend.overlay1
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: 11
             }
         }
     }
