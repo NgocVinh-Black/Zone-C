@@ -16,7 +16,10 @@ import "../frost"
 Item {
     id: root
     property var barWindow
-    anchors.fill: parent
+    // window is wider than the bar (shadow room); keep the 52px bar on its edge
+    height: parent ? parent.height : 0
+    width: 60
+    x: onRight && parent ? parent.width - width : 0
     visible: barWindow ? barWindow.isVertical : false
     readonly property bool onRight: barWindow ? barWindow.barPosition === "right" : false
     function getWidget(name) { return null; }
@@ -98,8 +101,8 @@ Item {
             Column {
                 id: clockCol
                 anchors.horizontalCenter: parent.horizontalCenter
-                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, DateTime.is12Hour ? "hh" : "HH"); mono: true; px: 17; weight: Font.DemiBold; lineHeight: 1.1 }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, "mm"); mono: true; px: 17; weight: Font.DemiBold; lineHeight: 1.1 }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, DateTime.is12Hour ? "hh" : "HH"); mono: true; px: 17; weight: Font.DemiBold; css: 1.1 }
+                FText { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(DateTime.now, "mm"); mono: true; px: 17; weight: Font.DemiBold; css: 1.1 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter; topPadding: 4; text: Fz.dayShort(DateTime.now) + " " + DateTime.now.getDate(); px: 10; color: Fz.sub }
                 Item { width: 1; height: 8 }
                 Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: 20; height: 1; color: Fz.fg(0.1) }
@@ -148,13 +151,13 @@ Item {
         WlrLayershell.layer: WlrLayer.Top
         exclusionMode: ExclusionMode.Ignore
         anchors { top: true; left: !root.onRight; right: root.onRight }
-        margins { top: 150 - 52; left: 72 - 60; right: 72 - 60 }
-        implicitWidth: 380 + 40; implicitHeight: mcard.height + 40
+        margins { top: 150 - 52 - 60; left: 72 - 60 - 60; right: 72 - 60 - 60 }
+        implicitWidth: 380 + 160; implicitHeight: mcard.height + 180
         color: "transparent"
         mask: Region { item: mcard }
         Glass {
             id: mcard
-            x: 20; y: 20
+            x: 80; y: 80
             width: 380; height: mcol.implicitHeight + 36
             readonly property var player: MprisController.activePlayer
             readonly property bool has: player !== null && MprisController.trackTitle !== ""

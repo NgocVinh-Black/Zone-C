@@ -98,7 +98,7 @@ Scope {
         WlrLayershell.layer: WlrLayer.Top
         exclusionMode: ExclusionMode.Ignore
         anchors { top: true; bottom: true; right: true }
-        implicitWidth: 460
+        implicitWidth: 540   // panels plus room for their shadow
         color: "transparent"
         mask: Region {
             Region { item: railBox }

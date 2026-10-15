@@ -23,10 +23,10 @@ PanelWindow {
     margins {
         top: (barPos === "top" ? 64 : 16) - 40
         bottom: (barPos === "bottom" ? 64 : 16) - 40
-        right: hpos === "right" ? (barPos === "right" ? 76 : 16) - 40 : 0
-        left: hpos === "left" ? (barPos === "left" ? 76 : 16) - 40 : 0
+        right: hpos === "right" ? (barPos === "right" ? 76 : 16) - 80 : 0
+        left: hpos === "left" ? (barPos === "left" ? 76 : 16) - 80 : 0
     }
-    implicitWidth: 380 + 80
+    implicitWidth: 390 + 160   // the cards plus room for their shadow
     color: "transparent"
     visible: NotificationManager.activePopupsModel.count > 0 && !NotificationManager.sysPanelOpen
     mask: Region { item: list }
@@ -64,7 +64,7 @@ PanelWindow {
 
     ListView {
         id: list
-        x: win.hpos === "center" ? (win.width - width) / 2 : 40
+        x: win.hpos === "center" ? (win.width - width) / 2 : 80
         y: win.atBottom ? win.height - 40 - height : 40
         width: 380
         height: Math.min(contentHeight, win.height - 80)

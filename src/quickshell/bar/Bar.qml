@@ -259,8 +259,11 @@ Variants {
                 right: barPosition === "right" || !barWindow.isVertical
             }
 
-            implicitHeight: barWindow.isVertical ? 0 : (barHeight + (isFill ? cornerRadius : edgePadding))
-            implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding)) : 0
+            // transparent room past the bar for the pills' drop shadow (outside the input mask and the
+            // reserved zone, so it neither takes clicks nor pushes windows)
+            readonly property int shadowPad: isFill ? 0 : 36
+            implicitHeight: barWindow.isVertical ? 0 : (barHeight + (isFill ? cornerRadius : edgePadding) + shadowPad)
+            implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding) + shadowPad) : 0
 
             margins {
                 top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(6)))

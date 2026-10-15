@@ -16,8 +16,9 @@ PanelWindow {
     // Settings → OSD "Vị trí": top / bottom / right
     readonly property string pos: Config.getSetting("osd.position", "bottom")
     anchors { bottom: pos !== "top"; top: pos === "top" || pos === "right"; left: pos !== "right"; right: true }
-    implicitHeight: 58 + 60 + 40
-    implicitWidth: 340 + 120
+    // room for the glass shadow (70px blur, 30px down) inside the window
+    implicitHeight: 58 + 60 + 120
+    implicitWidth: 340 + 160
     color: "transparent"
     visible: OsdController.isVisible || fade.running
     mask: Region { item: pill }
@@ -49,7 +50,7 @@ PanelWindow {
         height: 58
         width: win.slider ? 340 : content.implicitWidth + 40
         x: win.pos === "right" ? win.width - width - 24 : win.slider ? 60 : (win.width - width) / 2
-        y: win.pos === "right" ? (win.height - height) / 2 : win.pos === "top" ? 60 : 40
+        y: win.pos === "right" ? (win.height - height) / 2 : win.pos === "top" ? 60 : win.height - height - 60
         color: win.accent ? Fz.acc : Fz.glass
         opacity: OsdController.isVisible ? 1 : 0
         Behavior on opacity { NumberAnimation { id: fade; duration: 160 } }

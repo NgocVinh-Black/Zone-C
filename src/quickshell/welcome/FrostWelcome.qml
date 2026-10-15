@@ -92,7 +92,7 @@ PanelWindow {
                             layer.effect: MultiEffect { shadowEnabled: true; shadowColor: Fz.glowA(0.45); shadowBlur: 1; blurMax: 30 } }
                 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Chào mừng đến với Zone-C"); px: 40; weight: Font.DemiBold; font.letterSpacing: -1 }
-                FText { anchors.horizontalCenter: parent.horizontalCenter; width: 520; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.5
+                FText { anchors.horizontalCenter: parent.horizontalCenter; width: 520; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; css: 1.5
                         text: Fz.tr("Desktop shell cho Hyprland, viết bằng Quickshell. Vài bước để chọn ngôn ngữ, giao diện và bố cục."); px: 16; color: Fz.sub2 }
                 FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("bởi @NgocVinh-Black · v") + Updater.localVersion; px: 13; color: Fz.sub }
             }

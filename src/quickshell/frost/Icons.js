@@ -8,6 +8,10 @@ var extra = {
     "w-storm": {"parts":[{"d":"M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973","fill":false,"stroke":true,"sw":null},{"d":"m13 12-3 5h4l-3 5","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-snow": {"parts":[{"d":"M2 12h20M12 2v20m8-6-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-fog": {"parts":[{"d":"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242","fill":false,"stroke":true,"sw":null},{"d":"M16 17H7M17 21H9","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
+    "x-cpu": {"parts":[{"d":"M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 8h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z","fill":false,"stroke":true,"sw":null},{"d":"M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
+    "x-ram": {"parts":[{"d":"M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.8V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.8z","fill":false,"stroke":true,"sw":null},{"d":"M6 19v-3M10 19v-3M14 19v-3M18 19v-3M8 11V9M12 11V9M16 11V9","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
+    "x-bolt": {"parts":[{"d":"M13 2 4.5 13.5H11L10 22l8.5-11.5H12z","fill":true,"stroke":false,"sw":null}],"vb":[0,0,24,24]},
+    "x-temp": {"parts":[{"d":"M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-rain": {"parts":[{"d":"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242","fill":false,"stroke":true,"sw":null},{"d":"M16 14v6M8 14v6M12 16v6","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]}
 };
 

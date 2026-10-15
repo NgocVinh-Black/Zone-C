@@ -37,7 +37,7 @@ Glass {
             Column {
                 id: info
                 FText { text: (root.city ? root.city + " · " : "") + Fz.weekdays[DateTime.now.getDay()]; color: Fz.sub; px: 13 }
-                FText { topPadding: 6; text: Fz.deg(Weather.currentTemp); px: 56; weight: Font.Light; font.letterSpacing: -2; lineHeight: 1 }
+                FText { topPadding: 6; text: Fz.deg(Weather.currentTemp); px: 56; weight: Font.Light; font.letterSpacing: -2; css: 1 }
                 FText { topPadding: 6; text: Fz.weatherDesc(Weather.currentIcon) + (root.today ? Fz.tr(" · Cao ") + Fz.deg(root.today.max) + Fz.tr(" Thấp ") + Fz.deg(root.today.min) : ""); color: Fz.sub2; px: 13.5 }
             }
             FIcon { anchors.right: parent.right; name: Fz.weatherIcon(Weather.currentIcon); size: 52; strokeWidth: 1.2; color: Fz.acc }
@@ -51,10 +51,11 @@ Glass {
                 delegate: Rectangle {
                     required property var modelData
                     width: (col.width - 20) / 6
-                    height: 64
+                    height: hcol.implicitHeight + 18      // `.hr`: padding 9px 0
                     radius: 12
                     color: modelData.cur ? Fz.acc : Fz.fg(0.05)
                     Column {
+                        id: hcol
                         anchors.centerIn: parent
                         spacing: 5
                         FText { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.t; px: 11; color: modelData.cur ? Fz.ink : Fz.sub2 }

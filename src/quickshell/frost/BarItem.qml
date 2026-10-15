@@ -25,6 +25,22 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 8
     }
+    // tooltip: the label in a small glass bubble under the item after a short hover (the bar window
+    // keeps 36px of transparent room below the bar for shadows, which fits it)
+    property bool tipShown: false
+    Timer { interval: 600; running: root.hovered && root.label !== "" && !root.on; onTriggered: root.tipShown = true }
+    onHoveredChanged: if (!hovered) tipShown = false
+    Rectangle {
+        visible: root.tipShown && root.hovered
+        z: 100
+        y: root.height + 6
+        x: Math.round((root.width - width) / 2)
+        width: tip.implicitWidth + 18; height: 24; radius: 8
+        color: Fz.mantle
+        border.width: 1; border.color: Fz.line2
+        FText { id: tip; anchors.centerIn: parent; text: root.label; px: 12; color: Fz.tx }
+    }
+
     MouseArea {
         id: mouse
         anchors.fill: parent

@@ -9,10 +9,9 @@ Item {
     implicitWidth: row.implicitWidth + 8
     implicitHeight: 40
 
-    RectangularShadow {
-        anchors.fill: bg
+    OuterShadow {
         radius: 14
-        offset.y: Fz.light ? 8 : 10
+        offsetY: Fz.light ? 8 : 10
         blur: Fz.light ? 24 : 30
         color: Fz.light ? Qt.rgba(31 / 255, 45 / 255, 53 / 255, 0.14) : Qt.rgba(0, 0, 0, 0.28)
     }

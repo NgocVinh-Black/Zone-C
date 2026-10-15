@@ -109,7 +109,7 @@ PanelWindow {
                     spacing: 6
                     FText { text: Fz.tr("Đóng ") + root.appName + "?"; px: 20; weight: Font.DemiBold }
                     FText {
-                        width: parent.width; wrapMode: Text.Wrap; lineHeight: 1.25; px: 14; color: Fz.sub2
+                        width: parent.width; wrapMode: Text.Wrap; css: 1.25; px: 14; color: Fz.sub2
                         text: root.proc
                             ? (root.isTerminal ? "Terminal" : root.appName) + Fz.tr(" đang chạy một tiến trình. Đóng bây giờ sẽ dừng tiến trình") + (root.risky ? Fz.tr(" và có thể làm hỏng lần cập nhật.") : ".")
                             : Fz.tr("Nội dung chưa lưu trong ") + (root.winTitle || root.appName) + Fz.tr(" có thể bị mất.")

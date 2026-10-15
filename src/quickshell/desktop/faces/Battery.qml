@@ -27,7 +27,7 @@ Glass {
         FIcon { name: root.charging ? "plug" : "w-bat"; size: 30; color: Fz.acc; anchors.verticalCenter: parent.verticalCenter }
         Column {
             anchors.verticalCenter: parent.verticalCenter
-            FText { text: root.pct + "%"; px: 30; weight: Font.Light; lineHeight: 1 }
+            FText { text: root.pct + "%"; px: 30; weight: Font.Light; css: 1 }
             FText { text: root.timeLeft; color: Fz.sub2; px: 13 }
         }
     }

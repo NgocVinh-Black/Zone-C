@@ -15,7 +15,7 @@ Glass {
         FIcon { anchors.verticalCenter: parent.verticalCenter; name: Fz.weatherIcon(Weather.currentIcon); size: 54; strokeWidth: 1.2; color: Fz.acc }
         Column {
             anchors.verticalCenter: parent.verticalCenter
-            FText { text: Fz.deg(Weather.currentTemp); px: 48; weight: Font.Light; lineHeight: 1 }
+            FText { text: Fz.deg(Weather.currentTemp); px: 48; weight: Font.Light; css: 1 }
             FText { text: (city ? city + " · " : "") + Fz.weatherDesc(Weather.currentIcon); color: Fz.sub2; px: 13 }
         }
     }

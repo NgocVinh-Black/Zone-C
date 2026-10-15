@@ -14,7 +14,11 @@ import "../frost"
 Item {
     id: root
     property var barWindow
-    anchors.fill: parent
+    // the bar window is taller than the bar (shadow room): the bar keeps to its edge
+    x: 0
+    width: parent ? parent.width : 0
+    height: barWindow ? barWindow.barHeight : 40
+    y: barWindow && barWindow.barPosition === "bottom" ? parent.height - height : 0
 
     // Bar.qml reads these to size its input mask.
     readonly property real dynamicMinX: 0
@@ -69,6 +73,8 @@ Item {
     readonly property bool muted: Audio.defaultSink && Audio.defaultSink.audio ? Audio.defaultSink.audio.muted : false
     readonly property bool hasBattery: UPower.displayDevice.ready && UPower.displayDevice.isLaptopBattery
     readonly property int battery: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
+    readonly property bool charging: UPower.displayDevice.state === UPowerDeviceState.Charging
+    readonly property bool onAc: charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged || UPower.displayDevice.state === UPowerDeviceState.PendingCharge || !UPower.onBattery
     readonly property int notifCount: NotificationManager.globalNotificationHistory ? NotificationManager.globalNotificationHistory.count : 0
     property string kbLayout: "VI"
     Process {
@@ -273,13 +279,18 @@ Item {
             BarItem {
                 id: sysIt
                 on: root.openWidget === "taskmanager"
-                label: "CPU " + SysData.cpu + "%, RAM " + SysData.ramPercent + "%"
+                label: "CPU " + SysData.cpu + "% · RAM " + SysData.ramPercent + "%" + (SysData.temp > 0 ? " · " + SysData.temp + "°C" : "")
                 onClicked: Fz.open("taskmanager")
-                FIcon { name: "a-pulse"; size: 15; color: sysIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
-                FText { mono: true; text: SysData.cpu + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: "RAM"; color: sysIt.fgColor; opacity: 0.7; px: 11; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
-                FText { mono: true; text: SysData.ramPercent + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
-                FText { visible: SysData.temp > 0; mono: true; text: SysData.temp + "°"; color: SysData.temp >= 85 ? Fz.yellow : sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
+                // icon + value pairs, as compact as the rest of the bar
+                Row { spacing: 4; anchors.verticalCenter: parent.verticalCenter
+                      FIcon { name: "x-cpu"; size: 14; color: sysIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                      FText { mono: true; text: SysData.cpu + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter } }
+                Row { spacing: 4; anchors.verticalCenter: parent.verticalCenter
+                      FIcon { name: "x-ram"; size: 14; color: sysIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                      FText { mono: true; text: SysData.ramPercent + "%"; color: sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter } }
+                Row { visible: SysData.temp > 0; spacing: 2; anchors.verticalCenter: parent.verticalCenter
+                      FIcon { name: "x-temp"; size: 14; color: SysData.temp >= 85 ? Fz.yellow : sysIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                      FText { mono: true; text: SysData.temp + "°"; color: SysData.temp >= 85 ? Fz.yellow : sysIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter } }
             }
         }
 
@@ -303,7 +314,12 @@ Item {
                     label: modelData.tooltipTitle || modelData.title || modelData.id
                     onClicked: modelData.onlyMenu ? Fz.open("tray") : modelData.activate()
                     onRightClicked: Fz.open("tray")
-                    Image { width: 16; height: 16; source: modelData.icon; sourceSize: Qt.size(32, 32); anchors.verticalCenter: parent.verticalCenter }
+                    Item {
+                        width: 16; height: 16; anchors.verticalCenter: parent.verticalCenter
+                        Image { id: trayImg; anchors.fill: parent; source: modelData.icon; sourceSize: Qt.size(32, 32); visible: status === Image.Ready }
+                        // apps whose icon can't be loaded get a neutral glyph instead of an empty box
+                        FIcon { anchors.centerIn: parent; visible: trayImg.status !== Image.Ready; name: "t-open"; size: 15; color: Fz.sub2 }
+                    }
                 }
             }
             BarItem {
@@ -321,21 +337,23 @@ Item {
                 id: wifiIt
                 visible: root.shown("wifi")
                 on: root.openWidget === "network"
-                label: root.ssid !== "" ? "Wi-Fi " + root.ssid : "Wi-Fi"
+                padX: 9
+                label: !root.wifiOn ? "Wi-Fi · " + Fz.tr("Tắt") : (root.ssid !== "" ? "Wi-Fi · " + root.ssid : "Wi-Fi · " + Fz.tr("Ngoại tuyến"))
                 onClicked: Fz.open("network", "wifi")
                 // EmptyStates: no network → red "Ngoại tuyến"
                 readonly property bool offline: root.wifiOn && root.ssid === ""
                 readonly property color tint: offline && !on ? Fz.redTx : fgColor
                 FIcon { name: root.wifiOn && root.ssid !== "" ? "b-wifi" : "x-wifioff"; size: 15; color: wifiIt.tint; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: !root.wifiOn ? Fz.tr("Tắt") : (root.ssid !== "" ? root.ssid : Fz.tr("Ngoại tuyến")); width: Math.min(implicitWidth, 120); elide: Text.ElideRight; color: wifiIt.tint; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+
             }
             BarItem {
                 id: btIt
                 visible: root.shown("bt")
-                label: "Bluetooth, " + root.btConnected + Fz.tr(" thiết bị đã kết nối")
+                padX: 9
+                label: root.btOn ? "Bluetooth · " + root.btConnected + Fz.tr(" thiết bị đã kết nối") : "Bluetooth · " + Fz.tr("Tắt")
                 onClicked: Fz.open("network", "bt")
                 FIcon { name: root.btOn ? "b-bt" : "x-btoff"; size: 15; color: btIt.fgColor; opacity: root.btOn || btIt.on ? 1 : 0.55; anchors.verticalCenter: parent.verticalCenter }
-                FText { text: root.btOn ? "Bluetooth" : Fz.tr("Tắt"); opacity: root.btOn || btIt.on ? 1 : 0.55; color: btIt.fgColor; px: 13; weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+
                 Rectangle {
                     visible: root.btConnected > 0
                     width: Math.max(16, btBadge.implicitWidth + 8); height: 16; radius: 8
@@ -360,7 +378,7 @@ Item {
                 id: batIt
                 visible: root.shown("bat") && (root.hasBattery)
                 on: root.openWidget === "system"
-                label: "Pin " + root.battery + Fz.tr(" phần trăm, mở bảng hệ thống")
+                label: Fz.trAs("Pin ", "Battery ") + root.battery + "%" + (root.charging ? " · " + Fz.tr("Đang sạc") : root.onAc ? " · " + Fz.trAs("Đã cắm sạc", "Plugged in") : "")
                 onClicked: Fz.open("system")
                 Item {
                     width: 24; height: 12
@@ -372,6 +390,8 @@ Item {
                     }
                     Rectangle { x: parent.width + 2; y: 4; width: 2; height: 4; radius: 1; color: batIt.fgColor }
                 }
+                // plugged in: a bolt before the level (green while charging)
+                FIcon { visible: root.onAc; name: "x-bolt"; size: 13; color: root.charging && !batIt.on ? Fz.green : batIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
                 FText { mono: true; text: root.battery; color: batIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {

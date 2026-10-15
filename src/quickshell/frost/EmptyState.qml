@@ -21,7 +21,7 @@ Column {
         FIcon { anchors.centerIn: parent; name: root.icon; size: 28; color: root.iconColor }
     }
     FText { anchors.horizontalCenter: parent.horizontalCenter; width: Math.min(implicitWidth, root.width); horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; text: root.title; px: 16; weight: Font.DemiBold }
-    FText { visible: root.message !== ""; anchors.horizontalCenter: parent.horizontalCenter; width: Math.min(300, root.width); horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.45; text: root.message; px: 13; color: Fz.sub }
+    FText { visible: root.message !== ""; anchors.horizontalCenter: parent.horizontalCenter; width: Math.min(300, root.width); horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; css: 1.45; text: root.message; px: 13; color: Fz.sub }
     Rectangle {
         visible: root.code !== ""
         anchors.horizontalCenter: parent.horizontalCenter

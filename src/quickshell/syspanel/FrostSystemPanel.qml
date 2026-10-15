@@ -240,7 +240,7 @@ Item {
                                 spacing: 2
                                 FText { width: parent.width; elide: Text.ElideRight; text: nt.model.appName + " · " + root.ago(nt.model.timestamp); color: Fz.sub; px: 11.5 }
                                 FText { width: parent.width; elide: Text.ElideRight; text: nt.model.summary; px: 13.5; weight: Font.DemiBold }
-                                FText { width: parent.width; visible: text !== ""; text: nt.model.body; textFormat: Text.PlainText; color: Fz.sub2; px: 12.5; wrapMode: Text.Wrap; maximumLineCount: 3; lineHeight: 1.15 }
+                                FText { width: parent.width; visible: text !== ""; text: nt.model.body; textFormat: Text.PlainText; color: Fz.sub2; px: 12.5; wrapMode: Text.Wrap; maximumLineCount: 3; css: 1.15 }
                                 Item {
                                     visible: nt.showImg
                                     width: parent.width; height: visible ? 76 : 0
@@ -282,7 +282,7 @@ Item {
                         FIcon { anchors.centerIn: parent; name: "q-check"; size: 28; color: Fz.acc }
                     }
                     FText { anchors.horizontalCenter: parent.horizontalCenter; text: Fz.tr("Bạn đã xem hết thông báo"); px: 16; weight: Font.DemiBold }
-                    FText { anchors.horizontalCenter: parent.horizontalCenter; width: 300; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.45
+                    FText { anchors.horizontalCenter: parent.horizontalCenter; width: 300; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; css: 1.45
                             text: Fz.tr("Thông báo mới sẽ xuất hiện ở đây. Bật Không làm phiền để tạm ẩn."); color: Fz.sub; px: 13 }
                 }
             }
@@ -332,7 +332,7 @@ Item {
                         FIcon { name: root.hasBattery ? "q-bat" : "x-plug"; size: 26; color: Fz.ink; anchors.verticalCenter: parent.verticalCenter }
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
-                            FText { text: root.hasBattery ? root.pct + "%" : "AC"; px: 20; weight: Font.Bold; color: Fz.ink; lineHeight: 1 }
+                            FText { text: root.hasBattery ? root.pct + "%" : "AC"; px: 20; weight: Font.Bold; color: Fz.ink; css: 1 }
                             FText { topPadding: 3; text: root.batLeft; px: 11.5; weight: Font.Medium; color: Fz.ink }
                         }
                     }

@@ -11,13 +11,11 @@ Item {
     property bool shadow: true
     default property alias content: inner.data
 
-    RectangularShadow {
-        anchors.fill: bg
+    OuterShadow {
         visible: root.shadow
         radius: root.radius
-        offset.y: Fz.light ? 20 : 30
+        offsetY: Fz.light ? 20 : 30
         blur: Fz.light ? 50 : 70
-        spread: 0
         color: Fz.light ? Qt.rgba(31 / 255, 45 / 255, 53 / 255, 0.16) : Qt.rgba(0, 0, 0, 0.38)
     }
     Rectangle {

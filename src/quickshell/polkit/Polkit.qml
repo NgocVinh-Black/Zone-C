@@ -65,7 +65,7 @@ PanelWindow {
                 spacing: 6
                 FText { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: Fz.tr("Cần xác thực"); px: 20; weight: Font.DemiBold }
                 FText {
-                    width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; lineHeight: 1.25
+                    width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap; css: 1.25
                     text: win.flow && win.flow.message ? win.flow.message : Fz.tr("Một ứng dụng cần quyền quản trị.")
                     px: 14; color: Fz.sub2
                 }
