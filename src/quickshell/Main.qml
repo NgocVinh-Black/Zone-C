@@ -332,7 +332,7 @@ PanelWindow {
     // Bang nang, it dung (trang cai dat, bo chon hinh nen) chi nap khi mo va duoc giai phong
     // sau khi dong mot luc (_lazyWidgets) de quickshell khong giu chung trong RAM.
     property var _allWidgetNames: ["battery", "network", "volume", "calendar", "music", "notifications", "system"]
-    property var _lazyWidgets: ["guide", "wallpaper"]
+    property var _lazyWidgets: ["wallpaper"]
     property int _preloadIndex: 0
 
     function widgetNameForItem(item) {

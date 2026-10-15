@@ -290,7 +290,7 @@ if [ "$COMMAND" == "start" ]; then
 
     [ "$VERBOSE" = true ] && echo "$(t "daemon.launching")"
 
-    bash "$ZONE_C_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
+    bash "$ZONE_C_DIR/quickshell/settings/scripts/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!
 
     # Settings → Chung "Tỷ lệ giao diện" (general.uiScale, percent) scales the whole shell

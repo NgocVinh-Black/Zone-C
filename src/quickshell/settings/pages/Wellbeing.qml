@@ -14,7 +14,7 @@ Column {
 
     Process {
         running: true
-        command: ["python3", Caching.qsDir + "/guide/wellbeing/get_stats.py", "--db-dir", Caching.getStateDir("focustime")]
+        command: ["python3", Caching.qsDir + "/settings/scripts/get_stats.py", "--db-dir", Caching.getStateDir("focustime")]
         stdout: StdioCollector { onStreamFinished: { try { page.stats = JSON.parse(this.text); } catch (e) {} } }
     }
     function dur(s) { let h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h > 0 ? h + Fz.tr(" giờ ") + String(m).padStart(2, "0") + Fz.tr(" phút") : m + Fz.tr(" phút"); }

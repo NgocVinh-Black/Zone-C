@@ -29,7 +29,7 @@ PanelWindow {
 
     Process {
         running: win.open
-        command: ["python3", Caching.qsDir + "/guide/theme/theme_sorter.py", Caching.zoneCDir + "/assets/themes", Caching.stateDir + "/themes", Caching.getCacheDir("themes") + "/theme_sort_cache.json"]
+        command: ["python3", Caching.qsDir + "/settings/scripts/theme_sorter.py", Caching.zoneCDir + "/assets/themes", Caching.stateDir + "/themes", Caching.getCacheDir("themes") + "/theme_sort_cache.json"]
         stdout: StdioCollector { onStreamFinished: { try { win.presets = JSON.parse(this.text).filter(p => p.colors); } catch (e) {} } }
     }
     function applyTheme(name) {
