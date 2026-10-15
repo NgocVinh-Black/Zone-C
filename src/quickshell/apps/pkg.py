@@ -163,6 +163,42 @@ def updates():
     return res
 
 
+def ratings():
+    """Star ratings from ODRS (the open ratings service GNOME Software uses), cached for a day.
+    Returns {key: [average, count]} keyed by the AppStream id and by its last segment, lowercased
+    ("org.gimp.GIMP" and "gimp"), so pacman package names find their app too."""
+    import os, time, urllib.request
+    cache = os.path.expanduser("~/.cache/zone-c/appstore/ratings.json")
+    raw = None
+    try:
+        if time.time() - os.path.getmtime(cache) < 86400:
+            raw = json.load(open(cache))
+    except (OSError, ValueError):
+        pass
+    if raw is None:
+        try:
+            with urllib.request.urlopen("https://odrs.gnome.org/1.0/reviews/api/ratings", timeout=20) as r:
+                raw = json.load(r)
+            os.makedirs(os.path.dirname(cache), exist_ok=True)
+            json.dump(raw, open(cache, "w"))
+        except Exception:
+            try:
+                raw = json.load(open(cache))
+            except Exception:
+                return {}
+    out = {}
+    for aid, r in raw.items():
+        n = sum(r.get("star%d" % i, 0) for i in range(1, 6))
+        if n < 3:
+            continue
+        avg = round(sum(i * r.get("star%d" % i, 0) for i in range(1, 6)) / n, 1)
+        key = aid[:-8] if aid.endswith(".desktop") else aid
+        for k in (key.lower(), key.split(".")[-1].lower()):
+            if k not in out or out[k][1] < n:
+                out[k] = [avg, n]
+    return out
+
+
 def main():
     a = sys.argv[1:]
     if not a:
@@ -170,7 +206,7 @@ def main():
         return
     cmd = a[0]
     out = {"status": lambda: status(a[1:]), "search": lambda: search(" ".join(a[1:])), "info": lambda: info(a[1], a[2]),
-           "installed": installed, "updates": updates}.get(cmd, lambda: {})()
+           "installed": installed, "updates": updates, "ratings": ratings}.get(cmd, lambda: {})()
     print(json.dumps(dict(cmd=cmd, arg=" ".join(a[1:]), aur=bool(AUR), flatpak=bool(FLATPAK), data=out), ensure_ascii=False))
 
 

@@ -112,6 +112,16 @@ Scope {
                     stdout: StdioCollector { onStreamFinished: { try { qp.done(JSON.parse(this.text)); } catch (e) { qp.done({ data: null }); } } }
                 }
             }
+            // ODRS star ratings: {appstream id or its last segment (lowercase): [average, count]}
+            property var ratings: ({})
+            readonly property var ratingAlias: ({ "visual-studio-code-bin": "code", "neovim": "nvim", "libreoffice-fresh": "libreoffice", "telegram-desktop": "org.telegram.desktop",
+                "obs-studio": "com.obsproject.studio", "steam": "com.valvesoftware.steam", "blender": "org.blender.blender", "thunderbird": "org.mozilla.thunderbird" })
+            function rating(a) {
+                let id = String(a.id || "").toLowerCase();
+                let keys = [ratingAlias[id], id, id.split(".").pop(), id.replace(/-(bin|git|fresh|desktop|stable|beta)$/, ""), String(a.name || "").toLowerCase().replace(/\s+/g, "")];
+                for (const k of keys) if (k && ratings[k]) return ratings[k];
+                return null;
+            }
             function refreshStatus() {
                 query(["status"].concat(app.catalog.map(a => a.id)), d => { if (d.data) { win.status = d.data; win.hasAur = d.aur; win.hasFlatpak = d.flatpak; } });
                 query(["installed"], d => { if (d.data) win.installedList = d.data; });
@@ -119,6 +129,7 @@ Scope {
             Component.onCompleted: {
                 refreshStatus();
                 query(["updates"], d => { if (d.data) win.updatesList = d.data; });
+                query(["ratings"], d => { if (d.data) win.ratings = d.data; });
                 loadInfo(sel);
             }
             Timer { id: searchDelay; interval: 450; onTriggered: { let qq = win.q.trim(); if (qq.length < 2) return; win.searching = true; win.query(["search", qq], d => { if (d.arg === win.q.trim()) { win.results = d.data || []; win.searching = false; } }); } }
@@ -176,8 +187,8 @@ Scope {
             function btnLabel(a) {
                 let j = jobs[key(a)];
                 if (j) return j.kind === "install" ? Fz.tr("Đang cài…") : Fz.tr("Đang gỡ…");
-                if (cat === "updates" && q.trim().length < 2) return Fz.tr("Cập nhật");
-                return isInstalled(a) ? Fz.tr("Gỡ cài đặt") : Fz.tr("Cài đặt");
+                if (cat === "updates" && q.trim().length < 2) return Fz.trAs("Cập nhật", "Update");
+                return isInstalled(a) ? Fz.tr("Gỡ cài đặt") : Fz.trAs("Cài đặt", "Install");
             }
             function cmdFor(a) {
                 if (cat === "updates") return a.src === "Flatpak" ? "flatpak update " + a.id : a.src === "AUR" ? "yay -S " + a.id : "sudo pacman -Syu";
@@ -365,10 +376,12 @@ Scope {
                                             spacing: 8
                                             FChip { text: ac.modelData.src }
                                             Row {
-                                                visible: (ac.modelData.votes || 0) > 0
+                                                // ODRS average; AUR packages without one show their vote count
+                                                readonly property var r: win.rating(ac.modelData)
+                                                visible: r !== null || (ac.modelData.votes || 0) > 0
                                                 spacing: 3; anchors.verticalCenter: parent.verticalCenter
                                                 FIcon { name: "AppStore:s-star"; size: 12; color: Fz.yellow; anchors.verticalCenter: parent.verticalCenter }
-                                                FText { text: ac.modelData.votes || ""; px: 12; color: Fz.yellow }
+                                                FText { text: parent.r ? parent.r[0].toFixed(1) : "+" + (ac.modelData.votes || ""); px: 12; color: Fz.yellow }
                                             }
                                         }
                                         FBtn {
@@ -438,14 +451,15 @@ Scope {
                         width: parent.width
                         Repeater {
                             model: aside.a ? [[Fz.tr("Nguồn"), aside.a.src + (aside.d.repo ? " · " + aside.d.repo : "")], [Fz.tr("Phiên bản"), aside.d.version || aside.a.version || win.status[aside.a.id] || "…"],
-                                              [Fz.tr("Dung lượng"), aside.d.size || aside.a.size || "–"], [Fz.tr("Giấy phép"), aside.d.license || "–"]] : []
+                                              [Fz.tr("Dung lượng"), aside.d.size || aside.a.size || "–"], [Fz.tr("Giấy phép"), aside.d.license || "–"],
+                                              [Fz.tr("Đánh giá"), win.rating(aside.a) ? "★ " + win.rating(aside.a)[0].toFixed(1) + " · " + win.rating(aside.a)[1] + Fz.tr(" lượt") : "–"]] : []
                             delegate: Item {
                                 required property var modelData
                                 required property int index
                                 width: parent.width; height: 31
                                 FText { anchors.verticalCenter: parent.verticalCenter; text: modelData[0]; px: 12.5; color: Fz.sub }
                                 FText { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; width: Math.min(implicitWidth, 170); elide: Text.ElideRight; text: modelData[1]; mono: true; px: 12.5 }
-                                Rectangle { visible: index < 3; anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Fz.line }
+                                Rectangle { visible: index < 4; anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Fz.line }
                             }
                         }
                     }

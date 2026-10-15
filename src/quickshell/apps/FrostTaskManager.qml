@@ -88,15 +88,15 @@ Scope {
                            kv: [[Fz.tr("Tiến trình"), String(d.procs)], [Fz.tr("Luồng"), d.threads.toLocaleString("vi-VN")], [Fz.tr("Nhiệt độ"), d.temp ? d.temp + "°C" : "–"], ["Uptime", uptime(d.uptime)]] });
                 out.push({ k: "ram", n: Fz.tr("Bộ nhớ"), v: gib(m.used) + " / " + Math.round(m.total / 1073741824) + " GiB", big: Math.round(m.used / m.total * 100) + "%",
                            desc: "RAM " + Math.round(m.total / 1073741824) + " GiB",
-                           kv: [[Fz.tr("Đang dùng"), gib(m.used) + " GiB"], [Fz.tr("Đệm"), gib(m.cache) + " GiB"], ["Swap", gib(m.swapUsed) + " / " + gib(m.swapTotal) + " GiB"], [Fz.tr("Trống"), gib(m.avail) + " GiB"]] });
+                           kv: [[Fz.tr("Đang dùng"), gib(m.used) + " GiB"], [Fz.tr("Đệm"), gib(m.cache) + " GiB"], ["Swap", gib(m.swapUsed) + " / " + gib(m.swapTotal) + " GiB"], [Fz.trAs("Trống", "Available"), gib(m.avail) + " GiB"]] });
                 if (d.disk) out.push({ k: "disk", n: Fz.tr("Ổ đĩa"), v: d.disk.name + " · " + d.disk.busy + "%", big: d.disk.busy + "%",
                            desc: (d.disk.model || d.disk.name) + " · " + Math.round(d.disk.size / 1e9) + " GB",
                            kv: [[Fz.tr("Đọc"), rate(d.disk.read)], ["Ghi", rate(d.disk.write)], [Fz.tr("Thiết bị"), d.disk.name], [Fz.tr("Dung lượng"), Math.round(d.disk.size / 1e9) + " GB"]] });
                 out.push({ k: "net", n: d.net.wifi ? "Wi-Fi" : Fz.tr("Mạng"), v: "↓ " + (d.net.rx / 1048576).toFixed(1) + " · ↑ " + (d.net.tx / 1048576).toFixed(1) + " MB/s", big: rate(d.net.rx),
                            desc: d.net.iface || Fz.tr("Không có kết nối"),
-                           kv: [[Fz.tr("Nhận"), rate(d.net.rx)], [Fz.tr("Gửi"), rate(d.net.tx)], ["IPv4", d.net.ip || "–"], [Fz.tr("Giao diện"), d.net.iface || "–"]] });
+                           kv: [[Fz.trAs("Nhận", "Received"), rate(d.net.rx)], [Fz.trAs("Gửi", "Sent"), rate(d.net.tx)], ["IPv4", d.net.ip || "–"], [Fz.tr("Giao diện"), d.net.iface || "–"]] });
                 if (d.gpu) out.push({ k: "gpu", n: "GPU", v: d.gpu.busy + "%" + (d.gpu.temp ? " · " + d.gpu.temp + "°C" : ""), big: d.gpu.busy + "%", desc: "GPU",
-                           kv: [["Video RAM", mem(d.gpu.vram)], [Fz.tr("Nhiệt độ"), d.gpu.temp ? d.gpu.temp + "°C" : "–"], [Fz.tr("Tải"), d.gpu.busy + "%"], ["", ""]] });
+                           kv: [["Video RAM", mem(d.gpu.vram)], [Fz.tr("Nhiệt độ"), d.gpu.temp ? d.gpu.temp + "°C" : "–"], [Fz.trAs("Tải", "Load"), d.gpu.busy + "%"], ["", ""]] });
                 return out;
             }
             readonly property var curRes: resources[Math.min(res, resources.length - 1)] || null
@@ -576,7 +576,7 @@ Scope {
             Num { head: pr.header; width: 90; text: pr.header ? "CPU ▾" : pr.p ? pr.p.cpu.toFixed(1) + "%" : ""; hot: !pr.header && pr.p && pr.p.cpu > 5 }
             Num { head: pr.header; width: 90; text: pr.header ? Fz.tr("Bộ nhớ") : pr.p ? win_mem(pr.p.rss) : "" }
             Num { head: pr.header; width: 90; text: pr.header ? Fz.tr("Đĩa") : pr.p ? win_rate(pr.p.io) : "" }
-            Num { head: pr.header; width: 80; text: pr.header ? Fz.tr("Mạng") : "–" }
+            Num { head: pr.header; width: 80; text: pr.header ? Fz.tr("Mạng") : pr.p ? pr.win_rate(pr.p.net || 0) : "" }
         }
         function win_mem(b) { return b >= 1073741824 ? (b / 1073741824).toFixed(1) + " GB" : Math.round(b / 1048576) + " MB"; }
         function win_rate(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + " MB/s" : b >= 1024 ? Math.round(b / 1024) + " KB/s" : (b > 0 ? b + " B/s" : "0"); }

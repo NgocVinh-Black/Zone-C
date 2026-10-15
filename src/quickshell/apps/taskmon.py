@@ -6,6 +6,8 @@ resident memory and disk I/O rate. System totals cover CPU (and per core), memor
 the default network interface and the GPU when the kernel exposes it.
 """
 import json
+import re
+import subprocess
 import os
 import pwd
 import socket
@@ -175,10 +177,35 @@ def static_info():
     return dict(cpuModel=model, threads=NCPU, host=socket.gethostname())
 
 
+SOCK_RE = re.compile(r'users:\(\("[^"]*",pid=(\d+)')
+BYTES_RE = re.compile(r'bytes_(sent|received):(\d+)')
+
+
+def sockets():
+    """TCP byte counters per socket with the owning PID: {socket key: (pid, bytes moved)}.
+    ss shows the owner of the user's own sockets without root; other users' sockets are skipped."""
+    try:
+        text = subprocess.run(["ss", "-tinpH"], capture_output=True, text=True, timeout=2).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return {}
+    out, key, pid = {}, None, None
+    for line in text.splitlines():
+        if not line.startswith((" ", "\t")):
+            m = SOCK_RE.search(line)
+            f = line.split()
+            key, pid = (" ".join(f[3:5]), int(m.group(1))) if m and len(f) >= 5 else (None, None)
+        elif key and pid:
+            total = sum(int(v) for _, v in BYTES_RE.findall(line))
+            out[key + "|" + str(pid)] = (pid, total)
+            key = None
+    return out
+
+
 def main():
     me = os.getuid()
     print(json.dumps(dict(kind="static", **static_info())), flush=True)
     prev_cpu, prev_p, prev_d, t0 = cpu_times(), procs(), disks(), time.time()
+    prev_s = sockets()
     iface = default_iface()
     prev_n = net(iface)
     time.sleep(1)
@@ -190,6 +217,14 @@ def main():
         for (a, ai), (b, bi) in zip(prev_cpu, cur_cpu):
             tot = b - a
             cpus.append(round(100 * (1 - (bi - ai) / tot), 1) if tot > 0 else 0)
+
+        # per-process network rate from the TCP sockets seen in both samples
+        cur_s = sockets()
+        pnet = {}
+        for k, (pid, total) in cur_s.items():
+            if k in prev_s:
+                pnet[pid] = pnet.get(pid, 0) + max(0, total - prev_s[k][1]) / dt
+        prev_s = cur_s
 
         groups = {}
         for pid, p in cur_p.items():
@@ -206,17 +241,19 @@ def main():
             key = (name, p["uid"])
             g = groups.get(key)
             if not g:
-                g = groups[key] = dict(name=name, comm=p["comm"], user=uname(p["uid"]), mine=p["uid"] == me, pid=pid, pids=[], cpu=0.0, rss=0, io=0.0, threads=0)
+                g = groups[key] = dict(name=name, comm=p["comm"], user=uname(p["uid"]), mine=p["uid"] == me, pid=pid, pids=[], cpu=0.0, rss=0, io=0.0, net=0.0, threads=0)
             g["pids"].append(pid)
             g["pid"] = min(g["pid"], pid)
             g["cpu"] += cpu
             g["rss"] += p["rss"]
             g["io"] += max(0, io)
+            g["net"] += pnet.get(pid, 0)
             g["threads"] += p["threads"]
         plist = sorted(groups.values(), key=lambda g: (-g["cpu"], -g["rss"]))[:120]
         for g in plist:
             g["cpu"] = round(g["cpu"], 1)
             g["io"] = round(g["io"])
+            g["net"] = round(g["net"])
             g["n"] = len(g["pids"])
             g["pids"] = g["pids"][:64]
 

@@ -50,7 +50,7 @@ Column {
         width: parent.width
         SRow {
             icon: "s-printers"; title: Fz.tr("Chưa cài CUPS"); sub: Fz.tr("Cần gói cups để in và quản lý máy in")
-            FBtn { kind: "pri"; text: Fz.tr("Cài đặt"); onClicked: Quickshell.execDetached(["bash", "-c", (Config.getSetting("launcher.terminalCommand", "kitty -e")) + Fz.tr(" bash -c 'sudo pacman -S --needed cups cups-pdf && sudo systemctl enable --now cups.socket; read -n1 -p \"Xong. Nhấn phím bất kỳ…\"'")]) }
+            FBtn { kind: "pri"; text: Fz.trAs("Cài đặt", "Install"); onClicked: Quickshell.execDetached(["bash", "-c", (Config.getSetting("launcher.terminalCommand", "kitty -e")) + Fz.tr(" bash -c 'sudo pacman -S --needed cups cups-pdf && sudo systemctl enable --now cups.socket; read -n1 -p \"Xong. Nhấn phím bất kỳ…\"'")]) }
         }
     }
 

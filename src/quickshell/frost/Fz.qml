@@ -16,6 +16,8 @@ Item {
     // any other language shows the English strings of En.js.
     readonly property string lang: { let l = Config.getSetting("general.language", "vi"); return typeof l === "string" && l ? l : "vi"; }
     readonly property bool en: lang !== "vi"
+    // the same Vietnamese word with a different English meaning here ("Cài đặt" = Install / Settings)
+    function trAs(vi, english) { return en ? english : vi; }
     function tr(s) {
         if (!en || typeof s !== "string") return s;
         let t = En.map[s];
