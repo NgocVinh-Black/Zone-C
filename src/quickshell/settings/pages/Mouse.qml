@@ -66,7 +66,7 @@ Column {
             FSelect {
                 options: [Fz.tr("Mở launcher"), Fz.tr("Tổng quan"), Fz.tr("Không làm gì")]
                 readonly property var values: ["launcher", "overview", "none"]
-                current: Math.max(0, values.indexOf(Config.getSetting("hypr_gestures.up", "launcher")))
+                current: Math.max(0, values.indexOf(Config.getSetting("hypr_gestures.up", "none")))
                 onPicked: (i) => HyprConf.setGesture("up", values[i])
             }
         }

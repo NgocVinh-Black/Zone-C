@@ -5,7 +5,16 @@ local editor = "code"
 local fileExplorer = "zone-c ipc call files toggle"
 local fn = require("config/functions")
 
-hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+-- three-finger swipes: sideways switches workspace (as before) unless turned off in Zone-C Settings,
+-- swipe up is opt-in (Settings → Mouse & touchpad)
+local zg = _G.zonec_gestures or {}
+if zg.horizontal ~= false then
+  hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+end
+if zg.up == "launcher" or zg.up == "overview" then
+  local cmd = zg.up == "overview" and "zone-c ipc call overview toggle" or "zone-c msg toggle launcher"
+  hl.gesture({ fingers = 3, direction = "up", action = function() hl.exec_cmd(cmd) end })
+end
 
 ------------------------------------------------------------------
 -- Phim tat cu (tu repo arch-linux-setup), chuyen sang zone-c

@@ -41,9 +41,9 @@ QtObject {
     function write(all, gestures) {
         let g = gestures || Config.getSetting("hypr_gestures", {}) || {};
         let out = "-- written by Zone-C Settings; edit there, not here\npcall(hl.config, " + lua(all) + ")\n";
-        if (g.horizontal !== false) out += "pcall(hl.gesture, { fingers = 3, direction = \"horizontal\", action = \"workspace\" })\n";
-        let up = g.up || "launcher";
-        if (up !== "none") out += "pcall(hl.gesture, { fingers = 3, direction = \"up\", action = function() hl.exec_cmd(\"" + (up === "overview" ? "zone-c ipc call overview toggle" : "zone-c msg toggle launcher") + "\") end })\n";
-        Quickshell.execDetached(["bash", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1\"", "_", file, out]);
+        // gestures are registered by keybinds.lua from this table (loaded before it)
+        let gl = "-- written by Zone-C Settings\n_G.zonec_gestures = { horizontal = " + (g.horizontal !== false) + ", up = \"" + (g.up || "none") + "\" }\n";
+        Quickshell.execDetached(["bash", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1\" && printf '%s' \"$4\" > \"$3\"", "_", file, out,
+                                 Quickshell.env("HOME") + "/.config/zone-c/hyprland-gestures.lua", gl]);
     }
 }
