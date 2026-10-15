@@ -34,6 +34,7 @@ ShellRoot {
     PowerService {}
     AccessService {}
     FrostWelcome {}
+    Alerts {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}

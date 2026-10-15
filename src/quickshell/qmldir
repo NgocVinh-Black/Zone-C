@@ -37,6 +37,7 @@ WellbeingService 1.0 settings/WellbeingService.qml
 PowerService 1.0 settings/PowerService.qml
 AccessService 1.0 settings/AccessService.qml
 FrostWelcome 1.0 welcome/FrostWelcome.qml
+Alerts 1.0 alerts/Alerts.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

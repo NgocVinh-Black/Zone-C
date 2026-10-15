@@ -335,6 +335,13 @@ Item {
 
     Dim {
         active: idleRoot.isIdleSystemActive && idleRoot.isDimmed
+        // seconds between dimming and locking, for the countdown dialog
+        lockIn: {
+            let d = idleRoot.allActions.find(a => a.id === "dim"), l = idleRoot.allActions.find(a => a.id === "lock");
+            if (!l || l.enabled === false) return 0;
+            return Math.max(0, idleRoot.getActionTimeout(l) - (d ? idleRoot.getActionTimeout(d) : 0));
+        }
+        idleMinutes: { let d = idleRoot.allActions.find(a => a.id === "dim"); return Math.max(1, Math.round((d ? idleRoot.getActionTimeout(d) : 150) / 60)); }
     }
 
     Repeater {
