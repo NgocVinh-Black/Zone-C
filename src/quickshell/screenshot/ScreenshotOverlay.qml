@@ -7,8 +7,10 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import Quickshell.Hyprland
 import "../reusables"
 import "../"
+import "../frost"
 
 PanelWindow {
     id: root
@@ -66,7 +68,12 @@ PanelWindow {
 
     function s(val) { return Scaler.s(val); }
 
-    property color dimColor: Qt.alpha(ThemeBackend.crust, 0.72)
+    // Screenshot artboard: rgba(10,15,18,.55) outside the selection, in both light and dark
+    property color dimColor: Qt.rgba(10 / 255, 15 / 255, 18 / 255, 0.55)
+    // capture toolbar state: region | window | screen (photos) and the recording toggle
+    property string shotMode: "region"
+    property int delaySec: 0
+    property bool withCursor: false
 
     property bool isEditMode: false
     property string cachedMode: "false"
@@ -362,8 +369,8 @@ PanelWindow {
         id: audioPrefsFile
         path: Caching.getStateDir("screenshot") + "/audio_prefs"
 
-        onLoaded: (data) => {
-            let content = data.trim();
+        onLoaded: {
+            let content = text().trim();
             if (content !== "") {
                 let parts = content.split(",");
                 root.deskVol = parts[0] !== undefined && parts[0] !== "" ? parseFloat(parts[0]) : 1.0;
@@ -547,10 +554,10 @@ PanelWindow {
                 color: root.dimColor
                 opacity: (!root.isSelecting && !root.hasSelection) ? 1.0 : 0.0
                 Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 150 } }
-                Text {
+                FText {
                     anchors.centerIn: parent
-                    text: root.isVideoMode ? I18n.t("screenshot.video_mode") : I18n.t("screenshot.select_region")
-                    font.family: ThemeBackend.fontFamily; font.weight: Font.DemiBold; font.pixelSize: s(24); color: ThemeBackend.text
+                    text: root.isVideoMode ? "Kéo để chọn vùng cần quay" : "Kéo để chọn vùng cần chụp"
+                    px: 22; weight: Font.DemiBold; color: "#edf3f6"
                 }
             }
             Item {
@@ -566,6 +573,7 @@ PanelWindow {
 
         MultiEffect {
             id: structuralGlow
+            enabled: false
             source: selectionFrame
             anchors.fill: selectionFrame
             opacity: selectionFrame.opacity
@@ -577,7 +585,7 @@ PanelWindow {
             z: 5
             Behavior on shadowOpacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 200 } }
             Behavior on shadowBlur { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 200 } }
-            visible: opacity > 0
+            visible: false
         }
 
         Rectangle {
@@ -585,10 +593,35 @@ PanelWindow {
             opacity: (!root.isRefreezing && (root.isSelecting || root.hasSelection)) ? 1.0 : 0.0
             x: root.selX; y: root.selY; width: root.selW; height: root.selH
             color: "transparent"
-            border.color: (root.showQrPopup && root.isQrSuccess) ? ThemeBackend.green : (root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve)
-            border.width: s(2)
+            border.color: (root.showQrPopup && root.isQrSuccess) ? Fz.green : (root.isVideoMode ? Fz.red : Fz.acc)
+            border.width: 2
             z: 6
             visible: opacity > 0
+
+            // `.hd` handles: corners and edge midpoints, 12px accent dots ringed in surface
+            Repeater {
+                model: [[0, 0], [0.5, 0], [1, 0], [0, 0.5], [1, 0.5], [0, 1], [0.5, 1], [1, 1]]
+                delegate: Rectangle {
+                    required property var modelData
+                    visible: root.hasSelection && !root.isVideoMode
+                    width: 18; height: 18; radius: 9
+                    x: selectionFrame.width * modelData[0] - 9
+                    y: selectionFrame.height * modelData[1] - 9
+                    color: Qt.rgba(Fz.surf(1).r, Fz.surf(1).g, Fz.surf(1).b, 0.6)
+                    Rectangle { anchors.centerIn: parent; width: 12; height: 12; radius: 6; color: Fz.acc }
+                }
+            }
+            // size readout above the frame
+            Rectangle {
+                y: -36
+                visible: root.selW > 0
+                width: dimT.implicitWidth + 20; height: 26; radius: 8
+                color: Fz.surf(0.9)
+                FText {
+                    id: dimT; anchors.centerIn: parent; mono: true; px: 12
+                    text: Math.round(root.selW) + " × " + Math.round(root.selH) + " · x " + Math.round(root.selX) + " y " + Math.round(root.selY)
+                }
+            }
         }
 
         Repeater {
@@ -730,17 +763,15 @@ PanelWindow {
         Item {
             id: toolbar
             z: 30
+            // replaced by the Frost capture bar below (kept for its audio controls' state)
+            enabled: false
 
             property real totalHeight: s(120)
             property bool fitsOutsideBottom: (root.selY + root.selH + totalHeight + s(15)) <= root.height
 
             property bool shouldShow: root.hasSelection && !root.isSelecting && !root.isScanningQr && !root.showQrPopup
-            opacity: (!root.isRefreezing && shouldShow && !root.isSelecting) ? 1.0 : 0.0
-            Behavior on opacity {
-                enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing
-                NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-            }
-            visible: opacity > 0
+            opacity: 0
+            visible: false
 
             width: toolbarRow.width + s(20)
             height: totalHeight
@@ -1520,8 +1551,30 @@ PanelWindow {
         }
     }
 
+    // "Cửa sổ": the focused window's frame, in this screen's coordinates
+    function selectWindow() {
+        let t = Hyprland.activeToplevel;
+        let o = t && t.lastIpcObject ? t.lastIpcObject : null;
+        if (!o || !o.at || !o.size) return;
+        let sx = root.screen ? root.screen.x : 0, sy = root.screen ? root.screen.y : 0;
+        root.isMaximized = false;
+        root.startX = o.at[0] - sx; root.startY = o.at[1] - sy;
+        root.endX = root.startX + o.size[0]; root.endY = root.startY + o.size[1];
+        root.hasSelection = true;
+    }
+    function setShotMode(m) {
+        if (m === "rec") { root.isVideoMode = true; return; }
+        root.isVideoMode = false;
+        root.shotMode = m;
+        if (m === "screen") { if (!root.isMaximized) root.toggleMaximize(); }
+        else if (root.isMaximized) root.toggleMaximize();
+        if (m === "window") root.selectWindow();
+    }
+
     function executeCapture(openEditor, isRecord) {
         let cmd = `bash ${Caching.zoneCDir}/scripts/screenshot.sh --geometry "${root.geometryString}"`;
+        if (!isRecord && root.delaySec > 0) cmd += ` --delay ${root.delaySec}`;
+        if (!isRecord && root.withCursor) cmd += " --cursor";
         if (isRecord) {
             if (root.targetMonitorName !== "") cmd += ` --monitor "${root.targetMonitorName}"`;
             cmd += " --record";
@@ -1536,5 +1589,67 @@ PanelWindow {
         root.animateChanges = false;
         captureTimer.start();
         root.deactivate();
+    }
+
+    // ---------- Frost capture bar (Screenshot.dc.html) ----------
+    Glass {
+        id: frostBar
+        z: 40
+        visible: root.isActive && !root.isSelecting && !root.isRefreezing && !root.isScanningQr && !root.showQrPopup
+        radius: 24
+        x: (parent.width - width) / 2
+        y: parent.height - 40 - height
+        width: barRow.implicitWidth + 20
+        height: 62 + 20
+        Row {
+            id: barRow
+            x: 10; y: 10
+            spacing: 6
+            Repeater {
+                model: [["region", "Vùng", "s-region"], ["window", "Cửa sổ", "s-window"], ["screen", "Màn hình", "s-screen"], ["rec", "Quay", "s-rec"]]
+                delegate: Rectangle {
+                    required property var modelData
+                    readonly property bool on: modelData[0] === "rec" ? root.isVideoMode : (!root.isVideoMode && root.shotMode === modelData[0])
+                    width: 82; height: 62; radius: 15
+                    color: on ? Fz.acc : (mdMouse.containsMouse ? Fz.fg(0.07) : "transparent")
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 5
+                        FIcon { anchors.horizontalCenter: parent.horizontalCenter; name: modelData[2]; size: 20; color: parent.parent.on ? Fz.ink : Fz.sub2 }
+                        FText { anchors.horizontalCenter: parent.horizontalCenter; text: modelData[1]; px: 12; weight: Font.Medium; color: parent.parent.on ? Fz.ink : Fz.sub2 }
+                    }
+                    MouseArea { id: mdMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.setShotMode(modelData[0]) }
+                }
+            }
+            Rectangle { width: 1; height: 40; color: Fz.line2; anchors.verticalCenter: parent.verticalCenter }
+            FBtn {
+                anchors.verticalCenter: parent.verticalCenter
+                icon: "s-timer"; iconSize: 15
+                text: root.delaySec > 0 ? root.delaySec + " giây" : "Ngay"
+                onClicked: root.delaySec = ({ 0: 3, 3: 5, 5: 10, 10: 0 })[root.delaySec]
+            }
+            FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "s-cursor"; label: "Hiện con trỏ"; on: root.withCursor; onClicked: root.withCursor = !root.withCursor }
+            FIconBtn { visible: root.isVideoMode; anchors.verticalCenter: parent.verticalCenter; icon: "s-mic"; label: "Ghi âm micro"; on: !root.micMute; onClicked: root.micMute = !root.micMute }
+            Rectangle { width: 1; height: 40; color: Fz.line2; anchors.verticalCenter: parent.verticalCenter }
+            FBtn {
+                anchors.verticalCenter: parent.verticalCenter
+                kind: "pri"; height: 46; padX: 22; fontSize: 14
+                text: root.isVideoMode ? "Bắt đầu quay" : "Chụp"
+                onClicked: root.executeCapture(false, root.isVideoMode)
+            }
+            FIconBtn { anchors.verticalCenter: parent.verticalCenter; width: 46; height: 46; radius: 15; icon: "s-x"; label: "Hủy"; onClicked: root.deactivate() }
+        }
+    }
+    Row {
+        z: 40
+        visible: frostBar.visible
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: parent.height - 14 - 22
+        spacing: 6
+        FText { text: "Kéo để chọn vùng ·"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
+        FKbd { text: "Space" }
+        FText { text: "di chuyển ·"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
+        FKbd { text: "Esc" }
+        FText { text: "hủy · lưu vào ~/Ảnh/Screenshots"; px: 12; color: "#c6d3d9"; anchors.verticalCenter: parent.verticalCenter }
     }
 }

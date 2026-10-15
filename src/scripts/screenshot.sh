@@ -27,6 +27,8 @@ while [[ "$#" -gt 0 ]]; do
         --mic-dev) MIC_DEVICE="$2"; shift 2 ;;
         --backend) VIDEO_BACKEND="$2"; shift 2 ;;
         --monitor) TARGET_MON="$2"; shift 2 ;;
+        --delay) DELAY="$2"; shift 2 ;;
+        --cursor) CURSOR_FLAG="-c"; shift ;;
         *) shift ;;
     esac
 done
@@ -315,12 +317,14 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
     fi
 
     TMP_SCREENSHOT="/tmp/instant_snap_$$.png"
+    # --delay N: countdown chosen in the capture toolbar; --cursor: include the pointer
+    [[ "$DELAY" =~ ^[0-9]+$ ]] && [ "$DELAY" -gt 0 ] && sleep "$DELAY"
     if [ -n "$GEOMETRY" ]; then
-        grim -l 0 -g "$GEOMETRY" "$TMP_SCREENSHOT"
+        grim $CURSOR_FLAG -l 0 -g "$GEOMETRY" "$TMP_SCREENSHOT"
     elif [ -n "$TARGET_MON" ]; then
-        grim -o "$TARGET_MON" -l 0 "$TMP_SCREENSHOT" 2>/dev/null || grim -l 0 "$TMP_SCREENSHOT"
+        grim $CURSOR_FLAG -o "$TARGET_MON" -l 0 "$TMP_SCREENSHOT" 2>/dev/null || grim $CURSOR_FLAG -l 0 "$TMP_SCREENSHOT"
     else
-        grim -l 0 "$TMP_SCREENSHOT"
+        grim $CURSOR_FLAG -l 0 "$TMP_SCREENSHOT"
     fi
 
     if [ "$EDIT_MODE" = true ]; then
