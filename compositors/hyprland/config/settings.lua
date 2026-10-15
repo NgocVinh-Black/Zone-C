@@ -99,6 +99,13 @@ hl.window_rule({
   center = true,
 })
 
+hl.window_rule({
+  name  = "zone-c-taskmanager",
+  match = { class = "^(org.quickshell)$", title = "^(Zone-C · Giám sát hệ thống)$" },
+
+  size = "(monitor_w*0.917) (monitor_h*0.9)",
+})
+
 -- Zone-C Frost: frosted glass behind the shell's panels, bar pills and desktop cards (backdrop-filter in
 -- the design). ignore_alpha keeps the blur to the glass itself, not the transparent rest of each layer.
 hl.layer_rule({

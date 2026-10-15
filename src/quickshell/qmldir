@@ -30,6 +30,7 @@ FrostTray 1.0 tray/FrostTray.qml
 FrostEmoji 1.0 emoji/FrostEmoji.qml
 FrostPower 1.0 power/FrostPower.qml
 FrostFiles 1.0 apps/FrostFiles.qml
+FrostTaskManager 1.0 apps/FrostTaskManager.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

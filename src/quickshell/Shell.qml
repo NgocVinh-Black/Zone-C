@@ -27,6 +27,7 @@ ShellRoot {
     FrostEmoji {}
     FrostPower {}
     FrostFiles {}
+    FrostTaskManager {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}
