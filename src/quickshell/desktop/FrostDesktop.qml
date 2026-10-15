@@ -27,7 +27,9 @@ Variants {
             color: "transparent"
 
             // Outside the editor only the widgets take clicks; the rest of the desktop stays reachable.
-            mask: Region { item: editing ? fullMask : widgetMask; intersection: Intersection.Combine }
+            // The desktop layer sits under every window, so it can take the whole screen:
+            // widgets get their clicks and the empty desktop gets the right-click menu.
+            mask: Region { item: fullMask; intersection: Intersection.Combine }
             Item { id: fullMask; anchors.fill: parent }
             Item { id: widgetMask; x: 0; y: 0; width: 0; height: 0 }
 
@@ -133,6 +135,19 @@ Variants {
 
             // `.scrim` over the wallpaper, as on every desktop artboard
             Rectangle { anchors.fill: parent; color: Fz.scrim; visible: !win.editing }
+
+            // ---------- desktop right-click menu (TrayMenu artboard) ----------
+            MouseArea {
+                anchors.fill: parent
+                enabled: !win.editing
+                acceptedButtons: Qt.RightButton | Qt.LeftButton
+                onClicked: (e) => {
+                    if (e.button !== Qt.RightButton) { deskMenu.visible = false; return; }
+                    deskMenu.x = Math.min(e.x, win.width - deskMenu.width - 8);
+                    deskMenu.y = Math.min(e.y, win.height - deskMenu.height - 8);
+                    deskMenu.visible = true;
+                }
+            }
 
             // ---------- editor backdrop: grid (Widgets artboard) ----------
             Rectangle {
@@ -380,6 +395,20 @@ Variants {
                         }
                     }
                 }
+            }
+
+            FMenu {
+                id: deskMenu
+                visible: false
+                z: 50
+                FMenuItem { icon: "t-image"; text: "Đổi hình nền"; hint: "Super Shift W"; onTriggered: { deskMenu.visible = false; Fz.open("wallpaper"); } }
+                FMenuItem { icon: "t-widgets"; text: "Chỉnh widget"; onTriggered: { deskMenu.visible = false; win.editing = true; } }
+                FMenuItem { icon: "t-display"; text: "Cài đặt màn hình"; onTriggered: { deskMenu.visible = false; Fz.open("guide", "display"); } }
+                FMenuSep {}
+                FMenuItem { icon: "t-terminal"; text: "Mở terminal"; hint: "Super T"; onTriggered: { deskMenu.visible = false; Quickshell.execDetached(["bash", "-c", "kitty || foot"]); } }
+                FMenuItem { icon: "t-moon"; text: Fz.light ? "Chuyển sang chế độ tối" : "Chuyển sang chế độ sáng"; chevron: true; onTriggered: { deskMenu.visible = false; ZoneStyle.setMode("toggle"); } }
+                FMenuSep {}
+                FMenuItem { icon: "t-gear"; text: "Cài đặt Zone-C"; hint: "Super I"; onTriggered: { deskMenu.visible = false; Fz.open("guide"); } }
             }
 
             FFilePicker {

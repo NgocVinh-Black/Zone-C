@@ -24,6 +24,7 @@ ShellRoot {
     Polkit {}
     PairDialog {}
     FrostOverview {}
+    FrostTray {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}

@@ -215,6 +215,7 @@ Item {
                 label: "Clipboard"
                 on: root.clipboardOpen
                 onClicked: Fz.open("clipboard")
+                onRightClicked: Fz.open("tray")
                 FIcon { name: "b-clip"; size: 15; color: clipIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {

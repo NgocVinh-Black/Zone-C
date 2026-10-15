@@ -149,7 +149,7 @@ Item {
     // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
     // listen for this; everything else opens through the popup host like the bar always has.
     signal openRequest(string name, string arg)
-    readonly property var standalone: ["overview", "alttab", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome"]
+    readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome"]
     function open(widget, arg) {
         if (standalone.indexOf(widget) !== -1) { openRequest(widget, arg || ""); return; }
         Quickshell.execDetached(["bash", Caching.zoneCDir + "/scripts/qs_manager.sh", "toggle", widget].concat(arg ? [arg] : []));
