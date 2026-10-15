@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Screen-share picker for xdg-desktop-portal-hyprland (screencopy:custom_picker_binary in xdph.conf).
+# Hands the choice to the Zone-C shell, which shows the Frost picker, then prints the selection
+# in xdph's format: [SELECTION]<flags>/screen:NAME | /window:ID | /region:NAME@X,Y,W,H
+dir="${XDG_RUNTIME_DIR:-/tmp}/zone-c/portal"
+mkdir -p "$dir"
+req=$(mktemp -p "$dir" share-XXXXXX.json)
+trap 'rm -f "$req" "$req.out"' EXIT
+
+python3 - "$req" <<'PY'
+import json, os, sys
+wins = []
+for item in os.environ.get("XDPH_WINDOW_SHARING_LIST", "").split("[HA>]"):
+    if "[HC>]" not in item:
+        continue
+    wid, rest = item.split("[HC>]", 1)
+    cls, rest = rest.split("[HT>]", 1)
+    title, addr = rest.split("[HE>]", 1) if "[HE>]" in rest else (rest, "")
+    wins.append({"id": wid, "cls": cls, "title": title, "addr": addr})
+json.dump({"windows": wins}, open(sys.argv[1], "w"), ensure_ascii=False)
+PY
+
+zone-c ipc call screenshare pick "$req" >/dev/null 2>&1 || exit 1
+for _ in $(seq 1 1200); do [ -f "$req.out" ] && break; sleep 0.1; done
+[ -f "$req.out" ] || exit 1
+
+read -r kind value remember < <(python3 -c 'import json,sys; a=json.load(open(sys.argv[1])); print(a.get("kind",""), a.get("value",""), "r" if a.get("remember") else "")' "$req.out")
+[ -n "$kind" ] && [ "$kind" != "cancel" ] || exit 1
+if [ "$kind" = "region" ]; then
+    value=$(slurp -f "%o@%x,%y,%w,%h") || exit 1
+fi
+echo "[SELECTION]${remember}/${kind}:${value}"

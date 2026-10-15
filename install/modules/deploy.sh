@@ -346,6 +346,9 @@ deploy_package() {
                 > "$HOME/.local/share/dbus-1/services/org.freedesktop.impl.portal.desktop.zonec.service"
             cp "$REPO_ROOT/config/portal/hyprland-portals.conf" "$HOME/.config/xdg-desktop-portal/hyprland-portals.conf"
             sudo install -Dm644 "$REPO_ROOT/config/portal/zonec.portal" /usr/share/xdg-desktop-portal/portals/zonec.portal 2>/dev/null || true
+            # screen-share picker of xdg-desktop-portal-hyprland
+            mkdir -p "$HOME/.config/hypr"
+            sed "s|@BIN_DIR@|$BIN_DIR|" "$REPO_ROOT/config/portal/xdph.conf" > "$HOME/.config/hypr/xdph.conf"
         fi
 
         if [ -d "$REPO_ROOT/config/applications" ]; then

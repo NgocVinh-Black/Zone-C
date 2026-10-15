@@ -36,6 +36,7 @@ ShellRoot {
     FrostWelcome {}
     Alerts {}
     FrostPortal {}
+    FrostScreenShare {}
     CloseConfirm {}
     KeybindsHelp {}
     PopoutManager {}
