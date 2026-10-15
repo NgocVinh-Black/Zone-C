@@ -12,7 +12,8 @@ Item {
 
     property string title: "Mở tệp"
     property string subtitle: "Zone-C"
-    property string mode: "open"             // "open" | "save"
+    property string mode: "open"             // "open" | "save" | "folder"
+    property bool modeSwitch: true           // the Mở / Lưu switch in the header (off for portal requests)
     property var exts: []                    // ["png", "jpg"]; empty = everything
     property string filterLabel: "Tất cả tệp"
     property string dir: home
@@ -51,6 +52,7 @@ Item {
         lister.running = true;
     }
     function matches(e) {
+        if (mode === "folder") return e.dir;
         if (e.dir || allFiles || exts.length === 0) return true;
         let n = e.name.toLowerCase();
         return exts.some(x => n.endsWith("." + x));
@@ -69,6 +71,12 @@ Item {
         accepted(dir.replace(/\/$/, "") + "/" + e.name);
     }
     function confirm() {
+        if (mode === "folder") {
+            let e = sel >= 0 && sel < shown.length ? shown[sel] : null;
+            visible = false;
+            accepted(e && e.dir ? dir.replace(/\/$/, "") + "/" + e.name : dir);
+            return;
+        }
         if (mode === "save") {
             let n = nameField.text.trim();
             if (n === "") return;
@@ -183,7 +191,7 @@ Item {
             Row {
                 anchors.right: parent.right; anchors.rightMargin: 14; anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                FSeg { options: ["Mở tệp", "Lưu tệp"]; current: root.mode === "save" ? 1 : 0; onPicked: (i) => root.mode = i === 1 ? "save" : "open"; anchors.verticalCenter: parent.verticalCenter }
+                FSeg { visible: root.modeSwitch && root.mode !== "folder"; options: ["Mở tệp", "Lưu tệp"]; current: root.mode === "save" ? 1 : 0; onPicked: (i) => root.mode = i === 1 ? "save" : "open"; anchors.verticalCenter: parent.verticalCenter }
                 FIconBtn { ghost: true; icon: "p-x"; iconSize: 15; label: "Đóng"; onClicked: root.close(false); anchors.verticalCenter: parent.verticalCenter }
             }
         }
@@ -338,7 +346,7 @@ Item {
                         FText { width: 70; text: "Loại"; color: Fz.sub; px: 13; anchors.verticalCenter: parent.verticalCenter }
                         FSelect { width: parent.width - 70 - 10 - cancelB.width - 10 - okB.width - 10; options: [root.filterLabel, "Tất cả tệp"]; current: root.allFiles ? 1 : 0; onPicked: (i) => root.allFiles = i === 1; anchors.verticalCenter: parent.verticalCenter }
                         FBtn { id: cancelB; height: 38; text: "Hủy"; onClicked: root.close(false) }
-                        FBtn { id: okB; height: 38; width: Math.max(110, implicitWidth); kind: "pri"; text: root.mode === "save" ? "Lưu" : "Mở"; onClicked: root.confirm() }
+                        FBtn { id: okB; height: 38; width: Math.max(110, implicitWidth); kind: "pri"; text: root.mode === "save" ? "Lưu" : root.mode === "folder" ? "Chọn thư mục" : "Mở"; onClicked: root.confirm() }
                     }
                 }
             }

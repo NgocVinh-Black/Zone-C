@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.freedesktop.impl.portal.desktop.zonec
+Exec=/usr/bin/python3 @ZONEC_SRC@/scripts/portal/zonec_portal.py

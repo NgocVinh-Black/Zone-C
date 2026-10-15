@@ -338,6 +338,16 @@ deploy_package() {
             cp -r "$REPO_ROOT/config/icons/." "$HOME/.local/share/icons/hicolor/scalable/apps/"
         fi
 
+        # Zone-C file chooser for xdg-desktop-portal (the .portal file lives in the system data dir)
+        if [ -d "$REPO_ROOT/config/portal" ]; then
+            local zsrc="$HOME/.local/share/zone-c/src"
+            mkdir -p "$HOME/.local/share/dbus-1/services" "$HOME/.config/xdg-desktop-portal"
+            sed "s|@ZONEC_SRC@|$zsrc|" "$REPO_ROOT/config/portal/org.freedesktop.impl.portal.desktop.zonec.service" \
+                > "$HOME/.local/share/dbus-1/services/org.freedesktop.impl.portal.desktop.zonec.service"
+            cp "$REPO_ROOT/config/portal/hyprland-portals.conf" "$HOME/.config/xdg-desktop-portal/hyprland-portals.conf"
+            sudo install -Dm644 "$REPO_ROOT/config/portal/zonec.portal" /usr/share/xdg-desktop-portal/portals/zonec.portal 2>/dev/null || true
+        fi
+
         if [ -d "$REPO_ROOT/config/applications" ]; then
             mkdir -p "$HOME/.local/share/applications"
             cp -r "$REPO_ROOT/config/applications/." "$HOME/.local/share/applications/"
