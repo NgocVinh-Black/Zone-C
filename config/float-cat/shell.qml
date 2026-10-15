@@ -239,13 +239,6 @@ ShellRoot {
                     x: 16 * bot.u - width / 2; y: 1.6 * bot.u - height / 2
                     color: win.led
                     border.width: 1; border.color: win.cRim
-                    Behavior on color { ColorAnimation { duration: 250 } }
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: parent.width * 2.2; height: width; radius: width / 2
-                        color: win.led; opacity: ledPulse.v * 0.3
-                        QtObject { id: ledPulse; property real v: 0.5 }
-                    }
                 }
 
                 // ear pods
@@ -273,11 +266,6 @@ ShellRoot {
                     width: 21.33 * bot.u; height: 17.33 * bot.u; radius: height / 2
                     x: 16 * bot.u - width / 2; y: 20.1 * bot.u - height / 2
                     color: win.cBody
-                    // glare across the top of the face
-                    Rectangle {
-                        x: parent.width * 0.22; y: parent.height * 0.1; width: parent.width * 0.56; height: 1.2 * bot.u; radius: height / 2
-                        color: Qt.rgba(1, 1, 1, 0.06)
-                    }
                 }
 
                 // eyes: pills (3.56 x 5.33) that squint to slits (3 x 2), blink, glance and grow
@@ -297,13 +285,6 @@ ShellRoot {
                             width: w; height: h; radius: Math.min(w, h) / 2
                             x: eye.cx - w / 2; y: eye.cy - h / 2
                             color: win.cGlow
-                            // soft glow around the pill
-                            Rectangle {
-                                anchors.centerIn: parent
-                                width: parent.width + 0.9 * bot.u; height: parent.height + 0.9 * bot.u; radius: Math.min(width, height) / 2
-                                color: "transparent"; border.width: 0.45 * bot.u
-                                border.color: Qt.rgba(win.cGlow.r, win.cGlow.g, win.cGlow.b, 0.22)
-                            }
                         }
                         // happy ^ and sleeping _ eyes
                         Canvas {
@@ -352,89 +333,6 @@ ShellRoot {
                             c.restore()
                         }
                     }
-                }
-            }
-
-            // thought bubble: three dots typing while Claude works
-            Item {
-                id: thought
-                x: bot.x + bot.width - 52; y: bot.y - 42
-                width: 58; height: 44
-                opacity: win.mode === "thinking" ? 1 : 0
-                scale: win.mode === "thinking" ? 1 : 0.5
-                transformOrigin: Item.BottomLeft
-                visible: opacity > 0
-                Behavior on opacity { NumberAnimation { duration: 200 } }
-                Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
-                Rectangle { x: 2; y: 36; width: 6; height: 6; radius: 3; color: win.cBubble; border.color: win.cRim; border.width: 1 }
-                Rectangle { x: 9; y: 26; width: 9; height: 9; radius: 4.5; color: win.cBubble; border.color: win.cRim; border.width: 1 }
-                Rectangle {
-                    x: 14; y: 0; width: 44; height: 24; radius: 12
-                    color: win.cBubble; border.color: win.cRim; border.width: 1
-                    Row {
-                        anchors.centerIn: parent
-                        spacing: 5
-                        Repeater {
-                            model: 3
-                            delegate: Rectangle {
-                                id: dot
-                                required property int index
-                                width: 6; height: 6; radius: 3
-                                color: win.cGlow
-                                SequentialAnimation on y {
-                                    loops: Animation.Infinite; running: thought.visible
-                                    PauseAnimation { duration: dot.index * 140 }
-                                    NumberAnimation { to: -4; duration: 200; easing.type: Easing.OutQuad }
-                                    NumberAnimation { to: 0; duration: 240; easing.type: Easing.InQuad }
-                                    PauseAnimation { duration: 560 - dot.index * 140 }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // "z Z" while dozing
-            Repeater {
-                model: 2
-                delegate: Text {
-                    id: zz
-                    required property int index
-                    text: index === 0 ? "z" : "Z"
-                    color: win.cGlow
-                    font.family: "Geist"; font.pixelSize: 15 + index * 5; font.weight: Font.DemiBold
-                    property real p: 0
-                    x: bot.x + bot.width - 14 + 16 * p
-                    y: bot.y + 10 - 34 * p
-                    opacity: win.sleepy ? Math.sin(p * Math.PI) : 0
-                    SequentialAnimation on p {
-                        loops: Animation.Infinite; running: win.sleepy
-                        PauseAnimation { duration: zz.index * 1300 }
-                        NumberAnimation { from: 0; to: 1; duration: 2600; easing.type: Easing.OutQuad }
-                    }
-                }
-            }
-
-            // confetti when done
-            Repeater {
-                model: [
-                    { dx: -70, dy: -40, c: 0 }, { dx: 64, dy: -46, c: 1 }, { dx: -40, dy: -70, c: 2 },
-                    { dx: 40, dy: -74, c: 0 }, { dx: -86, dy: 6, c: 1 }, { dx: 84, dy: -4, c: 2 },
-                    { dx: -12, dy: -84, c: 1 }, { dx: 18, dy: -86, c: 2 }
-                ]
-                delegate: Rectangle {
-                    id: bit
-                    required property var modelData
-                    required property int index
-                    property real p: 0
-                    width: index % 3 === 0 ? 6 : 5; height: index % 3 === 0 ? 6 : 9; radius: index % 3 === 0 ? 3 : 1.5
-                    color: [win.cGlow, win.cYellow, win.cGreen][modelData.c]
-                    x: bot.x + bot.width / 2 + modelData.dx * p
-                    y: bot.y + 10 + modelData.dy * p + 30 * p * p
-                    rotation: 260 * p * (index % 2 ? 1 : -1)
-                    opacity: p > 0 && p < 1 ? 1 - p * p : 0
-                    NumberAnimation { id: fly; target: bit; property: "p"; from: 0; to: 1; duration: 1200; easing.type: Easing.OutCubic }
-                    Connections { target: doneAnim; function onStarted() { fly.restart() } }
                 }
             }
 
@@ -523,11 +421,6 @@ ShellRoot {
         }
 
         // ---------- antenna light: colour and pulse by state ----------
-        SequentialAnimation {
-            loops: Animation.Infinite; running: true
-            NumberAnimation { target: ledPulse; property: "v"; to: 1; duration: win.mode === "thinking" || win.mode === "ask" ? 380 : 1400; easing.type: Easing.InOutSine }
-            NumberAnimation { target: ledPulse; property: "v"; to: 0; duration: win.mode === "thinking" || win.mode === "ask" ? 380 : 1400; easing.type: Easing.InOutSine }
-        }
 
         // ---------- working: eyes narrow and dart about, the collar light runs back and forth ----------
         SequentialAnimation {
@@ -555,29 +448,18 @@ ShellRoot {
         }
 
         // ---------- Claude Code reactions ----------
-        // done: happy eyes, collar green, a bouncy double hop and confetti
+        // done: happy eyes, collar green, one small hop
         SequentialAnimation {
             id: doneAnim
-            NumberAnimation { target: win; property: "hop"; to: 1; duration: 230; easing.type: Easing.OutQuad }
-            NumberAnimation { target: win; property: "hop"; to: 0; duration: 420; easing.type: Easing.OutBounce }
-            PauseAnimation { duration: 200 }
-            NumberAnimation { target: win; property: "hop"; to: 0.5; duration: 180; easing.type: Easing.OutQuad }
-            NumberAnimation { target: win; property: "hop"; to: 0; duration: 360; easing.type: Easing.OutBounce }
+            NumberAnimation { target: win; property: "hop"; to: 0.5; duration: 200; easing.type: Easing.OutQuad }
+            NumberAnimation { target: win; property: "hop"; to: 0; duration: 380; easing.type: Easing.OutBounce }
         }
-        // ask: tilt, big eyes, a little hop
+        // ask: big eyes
         SequentialAnimation {
             id: askAnim
-            ParallelAnimation {
-                NumberAnimation { target: win; property: "tilt"; to: -9; duration: 280; easing.type: Easing.OutBack }
-                NumberAnimation { target: win; property: "eyeScale"; to: 1.22; duration: 280; easing.type: Easing.OutBack }
-            }
-            NumberAnimation { target: win; property: "hop"; to: 0.3; duration: 150; easing.type: Easing.OutQuad }
-            NumberAnimation { target: win; property: "hop"; to: 0; duration: 300; easing.type: Easing.OutBounce }
-            PauseAnimation { duration: 1800 }
-            ParallelAnimation {
-                NumberAnimation { target: win; property: "tilt"; to: 0; duration: 400; easing.type: Easing.InOutSine }
-                NumberAnimation { target: win; property: "eyeScale"; to: 1; duration: 400; easing.type: Easing.InOutSine }
-            }
+            NumberAnimation { target: win; property: "eyeScale"; to: 1.22; duration: 280; easing.type: Easing.OutBack }
+            PauseAnimation { duration: 2200 }
+            NumberAnimation { target: win; property: "eyeScale"; to: 1; duration: 400; easing.type: Easing.InOutSine }
         }
         // picked up: a startled little hop and a double blink
         SequentialAnimation {
@@ -615,18 +497,6 @@ ShellRoot {
                 NumberAnimation { target: win; property: "lookY"; to: 0; duration: 300; easing.type: Easing.InOutCubic }
             }
         }
-        SequentialAnimation {
-            id: tiltAnim
-            property real to: 7
-            NumberAnimation { target: win; property: "tilt"; to: tiltAnim.to; duration: 300; easing.type: Easing.OutBack }
-            PauseAnimation { duration: 900 }
-            NumberAnimation { target: win; property: "tilt"; to: 0; duration: 380; easing.type: Easing.InOutSine }
-        }
-        SequentialAnimation {
-            id: idleHop
-            NumberAnimation { target: win; property: "hop"; to: 0.35; duration: 170; easing.type: Easing.OutQuad }
-            NumberAnimation { target: win; property: "hop"; to: 0; duration: 340; easing.type: Easing.OutBounce }
-        }
 
         // eyes: their own rhythm
         Timer {
@@ -641,9 +511,7 @@ ShellRoot {
             interval: 4200; repeat: true; running: win.mode === "idle" && !win.sleepy
             onTriggered: {
                 const r = Math.random()
-                if (r < 0.45) { glanceAnim.toX = win.rnd(-1.5, 1.5); glanceAnim.toY = win.rnd(-1, 0.6); glanceAnim.restart() }
-                else if (r < 0.7) { tiltAnim.to = Math.random() < 0.5 ? -7 : 7; tiltAnim.restart() }
-                else if (r < 0.85) idleHop.restart()
+                if (r < 0.5) { glanceAnim.toX = Math.random() < 0.5 ? -1.4 : 1.4; glanceAnim.toY = 0; glanceAnim.restart() }
                 interval = win.rnd(3200, 6000)
             }
         }
