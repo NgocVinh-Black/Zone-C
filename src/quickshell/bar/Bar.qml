@@ -241,7 +241,7 @@ Variants {
                 return Math.round(Scaler.s(val));
             }
 
-            property int barHeight: s(40)
+            property int barHeight: isVertical ? 52 : s(40)
             property real cornerRadius: s(12)
 
             property real baseOffsetY: {
@@ -353,7 +353,7 @@ Variants {
             property bool isDataReady: fastPollerLoaded
             Timer { interval: 400; running: true; onTriggered: barWindow.isDataReady = true }
 
-            SideBar {
+            FrostSideBar {
                 id: verticalWrapper
                 barWindow: barWindow
                 property real hideOffsetX: {
