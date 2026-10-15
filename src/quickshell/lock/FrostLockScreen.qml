@@ -107,7 +107,7 @@ FocusScope {
         Item {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 88; height: 88
-            RectangularShadow { anchors.fill: ring; radius: 47; blur: 30; color: Fz.glowA(0.4) }
+            RectangularShadow { anchors.fill: ring; radius: 47; blur: 15; color: Fz.glowA(0.4) }
             Rectangle { id: ring; anchors.fill: parent; anchors.margins: -3; radius: 47; color: Fz.acc }
             RoundImage { anchors.fill: parent; radius: 44; source: root.avatar; visible: ready }
             Rectangle { anchors.fill: parent; radius: 44; color: Fz.acc; visible: root.avatar === ""

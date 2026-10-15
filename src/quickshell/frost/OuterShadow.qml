@@ -7,11 +7,14 @@ import QtQuick.Effects
 Item {
     id: r
     property real radius: 24
-    property real blur: 30
+    property real blur: 30          // CSS box-shadow blur (the full width of the soft edge)
     property real offsetY: 10
     property color color: Qt.rgba(0, 0, 0, 0.3)
     anchors.fill: parent
-    readonly property real m: blur + Math.abs(offsetY) + 6
+    // CSS's blur is the width of the soft edge, half of it outside the shape; Qt's is the reach
+    // outside, so the CSS value is halved (a full value drew shadows twice as big as the design)
+    readonly property real qtBlur: blur / 2
+    readonly property real m: qtBlur + Math.abs(offsetY) + 6
 
     Item {
         id: src
@@ -19,7 +22,7 @@ Item {
         width: r.width + 2 * r.m; height: r.height + 2 * r.m
         layer.enabled: r.width > 0 && r.height > 0
         layer.effect: MultiEffect { maskEnabled: true; maskInverted: true; maskSource: hole; maskThresholdMin: 0.5; maskSpreadAtMin: 1.0 }
-        RectangularShadow { x: r.m; y: r.m; width: r.width; height: r.height; radius: r.radius; blur: r.blur; offset.y: r.offsetY; color: r.color }
+        RectangularShadow { x: r.m; y: r.m; width: r.width; height: r.height; radius: r.radius; blur: r.qtBlur; offset.y: r.offsetY; color: r.color }
     }
     Item {
         id: hole
