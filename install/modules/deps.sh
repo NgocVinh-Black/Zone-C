@@ -56,7 +56,7 @@ REQUIRED_PKGS=(
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
     "qt5ct" "qt6ct" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
     "fcitx5" "fcitx5-unikey" "fcitx5-gtk" "fcitx5-qt" "fcitx5-configtool" "papirus-icon-theme"
-    "flameshot" "foot" "loupe" "gphoto2" "noto-fonts" "noto-fonts-emoji" "wtype"
+    "flameshot" "foot" "loupe" "gphoto2" "noto-fonts" "noto-fonts-emoji" "wtype" "pacman-contrib" "udisks2"
     "google-chrome" "visual-studio-code-bin" "viber"
 )
 

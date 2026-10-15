@@ -100,8 +100,8 @@ hl.window_rule({
 })
 
 hl.window_rule({
-  name  = "zone-c-taskmanager",
-  match = { class = "^(org.quickshell)$", title = "^(Zone-C · Giám sát hệ thống)$" },
+  name  = "zone-c-taskmanager-appstore",
+  match = { class = "^(org.quickshell)$", title = "^(Zone-C · (Giám sát hệ thống|Cửa hàng ứng dụng))$" },
 
   size = "(monitor_w*0.917) (monitor_h*0.9)",
 })
