@@ -8,6 +8,7 @@ Rectangle {
     property bool on: false
     property bool ghost: false
     property string label: ""
+    property color iconColor: on ? Fz.ink : Fz.tx
     property bool hovered: mouse.containsMouse
     signal clicked()
 
@@ -18,6 +19,6 @@ Rectangle {
     Accessible.role: Accessible.Button
     Accessible.name: label
 
-    FIcon { anchors.centerIn: parent; name: root.icon; size: root.iconSize; color: root.on ? Fz.ink : Fz.tx }
+    FIcon { anchors.centerIn: parent; name: root.icon; size: root.iconSize; color: root.iconColor }
     MouseArea { id: mouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.clicked() }
 }

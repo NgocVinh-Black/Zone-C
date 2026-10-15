@@ -10,6 +10,7 @@ ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
+FrostLockScreen 1.0 lock/FrostLockScreen.qml
 
 Start 1.0 serp/Start.qml
 ZoneC 1.0 serp/ZoneC.qml
@@ -27,6 +28,7 @@ FrostDesktop 1.0 desktop/FrostDesktop.qml
 PairDialog 1.0 network/PairDialog.qml
 FrostOverview 1.0 overview/FrostOverview.qml
 FrostTray 1.0 tray/FrostTray.qml
+FrostEmoji 1.0 emoji/FrostEmoji.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml
