@@ -25,11 +25,11 @@ Scope {
         ["Blender", Fz.tr("Dựng hình 3D"), "B", "peach", "pacman", "blender", "gfx"],
         ["Visual Studio Code", Fz.tr("Trình soạn thảo mã"), "C", "#BFE3F5", "AUR", "visual-studio-code-bin", "dev"],
         ["GIMP", Fz.tr("Chỉnh sửa ảnh"), "G", "yellow", "pacman", "gimp", "gfx"],
-        ["Obsidian", Fz.tr("Ghi chú Markdown"), "O", "#DCD3EE", "Flatpak", "md.obsidian.Obsidian", "office"],
-        ["Spotify", Fz.tr("Nghe nhạc"), "S", "green", "Flatpak", "com.spotify.Client", "media"],
+        ["Obsidian", Fz.tr("Ghi chú Markdown"), "O", "#DCD3EE", "Flatpak", "md.obsidian.Obsidian", "office", "obsidian"],
+        ["Spotify", Fz.tr("Nghe nhạc"), "S", "green", "Flatpak", "com.spotify.Client", "media", "spotify-launcher"],
         ["Steam", Fz.tr("Chơi game"), "S", "glow", "pacman", "steam", "game"],
         ["LibreOffice", Fz.tr("Bộ văn phòng"), "L", "#CFE4D8", "pacman", "libreoffice-fresh", "office"],
-        ["Discord", Fz.tr("Trò chuyện"), "D", "#C9D2F5", "Flatpak", "com.discordapp.Discord", "chat"],
+        ["Discord", Fz.tr("Trò chuyện"), "D", "#C9D2F5", "Flatpak", "com.discordapp.Discord", "chat", "discord"],
         ["btop", Fz.tr("Giám sát tài nguyên"), "b", "#F0D3DA", "pacman", "btop", "tool"],
         ["Inkscape", Fz.tr("Đồ họa vector"), "I", "#DCD3EE", "pacman", "inkscape", "gfx"],
         ["Krita", Fz.tr("Vẽ kỹ thuật số"), "K", "#F0D3DA", "pacman", "krita", "gfx"],
@@ -48,7 +48,8 @@ Scope {
         ["GParted", Fz.tr("Phân vùng ổ đĩa"), "G", "peach", "pacman", "gparted", "tool"],
         ["Timeshift", Fz.tr("Sao lưu hệ thống"), "T", "green", "pacman", "timeshift", "tool"],
         ["Flatseal", Fz.tr("Quyền ứng dụng Flatpak"), "F", "#BFE3F5", "Flatpak", "com.github.tchx84.Flatseal", "tool"]
-    ].map(a => ({ name: a[0], desc: a[1], letter: a[2], color: a[3], src: a[4], id: a[5], cat: a[6] }))
+    // a[7]: the same app in the official repos, used when Flatpak is not installed
+    ].map(a => ({ name: a[0], desc: a[1], letter: a[2], color: a[3], src: a[4], id: a[5], cat: a[6], alt: a[7] || "" }))
     readonly property var cats: [["discover", Fz.tr("Khám phá"), "AppStore:s-compass"], ["installed", Fz.tr("Đã cài"), "AppStore:s-box"], ["updates", Fz.tr("Cập nhật"), "AppStore:s-upd"],
         ["dev", Fz.tr("Phát triển"), "AppStore:s-code"], ["gfx", Fz.tr("Đồ họa"), "AppStore:s-pen"], ["media", Fz.tr("Âm nhạc & video"), "AppStore:s-music"], ["game", Fz.tr("Trò chơi"), "AppStore:s-game"],
         ["chat", Fz.tr("Liên lạc"), "AppStore:s-chat"], ["office", Fz.tr("Văn phòng"), "AppStore:s-doc"], ["tool", Fz.tr("Tiện ích hệ thống"), "AppStore:s-wrench"]]
@@ -69,13 +70,17 @@ Scope {
             property string src: "all"
             property string q: ""
             property var status: ({})          // id -> installed version
+            // pacman versions may carry an epoch ("17:5.2.2-3"); it is not shown
+            function ver(v) { return v ? String(v).replace(/^\d+:/, "") : ""; }
             property var results: []
             property bool searching: false
             property var installedList: []
             property var updatesList: []
             property bool hasAur: true
             property bool hasFlatpak: false
-            property var sel: app.catalog[0]
+            // Flatpak entries switch to their pacman package on machines without Flatpak
+            readonly property var apps: app.catalog.map(a => (!hasFlatpak && a.src === "Flatpak" && a.alt) ? Object.assign({}, a, { src: "pacman", id: a.alt }) : a)
+            property var sel: apps[0]
             property var details: ({})         // "src:id" -> info
             property var jobs: ({})            // "src:id" -> { kind, pct, line }
 
@@ -92,7 +97,7 @@ Scope {
                 if (q.trim().length >= 2) base = results;
                 else if (cat === "installed") base = installedList;
                 else if (cat === "updates") base = updatesList;
-                else base = app.catalog.filter(a => cat === "discover" || a.cat === cat);
+                else base = win.apps.filter(a => cat === "discover" || a.cat === cat);
                 let ql = q.trim().toLowerCase();
                 return base.filter(a => (src === "all" || a.src === src) && (ql.length >= 2 || !ql || a.name.toLowerCase().indexOf(ql) !== -1)).map(decorate);
             }
@@ -123,7 +128,7 @@ Scope {
                 return null;
             }
             function refreshStatus() {
-                query(["status"].concat(app.catalog.map(a => a.id)), d => { if (d.data) { win.status = d.data; win.hasAur = d.aur; win.hasFlatpak = d.flatpak; } });
+                query(["status"].concat(app.catalog.map(a => a.id), app.catalog.filter(a => a.alt).map(a => a.alt)), d => { if (d.data) { win.status = d.data; win.hasAur = d.aur; win.hasFlatpak = d.flatpak; } });
                 query(["installed"], d => { if (d.data) win.installedList = d.data; });
             }
             Component.onCompleted: {
@@ -328,7 +333,7 @@ Scope {
                             FText { text: "Blender"; px: 26; weight: Font.DemiBold }
                             FText { text: Fz.tr("Dựng hình 3D, hoạt ảnh và dựng phim. Miễn phí, mã nguồn mở."); px: 13.5; color: Fz.sub2 }
                         }
-                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: win.pick(win.decorate(app.catalog[0])) }
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: win.pick(win.decorate(win.apps[0])) }
                     }
                     Item {
                         width: parent.width; height: 14
@@ -366,7 +371,7 @@ Scope {
                                         Column {
                                             width: parent.width - 60; anchors.verticalCenter: parent.verticalCenter
                                             FText { width: parent.width; elide: Text.ElideRight; text: ac.modelData.name; px: 14; weight: Font.DemiBold }
-                                            FText { width: parent.width; elide: Text.ElideRight; text: ac.modelData.old ? ac.modelData.old + " → " + ac.modelData.version : ac.modelData.desc; px: 12; color: Fz.sub }
+                                            FText { width: parent.width; elide: Text.ElideRight; text: ac.modelData.old ? win.ver(ac.modelData.old) + " → " + win.ver(ac.modelData.version) : ac.modelData.desc; px: 12; color: Fz.sub }
                                         }
                                     }
                                     Item {
@@ -450,7 +455,7 @@ Scope {
                     Column {
                         width: parent.width
                         Repeater {
-                            model: aside.a ? [[Fz.tr("Nguồn"), aside.a.src + (aside.d.repo ? " · " + aside.d.repo : "")], [Fz.tr("Phiên bản"), aside.d.version || aside.a.version || win.status[aside.a.id] || "…"],
+                            model: aside.a ? [[Fz.tr("Nguồn"), aside.a.src + (aside.d.repo ? " · " + aside.d.repo : "")], [Fz.tr("Phiên bản"), win.ver(aside.d.version || aside.a.version || win.status[aside.a.id]) || "…"],
                                               [Fz.tr("Dung lượng"), aside.d.size || aside.a.size || "–"], [Fz.tr("Giấy phép"), aside.d.license || "–"],
                                               [Fz.tr("Đánh giá"), win.rating(aside.a) ? "★ " + win.rating(aside.a)[0].toFixed(1) + " · " + win.rating(aside.a)[1] + Fz.tr(" lượt") : "–"]] : []
                             delegate: Item {

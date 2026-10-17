@@ -310,7 +310,8 @@ Scope {
                                     c.strokeStyle = Fz.fg(0.07); c.lineWidth = 1;
                                     for (const f of [0.25, 0.5, 0.75]) { c.beginPath(); c.moveTo(0, Math.round(H * f) + 0.5); c.lineTo(W, Math.round(H * f) + 0.5); c.stroke(); }
                                     let d = data; if (d.length < 2) return;
-                                    let X = i => (60 - d.length + i) * W / 59, Y = v => H - Math.min(100, v) / 100 * H;
+                                    // fewer than 60 samples (just opened): spread them over the full width
+                                    let n = Math.max(d.length, 2), X = i => i * W / (n - 1), Y = v => H - Math.min(100, v) / 100 * H;
                                     c.beginPath(); c.moveTo(X(0), Y(d[0])); for (let i = 1; i < d.length; i++) c.lineTo(X(i), Y(d[i]));
                                     c.lineTo(W, height); c.lineTo(X(0), height); c.closePath(); c.fillStyle = Fz.accA(0.1); c.fill();
                                     c.beginPath(); c.moveTo(X(0), Y(d[0])); for (let i = 1; i < d.length; i++) c.lineTo(X(i), Y(d[i]));
@@ -336,7 +337,8 @@ Scope {
                                         spacing: 4
                                         Rectangle {
                                             width: parent.width; height: 44; radius: 6; color: Fz.fg(0.06); clip: true
-                                            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: Math.max(4, modelData) / 100 * 44; color: Fz.acc; opacity: Math.min(1, 0.45 + modelData / 60) }
+                                            // at least 4 px so an idle core still shows its accent bar
+                                            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: Math.max(4, Math.max(4, modelData) / 100 * 44); color: Fz.acc; opacity: Math.min(1, 0.45 + modelData / 60) }
                                         }
                                         FText { text: "CPU" + index + " " + Math.round(modelData) + "%"; mono: true; px: 11; color: Fz.sub }
                                     }

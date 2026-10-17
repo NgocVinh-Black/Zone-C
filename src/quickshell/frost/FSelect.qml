@@ -71,7 +71,7 @@ Rectangle {
                         color: index === root.current ? Fz.acc : (optMouse.containsMouse ? Fz.fg(0.06) : "transparent")
                         FText { id: optText; x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData; px: 13; color: index === root.current ? Fz.ink : Fz.tx }
                         MouseArea { id: optMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                            onClicked: { root.current = index; root.picked(index); root.close(); } }
+                            onClicked: { root.picked(index); if (root.current !== index) root.current = index; root.close(); } }
                     }
                 }
             }

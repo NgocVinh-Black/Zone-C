@@ -1,6 +1,8 @@
 import QtQuick
 
 // `.seg`: segmented control. options: [{label, icon?}] or strings; current: index.
+// A click reports picked() first and only sets `current` itself when the owner did not, so a
+// `current` bound to the owner's state keeps following it (e.g. a tab opened from elsewhere).
 Rectangle {
     id: root
     property var options: []
@@ -40,7 +42,7 @@ Rectangle {
                     FIcon { visible: segIcon !== ""; name: segIcon; size: segLabel === "" ? 20 : 14; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
                     FText { visible: segLabel !== ""; text: segLabel; px: root.fontSize; weight: Font.Medium; color: on ? Fz.ink : (segMouse.containsMouse ? Fz.tx : Fz.sub2); anchors.verticalCenter: parent.verticalCenter }
                 }
-                MouseArea { id: segMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.current = index; root.picked(index); } }
+                MouseArea { id: segMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.picked(index); if (root.current !== index) root.current = index; } }
             }
         }
     }

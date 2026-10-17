@@ -19,5 +19,5 @@ Rectangle {
         color: root.on ? Fz.ink : Fz.knob
         Behavior on x { NumberAnimation { duration: 150 } }
     }
-    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { root.on = !root.on; root.toggled(root.on); } }
+    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { let v = !root.on; root.toggled(v); if (root.on !== v) root.on = v; } }
 }

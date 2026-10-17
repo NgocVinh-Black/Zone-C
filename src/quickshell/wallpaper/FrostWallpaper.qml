@@ -189,7 +189,7 @@ Item {
                 Rectangle { width: parent.width; height: 24; color: parent.color }
                 Column {
                     x: 22; anchors.bottom: parent.bottom; anchors.bottomMargin: 18
-                    FText { text: root.cur ? root.cur.fileName : Fz.tr("Chưa có hình nền"); px: 18; weight: Font.DemiBold; width: 380; elide: Text.ElideMiddle }
+                    FText { text: root.cur ? root.cur.fileName : indexer.running ? Fz.tr("Đang tải hình nền…") : Fz.tr("Chưa có hình nền"); px: 18; weight: Font.DemiBold; width: 380; elide: Text.ElideMiddle }
                     FText {
                         text: !root.cur ? root.srcDir : (sizer.status === Image.Ready ? sizer.implicitWidth + Fz.tr("×") + sizer.implicitHeight + " · " : "") + root.size(root.cur.size) + (root.cur.isVideo ? " · video" : "")
                         mono: true; px: 12; color: Fz.sub2

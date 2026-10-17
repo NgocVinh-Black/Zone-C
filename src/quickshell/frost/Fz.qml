@@ -176,6 +176,17 @@ Item {
     // Frost surfaces that live in their own window (overview, power menu, the three system apps…)
     // listen for this; everything else opens through the popup host like the bar always has.
     signal openRequest(string name, string arg)
+    // Display name of a window's app from its Hyprland class; Zone-C's own Quickshell windows are
+    // titled "Zone-C · <name>" and go by that name.
+    function appName(cls, title) {
+        let m = /^Zone-C · (.+)$/.exec(title || "");
+        if (cls === "org.quickshell" && m) return tr(m[1]);
+        let map = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "code-oss": "VS Code", "org.gnome.Nautilus": tr("Tệp"), "ViberPC": "Viber", "Spotify": tr("Nhạc"), "spotify": tr("Nhạc") };
+        return map[cls] || (cls ? cls.charAt(0).toUpperCase() + cls.slice(1) : (title || tr("Cửa sổ")));
+    }
+
+    // tab the Wi-Fi / Bluetooth panel shows, so the bar lights the matching button
+    property string networkTab: "wifi"
     readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome", "settings", "guide"]
     function open(widget, arg) {
         if (widget === "guide") widget = "settings";

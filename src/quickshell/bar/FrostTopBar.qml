@@ -336,7 +336,7 @@ Item {
             BarItem {
                 id: wifiIt
                 visible: root.shown("wifi")
-                on: root.openWidget === "network"
+                on: root.openWidget === "network" && Fz.networkTab !== "bt"
                 padX: 9
                 label: !root.wifiOn ? "Wi-Fi · " + Fz.tr("Tắt") : (root.ssid !== "" ? "Wi-Fi · " + root.ssid : "Wi-Fi · " + Fz.tr("Ngoại tuyến"))
                 onClicked: Fz.open("network", "wifi")
@@ -349,6 +349,7 @@ Item {
             BarItem {
                 id: btIt
                 visible: root.shown("bt")
+                on: root.openWidget === "network" && Fz.networkTab === "bt"
                 padX: 9
                 label: root.btOn ? "Bluetooth · " + root.btConnected + Fz.tr(" thiết bị đã kết nối") : "Bluetooth · " + Fz.tr("Tắt")
                 onClicked: Fz.open("network", "bt")

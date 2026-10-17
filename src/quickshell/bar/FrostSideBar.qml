@@ -119,10 +119,10 @@ Item {
         Sb {
             Si { onClicked: { Quickshell.execDetached(["fcitx5-remote", "-t"]); kbPoll.running = true; }
                  FText { anchors.horizontalCenter: parent.horizontalCenter; text: root.kbLayout; px: 11; weight: Font.DemiBold; color: parent.parent.fg } }
-            Si { on: root.openWidget === "network"; onClicked: Fz.open("network", "wifi")
+            Si { on: root.openWidget === "network" && Fz.networkTab !== "bt"; onClicked: Fz.open("network", "wifi")
                  FIcon { anchors.horizontalCenter: parent.horizontalCenter; name: Networking.wifiEnabled && root.ssid !== "" ? "v-wifi" : "x-wifioff"; size: 16; color: root.ssid === "" && Networking.wifiEnabled && !parent.parent.on ? Fz.redTx : parent.parent.fg }
                  FText { visible: root.wifiShort !== ""; anchors.horizontalCenter: parent.horizontalCenter; text: root.wifiShort; px: 10.5; weight: Font.DemiBold; color: parent.parent.fg } }
-            Si { onClicked: Fz.open("network", "bt"); opacity: root.bt && root.bt.enabled ? 1 : 0.55
+            Si { on: root.openWidget === "network" && Fz.networkTab === "bt"; onClicked: Fz.open("network", "bt"); opacity: root.bt && root.bt.enabled || on ? 1 : 0.55
                  FIcon { anchors.horizontalCenter: parent.horizontalCenter; name: root.bt && root.bt.enabled ? "v-bt" : "x-btoff"; size: 16; color: parent.parent.fg }
                  FText { visible: root.btConnected > 0; anchors.horizontalCenter: parent.horizontalCenter; text: root.btConnected; px: 10.5; weight: Font.DemiBold; color: parent.parent.fg } }
             Si { on: root.openWidget === "volume"; onClicked: Fz.open("volume")

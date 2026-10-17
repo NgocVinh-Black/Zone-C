@@ -55,7 +55,11 @@ PanelWindow {
     readonly property var all: Hyprland.toplevels ? (Hyprland.toplevels.values || []) : []
     function cls(t) { return (t.lastIpcObject && t.lastIpcObject.class) ? t.lastIpcObject.class : ""; }
     function wsId(t) { return t.workspace ? t.workspace.id : (t.lastIpcObject && t.lastIpcObject.workspace ? t.lastIpcObject.workspace.id : 0); }
+    // Zone-C's own apps are Quickshell windows titled "Zone-C · <name>"
+    function zcApp(t) { let m = /^Zone-C · (.+)$/.exec(t.title || ""); return cls(t) === "org.quickshell" && m ? m[1] : ""; }
     function icon(t) {
+        let z = zcApp(t);
+        if (z) return ({ "Giám sát hệ thống": "l-pulse", "Cài đặt": "l-gear", "Cửa hàng ứng dụng": "l-box", "Tệp": "o-folder" })[z] || "l-zc";
         let c = (cls(t) + " " + (t.title || "")).toLowerCase();
         if (/foot|kitty|alacritty|wezterm|terminal|konsole/.test(c)) return "o-terminal";
         if (/chrome|chromium|firefox|brave|browser|zen/.test(c)) return "o-browser";
@@ -66,9 +70,7 @@ PanelWindow {
         return "o-browser";
     }
     function appName(t) {
-        let c = cls(t);
-        let map = { "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "code-oss": "VS Code", "org.gnome.Nautilus": Fz.tr("Tệp"), "ViberPC": "Viber", "Spotify": Fz.tr("Nhạc"), "spotify": Fz.tr("Nhạc") };
-        return map[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : (t.title || Fz.tr("Cửa sổ")));
+        return Fz.appName(cls(t), t.title);
     }
     readonly property var wsWindows: all.filter(t => wsId(t) === shownWs && (filter === "" || (t.title + " " + cls(t)).toLowerCase().indexOf(filter.toLowerCase()) !== -1))
     // most recently focused first, one entry per window

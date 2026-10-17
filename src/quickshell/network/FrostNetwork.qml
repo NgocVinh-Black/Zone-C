@@ -12,6 +12,7 @@ Item {
     focus: true
 
     property string activeMode: "wifi"
+    onActiveModeChanged: Fz.networkTab = activeMode
     function gotoTab(t) { activeMode = (t === "bt") ? "bt" : "wifi"; }
     readonly property bool isWifi: activeMode !== "bt"
 
@@ -91,7 +92,7 @@ Item {
         onTriggered: { speed.running = true; if (!pinger.running) pinger.running = true; }
     }
     onVisibleChanged: if (visible) { scanMeta.running = true; if (wifiDev) wifiDev.scannerEnabled = true; }
-    Component.onCompleted: scanMeta.running = true
+    Component.onCompleted: { scanMeta.running = true; Fz.networkTab = activeMode; }
 
     // ---------- Bluetooth ----------
     readonly property var adapter: Bluetooth.defaultAdapter
@@ -99,7 +100,10 @@ Item {
     readonly property var paired: btDevs.filter(d => d.paired || d.bonded)
     // devices that only advertise their address (shown as "76-CB-92-…") are left out, like the design's list
     readonly property var nearby: btDevs.filter(d => !d.paired && !d.bonded && d.name && !/^([0-9A-F]{2}[-:]){5}[0-9A-F]{2}$/i.test(d.name))
-    Binding { target: root.adapter; property: "discovering"; value: root.visible && !root.isWifi && root.adapter && root.adapter.enabled; when: root.adapter !== null }
+    // scan for nearby devices only while the Bluetooth tab is on screen; stop only a scan that is running
+    readonly property bool wantScan: visible && !isWifi && adapter !== null && adapter.enabled
+    function syncScan() { if (adapter && adapter.discovering !== wantScan && (wantScan || adapter.discovering)) adapter.discovering = wantScan; }
+    onWantScanChanged: syncScan()
     function btIcon(d) {
         let i = (d.icon || "").toLowerCase();
         if (i.indexOf("headset") !== -1 || i.indexOf("headphone") !== -1) return "n-head";

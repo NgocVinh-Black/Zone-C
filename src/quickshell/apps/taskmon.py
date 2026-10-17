@@ -234,6 +234,9 @@ def main():
             if pid == 2 or p["ppid"] == 2:
                 continue    # kernel threads
             name = p["exe"]
+            # apps installed as versioned binaries (Claude Code runs ".../versions/2.1.302") go by their comm
+            if re.fullmatch(r"v?\d+(\.\d+)+", name):
+                name = p["comm"]
             if name.startswith(INTERP):
                 args = read(f"/proc/{pid}/cmdline").split("\0")[1:]
                 script = "" if "-c" in args[:2] else next((a for a in args if a and not a.startswith("-")), "")

@@ -36,7 +36,8 @@ PanelWindow {
         let tl = Hyprland.toplevels ? (Hyprland.toplevels.values || []) : [], seen = {}, out = [];
         for (const t of tl) {
             let c = t.lastIpcObject && t.lastIpcObject.class ? t.lastIpcObject.class : "";
-            let n = ({ "foot": "Foot", "kitty": "kitty", "google-chrome": "Chrome", "code": "VS Code", "org.gnome.Nautilus": Fz.tr("Tệp"), "ViberPC": "Viber" })[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : "");
+            if (c === "org.quickshell") continue;   // Zone-C's own windows close with the session anyway
+            let n = c ? Fz.appName(c, t.title) : "";
             if (n && !seen[n]) { seen[n] = true; out.push(n); }
         }
         return out;

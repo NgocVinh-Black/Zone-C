@@ -168,6 +168,7 @@ var map = {
 "Chưa cài CUPS": "CUPS is not installed",
 "Chưa có dữ liệu": "No data yet",
 "Chưa có hình nền": "No wallpapers yet",
+"Đang tải hình nền…": "Loading wallpapers…",
 "Chưa có snapshot": "No snapshots yet",
 "Chưa có tiện ích": "No widgets yet",
 "Chưa có ứng dụng": "No apps",

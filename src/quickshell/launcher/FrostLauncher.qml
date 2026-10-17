@@ -42,6 +42,7 @@ PanelWindow {
             imeProbe.running = true;
             focusTimer.restart();
         } else if (imeBefore === "unikey") {
+            OsdController.quietIme(2000);
             Quickshell.execDetached(["fcitx5-remote", "-o"]);
             imeBefore = "";
         }
@@ -53,7 +54,7 @@ PanelWindow {
     Process {
         id: imeProbe
         command: ["fcitx5-remote", "-n"]
-        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim(); if (win.imeBefore === "unikey") { if (win.imGuard) Quickshell.execDetached(["fcitx5-remote", "-c"]); else win.imeBefore = ""; } } }
+        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim(); if (win.imeBefore === "unikey") { if (win.imGuard) { OsdController.quietIme(2000); Quickshell.execDetached(["fcitx5-remote", "-c"]); } else win.imeBefore = ""; } } }
     }
     Process {
         id: rankProc

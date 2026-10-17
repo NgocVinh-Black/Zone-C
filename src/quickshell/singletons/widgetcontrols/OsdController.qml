@@ -121,6 +121,9 @@ Item {
 
     // Input method switches (fcitx5: unikey <-> keyboard-us) show the "Tiếng Việt · Unikey" OSD.
     property string lastIme: ""
+    // switches the shell makes itself (the launcher turning Unikey off and back on) stay silent
+    property real imeQuietUntil: 0
+    function quietIme(ms) { imeQuietUntil = Date.now() + (ms || 2000); }
     Process {
         id: imePoll
         command: ["fcitx5-remote", "-n"]
@@ -128,7 +131,7 @@ Item {
             onStreamFinished: {
                 let im = this.text.trim();
                 if (im === "") return;
-                if (controller.lastIme !== "" && im !== controller.lastIme) controller.show("ime", im);
+                if (controller.lastIme !== "" && im !== controller.lastIme && Date.now() > controller.imeQuietUntil) controller.show("ime", im);
                 controller.lastIme = im;
             }
         }
