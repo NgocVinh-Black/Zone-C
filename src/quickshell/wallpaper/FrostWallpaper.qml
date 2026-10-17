@@ -94,7 +94,8 @@ Item {
     // `.wall.blur` + `.scrim.deep`
     Image {
         anchors.fill: parent; anchors.margins: -60; anchors.topMargin: -112
-        source: root.src(root.cur) || ("file://" + Wallpaper.getWallpaperPath(""))
+        // a video wallpaper without a poster leaves just the scrim (Image cannot decode video)
+        source: { let p = Wallpaper.getWallpaperPath(""); return root.src(root.cur) || (p && !/\.(mp4|webm|mkv|mov|avi)$/i.test(p) ? "file://" + p : ""); }
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: 960
         layer.enabled: true

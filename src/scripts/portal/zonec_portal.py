@@ -3,6 +3,8 @@
 
 Each request is written to a JSON file and shown by the shell (`zone-c ipc call portal fileChooser`);
 the shell answers in <file>.out. Registered by zonec.portal and the D-Bus activation file.
+When the shell cannot be reached (not running, reloading), the request goes to the GTK backend
+instead, so the app still gets a file dialog rather than waiting forever.
 """
 import json
 import mimetypes
@@ -16,6 +18,8 @@ gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
 BUS_NAME = "org.freedesktop.impl.portal.desktop.zonec"
+GTK_NAME = "org.freedesktop.impl.portal.desktop.gtk"
+IFACE = "org.freedesktop.impl.portal.FileChooser"
 OBJ_PATH = "/org/freedesktop/portal/desktop"
 XML = """
 <node>
@@ -48,7 +52,11 @@ STATE = os.path.join(os.environ.get("XDG_RUNTIME_DIR", tempfile.gettempdir()), "
 def app_name(app_id):
     if not app_id:
         return "Ứng dụng"
-    info = Gio.DesktopAppInfo.new(app_id + ".desktop")
+    try:
+        # PyGObject raises instead of returning None when there is no such .desktop file
+        info = Gio.DesktopAppInfo.new(app_id + ".desktop")
+    except TypeError:
+        info = None
     return info.get_display_name() if info else app_id.split(".")[-1]
 
 
@@ -75,7 +83,18 @@ def exts_of(options):
     return out, label
 
 
-def handle(invocation, method, params):
+def fallback(conn, invocation, method, params):
+    """Hand the request to xdg-desktop-portal-gtk and pass its answer back."""
+    def done(c, res):
+        try:
+            invocation.return_value(c.call_finish(res))
+        except GLib.Error:
+            invocation.return_value(GLib.Variant("(ua{sv})", (2, {})))
+    conn.call(GTK_NAME, OBJ_PATH, IFACE, method, params, GLib.VariantType.new("(ua{sv})"),
+              Gio.DBusCallFlags.NONE, GLib.MAXINT, None, done)
+
+
+def handle(conn, invocation, method, params):
     handle_path, app_id, _parent, title, options = params.unpack()
     mode = "save" if method != "OpenFile" else ("folder" if options.get("directory") else "open")
     exts, label = exts_of(options)
@@ -90,11 +109,22 @@ def handle(invocation, method, params):
     fd, path = tempfile.mkstemp(prefix="req-", suffix=".json", dir=STATE)
     with os.fdopen(fd, "w") as f:
         json.dump(req, f, ensure_ascii=False)
-    subprocess.Popen(["zone-c", "ipc", "call", "portal", "fileChooser", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        proc = subprocess.Popen(["zone-c", "ipc", "call", "portal", "fileChooser", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError:
+        proc = None
 
     def poll():
         out = path + ".out"
         if not os.path.exists(out):
+            # the shell never got the request: use the GTK dialog
+            if proc is None or (proc.poll() is not None and proc.returncode != 0):
+                try:
+                    os.unlink(path)
+                except OSError:
+                    pass
+                fallback(conn, invocation, method, params)
+                return False
             return True
         try:
             with open(out) as f:
@@ -121,7 +151,7 @@ def handle(invocation, method, params):
 
 
 def on_call(conn, sender, path, iface, method, params, invocation):
-    handle(invocation, method, params)
+    handle(conn, invocation, method, params)
 
 
 def on_get(conn, sender, path, iface, prop):

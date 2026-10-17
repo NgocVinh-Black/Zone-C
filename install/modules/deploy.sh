@@ -12,6 +12,44 @@ EXTRA_CONFIGS=(
     "code-flags.conf"
 )
 
+# mimeapps.list is shared with other programs (Claude Code, browsers add their own handlers):
+# take the repo's entries, but keep every entry the user has that the repo does not set.
+merge_mimeapps() {
+    local src="$1" dest="$2"
+    if [ ! -f "$dest" ] || ! command -v python3 >/dev/null 2>&1; then
+        cp "$src" "$dest"
+        return
+    fi
+    python3 - "$src" "$dest" <<'PY' || cp "$src" "$dest"
+import configparser, sys
+def load(p):
+    c = configparser.ConfigParser(interpolation=None, strict=False)
+    c.optionxform = str
+    c.read(p, encoding="utf-8")
+    return c
+repo, mine = load(sys.argv[1]), load(sys.argv[2])
+for sec in mine.sections():
+    if not repo.has_section(sec):
+        repo.add_section(sec)
+    for key, val in mine.items(sec):
+        if not repo.has_option(sec, key):
+            repo.set(sec, key, val)
+with open(sys.argv[2], "w", encoding="utf-8") as f:
+    repo.write(f, space_around_delimiters=False)
+PY
+}
+
+# copies one shipped config file into ~/.config, merging the ones that are shared
+install_config_file() {
+    local src="$1" dest="$2"
+    mkdir -p "$(dirname "$dest")"
+    if [ "$(basename "$dest")" = "mimeapps.list" ]; then
+        merge_mimeapps "$src" "$dest"
+    else
+        cp "$src" "$dest"
+    fi
+}
+
 render_wallpaper_progress() {
     local current="$1"
     local total="$2"
@@ -324,8 +362,7 @@ deploy_package() {
                     mkdir -p "$dest_cfg"
                     cp -r "$src_cfg/." "$dest_cfg/"
                 elif [ -f "$src_cfg" ]; then
-                    mkdir -p "$(dirname "$dest_cfg")"
-                    cp "$src_cfg" "$dest_cfg"
+                    install_config_file "$src_cfg" "$dest_cfg"
                 fi
             done
         fi
@@ -533,8 +570,7 @@ deploy_package() {
                         local cfg_name="${rel_cfg%%/*}"
                         for cfg in "${EXTRA_CONFIGS[@]}"; do
                             if [[ "$cfg" == "$cfg_name" ]]; then
-                                mkdir -p "$(dirname "$HOME/.config/$rel_cfg")"
-                                cp "$REPO_ROOT/$file" "$HOME/.config/$rel_cfg"
+                                install_config_file "$REPO_ROOT/$file" "$HOME/.config/$rel_cfg"
                             fi
                         done
                     fi
