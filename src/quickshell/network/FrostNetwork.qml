@@ -114,7 +114,7 @@ Item {
         return "n-bt";
     }
     function btKind(d) {
-        return ({ "n-head": "Tai nghe", "n-mouse": Fz.tr("Chuột"), "n-kbd": Fz.tr("Bàn phím"), "n-phone": Fz.tr("Điện thoại"), "n-spk": "Loa" })[btIcon(d)] || Fz.tr("Thiết bị");
+        return ({ "n-head": "Tai nghe", "n-mouse": Fz.tr("Chuột"), "n-kbd": Fz.tr("Bàn phím"), "n-phone": Fz.tr("Điện thoại"), "n-spk": "Loa" })[btIcon(d)] || Fz.trAs("Thiết bị", "Device");
     }
 
     Glass {
