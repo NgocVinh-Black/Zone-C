@@ -372,7 +372,7 @@ Item {
                 onClicked: Fz.open("volume")
                 onRightClicked: if (Audio.defaultSink) Audio.toggleMute(Audio.defaultSink)
                 onWheel: (steps) => { if (Audio.defaultSink) Audio.setVolume(Audio.defaultSink, Math.max(0, Math.min(150, root.volume + steps * 5))); }
-                FIcon { name: root.muted ? "mute" : "b-vol"; size: 15; color: volIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                FIcon { name: root.muted ? "v-mute" : "b-vol"; size: 15; color: volIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
                 FText { mono: true; text: root.muted ? "–" : root.volume; color: volIt.fgColor; px: 12; anchors.verticalCenter: parent.verticalCenter }
             }
             BarItem {
