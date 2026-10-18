@@ -10,6 +10,7 @@ import "../frost"
 PanelWindow {
     id: win
     property bool open: false
+    SurfaceGuard { name: "emoji"; shown: win.open; onCloseRequested: win.open = false }
     visible: open
     WlrLayershell.namespace: "qs-emoji"
     WlrLayershell.layer: WlrLayer.Overlay

@@ -36,6 +36,7 @@ PanelWindow {
         focusTimer.restart();
     }
     function hide() { mode = ""; }
+    SurfaceGuard { name: "overview"; shown: win.visible; onCloseRequested: win.hide() }
     Timer { id: focusTimer; interval: 30; onTriggered: win.mode === "overview" ? field.forceActiveFocus() : keys.forceActiveFocus() }
 
     Connections {

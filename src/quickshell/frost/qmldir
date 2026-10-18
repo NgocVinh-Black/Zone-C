@@ -35,3 +35,4 @@ FMenuItem 1.0 FMenuItem.qml
 FMenuSep 1.0 FMenuSep.qml
 EmptyState 1.0 EmptyState.qml
 OuterShadow 1.0 OuterShadow.qml
+SurfaceGuard 1.0 SurfaceGuard.qml

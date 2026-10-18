@@ -185,6 +185,10 @@ Item {
         return map[cls] || (cls ? cls.charAt(0).toUpperCase() + cls.slice(1) : (title || tr("Cửa sổ")));
     }
 
+    // A shell panel opening (SurfaceGuard): the others close so panels never pile up
+    signal surfaceOpened(string name)
+    function claim(name) { surfaceOpened(name); }
+
     // tab the Wi-Fi / Bluetooth panel shows, so the bar lights the matching button
     property string networkTab: "wifi"
     readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome", "settings", "guide"]

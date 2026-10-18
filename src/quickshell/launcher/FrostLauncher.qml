@@ -49,12 +49,13 @@ PanelWindow {
     }
     Timer { id: focusTimer; interval: 40; onTriggered: field.forceActiveFocus() }
     function close() { LauncherController.hide(); }
+    SurfaceGuard { name: "launcher"; shown: win.visible; onCloseRequested: win.close() }
 
     // Unikey off while typing in the launcher (footer note of the artboard), restored on close.
     Process {
         id: imeProbe
-        command: ["fcitx5-remote", "-n"]
-        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim(); if (win.imeBefore === "unikey") { if (win.imGuard) { OsdController.quietIme(2000); Quickshell.execDetached(["fcitx5-remote", "-c"]); } else win.imeBefore = ""; } } }
+        command: ["fcitx5-remote"]
+        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim() === "2" ? "unikey" : ""; if (win.imeBefore === "unikey") { if (win.imGuard) { OsdController.quietIme(2000); Quickshell.execDetached(["fcitx5-remote", "-c"]); } else win.imeBefore = ""; } } }
     }
     Process {
         id: rankProc

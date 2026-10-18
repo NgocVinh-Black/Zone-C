@@ -117,23 +117,8 @@ hl.window_rule({
   center = true,
 })
 
--- Zone-C Frost apps (Tệp, Giám sát hệ thống, Cửa hàng ứng dụng) are Quickshell windows titled "Zone-C · …":
--- float them at the size of the design and centre them.
-hl.window_rule({
-  name  = "zone-c-apps",
-  match = { class = "^(org.quickshell)$", title = "^(Zone-C · .*)$" },
-
-  float  = true,
-  size   = "(monitor_w*0.967) (monitor_h*0.92)",
-  center = true,
-})
-
-hl.window_rule({
-  name  = "zone-c-taskmanager-appstore",
-  match = { class = "^(org.quickshell)$", title = "^(Zone-C · (Giám sát hệ thống|Cửa hàng ứng dụng))$" },
-
-  size = "(monitor_w*0.917) (monitor_h*0.9)",
-})
+-- Zone-C's own apps (Tệp, Giám sát hệ thống, Cửa hàng ứng dụng, Cài đặt) are ordinary windows: they
+-- tile like every other app instead of floating over the workspace.
 
 -- Zone-C Frost: frosted glass behind the shell's panels, bar pills and desktop cards (backdrop-filter in
 -- the design). ignore_alpha keeps the blur to the glass itself, not the transparent rest of each layer.

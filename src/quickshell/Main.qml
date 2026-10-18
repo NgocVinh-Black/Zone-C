@@ -405,6 +405,12 @@ PanelWindow {
         reportWidgetState();
         lazyEvictTimer.restart();
     }
+    // the bar popups take part in "one panel at a time" (frost/SurfaceGuard.qml)
+    SurfaceGuard {
+        name: "popup"
+        shown: masterWindow.currentActive !== "hidden" && masterWindow.currentActive !== ""
+        onCloseRequested: masterWindow.switchWidget("hidden", "")
+    }
 
     Timer {
         id: lazyEvictTimer

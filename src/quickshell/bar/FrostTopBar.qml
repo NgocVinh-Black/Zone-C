@@ -80,7 +80,7 @@ Item {
     Process {
         id: kbPoll
         running: true
-        command: ["bash", "-c", "if [[ \"$(fcitx5-remote -n 2>/dev/null)\" == \"unikey\" ]]; then echo VI; else l=$(LC_ALL=C hyprctl devices -j 2>/dev/null | jq -r '(.keyboards[] | select(.main == true) | .active_keymap) // empty' | head -n1); echo \"${l:0:2}\" | tr '[:lower:]' '[:upper:]'; fi"]
+        command: ["bash", "-c", "if [[ \"$(fcitx5-remote 2>/dev/null)\" == \"2\" ]]; then echo VI; else l=$(LC_ALL=C hyprctl devices -j 2>/dev/null | jq -r '(.keyboards[] | select(.main == true) | .active_keymap) // empty' | head -n1); echo \"${l:0:2}\" | tr '[:lower:]' '[:upper:]'; fi"]
         stdout: StdioCollector { onStreamFinished: { let t = this.text.trim(); root.kbLayout = (t === "" ? "US" : t); } }
     }
     Timer { interval: 1500; running: true; repeat: true; onTriggered: kbPoll.running = true }

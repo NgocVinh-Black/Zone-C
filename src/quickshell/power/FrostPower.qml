@@ -12,6 +12,7 @@ import "../frost"
 PanelWindow {
     id: win
     property bool open: false
+    SurfaceGuard { name: "power"; shown: win.open; onCloseRequested: win.open = false }
     visible: open
     WlrLayershell.namespace: "zone-c-power"
     WlrLayershell.layer: WlrLayer.Overlay

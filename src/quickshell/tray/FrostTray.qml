@@ -11,6 +11,7 @@ import "../frost"
 PanelWindow {
     id: win
     property bool open: false
+    SurfaceGuard { name: "tray"; shown: win.open; onCloseRequested: win.open = false }
     visible: open
     WlrLayershell.namespace: "qs-tray"
     WlrLayershell.layer: WlrLayer.Overlay

@@ -124,13 +124,16 @@ Item {
     // switches the shell makes itself (the launcher turning Unikey off and back on) stay silent
     property real imeQuietUntil: 0
     function quietIme(ms) { imeQuietUntil = Date.now() + (ms || 2000); }
+    // `fcitx5-remote` state, not `-n`: the name reads "keyboard-us" whenever a shell panel holds the
+    // keyboard (no input context), which flashed the OSD on every panel open/close. 2 = Unikey, 1 = EN.
     Process {
         id: imePoll
-        command: ["fcitx5-remote", "-n"]
+        command: ["fcitx5-remote"]
         stdout: StdioCollector {
             onStreamFinished: {
-                let im = this.text.trim();
-                if (im === "") return;
+                let st = this.text.trim();
+                if (st !== "1" && st !== "2") return;
+                let im = st === "2" ? "unikey" : "keyboard-us";
                 if (controller.lastIme !== "" && im !== controller.lastIme && Date.now() > controller.imeQuietUntil) controller.show("ime", im);
                 controller.lastIme = im;
             }

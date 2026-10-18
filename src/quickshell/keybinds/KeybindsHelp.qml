@@ -114,6 +114,7 @@ PanelWindow {
 
     function open() { query = ""; searchInput.text = ""; active = true; focusTimer.restart(); }
     function close() { active = false; }
+    SurfaceGuard { name: "keybinds"; shown: root.active; onCloseRequested: root.close() }
     function toggle() { if (active) close(); else open(); }
 
     WlrLayershell.layer: WlrLayer.Overlay

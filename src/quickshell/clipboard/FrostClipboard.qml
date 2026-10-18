@@ -27,6 +27,7 @@ PanelWindow {
     readonly property string fetcher: Caching.qsDir + "/clipboard/clip_fetcher.py"
 
     function close() { ClipboardController.hide(); }
+    SurfaceGuard { name: "clipboard"; shown: win.visible; onCloseRequested: win.close() }
     onVisibleChanged: if (visible) { query = ""; field.text = ""; sel = 0; refresh(); focusTimer.restart(); }
     Timer { id: focusTimer; interval: 40; onTriggered: field.forceActiveFocus() }
 
