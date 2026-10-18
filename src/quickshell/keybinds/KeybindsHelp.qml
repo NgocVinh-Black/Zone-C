@@ -27,6 +27,7 @@ PanelWindow {
             { k: "Super+C", d: "VS Code" },
             { k: "Super+E", d: Fz.tr("Trình quản lý file") },
             { k: "Ctrl+Alt+V", d: Fz.tr("Chỉnh âm thanh") },
+            { k: "Ctrl+Alt+B", d: Fz.tr("Quản lý Bluetooth") },
             { k: "Super+.", d: Fz.tr("Emoji & ký tự") },
             { k: "Super+/", d: Fz.tr("Bảng phím tắt này") } ] },
         { col: 0, icon: "󰕮", title: Fz.tr("Bảng của Zone-C"), accent: "mauve", rows: [
@@ -71,7 +72,7 @@ PanelWindow {
             { k: "Ctrl+Alt+Tab|Ctrl+Shift+Alt+Tab", d: Fz.tr("Tab kế tiếp / trước") } ] },
         { col: 2, icon: "󰍺", title: "Workspace", accent: "green", rows: [
             { k: "Super+Tab", d: Fz.tr("Tổng quan cửa sổ") },
-            { k: "Super+1…0", d: "Sang workspace 1–10" },
+            { k: "Super+1…0", d: Fz.tr("Sang workspace 1–10") },
             { k: "Super+Shift+1…0|Super+Alt+1…0", d: Fz.tr("Chuyển cửa sổ sang đó") },
             { k: "Ctrl+Super+1…0", d: Fz.tr("Sang nhóm workspace") },
             { k: "Ctrl+Super+Alt+1…0", d: Fz.tr("Chuyển cửa sổ sang nhóm") },
@@ -90,7 +91,9 @@ PanelWindow {
             { k: "Ctrl+Super+=|Ctrl+Super+-", d: Fz.tr("Bài tiếp / bài trước") },
             { k: "Super+Shift+M|Mute", d: Fz.tr("Tắt tiếng loa") },
             { k: Fz.tr("Phím âm lượng|Phím độ sáng"), d: Fz.tr("Âm lượng / độ sáng") },
-            { k: Fz.tr("Phím Mic"), d: Fz.tr("Tắt / bật micro") } ] }
+            { k: Fz.tr("Phím Mic"), d: Fz.tr("Tắt / bật micro") },
+            { k: "Super+Alt+=|Super+Alt+-", d: Fz.tr("Phóng to / thu nhỏ màn hình") },
+            { k: "Ctrl+Space", d: Fz.tr("Bật / tắt gõ tiếng Việt (Unikey)") } ] }
     ]
 
     function norm(t) {
@@ -108,6 +111,21 @@ PanelWindow {
         for (let i = 0; i < parts.length; i++) {
             if (parts[i] === "" && i + 1 < parts.length) { out.push("+"); i++; continue; }
             if (parts[i] !== "") out.push(parts[i]);
+        }
+        return out;
+    }
+
+    // three columns (four squeeze the key chips); sections go to the shortest column so the columns
+    // end at about the same height
+    readonly property int nCols: 3
+    readonly property var layout: {
+        let h = [], out = [];
+        for (let c = 0; c < nCols; c++) { h.push(0); out.push([]); }
+        for (const s of sections) {
+            const rows = s.rows.filter(r => rowMatches(r)).length;
+            if (!rows) continue;
+            let c = h.indexOf(Math.min.apply(null, h));
+            out[c].push(s); h[c] += rows + 2.5;
         }
         return out;
     }
@@ -189,10 +207,11 @@ PanelWindow {
         }
 
         Flickable {
+            id: flick
             y: header.height + 20
             width: parent.width
             height: parent.height - y
-            contentHeight: cols.height
+            contentHeight: cols.height + 40
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             Row {
@@ -200,14 +219,14 @@ PanelWindow {
                 width: parent.width
                 spacing: 16
                 Repeater {
-                    model: 3
+                    model: root.nCols
                     delegate: Column {
                         required property int index
                         readonly property int colIndex: index
-                        width: (cols.width - 32) / 3
+                        width: (cols.width - 16 * (root.nCols - 1)) / root.nCols
                         spacing: 16
                         Repeater {
-                            model: root.sections.filter(s => s.col === colIndex && s.rows.some(r => root.rowMatches(r)))
+                            model: root.layout[colIndex] || []
                             delegate: Glass {
                                 required property var modelData
                                 width: parent.width
@@ -224,7 +243,7 @@ PanelWindow {
                                             required property var modelData
                                             required property int index
                                             width: sc.width
-                                            height: Math.max(36, label.implicitHeight + 14)
+                                            height: Math.max(32, label.implicitHeight + 12)
                                             Rectangle { visible: index > 0; width: parent.width; height: 1; color: Fz.fg(0.06) }
                                             FText { id: label; width: parent.width - keys.width - 10; wrapMode: Text.Wrap; text: modelData.d; px: 13.5; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
                                             Row {
@@ -244,6 +263,17 @@ PanelWindow {
                     }
                 }
             }
+        }
+        // more below: a fade and a hint over the bottom edge until the list is scrolled to the end
+        Rectangle {
+            visible: flick.contentHeight > flick.height && !flick.atYEnd
+            anchors.bottom: flick.bottom; width: flick.width; height: 70
+            gradient: Gradient {
+                GradientStop { position: 0; color: "transparent" }
+                GradientStop { position: 1; color: Qt.rgba(Fz.bg0.r, Fz.bg0.g, Fz.bg0.b, 0.85) }
+            }
+            FText { anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10
+                    text: Fz.tr("Cuộn để xem thêm ↓"); px: 12.5; color: Fz.sub }
         }
     }
 }
