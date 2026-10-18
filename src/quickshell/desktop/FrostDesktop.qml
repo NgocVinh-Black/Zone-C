@@ -293,16 +293,18 @@ Variants {
                             win.save();
                         }
                     }
-                    FBtn { anchors.verticalCenter: parent.verticalCenter; kind: "pri"; text: "Xong"; onClicked: win.editing = false }
+                    FBtn { anchors.verticalCenter: parent.verticalCenter; kind: "pri"; text: Fz.tr("Xong"); onClicked: win.editing = false }
                 }
             }
 
             // ---------- "Thêm tiện ích" panel ----------
+            // opaque, so the widgets it covers don't show through
             Glass {
                 id: aside
                 visible: win.editing
                 z: 20
                 anchors.right: parent.right; anchors.rightMargin: 16
+                Rectangle { anchors.fill: parent; radius: aside.radius; color: Fz.mantle; opacity: 0.94 }
                 anchors.top: parent.top; anchors.topMargin: 80
                 anchors.bottom: parent.bottom; anchors.bottomMargin: 16
                 width: 360
