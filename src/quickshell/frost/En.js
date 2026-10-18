@@ -169,6 +169,8 @@ var map = {
 "Chưa có dữ liệu": "No data yet",
 "Chưa có hình nền": "No wallpapers yet",
 "Xong": "Done",
+"Thanh bar, bảng, ứng dụng và cài đặt · đổi ngay": "Bar, panels, apps and settings · applies right away",
+"Ngôn ngữ của Zone-C": "Zone-C language",
 "Đang tải hình nền…": "Loading wallpapers…",
 "Chưa có snapshot": "No snapshots yet",
 "Chưa có tiện ích": "No widgets yet",

@@ -41,11 +41,8 @@ Column {
         }
         SRow {
             title: Fz.tr("Ngôn ngữ giao diện")
-            CfgSelect {
-                key: "general.language"; def: "vi"
-                options: [Fz.tr("Tiếng Việt"), "English", "Deutsch", Fz.tr("Español"), "Italiano", "한국어", Fz.tr("Português"), Fz.tr("Русский"), Fz.tr("Українська"), Fz.tr("Azərbaycan"), Fz.tr("Հայերեն")]
-                values: ["vi", "en", "de", "es", "it", "ko", "pt", "ru", "ua", "az", "hy"]
-            }
+            // the Frost interface is written in Vietnamese with an English translation (frost/En.js)
+            CfgSeg { key: "general.language"; def: "vi"; options: [Fz.tr("Tiếng Việt"), "English"]; values: ["vi", "en"] }
         }
         SRow {
             title: Fz.tr("Tỷ lệ giao diện"); sub: Fz.tr("Áp dụng khi Zone-C khởi động lại")

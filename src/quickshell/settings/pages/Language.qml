@@ -39,6 +39,14 @@ Column {
     Grp {
         width: parent.width
         SRow {
+            title: Fz.tr("Ngôn ngữ của Zone-C"); sub: Fz.tr("Thanh bar, bảng, ứng dụng và cài đặt · đổi ngay")
+            CfgSeg { key: "general.language"; def: "vi"; options: [Fz.tr("Tiếng Việt"), "English"]; values: ["vi", "en"] }
+        }
+    }
+    Item { width: 1; height: 12 }
+    Grp {
+        width: parent.width
+        SRow {
             title: Fz.tr("Ngôn ngữ hệ thống"); sub: "LANG=" + page.lang; subMono: true
             FSelect {
                 options: page.options.map(l => page.names[page.base(l)] || page.base(l))
@@ -62,12 +70,5 @@ Column {
         SRow { title: Fz.tr("Ngày"); FText { text: page.base(page.region) === "en_US" ? Qt.formatDate(DateTime.now, "MM/dd/yyyy") : Qt.formatDate(DateTime.now, "dd/MM/yyyy"); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
         SRow { title: Fz.tr("Số"); FText { text: page.regionFmt(1234567.89, 2); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
         SRow { title: Fz.tr("Tiền tệ"); FText { text: page.base(page.region) === "vi_VN" ? page.regionFmt(1234567, 0) + " ₫" : page.base(page.region) === "en_US" ? "$" + page.regionFmt(1234567, 0) : page.regionFmt(1234567, 0); mono: true; px: 13.5; color: Fz.sub; anchors.verticalCenter: parent.verticalCenter } }
-    }
-    Item { width: 1; height: 12 }
-    Row {
-        spacing: 4
-        FText { text: Fz.tr("Ngôn ngữ của Zone-C đổi trong"); px: 13.5; color: Fz.sub }
-        FText { text: Fz.tr("Chung"); px: 13.5; color: Fz.glow; font.underline: true; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: page.app.page = "general" } }
-        FText { text: "."; px: 13.5; color: Fz.sub }
     }
 }
