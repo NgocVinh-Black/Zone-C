@@ -193,9 +193,6 @@ Scope {
         lockUI.authenticating = false;
         lockUI.statusText = I18n.t("lock.status.locked");
         rootLock.locked = true;
-        // Unikey would hold the password in its composition (never committed to the field):
-        // type it plainly while locked and give Unikey back afterwards
-        Quickshell.execDetached(["bash", "-c", "f=\"$XDG_RUNTIME_DIR/zone-c-lock-ime\"; if [ \"$(fcitx5-remote 2>/dev/null)\" = 2 ]; then touch \"$f\"; fcitx5-remote -c; else rm -f \"$f\"; fi"]);
         Wallpaper.setPlayback("all", "pause");
         pamActionTimer.start();
         kbPollerRestartTimer.restart();
@@ -209,7 +206,6 @@ Scope {
     function completeUnlock() {
         if (!rootLock.locked) return;
         rootLock.locked = false;
-        Quickshell.execDetached(["bash", "-c", "f=\"$XDG_RUNTIME_DIR/zone-c-lock-ime\"; [ -e \"$f\" ] && { rm -f \"$f\"; fcitx5-remote -o; }"]);
         Wallpaper.setPlayback("all", "play");
         root.isUnlocking = false;
         kbWaiter.running = false;

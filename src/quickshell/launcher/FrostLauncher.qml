@@ -26,7 +26,6 @@ PanelWindow {
     property var ranks: ({ focus: {}, launch: {}, context: {} })
     property var fileHits: []
     property var history: []
-    property string imeBefore: ""
     readonly property string terminal: { let l = Config.getSetting("launcher", {}); return (l && l.terminalCommand) ? l.terminalCommand : "kitty -e"; }
     // Settings → Launcher
     readonly property string boxPos: Config.getSetting("launcher.position", "top")
@@ -39,24 +38,13 @@ PanelWindow {
         if (visible) {
             query = ""; field.text = ""; sel = 0;
             rankProc.running = true;
-            imeProbe.running = true;
             focusTimer.restart();
-        } else if (imeBefore === "unikey") {
-            OsdController.quietIme(2000);
-            Quickshell.execDetached(["fcitx5-remote", "-o"]);
-            imeBefore = "";
         }
     }
     Timer { id: focusTimer; interval: 40; onTriggered: field.forceActiveFocus() }
     function close() { LauncherController.hide(); }
     SurfaceGuard { name: "launcher"; shown: win.visible; onCloseRequested: win.close() }
 
-    // Unikey off while typing in the launcher (footer note of the artboard), restored on close.
-    Process {
-        id: imeProbe
-        command: ["fcitx5-remote"]
-        stdout: StdioCollector { onStreamFinished: { win.imeBefore = this.text.trim() === "2" ? "unikey" : ""; if (win.imeBefore === "unikey") { if (win.imGuard) { OsdController.quietIme(2000); Quickshell.execDetached(["fcitx5-remote", "-c"]); } else win.imeBefore = ""; } } }
-    }
     Process {
         id: rankProc
         command: ["python3", Caching.qsDir + "/launcher/app_rank.py", "--rank"]
@@ -222,6 +210,10 @@ PanelWindow {
                             font.pointSize: 19 * 0.75
                             selectionColor: Fz.accA(0.35)
                             clip: true
+                            // "Unikey turns off while typing" (footer of the artboard), done like V1's launcher:
+                            // a sensitive field gets plain keys from fcitx5, so Unikey never composes here and
+                            // the VI/EN state is never touched (toggling it raced with the launcher closing)
+                            inputMethodHints: win.imGuard ? (Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase) : Qt.ImhNone
                             onTextChanged: win.query = text
                             Keys.onPressed: (e) => {
                                 if (e.key === Qt.Key_Escape) { win.close(); e.accepted = true; }
