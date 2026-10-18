@@ -25,7 +25,7 @@ PanelWindow {
     property var presets: []
 
     Connections { target: Fz; function onOpenRequest(name, arg) { if (name === "welcome") { win.step = 0; win.open = true; } } }
-    IpcHandler { target: "welcome"; function open(): void { win.step = 0; win.open = true; } function step(n: int): void { win.step = Math.max(0, Math.min(3, n)); win.open = true; } }
+    IpcHandler { target: "welcome"; function open(): void { win.step = 0; win.open = true; } function step(n: int): void { win.step = Math.max(0, Math.min(3, n)); win.open = true; } function close(): void { win.finish(); } }
 
     Process {
         running: win.open

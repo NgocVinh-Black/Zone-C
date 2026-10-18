@@ -159,7 +159,8 @@ Variants {
             Rectangle {
                 anchors.fill: parent
                 visible: win.editing
-                color: Fz.scrim
+                // the edit layer sits above the windows: near-opaque so they don't show through the widgets
+                color: Qt.rgba(Fz.bg0.r, Fz.bg0.g, Fz.bg0.b, 0.9)
                 MouseArea { anchors.fill: parent; onClicked: win.selectedId = "" }
                 Canvas {
                     id: editGrid

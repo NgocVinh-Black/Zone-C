@@ -220,7 +220,7 @@ Scope {
             // ---------------- categories ----------------
             Rectangle {
                 id: nav
-                width: 230; height: parent.height
+                width: win.width < 1300 ? 190 : 230; height: parent.height
                 color: Fz.crust
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Fz.line }
                 Column {
@@ -347,15 +347,17 @@ Scope {
                     FText { visible: win.searching; text: Fz.tr("Đang tìm trong pacman") + (win.hasAur ? ", AUR" : "") + (win.hasFlatpak ? Fz.tr(" và Flathub") : "") + "…"; px: 13; color: Fz.sub }
                     FText { visible: !win.searching && win.list.length === 0; text: win.cat === "updates" ? Fz.tr("Hệ thống đã được cập nhật.") : Fz.tr("Không có ứng dụng nào."); px: 13; color: Fz.sub }
                     Grid {
+                        id: appGrid
                         width: parent.width
-                        columns: 3; spacing: 10
+                        // as many ~240 px cards as fit: 3 on a full screen, 1 when the window is tiled narrow
+                        columns: Math.max(1, Math.floor((mcol.width + 10) / 240)); spacing: 10
                         Repeater {
                             model: win.list.slice(0, 150)
                             delegate: Rectangle {
                                 id: ac
                                 required property var modelData
                                 readonly property bool on: win.sel && win.key(win.sel) === win.key(modelData)
-                                width: (mcol.width - 20) / 3; height: 112
+                                width: (mcol.width - 10 * (appGrid.columns - 1)) / appGrid.columns; height: 112
                                 radius: 18
                                 color: Fz.fg(acMouse.containsMouse ? 0.07 : 0.035)
                                 border.width: on ? 2 : 1; border.color: on ? Fz.acc : Fz.fg(0.08)
@@ -409,7 +411,7 @@ Scope {
             Rectangle {
                 id: aside
                 anchors.right: parent.right; y: 64
-                width: 300; height: parent.height - 64
+                width: win.width < 1300 ? 260 : 300; height: parent.height - 64
                 color: Fz.crust
                 Rectangle { width: 1; height: parent.height; color: Fz.line }
                 readonly property var a: win.sel ? win.decorate(win.sel) : null
