@@ -30,16 +30,34 @@ Rectangle {
                 id: field
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
-                color: Fz.tx
+                // passwords stay in Normal echo with sensitive hints so Unikey passes keys straight through
+                // (in Password echo it still composes); the dots are drawn over the transparent text below
+                color: root.password ? "transparent" : Fz.tx
                 font.family: Fz.font
                 font.pointSize: root.fontSize * 0.75
-                selectionColor: Fz.accA(0.35)
-                selectedTextColor: Fz.tx
-                echoMode: root.password ? TextInput.Password : TextInput.Normal
-                // passwords: keep input methods (Unikey) from composing in the field
-                inputMethodHints: root.password ? (Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhPreferLatin) : Qt.ImhNone
+                selectionColor: root.password ? "transparent" : Fz.accA(0.35)
+                selectedTextColor: root.password ? "transparent" : Fz.tx
+                echoMode: TextInput.Normal
+                inputMethodHints: root.password ? (Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase) : Qt.ImhNone
+                cursorDelegate: root.password ? emptyCursor : null
                 clip: true
                 onAccepted: root.accepted()
+            }
+            Component { id: emptyCursor; Item {} }
+            Text {
+                id: dots
+                visible: root.password
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.min(implicitWidth, parent.width - 4); clip: true
+                horizontalAlignment: implicitWidth > parent.width - 4 ? Text.AlignRight : Text.AlignLeft
+                text: "•".repeat(field.text.length)
+                color: Fz.tx; font.family: Fz.font; font.pointSize: root.fontSize * 0.75
+            }
+            Rectangle {
+                visible: root.password && field.activeFocus && dotCaret.on
+                x: dots.width + 1; anchors.verticalCenter: parent.verticalCenter
+                width: 1.5; height: root.fontSize + 4; radius: 1; color: Fz.tx
+                Timer { id: dotCaret; property bool on: true; interval: 530; repeat: true; running: root.password && field.activeFocus; onTriggered: on = !on; onRunningChanged: on = true }
             }
             FText { anchors.verticalCenter: parent.verticalCenter; visible: field.text === "" && !field.inputMethodComposing; text: root.placeholder; color: Fz.dim; px: root.fontSize }
         }

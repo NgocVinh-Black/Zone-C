@@ -125,23 +125,40 @@ FocusScope {
             }
             Item {
                 x: 20; width: parent.width - 20 - 7 - 36 - 6 - 40 - 6; height: parent.height
+                // The real input stays in Normal echo mode: in Password mode fcitx5/Unikey still composes
+                // (and shows the composition in clear), so the dots are drawn here instead (as V1 did).
                 TextInput {
                     id: field
                     anchors.fill: parent
                     verticalAlignment: TextInput.AlignVCenter
-                    color: Fz.tx; font.family: Fz.font; font.pointSize: 15 * 0.75
-                    echoMode: root.showPw ? TextInput.Normal : TextInput.Password
-                    passwordCharacter: "•"
-                    // a password: input methods must not compose in it
-                    inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase | Qt.ImhPreferLatin
+                    color: "transparent"; selectionColor: "transparent"; selectedTextColor: "transparent"
+                    font.family: Fz.font; font.pointSize: 15 * 0.75
+                    echoMode: TextInput.Normal
+                    inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
+                    cursorDelegate: Item {}
                     focus: true
                     clip: true
                     enabled: !root.lockUI || !root.lockUI.authenticating
                     onAccepted: root.submit()
                     Keys.onEscapePressed: text = ""
                 }
+                Text {
+                    id: shownPw
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Math.min(implicitWidth, parent.width - 4)
+                    clip: true
+                    horizontalAlignment: implicitWidth > parent.width - 4 ? Text.AlignRight : Text.AlignLeft
+                    text: root.showPw ? field.text : "•".repeat(field.text.length)
+                    color: Fz.tx; font.family: Fz.font; font.pointSize: 15 * 0.75
+                }
+                Rectangle {
+                    x: shownPw.width + 1; anchors.verticalCenter: parent.verticalCenter
+                    width: 1.5; height: 20; radius: 1; color: Fz.tx
+                    visible: field.activeFocus && caretBlink.on
+                    Timer { id: caretBlink; property bool on: true; interval: 530; repeat: true; running: field.activeFocus; onTriggered: on = !on; onRunningChanged: on = true }
+                }
                 FText {
-                    anchors.verticalCenter: parent.verticalCenter; visible: field.text === "" && field.preeditText === ""
+                    anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""
                     text: !root.lockUI ? Fz.tr("Nhập mật khẩu") : root.lockUI.authenticating ? Fz.tr("Đang kiểm tra…") : root.lockUI.failed ? Fz.tr("Sai mật khẩu, thử lại") : Fz.tr("Nhập mật khẩu")
                     color: root.lockUI && root.lockUI.failed ? Fz.redTx : Fz.dim; px: 15
                 }
