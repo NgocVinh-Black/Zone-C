@@ -92,7 +92,8 @@ Item {
     }
 
     readonly property bool recording: Rec.active
-    readonly property var trayItems: SystemTray.items ? (SystemTray.items.values || []).filter(i => i.status !== Status.Passive) : []
+    // blueman's own icon is left out: the bar's Bluetooth button already covers it (still listed in the tray panel)
+    readonly property var trayItems: SystemTray.items ? (SystemTray.items.values || []).filter(i => i.status !== Status.Passive && i.id !== "blueman") : []
     readonly property string focusTitle: Hyprland.activeToplevel ? (Hyprland.activeToplevel.title || "") : ""
     Component.onCompleted: SysData.subscribe()
     // Settings → Thanh bar: modules dropped from every column of bar.modules are hidden
