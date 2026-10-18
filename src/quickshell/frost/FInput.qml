@@ -36,6 +36,8 @@ Rectangle {
                 selectionColor: Fz.accA(0.35)
                 selectedTextColor: Fz.tx
                 echoMode: root.password ? TextInput.Password : TextInput.Normal
+                // passwords: keep input methods (Unikey) from composing in the field
+                inputMethodHints: root.password ? (Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhPreferLatin) : Qt.ImhNone
                 clip: true
                 onAccepted: root.accepted()
             }

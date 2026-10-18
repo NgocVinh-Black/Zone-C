@@ -132,6 +132,8 @@ FocusScope {
                     color: Fz.tx; font.family: Fz.font; font.pointSize: 15 * 0.75
                     echoMode: root.showPw ? TextInput.Normal : TextInput.Password
                     passwordCharacter: "•"
+                    // a password: input methods must not compose in it
+                    inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase | Qt.ImhPreferLatin
                     focus: true
                     clip: true
                     enabled: !root.lockUI || !root.lockUI.authenticating
@@ -139,7 +141,7 @@ FocusScope {
                     Keys.onEscapePressed: text = ""
                 }
                 FText {
-                    anchors.verticalCenter: parent.verticalCenter; visible: field.text === ""
+                    anchors.verticalCenter: parent.verticalCenter; visible: field.text === "" && field.preeditText === ""
                     text: !root.lockUI ? Fz.tr("Nhập mật khẩu") : root.lockUI.authenticating ? Fz.tr("Đang kiểm tra…") : root.lockUI.failed ? Fz.tr("Sai mật khẩu, thử lại") : Fz.tr("Nhập mật khẩu")
                     color: root.lockUI && root.lockUI.failed ? Fz.redTx : Fz.dim; px: 15
                 }
