@@ -91,6 +91,18 @@ else:
 
 # the greeter runs as the sddm user and cannot read the home folder: hand it the avatar and the UI language
 conf["lang"] = "vi" if general.get("language", "vi") == "vi" else "en"
+# logical height of the main monitor, so the greeter draws at the lock screen's size (Main.qml `k`)
+try:
+    mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True, timeout=3).stdout or "[]")
+    m = next((m for m in mons if m.get("focused")), mons[0] if mons else None)
+    if m and m.get("scale"):
+        h = m["height"] if int(m.get("transform", 0)) % 2 == 0 else m["width"]
+        conf["uiHeight"] = str(round(h / m["scale"]))
+    elif "uiHeight" in old:
+        conf["uiHeight"] = old["uiHeight"]
+except Exception:
+    if "uiHeight" in old:
+        conf["uiHeight"] = old["uiHeight"]
 avatar = os.path.expanduser(general.get("avatarPath") or "~/.face")
 # still the default Zone-C logo: show the preset's variant, as the shell does (ZoneStyle.avatarSource)
 logo = os.path.join(assets, "logo.png")

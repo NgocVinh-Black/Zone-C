@@ -95,151 +95,163 @@ Rectangle {
     }
     Rectangle { anchors.fill: parent; color: Qt.rgba(14 / 255, 20 / 255, 24 / 255, 0.62) }
 
-    // ---------- top right: keyboard, battery ----------
-    Row {
-        anchors.top: parent.top; anchors.right: parent.right; anchors.topMargin: 20; anchors.rightMargin: 24
-        spacing: 8
-        // same chip as the lock screen: the input language, not the XKB layout name
-        Pill {
-            bold: true
-            label: {
-                let s = typeof keyboard !== "undefined" && keyboard.layouts.length ? String(keyboard.layouts[keyboard.currentLayout].shortName).toLowerCase() : "us";
-                return s === "us" || s === "gb" ? "EN" : s === "vn" ? "VI" : s.toUpperCase();
-            }
-        }
-        // battery, as on the lock screen (needs GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1, else hidden)
-        Rectangle {
-            visible: root.batCap >= 0
-            height: 34; radius: 17; width: batRow.implicitWidth + 28
-            color: root.glass; border.width: 1; border.color: root.fg(0.09)
-            Row {
-                id: batRow
-                anchors.centerIn: parent
-                spacing: 7
-                Item {
-                    width: 18; height: 18; anchors.verticalCenter: parent.verticalCenter
-                    Rectangle { x: 1; y: 5; width: 14; height: 8; radius: 2; color: "transparent"; border.width: 1.5; border.color: root.sub2 }
-                    Rectangle { x: 15.5; y: 7.5; width: 1.5; height: 3; radius: 0.75; color: root.sub2 }
-                    Rectangle { x: 3; y: 7; height: 4; radius: 0.5; width: Math.max(1, 10 * root.batCap / 100)
-                                color: root.batCap <= 15 && !root.batCharging ? root.red : root.sub2 }
-                }
-                T { text: root.batCap + "%"; px: 12; color: root.sub2; font.family: root.mono; anchors.verticalCenter: parent.verticalCenter }
-            }
-        }
-    }
+    // Everything is laid out in the lock screen's logical pixels and scaled to the greeter's screen,
+    // so both screens have the same sizes: the shell's monitor is uiHeight logical px tall
+    // (current/theme.conf, written by scripts/sddm_sync.sh; 1125 = 1800 px at scale 1.6).
+    readonly property real k: { let h = Number(pick("uiHeight", "0")); return h > 0 ? height / h : 1; }
+    Item {
+        id: ui
+        width: root.width / root.k
+        height: root.height / root.k
+        scale: root.k
+        transformOrigin: Item.TopLeft
 
-    // ---------- clock ----------
-    Column {
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 110 * root.height / 900
-        spacing: 6
-        T { anchors.horizontalCenter: parent.horizontalCenter; text: root.dateLine(root.now).toUpperCase()
-            px: 16; weight: 600; color: root.sub2; font.letterSpacing: 16 * 0.2 }
-        T { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(root.now, "HH:mm"); px: 200; weight: 200; font.letterSpacing: -10; lineHeight: 0.95 }
-    }
-
-    // ---------- user, password, session ----------
-    Column {
-        id: form
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 520 * root.height / 900 - 60
-        spacing: 14
-        Item {
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 88; height: 88
-            Rectangle { anchors.fill: parent; anchors.margins: -3; radius: 47; color: root.acc
-                        layer.enabled: true; layer.effect: MultiEffect { shadowEnabled: true; shadowColor: Qt.rgba(159 / 255, 211 / 255, 224 / 255, 0.4); shadowBlur: 1; blurMax: 30 } }
-            Rectangle {
-                id: avatarClip
-                anchors.fill: parent; radius: 44; color: root.s0
-                T { anchors.centerIn: parent; visible: avatar.status !== Image.Ready; text: root.curName.charAt(0).toUpperCase(); px: 34; weight: 700; color: root.acc }
-                Image {
-                    id: avatar
-                    anchors.fill: parent; fillMode: Image.PreserveAspectCrop
-                    // SDDM's own face icon when it has one, else the avatar the shell synced (~/.face is not readable here)
-                    source: root.pick("avatar", "") !== "" ? Qt.resolvedUrl("current/" + root.pick("avatar", "")) : (root.cur && root.cur.icon ? root.cur.icon : "")
-                    visible: false
-                }
-                MultiEffect { anchors.fill: parent; source: avatar; visible: avatar.status === Image.Ready; maskEnabled: true; maskSource: mask }
-                Item { id: mask; anchors.fill: parent; layer.enabled: true; visible: false; Rectangle { anchors.fill: parent; radius: 44 } }
-            }
-        }
-        T { anchors.horizontalCenter: parent.horizontalCenter; text: root.curName; px: 20; weight: 600 }
+        // ---------- top right: keyboard, battery ----------
         Row {
-            visible: root.userCount > 1
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top; anchors.right: parent.right; anchors.topMargin: 20; anchors.rightMargin: 24
             spacing: 8
-            Repeater {
-                model: root.userCount
-                delegate: Rectangle {
-                    required property int index
-                    readonly property var u: root.userAt(index)
-                    readonly property bool on: index === root.userIndex
-                    height: 36; radius: 18
-                    width: chipRow.implicitWidth + 24
-                    color: on ? root.acc : root.fg(chipMouse.containsMouse ? 0.12 : 0.06)
-                    border.width: on ? 0 : 1; border.color: root.fg(0.14)
-                    Row {
-                        id: chipRow
-                        anchors.centerIn: parent; spacing: 7
-                        Rectangle { width: 22; height: 22; radius: 11; color: on ? root.ink : root.s0; anchors.verticalCenter: parent.verticalCenter
-                                    T { anchors.centerIn: parent; text: u ? u.real.charAt(0).toUpperCase() : ""; px: 11; weight: 700; color: root.acc } }
-                        T { text: u ? u.real : ""; px: 13; weight: 500; color: on ? root.ink : root.tx; anchors.verticalCenter: parent.verticalCenter }
+            // same chip as the lock screen: the input language, not the XKB layout name
+            Pill {
+                bold: true
+                label: {
+                    let s = typeof keyboard !== "undefined" && keyboard.layouts.length ? String(keyboard.layouts[keyboard.currentLayout].shortName).toLowerCase() : "us";
+                    return s === "us" || s === "gb" ? "EN" : s === "vn" ? "VI" : s.toUpperCase();
+                }
+            }
+            // battery, as on the lock screen (needs GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1, else hidden)
+            Rectangle {
+                visible: root.batCap >= 0
+                height: 34; radius: 17; width: batRow.implicitWidth + 28
+                color: root.glass; border.width: 1; border.color: root.fg(0.09)
+                Row {
+                    id: batRow
+                    anchors.centerIn: parent
+                    spacing: 7
+                    Item {
+                        width: 18; height: 18; anchors.verticalCenter: parent.verticalCenter
+                        Rectangle { x: 1; y: 5; width: 14; height: 8; radius: 2; color: "transparent"; border.width: 1.5; border.color: root.sub2 }
+                        Rectangle { x: 15.5; y: 7.5; width: 1.5; height: 3; radius: 0.75; color: root.sub2 }
+                        Rectangle { x: 3; y: 7; height: 4; radius: 0.5; width: Math.max(1, 10 * root.batCap / 100)
+                                    color: root.batCap <= 15 && !root.batCharging ? root.red : root.sub2 }
                     }
-                    MouseArea { id: chipMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.userIndex = index; pw.forceActiveFocus(); } }
+                    T { text: root.batCap + "%"; px: 12; color: root.sub2; font.family: root.mono; anchors.verticalCenter: parent.verticalCenter }
                 }
             }
         }
-        // `.glass` password pill
-        Rectangle {
-            id: pill
+
+        // ---------- clock ----------
+        Column {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: 360; height: 54; radius: 27
-            color: root.glass
-            border.width: 1; border.color: root.error ? Qt.rgba(1, 123 / 255, 123 / 255, 0.6) : root.fg(0.08)
-            SequentialAnimation on anchors.horizontalCenterOffset {
-                id: shake; running: false
-                NumberAnimation { to: -10; duration: 50 } NumberAnimation { to: 10; duration: 70 } NumberAnimation { to: -6; duration: 60 } NumberAnimation { to: 0; duration: 50 }
+            y: 110
+            spacing: 6
+            T { anchors.horizontalCenter: parent.horizontalCenter; text: root.dateLine(root.now).toUpperCase()
+                px: 16; weight: 600; color: root.sub2; font.letterSpacing: 16 * 0.2 }
+            T { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(root.now, "HH:mm"); px: 200; weight: 200; font.letterSpacing: -10; lineHeight: 0.95 }
+        }
+
+        // ---------- user, password, session ----------
+        Column {
+            id: form
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 520 * ui.height / 900
+            spacing: 14
+            Item {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 88; height: 88
+                Rectangle { anchors.fill: parent; anchors.margins: -3; radius: 47; color: root.acc
+                            layer.enabled: true; layer.effect: MultiEffect { shadowEnabled: true; shadowColor: Qt.rgba(159 / 255, 211 / 255, 224 / 255, 0.4); shadowBlur: 1; blurMax: 30 } }
+                Rectangle {
+                    id: avatarClip
+                    anchors.fill: parent; radius: 44; color: root.s0
+                    T { anchors.centerIn: parent; visible: avatar.status !== Image.Ready; text: root.curName.charAt(0).toUpperCase(); px: 34; weight: 700; color: root.acc }
+                    Image {
+                        id: avatar
+                        anchors.fill: parent; fillMode: Image.PreserveAspectCrop
+                        // SDDM's own face icon when it has one, else the avatar the shell synced (~/.face is not readable here)
+                        source: root.pick("avatar", "") !== "" ? Qt.resolvedUrl("current/" + root.pick("avatar", "")) : (root.cur && root.cur.icon ? root.cur.icon : "")
+                        visible: false
+                    }
+                    MultiEffect { anchors.fill: parent; source: avatar; visible: avatar.status === Image.Ready; maskEnabled: true; maskSource: mask }
+                    Item { id: mask; anchors.fill: parent; layer.enabled: true; visible: false; Rectangle { anchors.fill: parent; radius: 44 } }
+                }
             }
-            TextInput {
-                id: pw
-                x: 20; anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - 20 - 7 - 40 - 6 - 36 - 6
-                color: root.tx; font.family: root.font; font.pointSize: 15 * 0.75
-                echoMode: showPw.on ? TextInput.Normal : TextInput.Password
-                passwordCharacter: "•"
-                clip: true; focus: true
-                onAccepted: root.login()
-                Keys.onEscapePressed: text = ""
-                T { anchors.verticalCenter: parent.verticalCenter; visible: pw.text === ""; text: root.error || (root.en ? "Enter password" : "Nhập mật khẩu"); px: 15; color: root.error ? root.red : Qt.rgba(125 / 255, 144 / 255, 154 / 255, 1) }
+            T { anchors.horizontalCenter: parent.horizontalCenter; text: root.curName; px: 20; weight: 600 }
+            Row {
+                visible: root.userCount > 1
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 8
+                Repeater {
+                    model: root.userCount
+                    delegate: Rectangle {
+                        required property int index
+                        readonly property var u: root.userAt(index)
+                        readonly property bool on: index === root.userIndex
+                        height: 36; radius: 18
+                        width: chipRow.implicitWidth + 24
+                        color: on ? root.acc : root.fg(chipMouse.containsMouse ? 0.12 : 0.06)
+                        border.width: on ? 0 : 1; border.color: root.fg(0.14)
+                        Row {
+                            id: chipRow
+                            anchors.centerIn: parent; spacing: 7
+                            Rectangle { width: 22; height: 22; radius: 11; color: on ? root.ink : root.s0; anchors.verticalCenter: parent.verticalCenter
+                                        T { anchors.centerIn: parent; text: u ? u.real.charAt(0).toUpperCase() : ""; px: 11; weight: 700; color: root.acc } }
+                            T { text: u ? u.real : ""; px: 13; weight: 500; color: on ? root.ink : root.tx; anchors.verticalCenter: parent.verticalCenter }
+                        }
+                        MouseArea { id: chipMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { root.userIndex = index; pw.forceActiveFocus(); } }
+                    }
+                }
+            }
+            // `.glass` password pill
+            Rectangle {
+                id: pill
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 360; height: 54; radius: 27
+                color: root.glass
+                border.width: 1; border.color: root.error ? Qt.rgba(1, 123 / 255, 123 / 255, 0.6) : root.fg(0.08)
+                SequentialAnimation on anchors.horizontalCenterOffset {
+                    id: shake; running: false
+                    NumberAnimation { to: -10; duration: 50 } NumberAnimation { to: 10; duration: 70 } NumberAnimation { to: -6; duration: 60 } NumberAnimation { to: 0; duration: 50 }
+                }
+                TextInput {
+                    id: pw
+                    x: 20; anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - 20 - 7 - 40 - 6 - 36 - 6
+                    color: root.tx; font.family: root.font; font.pointSize: 15 * 0.75
+                    echoMode: showPw.on ? TextInput.Normal : TextInput.Password
+                    passwordCharacter: "•"
+                    clip: true; focus: true
+                    onAccepted: root.login()
+                    Keys.onEscapePressed: text = ""
+                    T { anchors.verticalCenter: parent.verticalCenter; visible: pw.text === ""; text: root.error || (root.en ? "Enter password" : "Nhập mật khẩu"); px: 15; color: root.error ? root.red : Qt.rgba(125 / 255, 144 / 255, 154 / 255, 1) }
+                }
+                Row {
+                    anchors.right: parent.right; anchors.rightMargin: 7; anchors.verticalCenter: parent.verticalCenter
+                    spacing: 6
+                    Ib { id: showPw; property bool on: false; ghost: true; glyph: "eye"; onClicked: on = !on }
+                    Ib { width: 40; height: 40; radius: 20; primary: true; glyph: "arrow"; onClicked: root.login() }
+                }
             }
             Row {
-                anchors.right: parent.right; anchors.rightMargin: 7; anchors.verticalCenter: parent.verticalCenter
-                spacing: 6
-                Ib { id: showPw; property bool on: false; ghost: true; glyph: "eye"; onClicked: on = !on }
-                Ib { width: 40; height: 40; radius: 20; primary: true; glyph: "arrow"; onClicked: root.login() }
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 8
+                Rectangle {
+                    width: 220; height: 36; radius: 18
+                    color: root.base; border.width: 1; border.color: root.fg(0.14)
+                    T { x: 14; anchors.verticalCenter: parent.verticalCenter; text: root.sessionName(root.sessionIndex) + " · Zone-C"; px: 13.5 }
+                    T { anchors.right: parent.right; anchors.rightMargin: 14; anchors.verticalCenter: parent.verticalCenter; text: "⌄"; px: 14; color: root.sub }
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if (sessions.count > 0) root.sessionIndex = (root.sessionIndex + 1) % sessions.count }
+                }
             }
         }
-        Row {
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 8
-            Rectangle {
-                width: 220; height: 36; radius: 18
-                color: root.base; border.width: 1; border.color: root.fg(0.14)
-                T { x: 14; anchors.verticalCenter: parent.verticalCenter; text: root.sessionName(root.sessionIndex) + " · Zone-C"; px: 13.5 }
-                T { anchors.right: parent.right; anchors.rightMargin: 14; anchors.verticalCenter: parent.verticalCenter; text: "⌄"; px: 14; color: root.sub }
-                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if (sessions.count > 0) root.sessionIndex = (root.sessionIndex + 1) % sessions.count }
-            }
-        }
-    }
 
-    // ---------- power ----------
-    Row {
-        anchors.right: parent.right; anchors.bottom: parent.bottom; anchors.margins: 28
-        spacing: 8
-        Ib { width: 44; height: 44; radius: 22; glyph: "moon"; visible: root.preview || sddm.canSuspend; onClicked: if (!root.preview) sddm.suspend() }
-        Ib { width: 44; height: 44; radius: 22; glyph: "restart"; visible: root.preview || sddm.canReboot; onClicked: if (!root.preview) sddm.reboot() }
-        Ib { width: 44; height: 44; radius: 22; glyph: "off"; danger: true; visible: root.preview || sddm.canPowerOff; onClicked: if (!root.preview) sddm.powerOff() }
+        // ---------- power ----------
+        Row {
+            anchors.right: parent.right; anchors.bottom: parent.bottom; anchors.margins: 28
+            spacing: 8
+            Ib { width: 44; height: 44; radius: 22; glyph: "moon"; visible: root.preview || sddm.canSuspend; onClicked: if (!root.preview) sddm.suspend() }
+            Ib { width: 44; height: 44; radius: 22; glyph: "restart"; visible: root.preview || sddm.canReboot; onClicked: if (!root.preview) sddm.reboot() }
+            Ib { width: 44; height: 44; radius: 22; glyph: "off"; danger: true; visible: root.preview || sddm.canPowerOff; onClicked: if (!root.preview) sddm.powerOff() }
+        }
     }
 
     // ---------- pieces ----------
