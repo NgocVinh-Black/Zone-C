@@ -34,7 +34,14 @@ Rectangle {
         visible: root.tipShown && root.hovered
         z: 100
         y: root.height + 6
-        x: Math.round((root.width - width) / 2)
+        // centred under the item, but kept 6px inside the bar window so the end items' tips aren't cut off
+        x: {
+            let cx = (root.width - width) / 2;
+            let win = root.Window.window;
+            if (!win || !root.tipShown) return Math.round(cx);
+            let gx = root.mapToItem(null, 0, 0).x;
+            return Math.round(Math.max(6 - gx, Math.min(cx, win.width - 6 - gx - width)));
+        }
         width: tip.implicitWidth + 18; height: 24; radius: 8
         color: Fz.mantle
         border.width: 1; border.color: Fz.line2
