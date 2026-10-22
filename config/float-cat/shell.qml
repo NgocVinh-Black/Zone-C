@@ -149,6 +149,7 @@ ShellRoot {
         property real eyeScale: 1
         property real collarLit: 0     // collar arc: dark .. glowing, follows the squint like the Lottie
         property real sweep: 0         // light running along the collar while working, 0..1
+        property real runPhase: 0      // working: the eyes' loader beat, 0..1 looping
         readonly property color led: mode === "done" ? cGreen : mode === "ask" ? cYellow : sleepy ? cCollar : cGlow   // antenna ball
 
         // `qs ipc -p <this file> call cat state thinking|done|ask|idle`
@@ -274,14 +275,18 @@ ShellRoot {
                     delegate: Item {
                         id: eye
                         required property real modelData
-                        readonly property real cx: (modelData + win.lookX) * bot.u
-                        readonly property real cy: (20 + win.lookY) * bot.u
+                        // working: both eyes scan left-right with the collar light while bobbing out of step,
+                        // like a loader (run 0..1 = short..tall); -1 when not working
+                        readonly property bool working: win.mode === "thinking" && !happy && !shut
+                        readonly property real run: working ? 0.5 + 0.5 * Math.sin(2 * Math.PI * (win.runPhase - (modelData > 16 ? 0.5 : 0))) : -1
+                        readonly property real cx: (modelData + win.lookX + (working ? (win.sweep - 0.5) * 2.6 : 0)) * bot.u
+                        readonly property real cy: (20 + win.lookY - (working ? 0.9 * run : 0)) * bot.u
                         readonly property bool happy: win.mode === "done"
                         readonly property bool shut: win.sleepy
                         Rectangle {
                             visible: !eye.happy && !eye.shut
-                            readonly property real w: (3.56 - 0.56 * win.squint) * bot.u * win.eyeScale
-                            readonly property real h: Math.max(0.5, (5.33 - 3.33 * win.squint) * (1 - 0.88 * win.blink)) * bot.u * win.eyeScale
+                            readonly property real w: (eye.working ? 3.3 : 3.56 - 0.56 * win.squint) * bot.u * win.eyeScale
+                            readonly property real h: Math.max(0.5, (eye.working ? 1.8 + 3.5 * eye.run : 5.33 - 3.33 * win.squint) * (1 - 0.88 * win.blink)) * bot.u * win.eyeScale
                             width: w; height: h; radius: Math.min(w, h) / 2
                             x: eye.cx - w / 2; y: eye.cy - h / 2
                             color: win.cGlow
@@ -422,29 +427,18 @@ ShellRoot {
 
         // ---------- antenna light: colour and pulse by state ----------
 
-        // ---------- working: eyes narrow and dart about, the collar light runs back and forth ----------
+        // ---------- working: the eyes run a loader (out-of-step bob) while scanning with the collar light ----------
         SequentialAnimation {
             running: win.mode === "thinking"
             loops: Animation.Infinite
-            onRunningChanged: { win.squint = running ? 0.45 : 0; win.collarLit = running ? 0.25 : 0 }
-            NumberAnimation { target: win; property: "sweep"; from: 0; to: 1; duration: 900; easing.type: Easing.InOutSine }
+            onRunningChanged: { win.squint = 0; win.collarLit = running ? 0.25 : 0; win.sweep = 0.5 }
+            NumberAnimation { target: win; property: "sweep"; from: 0.5; to: 1; duration: 450; easing.type: Easing.OutSine }
             NumberAnimation { target: win; property: "sweep"; from: 1; to: 0; duration: 900; easing.type: Easing.InOutSine }
+            NumberAnimation { target: win; property: "sweep"; from: 0; to: 0.5; duration: 450; easing.type: Easing.InSine }
         }
-        Timer {
-            interval: 700; repeat: true; running: win.mode === "thinking"
-            onTriggered: {
-                // glance up and to the sides as if reading
-                lookAnim.toX = win.rnd(-1.4, 1.4); lookAnim.toY = win.rnd(-1.2, 0.2)
-                lookAnim.restart()
-                interval = win.rnd(500, 1000)
-            }
-        }
-        ParallelAnimation {
-            id: lookAnim
-            property real toX: 0
-            property real toY: 0
-            NumberAnimation { target: win; property: "lookX"; to: lookAnim.toX; duration: 220; easing.type: Easing.OutCubic }
-            NumberAnimation { target: win; property: "lookY"; to: lookAnim.toY; duration: 220; easing.type: Easing.OutCubic }
+        NumberAnimation {
+            target: win; property: "runPhase"; from: 0; to: 1; duration: 620
+            loops: Animation.Infinite; running: win.mode === "thinking"
         }
 
         // ---------- Claude Code reactions ----------
