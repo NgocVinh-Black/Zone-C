@@ -412,12 +412,14 @@ Item {
                 on: root.openWidget === "system"
                 label: root.notifCount + Fz.tr(" thông báo")
                 onClicked: Fz.open("system")
-                FIcon { name: "b-bell"; size: 15; color: notifIt.fgColor; anchors.verticalCenter: parent.verticalCenter }
+                // the clapper hangs below the bell, so the glyph's box sits lower than the bell body:
+                // nudge the two together so the body and the badge share a centre line
+                FIcon { name: "b-bell"; size: 15; color: notifIt.fgColor; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: 1 }
                 Rectangle {
                     visible: root.notifCount > 0
                     width: Math.max(16, notifBadge.implicitWidth + 8); height: 16; radius: 8
                     color: notifIt.on ? Fz.ink : Fz.acc
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -1
                     FText { id: notifBadge; anchors.centerIn: parent; text: root.notifCount; color: notifIt.on ? Fz.acc : Fz.ink; px: 10.5; weight: Font.Bold }
                 }
             }
