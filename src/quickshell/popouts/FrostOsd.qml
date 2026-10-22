@@ -20,7 +20,8 @@ PanelWindow {
     implicitHeight: 58 + 60 + 120
     implicitWidth: 340 + 160
     color: "transparent"
-    visible: OsdController.isVisible || fade.running
+    // shown / hidden with Hyprland's layer animation (layersIn/Out); a QML fade would snap the glass blur
+    visible: OsdController.isVisible
     mask: Region { item: pill }
 
     readonly property string kind: OsdController.kind
@@ -52,8 +53,6 @@ PanelWindow {
         x: win.pos === "right" ? win.width - width - 24 : win.slider ? 60 : (win.width - width) / 2
         y: win.pos === "right" ? (win.height - height) / 2 : win.pos === "top" ? 60 : win.height - height - 60
         color: win.accent ? Fz.acc : Fz.glass
-        opacity: OsdController.isVisible ? 1 : 0
-        Behavior on opacity { NumberAnimation { id: fade; duration: 160 } }
         HoverHandler { onHoveredChanged: { OsdController.isHovered = hovered; if (hovered) OsdController.cancelHide(); else OsdController.requestHide(); } }
 
         Row {

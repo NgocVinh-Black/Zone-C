@@ -28,7 +28,12 @@ PanelWindow {
     }
     implicitWidth: 390 + 160   // the cards plus room for their shadow
     color: "transparent"
-    visible: NotificationManager.activePopupsModel.count > 0 && !NotificationManager.sysPanelOpen
+    // stays mapped (transparent, input only on the cards) so the first card's slide-in isn't spent
+    // before the surface reaches the screen, and the last card can slide out
+    visible: !NotificationManager.sysPanelOpen
+    // cards slide in from (and out to) the screen edge they sit on; no fade, which would snap the
+    // glass blur on and off at its alpha threshold
+    readonly property real slideFrom: hpos === "right" ? 440 : hpos === "left" ? -440 : 0
     mask: Region { item: list }
 
     property bool replying: false
@@ -71,7 +76,17 @@ PanelWindow {
         interactive: false
         spacing: 10
         model: NotificationManager.activePopupsModel
-        add: Transition { NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 180 } NumberAnimation { property: "x"; from: 40; to: 0; duration: 220; easing.type: Easing.OutCubic } }
+        add: slideIn
+        populate: slideIn
+        Transition {
+            id: slideIn
+            NumberAnimation { property: "x"; from: win.slideFrom; to: 0; duration: 280; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "scale"; from: win.slideFrom === 0 ? 0.9 : 1; to: 1; duration: 240; easing.type: Easing.OutCubic }
+        }
+        remove: Transition {
+            NumberAnimation { property: "x"; to: win.slideFrom; duration: 200; easing.type: Easing.InCubic }
+            NumberAnimation { property: "scale"; to: win.slideFrom === 0 ? 0.9 : 1; duration: 200; easing.type: Easing.InCubic }
+        }
         displaced: Transition { NumberAnimation { property: "y"; duration: 200; easing.type: Easing.OutCubic } }
 
         delegate: Item {

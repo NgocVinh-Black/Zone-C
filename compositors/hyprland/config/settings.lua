@@ -136,7 +136,7 @@ hl.window_rule({
 -- Layers that are always there (wallpaper, desktop, bar, edges) or animate themselves: no pop.
 hl.layer_rule({
   name  = "zone-c-static",
-  match = { namespace = "^(wallpaper-bg|qs-desktop|qs-widget-.*|quickshell|qs-sidemusic|qs-electric-border|qs-floating-overlay|zone-c-dim|zone-c-flash|zone-c-draw|qs-screenshot-overlay|assistant-bg|qs-identify|qs-osd|osd|qs-toasts|qs-popups)$" },
+  match = { namespace = "^(wallpaper-bg|qs-desktop|qs-widget-.*|quickshell|qs-sidemusic|qs-electric-border|qs-floating-overlay|zone-c-dim|zone-c-flash|zone-c-draw|qs-screenshot-overlay|assistant-bg|qs-identify|qs-toasts|qs-popups)$" },
 
   no_anim = true,
 })
