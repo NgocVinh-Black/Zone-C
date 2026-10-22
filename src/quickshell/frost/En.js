@@ -2,6 +2,8 @@
 // English strings for the Frost UI, keyed by the Vietnamese source text (Fz.tr looks them up).
 // Regenerate the key list with the i18n scanner when new Vietnamese strings are added.
 var map = {
+"Hoàn tác · Ctrl+Z": "Undo · Ctrl+Z",
+"Làm lại · Ctrl+Shift+Z": "Redo · Ctrl+Shift+Z",
 "Kết nối ": "Connect to ",
 "Mạng yêu cầu mật khẩu ": "The network needs a password · ",
 "Mạng yêu cầu mật khẩu": "The network needs a password",

@@ -37,7 +37,58 @@ Variants {
             onEditingChanged: {
                 Desk.editingScreen = editing ? monitor : (Desk.editingScreen === monitor ? "" : Desk.editingScreen);
                 if (!editing) { selectedId = ""; save(); }
-                else if (widgets.length) selectedId = widgets[0].id;
+                else {
+                    // what "Hủy" / Esc goes back to, and a fresh undo history
+                    entry = snapshot(); committed = entry; undoStack = []; redoStack = [];
+                    if (widgets.length) selectedId = widgets[0].id;
+                }
+            }
+
+            // ---------- undo / redo / cancel while editing ----------
+            // Every change to the layout lands here; changes closer than 350 ms apart (a drag, a resize)
+            // settle into one undo step.
+            property var entry: null
+            property var committed: null
+            property var undoStack: []
+            property var redoStack: []
+            property bool restoring: false
+            function snapshot() { return JSON.stringify({ preset: preset, widgets: widgets, custom: customPresets }); }
+            function restore(s) {
+                let v = JSON.parse(s);
+                restoring = true;
+                preset = v.preset; customPresets = v.custom; widgets = v.widgets;
+                restoring = false;
+                if (!widgets.find(w => w.id === selectedId)) selectedId = "";
+                committed = s;
+            }
+            function noteChange() {
+                if (!editing || restoring || committed === null) return;
+                if (!settle.running) { undoStack = undoStack.concat([committed]).slice(-100); redoStack = []; }
+                settle.restart();
+            }
+            Timer { id: settle; interval: 350; onTriggered: win.committed = win.snapshot() }
+            onCustomPresetsChanged: noteChange()
+            function undo() {
+                if (settle.running) { settle.stop(); committed = snapshot(); }
+                if (!undoStack.length) return;
+                let prev = undoStack[undoStack.length - 1];
+                undoStack = undoStack.slice(0, -1);
+                redoStack = redoStack.concat([snapshot()]);
+                restore(prev);
+            }
+            function redo() {
+                if (settle.running) { settle.stop(); committed = snapshot(); }
+                if (!redoStack.length) return;
+                let next = redoStack[redoStack.length - 1];
+                redoStack = redoStack.slice(0, -1);
+                undoStack = undoStack.concat([snapshot()]);
+                restore(next);
+            }
+            // leave the editor without keeping anything done since it opened
+            function cancel() {
+                settle.stop();
+                if (entry !== null) restore(entry);
+                editing = false;
             }
             property string selectedId: ""
             property string preset: "dash"
@@ -133,7 +184,7 @@ Variants {
                 function onEditRequested(monitor) { if (monitor === win.monitor) win.editing = true; }
                 function onPresetRequested(monitor, name) { if (monitor === win.monitor || monitor === "") win.applyPreset(name); }
             }
-            onPresetChanged: Desk.report(monitor, preset, widgets.length)
+            onPresetChanged: { Desk.report(monitor, preset, widgets.length); noteChange(); }
             IpcHandler {
                 target: "desktop"
                 function edit(): void { if (Hyprland.focusedMonitor && Hyprland.focusedMonitor.name !== win.monitor) return; win.editing = !win.editing; }
@@ -247,7 +298,7 @@ Variants {
             }
 
             // Input region outside the editor: the union of the widgets' boxes.
-            onWidgetsChanged: { maskTimer.restart(); Desk.report(monitor, preset, widgets.length); }
+            onWidgetsChanged: { maskTimer.restart(); Desk.report(monitor, preset, widgets.length); noteChange(); }
             Timer {
                 id: maskTimer
                 interval: 50
@@ -294,6 +345,11 @@ Variants {
                             win.save();
                         }
                     }
+                    FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "e-undo"; label: Fz.tr("Hoàn tác · Ctrl+Z")
+                               opacity: win.undoStack.length || settle.running ? 1 : 0.4; onClicked: win.undo() }
+                    FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "e-redo"; label: Fz.tr("Làm lại · Ctrl+Shift+Z")
+                               opacity: win.redoStack.length ? 1 : 0.4; onClicked: win.redo() }
+                    FBtn { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Hủy"); onClicked: win.cancel() }
                     FBtn { anchors.verticalCenter: parent.verticalCenter; kind: "pri"; text: Fz.tr("Xong"); onClicked: win.editing = false }
                 }
             }
@@ -429,7 +485,11 @@ Variants {
                 onAccepted: (path) => win.update(targetId, { path: path })
             }
 
-            Shortcut { sequence: "Escape"; enabled: win.editing; onActivated: win.editing = false }
+            // Esc leaves without saving (like "Hủy"), Enter keeps the changes (like "Xong")
+            Shortcut { sequence: "Escape"; enabled: win.editing; onActivated: win.cancel() }
+            Shortcut { sequences: ["Return", "Enter"]; enabled: win.editing; onActivated: win.editing = false }
+            Shortcut { sequence: StandardKey.Undo; enabled: win.editing; onActivated: win.undo() }
+            Shortcut { sequences: [StandardKey.Redo, "Ctrl+Shift+Z", "Ctrl+Y"]; enabled: win.editing; onActivated: win.redo() }
             Shortcut { sequence: "Delete"; enabled: win.editing && win.selectedId !== ""; onActivated: { win.widgets = win.widgets.filter(x => x.id !== win.selectedId); win.selectedId = ""; } }
 
             Component { id: heroC; HeroClock {} }

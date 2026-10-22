@@ -5,6 +5,8 @@ var icons = {"Alerts:a-bat":{"parts":[{"d":"M4.5 7.0h12.0a2.5 2.5 0 0 1 2.5 2.5v
 
 // Weather icons the design never drew (lucide): storm, snow, fog, partly cloudy, drizzle.
 var extra = {
+    "e-undo": {"parts":[{"d":"M9 14 4 9l5-5","fill":false,"stroke":true,"sw":null},{"d":"M4 9h10.5a5.5 5.5 0 0 1 0 11H11","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
+    "e-redo": {"parts":[{"d":"m15 14 5-5-5-5","fill":false,"stroke":true,"sw":null},{"d":"M20 9H9.5a5.5 5.5 0 0 0 0 11H13","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-storm": {"parts":[{"d":"M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973","fill":false,"stroke":true,"sw":null},{"d":"m13 12-3 5h4l-3 5","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-snow": {"parts":[{"d":"M2 12h20M12 2v20m8-6-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
     "w-fog": {"parts":[{"d":"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242","fill":false,"stroke":true,"sw":null},{"d":"M16 17H7M17 21H9","fill":false,"stroke":true,"sw":null}],"vb":[0,0,24,24]},
