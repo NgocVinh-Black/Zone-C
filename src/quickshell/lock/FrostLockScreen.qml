@@ -57,7 +57,7 @@ FocusScope {
     readonly property bool hasMedia: player !== null && MprisController.trackTitle !== ""
     readonly property int notifCount: NotificationManager.globalNotificationHistory ? NotificationManager.globalNotificationHistory.count : 0
     readonly property string city: (Weather.activeLocation && Weather.activeLocation.city) ? Weather.activeLocation.city : ""
-    readonly property string avatar: SystemInfo.avatarPath ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
+    readonly property string avatar: ZoneStyle.avatarSource(SystemInfo.avatarPath)   // the default logo follows the preset
     property bool hasFingerprint: false
     property bool showPw: false
     Process { running: true; command: ["bash", "-c", "command -v fprintd-list >/dev/null && fprintd-list \"$USER\" 2>/dev/null | grep -q 'finger' && echo yes"]

@@ -84,16 +84,21 @@ Item {
     // Avatar (~/.face) dang la logo Zone-C mac dinh -> doi theo preset; anh rieng cua ban thi giu nguyen
     property bool avatarIsLogo: false
     function avatarSource(path) {
-        if (path === "") return "";
+        if (!path) return "";
+        if (path.startsWith("file://")) path = path.substring(7);
         if (avatarIsLogo && artSuffix !== "" && Caching.zoneCDir)
             return "file://" + Caching.zoneCDir + "/assets/" + art("logo.png");
         return "file://" + path;
     }
     Process {
+        id: avatarProbe
         running: Caching.zoneCDir !== ""
         command: ["bash", "-c", "cmp -s \"$HOME/.face\" \"" + Caching.zoneCDir + "/assets/logo.png\""]
         onExited: (code) => root.avatarIsLogo = (code === 0)
     }
+    // a new avatar was picked (Settings → Chung): compare again once the copy has landed
+    function checkAvatar() { avatarRecheck.restart(); }
+    Timer { id: avatarRecheck; interval: 800; onTriggered: avatarProbe.running = true }
 
     property bool _ready: false
 

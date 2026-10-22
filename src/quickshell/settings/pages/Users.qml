@@ -12,7 +12,7 @@ Column {
     property var app
     width: parent ? parent.width : 0
 
-    readonly property string avatar: SystemInfo.avatarPath ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
+    readonly property string avatar: ZoneStyle.avatarSource(SystemInfo.avatarPath)   // the default logo follows the preset
     readonly property string term: Config.getSetting("launcher.terminalCommand", "kitty -e")
     property var d: ({})
     property var others: []

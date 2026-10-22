@@ -19,10 +19,13 @@ SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/zone-c/settings.json"
 [ -d "$CUR" ] && [ -w "$CUR" ] || exit 0
 [ -f "$SETTINGS" ] || exit 0
 
-exec python3 - "$CUR" "$SETTINGS" "${1:-}" <<'PY'
-import json, os, shutil, subprocess, sys
+# Zone-C assets (logo per preset), next to this script
+ASSETS="$(cd "$(dirname "$0")/.." && pwd)/assets"
 
-cur, settings_path, wall = sys.argv[1], sys.argv[2], sys.argv[3]
+exec python3 - "$CUR" "$SETTINGS" "${1:-}" "$ASSETS" <<'PY'
+import filecmp, json, os, shutil, subprocess, sys
+
+cur, settings_path, wall, assets = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 if wall.startswith("file://"):
     wall = wall[7:]
 
@@ -89,6 +92,11 @@ else:
 # the greeter runs as the sddm user and cannot read the home folder: hand it the avatar and the UI language
 conf["lang"] = "vi" if general.get("language", "vi") == "vi" else "en"
 avatar = os.path.expanduser(general.get("avatarPath") or "~/.face")
+# still the default Zone-C logo: show the preset's variant, as the shell does (ZoneStyle.avatarSource)
+logo = os.path.join(assets, "logo.png")
+if (settings.get("theme") or {}).get("activePreset") == "Zone Frost" and os.path.isfile(avatar) and os.path.isfile(logo) \
+        and filecmp.cmp(avatar, logo, shallow=False) and os.path.isfile(os.path.join(assets, "logo-frost.png")):
+    avatar = os.path.join(assets, "logo-frost.png")
 if os.path.isfile(avatar):
     conf["avatar"] = publish(avatar, "avatar")
 elif "avatar" in old:

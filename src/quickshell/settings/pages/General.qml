@@ -13,7 +13,7 @@ Column {
     property var picker
     width: parent ? parent.width : 0
 
-    readonly property string avatar: SystemInfo.avatarPath ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
+    readonly property string avatar: ZoneStyle.avatarSource(SystemInfo.avatarPath)
     readonly property string home: Quickshell.env("HOME")
     function short(p) { return p && p.indexOf(home) === 0 ? "~" + p.slice(home.length) : p; }
     Connections {
@@ -26,6 +26,7 @@ Column {
             Quickshell.execDetached(["bash", "-c", "cp -f -- \"$1\" \"$HOME/.face\" && rm -f \"$2\"", "_", path, Caching.getCacheDir("avatar") + "/avatar_cropped.png"]);
             Config.setSetting("general.avatarPath", page.home + "/.face");
             refetch.restart();
+            ZoneStyle.checkAvatar();
         }
         function onCanceled() { page.picking = false; }
     }

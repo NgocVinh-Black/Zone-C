@@ -20,7 +20,7 @@ PanelWindow {
     property bool busy: false
     property bool wheel: false
     property bool hasFingerprint: false
-    readonly property string avatar: SystemInfo.avatarPath ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
+    readonly property string avatar: ZoneStyle.avatarSource(SystemInfo.avatarPath)   // the default logo follows the preset
 
     onVisibleChanged: if (visible) { busy = false; pw.text = ""; groups.running = true; focusTimer.restart(); }
     Timer { id: focusTimer; interval: 50; onTriggered: pw.input.forceActiveFocus() }
