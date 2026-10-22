@@ -36,6 +36,7 @@ PanelWindow {
             { k: "Super+S|Super+N", d: Fz.tr("Lịch / mạng") },
             { k: "Super+Shift+V", d: Fz.tr("Âm lượng") },
             { k: "Super+Shift+W", d: Fz.tr("Chọn hình nền") },
+            { k: "Super+Alt+W", d: Fz.tr("Chỉnh widget màn hình") },
             { k: "Super+I|Super+H", d: Fz.tr("Cài đặt") },
             { k: "Super+A|Super+R", d: Fz.tr("Tự ẩn bar / tải lại shell") } ] },
         { col: 2, icon: "󰄀", title: Fz.tr("Chụp & quay màn hình"), accent: "peach", rows: [
