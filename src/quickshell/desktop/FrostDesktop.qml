@@ -107,6 +107,11 @@ Variants {
                 else if (barPos === "bottom") ys.push({ v: b.y - barGap, box: b, edge: "bottom" });
                 else if (barPos === "left") xs.push({ v: b.x + b.width + barGap, box: b, edge: "left" });
                 else xs.push({ v: b.x - barGap, box: b, edge: "right" });
+                // flush with the ends of the bar: a widget's left / right (top / bottom) edge on the bar's
+                if (barPos === "top" || barPos === "bottom")
+                    xs.push({ v: b.x, box: b, edge: "left" }, { v: b.x + b.width, box: b, edge: "right" });
+                else
+                    ys.push({ v: b.y, box: b, edge: "top" }, { v: b.y + b.height, box: b, edge: "bottom" });
                 for (let i = 0; i < rep.count; i++) {
                     let o = rep.itemAt(i);
                     if (!o || o === it || o.width === 0) continue;
