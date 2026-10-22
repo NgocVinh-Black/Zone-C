@@ -71,17 +71,27 @@ hl.config({
   },
 })
 
+-- Motion: ease-out (fast start, soft landing) to open, a quicker ease-in to close. Speed is in
+-- tenths of a second. Settings → Trợ năng → "Giảm chuyển động" turns all of it off.
 hl.curve("myBezier", { type = "bezier", points = { {0.05, 0.9}, {0.1, 1.05} } })
+hl.curve("zcOut", { type = "bezier", points = { {0.22, 1}, {0.36, 1} } })
+hl.curve("zcIn", { type = "bezier", points = { {0.4, 0}, {1, 1} } })
+hl.curve("zcMove", { type = "bezier", points = { {0.25, 1}, {0.5, 1} } })
 
-hl.animation({ leaf = "windows", enabled = true, speed = 5, bezier = "myBezier", style = "popin 80%" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "myBezier", style = "popin 80%" })
-hl.animation({ leaf = "layers", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
-hl.animation({ leaf = "layersIn", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
-hl.animation({ leaf = "layersOut", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
-hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "myBezier" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "myBezier", style = "slide" })
-hl.animation({ leaf = "specialWorkspaceIn", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
-hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 5, bezier = "myBezier", style = "fade" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 3.5, bezier = "zcOut", style = "popin 90%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2.2, bezier = "zcIn", style = "popin 92%" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 3.5, bezier = "zcMove" })
+-- shell panels, launcher, dialogs: a short pop and fade (the blur behind the glass fades with it)
+hl.animation({ leaf = "layersIn", enabled = true, speed = 2.6, bezier = "zcOut", style = "popin 94%" })
+hl.animation({ leaf = "layersOut", enabled = true, speed = 1.8, bezier = "zcIn", style = "popin 96%" })
+hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 2.2, bezier = "zcOut" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.6, bezier = "zcIn" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 3, bezier = "zcOut" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 2.2, bezier = "zcIn" })
+hl.animation({ leaf = "fadeSwitch", enabled = true, speed = 3, bezier = "zcOut" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 4, bezier = "zcMove", style = "slide" })
+hl.animation({ leaf = "specialWorkspaceIn", enabled = true, speed = 3, bezier = "zcOut", style = "slidevert" })
+hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 2.2, bezier = "zcIn", style = "slidevert" })
 
 -- Flameshot: cua so chup phu kin man hinh, khong bi tile / nhet vao nhom tab.
 -- Script ~/.local/bin/flameshot-gui bat fullscreen cho no de nam tren ca bar va vien dien.
@@ -123,6 +133,14 @@ hl.window_rule({
 
 -- Zone-C Frost: frosted glass behind the shell's panels, bar pills and desktop cards (backdrop-filter in
 -- the design). ignore_alpha keeps the blur to the glass itself, not the transparent rest of each layer.
+-- Layers that are always there (wallpaper, desktop, bar, edges) or animate themselves: no pop.
+hl.layer_rule({
+  name  = "zone-c-static",
+  match = { namespace = "^(wallpaper-bg|qs-desktop|qs-widget-.*|quickshell|qs-sidemusic|qs-electric-border|qs-floating-overlay|zone-c-dim|zone-c-flash|zone-c-draw|qs-screenshot-overlay|assistant-bg|qs-identify|qs-osd|osd|qs-toasts|qs-popups)$" },
+
+  no_anim = true,
+})
+
 hl.layer_rule({
   name  = "zone-c-glass",
   match = { namespace = "^(qs-.*)$" },

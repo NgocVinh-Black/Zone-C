@@ -676,21 +676,8 @@ PanelWindow {
             y: (animContainer.height - height) / 2
             transformOrigin: Item.Center
 
-            scale: masterWindow.isVisible ? 1.0 : 0.96
-            Behavior on scale {
-                NumberAnimation {
-                    duration: masterWindow.isVisible ? 280 : 160
-                    easing.type: masterWindow.isVisible ? Easing.OutCubic : Easing.InCubic
-                }
-            }
-
-            opacity: masterWindow.isVisible ? 1.0 : 0.0
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: masterWindow.isVisible ? 200 : 140
-                    easing.type: Easing.OutCubic
-                }
-            }
+            // open / close motion comes from Hyprland's layer animation (layersIn/Out in settings.lua):
+            // a QML fade here would cross the blur's ignore_alpha threshold and snap the glass on and off
 
             MouseArea { anchors.fill: parent }
 
