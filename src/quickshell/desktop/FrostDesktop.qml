@@ -84,6 +84,56 @@ Variants {
                 undoStack = undoStack.concat([snapshot()]);
                 restore(next);
             }
+            // ---------- alignment while dragging ----------
+            // The bar's box on this screen (Settings → Thanh bar position): drawn as a ghost in the editor and
+            // used as a snap edge so widgets keep clear of it.
+            readonly property string barPos: Config.getSetting("bar.position", "top") || "top"
+            readonly property rect barBox: barPos === "bottom" ? Qt.rect(8, height - 46, width - 16, 40)
+                                         : barPos === "left" ? Qt.rect(6, 8, 48, height - 16)
+                                         : barPos === "right" ? Qt.rect(width - 54, 8, 48, height - 16)
+                                         : Qt.rect(8, 6, width - 16, 40)
+            readonly property real snapDist: 8
+            readonly property real barGap: 24     // a widget snapped to the bar sits this far from it
+            property real guideX: -1              // vertical guide line while dragging (-1 none)
+            property real guideY: -1
+            property var guideBoxX: null          // the box the vertical guide lines up with (for its extent)
+            property var guideBoxY: null
+            // Move `it` (a widget being dragged) onto the nearest alignment within snapDist: the left / centre /
+            // right (top / middle / bottom) of the other widgets, the screen centre, and the edges along the bar.
+            function snap(it) {
+                let xs = [{ v: width / 2, box: null }], ys = [{ v: height / 2, box: null }];
+                let b = barBox;
+                if (barPos === "top") ys.push({ v: b.y + b.height + barGap, box: b, edge: "top" });
+                else if (barPos === "bottom") ys.push({ v: b.y - barGap, box: b, edge: "bottom" });
+                else if (barPos === "left") xs.push({ v: b.x + b.width + barGap, box: b, edge: "left" });
+                else xs.push({ v: b.x - barGap, box: b, edge: "right" });
+                for (let i = 0; i < rep.count; i++) {
+                    let o = rep.itemAt(i);
+                    if (!o || o === it || o.width === 0) continue;
+                    let box = Qt.rect(o.x, o.y, o.width, o.height);
+                    xs.push({ v: o.x, box: box }, { v: o.x + o.width / 2, box: box }, { v: o.x + o.width, box: box });
+                    ys.push({ v: o.y, box: box }, { v: o.y + o.height / 2, box: box }, { v: o.y + o.height, box: box });
+                }
+                function best(pos, size, list, startOnly, endOnly) {
+                    let r = null;
+                    for (const t of list) {
+                        // a bar edge only lines up with the side of the widget that faces the bar
+                        let pts = t.edge === "top" || t.edge === "left" ? [0] : t.edge ? [size] : [0, size / 2, size];
+                        for (const k of pts) {
+                            let d = t.v - (pos + k);
+                            if (Math.abs(d) <= snapDist && (!r || Math.abs(d) < Math.abs(r.d))) r = { d: d, v: t.v, box: t.box };
+                        }
+                    }
+                    return r;
+                }
+                let bx = best(it.x, it.width, xs), by = best(it.y, it.height, ys);
+                if (bx) it.x += bx.d;
+                if (by) it.y += by.d;
+                guideX = bx ? bx.v : -1; guideBoxX = bx ? bx.box : null;
+                guideY = by ? by.v : -1; guideBoxY = by ? by.box : null;
+            }
+            function clearGuides() { guideX = -1; guideY = -1; guideBoxX = null; guideBoxY = null; }
+
             // leave the editor without keeping anything done since it opened
             function cancel() {
                 settle.stop();
@@ -228,6 +278,53 @@ Variants {
                 }
             }
 
+            // ---------- ghost bar: where the bar sits, so widgets can be placed clear of it ----------
+            Rectangle {
+                visible: win.editing
+                x: win.barBox.x; y: win.barBox.y; width: win.barBox.width; height: win.barBox.height
+                radius: 14
+                color: Fz.fg(0.05)
+                border.width: 1; border.color: Fz.accA(0.35)
+                FText {
+                    anchors.centerIn: parent
+                    rotation: win.barPos === "left" || win.barPos === "right" ? -90 : 0
+                    text: Fz.tr("Thanh bar"); px: 12; weight: Font.DemiBold; color: Fz.dim
+                }
+            }
+
+            // ---------- alignment guides while dragging ----------
+            Rectangle {
+                visible: win.editing && win.guideX >= 0
+                z: 15
+                x: Math.round(win.guideX) - 0.5; width: 1
+                y: 0; height: win.height
+                color: Fz.glow
+                opacity: 0.9
+            }
+            Rectangle {
+                visible: win.editing && win.guideY >= 0
+                z: 15
+                y: Math.round(win.guideY) - 0.5; height: 1
+                x: 0; width: win.width
+                color: Fz.glow
+                opacity: 0.9
+            }
+            // the widget it lines up with lights up
+            Rectangle {
+                readonly property var b: win.guideBoxX
+                visible: win.editing && b !== null
+                z: 15
+                x: b ? b.x - 4 : 0; y: b ? b.y - 4 : 0; width: b ? b.width + 8 : 0; height: b ? b.height + 8 : 0
+                radius: 14; color: "transparent"; border.width: 1.5; border.color: Fz.glow
+            }
+            Rectangle {
+                readonly property var b: win.guideBoxY
+                visible: win.editing && b !== null && b !== win.guideBoxX
+                z: 15
+                x: b ? b.x - 4 : 0; y: b ? b.y - 4 : 0; width: b ? b.width + 8 : 0; height: b ? b.height + 8 : 0
+                radius: 14; color: "transparent"; border.width: 1.5; border.color: Fz.glow
+            }
+
             // ---------- widgets ----------
             Repeater {
                 id: rep
@@ -288,7 +385,10 @@ Variants {
                         drag.target: slot
                         drag.threshold: 2
                         onPressed: win.selectedId = slot.modelData.id
+                        // Shift held: move freely, no snapping
+                        onPositionChanged: (m) => { if (drag.active) { if (m.modifiers & Qt.ShiftModifier) win.clearGuides(); else win.snap(slot); } }
                         onReleased: {
+                            win.clearGuides();
                             if (!drag.active) return;
                             let nx = slot.modelData.ax === "r" ? win.width - slot.x - slot.width : slot.x;
                             win.update(slot.modelData.id, { x: Math.round(nx / Fz.px(1)), y: Math.round(slot.y / Fz.px(1)) });
@@ -321,7 +421,7 @@ Variants {
                 z: 20
                 radius: 18
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: 14
+                y: win.barPos === "top" ? win.barBox.y + win.barBox.height + 10 : 14   // under the ghost bar
                 width: toolbar.implicitWidth + 16
                 height: toolbar.implicitHeight + 16
                 Row {
