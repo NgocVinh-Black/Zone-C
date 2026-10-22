@@ -1,46 +1,45 @@
 #!/usr/bin/env bash
-# Banner Zone-C (phong cach than sam) khi mo terminal.
+# Banner Zone-C khi mo terminal (Frost: chu ZONE-C mot mau glow, nhan theme mo o dong cuoi).
 
 cols=$(tput cols 2>/dev/null || echo 80)
 
-# Mac dinh: tong xanh dien cua logo, sang (loi set) -> xanh dam
-colors=(
-    "205;245;255"
-    "140;225;255"
-    "80;195;255"
-    "30;160;255"
-    "15;115;255"
-    "10;75;215"
-)
+# Mac dinh theo thiet ke Frost: glow #9fd3e0, nhan mo #7d909a
+glow="159;211;224"
+dim="125;144;154"
+label="frost"
 
 # Theo theme dang dung cua Zone-C (scripts/term_sync.sh ghi file nay khi doi theme)
 theme_file="${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"
 if [[ -f "$theme_file" ]]; then
     source "$theme_file"
-    (( ${#ZONEC_BANNER_COLORS[@]} )) && colors=("${ZONEC_BANNER_COLORS[@]}")
+    [[ -n ${ZONEC_GLOW-} ]] && glow="$ZONEC_GLOW"
+    [[ -n ${ZONEC_DIM-} ]] && dim="$ZONEC_DIM"
+    [[ -n ${ZONEC_LABEL-} ]] && label="$ZONEC_LABEL"
 fi
 
-if (( cols >= 66 )); then
+if (( cols >= 60 )); then
     lines=(
-        '    ▟▛  ███████╗ ██████╗ ███╗   ██╗███████╗       ██████╗   ▟▛'
-        '   ▟▛   ╚══███╔╝██╔═══██╗████╗  ██║██╔════╝      ██╔════╝  ▟▛'
-        '  ▟█▄▄▖   ███╔╝ ██║   ██║██╔██╗ ██║█████╗  █████╗██║      ▟█▄▄▖'
-        '    ▟▛   ███╔╝  ██║   ██║██║╚██╗██║██╔══╝  ╚════╝██║        ▟▛'
-        '   ▟▛   ███████╗╚██████╔╝██║ ╚████║███████╗      ╚██████╗  ▟▛'
-        '  ▝▀    ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝       ╚═════╝ ▝▀'
+        '███████╗ ██████╗ ███╗   ██╗███████╗      ██████╗'
+        '╚══███╔╝██╔═══██╗████╗  ██║██╔════╝     ██╔════╝'
+        '  ███╔╝ ██║   ██║██╔██╗ ██║█████╗ █████╗██║'
+        ' ███╔╝  ██║   ██║██║╚██╗██║██╔══╝ ╚════╝██║'
+        '███████╗╚██████╔╝██║ ╚████║███████╗     ╚██████╗'
+        '╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝      ╚═════╝'
     )
 else
     lines=(
-        ' ▟▛ ▀▀▀█ █▀▀█ █▄ █ █▀▀     █▀▀'
-        '▟█▄▖ ▄▀  █  █ █ ▀█ █▀▀ ▀▀▀ █'
-        ' ▟▛ █▄▄▄ █▄▄█ █  ▀ █▄▄     █▄▄'
-        '▝▀'
+        '▀▀▀█ █▀▀█ █▄ █ █▀▀     █▀▀'
+        ' ▄▀  █  █ █ ▀█ █▀▀ ▀▀▀ █'
+        '█▄▄▄ █▄▄█ █  ▀ █▄▄     █▄▄'
     )
 fi
 
 echo
+last=$(( ${#lines[@]} - 1 ))
 for i in "${!lines[@]}"; do
-    c=${colors[$(( i * ${#colors[@]} / ${#lines[@]} ))]}
-    printf '\e[1;38;2;%sm%s\e[0m\n' "$c" "${lines[$i]}"
+    if (( i == last )); then
+        printf '\e[38;2;%sm%s\e[0m  \e[38;2;%sm%s\e[0m\n' "$glow" "${lines[$i]}" "$dim" "$label"
+    else
+        printf '\e[38;2;%sm%s\e[0m\n' "$glow" "${lines[$i]}"
+    fi
 done
-echo

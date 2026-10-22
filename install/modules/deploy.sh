@@ -411,6 +411,15 @@ deploy_package() {
         fi
 
         # ~/.local/bin vao PATH de goi duoc cac lenh Zone-C (chup, lam-min, usb-list...) tu terminal
+        # prompt and colours of the current Zone-C theme (scripts/term_sync.sh); after the distro's own PS1
+        if ! grep -q 'zone-c/term_theme.sh' "$bashrc" 2>/dev/null; then
+            {
+                echo ''
+                echo '# Zone-C: dau nhac lenh + mau theo theme dang dung'
+                echo '[[ $- == *i* && -f ${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh ]] && source "${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"'
+            } >> "$bashrc"
+        fi
+
         if ! grep -q 'PATH=.*\.local/bin' "$bashrc" 2>/dev/null; then
             {
                 echo ''

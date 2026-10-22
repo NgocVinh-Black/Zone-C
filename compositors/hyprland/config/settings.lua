@@ -15,8 +15,9 @@ hl.config({
     inactive_opacity = 1.0,
     blur = {
       enabled = true,
-      size = 8,
-      passes = 2,
+      -- closer to the design's backdrop-filter: blur(20px) behind the 0.86 terminal and glass panels
+      size = 10,
+      passes = 3,
       new_optimizations = true,
     },
     shadow = {

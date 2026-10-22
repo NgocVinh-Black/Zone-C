@@ -50,6 +50,19 @@ blue, sapphire, teal, mauve = hx("blue", "#3d9bff"), hx("sapphire", "#5cc0ff"), 
 green, peach, yellow, red = hx("green", "#a6e3a1"), hx("peach", "#fab387"), hx("yellow", "#f9e2af"), hx("red", "#ff5a74")
 text, sub1, ov0, ov1 = hx("text", "#e6efff"), hx("subtext1", "#b7c9ee"), hx("overlay0", "#6c7086"), hx("overlay1", "#7f849c")
 
+# Banner + dau nhac lenh (Frost: glow cho logo va thu muc, xanh la cho dau ❯, nhan theme mo)
+if preset in ("Zone Thunder", "Zone Crystal"):
+    glow = "#50c3ff"
+elif preset == "Zone Frost":
+    glow = "#2f5d72" if mode == "light" else "#9fd3e0"
+else:
+    glow = hx("blue", "#9fd3e0")
+dim = "#4a5d67" if mode == "light" else hx("overlay0", "#7d909a")
+prompt_green = green
+if preset == "Zone Frost" and mode != "light":
+    dim, prompt_green = "#7d909a", "#a6dcbc"   # --dim / --green of zone.css
+label = (preset or "frost").lower().replace("zone ", "")
+
 # Mau to cu phap: lenh = accent, tham so = chu phu, duong dan = accent phu (khong gach chan)
 faces = {
     "command_builtin": f"fg={blue},bold", "command_builtin_dot": f"fg={blue},bold",
@@ -84,6 +97,11 @@ faces = {
 
 lines = ["# Ghi tu dong boi Zone-C (scripts/term_sync.sh) theo theme: %s (%s) - dung sua tay" % (preset or "?", mode)]
 lines.append("ZONEC_BANNER_COLORS=(" + " ".join('"%d;%d;%d"' % rgb(h) for h in banner) + ")")
+lines.append('ZONEC_GLOW="%d;%d;%d"' % rgb(glow))
+lines.append('ZONEC_DIM="%d;%d;%d"' % rgb(dim))
+lines.append('ZONEC_LABEL="%s"' % label.replace('"', ''))
+# prompt of the artboard: green ❯, current folder in glow
+lines.append('[[ $- == *i* ]] && PS1="\\[\\e[38;2;%d;%d;%dm\\]❯\\[\\e[0m\\] \\[\\e[38;2;%sm\\]\\W\\[\\e[0m\\] "' % (rgb(prompt_green) + ('%d;%d;%d' % rgb(glow),)))
 lines.append("if [[ ${BLE_VERSION-} ]]; then")
 lines.append("    bleopt term_true_colors=semicolon")
 for k, v in faces.items():
