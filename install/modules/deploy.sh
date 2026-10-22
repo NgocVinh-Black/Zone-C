@@ -241,6 +241,7 @@ setup_sddm() {
 
     sudo mkdir -p /etc/sddm.conf.d
 
+    # QML_XHR_ALLOW_FILE_READ lets zone-frost read the battery level from /sys
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
@@ -249,7 +250,7 @@ ThemeDir=/usr/share/sddm/themes
 
 [General]
 DisplayServer=wayland
-GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1,QML_XHR_ALLOW_FILE_READ=1
 InputMethod=
 EOF
     else
@@ -259,6 +260,7 @@ Current=zone-frost
 ThemeDir=/usr/share/sddm/themes
 
 [General]
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
 InputMethod=
 EOF
     fi

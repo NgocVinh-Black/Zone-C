@@ -37,6 +37,25 @@ Rectangle {
     property string error: ""
     property var now: new Date()
     Timer { interval: 1000; running: true; repeat: true; onTriggered: root.now = new Date() }
+    // battery level from sysfs (BAT0/BAT1); -1 = no battery or the greeter may not read files
+    property int batCap: -1
+    property bool batCharging: false
+    function readSys(path, cb) {
+        let x = new XMLHttpRequest();
+        x.onreadystatechange = function() { if (x.readyState === XMLHttpRequest.DONE) cb(x.status === 200 || x.status === 0 ? String(x.responseText).trim() : ""); };
+        x.open("GET", "file://" + path);
+        try { x.send(); } catch (e) { cb(""); }
+    }
+    function readBattery(i) {
+        let dir = "/sys/class/power_supply/BAT" + i + "/";
+        readSys(dir + "capacity", function(c) {
+            let n = parseInt(c);
+            if (isNaN(n)) { if (i < 1) readBattery(i + 1); return; }
+            root.batCap = Math.max(0, Math.min(100, n));
+            readSys(dir + "status", function(st) { root.batCharging = st === "Charging" || st === "Full"; });
+        });
+    }
+    Timer { interval: 30000; running: true; repeat: true; triggeredOnStart: true; onTriggered: root.readBattery(0) }
     // UI language of the shell (current/theme.conf lang=vi|en, synced by scripts/sddm_sync.sh), as on the lock screen
     readonly property bool en: pick("lang", "vi") !== "vi"
     readonly property var weekdays: en ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -76,7 +95,7 @@ Rectangle {
     }
     Rectangle { anchors.fill: parent; color: Qt.rgba(14 / 255, 20 / 255, 24 / 255, 0.62) }
 
-    // ---------- top right: keyboard, host ----------
+    // ---------- top right: keyboard, battery ----------
     Row {
         anchors.top: parent.top; anchors.right: parent.right; anchors.topMargin: 20; anchors.rightMargin: 24
         spacing: 8
@@ -86,6 +105,25 @@ Rectangle {
             label: {
                 let s = typeof keyboard !== "undefined" && keyboard.layouts.length ? String(keyboard.layouts[keyboard.currentLayout].shortName).toLowerCase() : "us";
                 return s === "us" || s === "gb" ? "EN" : s === "vn" ? "VI" : s.toUpperCase();
+            }
+        }
+        // battery, as on the lock screen (needs GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1, else hidden)
+        Rectangle {
+            visible: root.batCap >= 0
+            height: 34; radius: 17; width: batRow.implicitWidth + 28
+            color: root.glass; border.width: 1; border.color: root.fg(0.09)
+            Row {
+                id: batRow
+                anchors.centerIn: parent
+                spacing: 7
+                Item {
+                    width: 18; height: 18; anchors.verticalCenter: parent.verticalCenter
+                    Rectangle { x: 1; y: 5; width: 14; height: 8; radius: 2; color: "transparent"; border.width: 1.5; border.color: root.sub2 }
+                    Rectangle { x: 15.5; y: 7.5; width: 1.5; height: 3; radius: 0.75; color: root.sub2 }
+                    Rectangle { x: 3; y: 7; height: 4; radius: 0.5; width: Math.max(1, 10 * root.batCap / 100)
+                                color: root.batCap <= 15 && !root.batCharging ? root.red : root.sub2 }
+                }
+                T { text: root.batCap + "%"; px: 12; color: root.sub2; font.family: root.mono; anchors.verticalCenter: parent.verticalCenter }
             }
         }
     }
