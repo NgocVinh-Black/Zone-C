@@ -86,8 +86,9 @@ Item {
     function avatarSource(path) {
         if (!path) return "";
         if (path.startsWith("file://")) path = path.substring(7);
+        // Zone Frost: the Ice Bolt avatar of Logo.dc.html ("Avatar · ~/.face")
         if (avatarIsLogo && artSuffix !== "" && Caching.zoneCDir)
-            return "file://" + Caching.zoneCDir + "/assets/" + art("logo.png");
+            return "file://" + Caching.zoneCDir + "/assets/" + art("avatar.png");
         return "file://" + path;
     }
     Process {

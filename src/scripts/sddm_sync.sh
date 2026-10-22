@@ -95,8 +95,8 @@ avatar = os.path.expanduser(general.get("avatarPath") or "~/.face")
 # still the default Zone-C logo: show the preset's variant, as the shell does (ZoneStyle.avatarSource)
 logo = os.path.join(assets, "logo.png")
 if (settings.get("theme") or {}).get("activePreset") == "Zone Frost" and os.path.isfile(avatar) and os.path.isfile(logo) \
-        and filecmp.cmp(avatar, logo, shallow=False) and os.path.isfile(os.path.join(assets, "logo-frost.png")):
-    avatar = os.path.join(assets, "logo-frost.png")
+        and filecmp.cmp(avatar, logo, shallow=False) and os.path.isfile(os.path.join(assets, "avatar-frost.png")):
+    avatar = os.path.join(assets, "avatar-frost.png")
 if os.path.isfile(avatar):
     conf["avatar"] = publish(avatar, "avatar")
 elif "avatar" in old:
