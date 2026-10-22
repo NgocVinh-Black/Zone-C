@@ -236,12 +236,13 @@ Scope {
                     onPaint: {
                         let c = getContext("2d"); c.reset();
                         let d = data; if (d.length < 2) return;
-                        let X = i => i * width / 29, Y = v => height - 4 - (height - 8) * Math.min(100, v) / 100;
-                        let off = 30 - d.length;
-                        c.beginPath(); c.moveTo(X(off), height);
-                        for (let i = 0; i < d.length; i++) c.lineTo(X(off + i), Y(d[i]));
-                        c.lineTo(X(29), height); c.closePath(); c.fillStyle = Fz.accA(0.12); c.fill();
-                        c.beginPath(); for (let i = 0; i < d.length; i++) i ? c.lineTo(X(off + i), Y(d[i])) : c.moveTo(X(off), Y(d[0]));
+                        // samples spread over the full width; the scale follows the load (at least 25%) so an idle CPU isn't a flat floor
+                        let top = Math.min(100, Math.max(25, Math.max.apply(null, d) * 1.25));
+                        let X = i => i * width / (d.length - 1), Y = v => height - 4 - (height - 8) * Math.min(top, v) / top;
+                        c.beginPath(); c.moveTo(0, height);
+                        for (let i = 0; i < d.length; i++) c.lineTo(X(i), Y(d[i]));
+                        c.lineTo(width, height); c.closePath(); c.fillStyle = Fz.accA(0.12); c.fill();
+                        c.beginPath(); for (let i = 0; i < d.length; i++) i ? c.lineTo(X(i), Y(d[i])) : c.moveTo(0, Y(d[0]));
                         c.strokeStyle = Fz.acc; c.lineWidth = 2; c.stroke();
                     }
                 }

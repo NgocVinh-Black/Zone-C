@@ -25,6 +25,7 @@ TrayBase 1.0 popouts/TrayBase.qml
 WidgetLoader 1.0 widgets/WidgetLoader.qml
 FrostDesktop 1.0 desktop/FrostDesktop.qml
 PairDialog 1.0 network/PairDialog.qml
+WifiDialog 1.0 network/WifiDialog.qml
 FrostOverview 1.0 overview/FrostOverview.qml
 FrostTray 1.0 tray/FrostTray.qml
 FrostEmoji 1.0 emoji/FrostEmoji.qml

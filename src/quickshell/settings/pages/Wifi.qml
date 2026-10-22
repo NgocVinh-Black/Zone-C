@@ -6,7 +6,7 @@ import "../"
 import "../../"
 import "../../frost"
 
-// Wi-Fi: radio, the network in use, available networks (password inline), hidden networks,
+// Wi-Fi: radio, the network in use, available networks (the password is asked in network/WifiDialog.qml), hidden networks,
 // auto-join for the current network, MAC randomisation and a hotspot (NetworkManager).
 Column {
     id: page
@@ -18,7 +18,6 @@ Column {
     readonly property var current: nets.find(n => n && n.connected) || null
     readonly property var others: nets.filter(n => n && !n.connected && n.name).sort((a, b) => (b.signalStrength || 0) - (a.signalStrength || 0)).slice(0, 12)
     property var info: ({})               // ip, rate, freq, autoconnect, mac, hotspot
-    property string openNet: ""
     property bool hiddenOpen: false
     function sec(n) { return ({ 0: Fz.tr("Mạng mở"), 1: "WEP", 2: "WPA", 3: "WPA2", 4: "WPA3", 5: "WPA2/WPA3", 6: "WPA2-Enterprise", 7: "OWE" })[n ? n.security : 0] || ""; }
     function strength(n) { let s = n ? (n.signalStrength || 0) : 0; return s > 1 ? s / 100 : s; }
@@ -73,13 +72,7 @@ Column {
                 SRow {
                     title: nr.modelData.name; sub: page.sec(nr.modelData) + (nr.modelData.known ? Fz.tr(" · đã lưu") : "")
                     FIcon { name: "s-wifi"; color: Fz.acc; opacity: 0.4 + 0.6 * page.strength(nr.modelData); anchors.verticalCenter: parent.verticalCenter }
-                    FBtn { text: Fz.tr("Kết nối"); onClicked: { if (nr.locked) page.openNet = page.openNet === nr.modelData.name ? "" : nr.modelData.name; else nr.modelData.connect(); } }
-                }
-                Row {
-                    visible: page.openNet === nr.modelData.name
-                    x: 16; spacing: 8; bottomPadding: 12
-                    FInput { id: pw; width: 280; height: 36; password: true; placeholder: Fz.tr("Mật khẩu"); onAccepted: { nr.modelData.connectWithPsk(text); page.openNet = ""; } }
-                    FBtn { kind: "pri"; text: Fz.tr("Kết nối"); onClicked: { nr.modelData.connectWithPsk(pw.text); page.openNet = ""; } }
+                    FBtn { text: Fz.tr("Kết nối"); onClicked: { if (nr.locked) Fz.askWifi(nr.modelData); else nr.modelData.connect(); } }
                 }
             }
         }

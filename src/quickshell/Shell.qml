@@ -22,6 +22,7 @@ ShellRoot {
 
     Polkit {}
     PairDialog {}
+    WifiDialog {}
     FrostOverview {}
     FrostTray {}
     FrostEmoji {}

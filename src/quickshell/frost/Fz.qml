@@ -191,6 +191,9 @@ Item {
 
     // tab the Wi-Fi / Bluetooth panel shows, so the bar lights the matching button
     property string networkTab: "wifi"
+    // secured Wi-Fi network waiting for its password (network/WifiDialog.qml): the Quickshell WifiNetwork object
+    property var wifiAsk: null
+    function askWifi(net) { wifiAsk = net; }
     readonly property var standalone: ["overview", "alttab", "tray", "power", "taskmanager", "files", "appstore", "emoji", "keyring", "screenshare", "welcome", "settings", "guide"]
     function open(widget, arg) {
         if (widget === "guide") widget = "settings";

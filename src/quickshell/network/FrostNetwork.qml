@@ -28,7 +28,6 @@ Item {
     readonly property var nets: wifiDev && wifiDev.networks ? (wifiDev.networks.values || []) : []
     readonly property var current: nets.find(n => n && n.connected) || null
     readonly property var others: nets.filter(n => n && !n.connected && n.name).sort((a, b) => (b.signalStrength || 0) - (a.signalStrength || 0))
-    property string openNet: ""
     property var meta: ({})          // ssid -> { freq, sec }
     property string ip: ""
     property real rx: 0
@@ -46,7 +45,7 @@ Item {
         return f >= 5900 ? "6 GHz" : f >= 4900 ? "5 GHz" : "2.4 GHz";
     }
     function bars(n) { let s = n ? (n.signalStrength || 0) : 0; if (s > 1) s /= 100; return s >= 0.75 ? 4 : s >= 0.5 ? 3 : s >= 0.25 ? 2 : 1; }
-    function connect(n, pw) { if (pw) n.connectWithPsk(pw); else n.connect(); openNet = ""; }
+    function connect(n, pw) { if (pw) n.connectWithPsk(pw); else n.connect(); }
 
     Process {
         id: scanMeta
@@ -216,14 +215,13 @@ Item {
                     delegate: Column {
                         id: netRow
                         required property var modelData
-                        readonly property bool open: root.openNet === modelData.name
                         readonly property bool locked: modelData.security > 0 && modelData.security !== 7
                         width: parent.width
                         Rectangle {
                             width: parent.width
                             height: 60
                             radius: 14
-                            color: netRow.open ? Fz.fg(0.07) : (nwMouse.containsMouse ? Fz.fg(0.06) : "transparent")
+                            color: (Fz.wifiAsk === netRow.modelData ? Fz.fg(0.07) : nwMouse.containsMouse ? Fz.fg(0.06) : "transparent")
                             Row {
                                 x: 12; anchors.verticalCenter: parent.verticalCenter
                                 spacing: 12
@@ -253,19 +251,9 @@ Item {
                                 id: nwMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     if (!netRow.locked || netRow.modelData.known) { root.connect(netRow.modelData, ""); return; }
-                                    root.openNet = netRow.open ? "" : netRow.modelData.name;
+                                    Fz.askWifi(netRow.modelData);
                                 }
                             }
-                        }
-                        Row {
-                            visible: netRow.open
-                            x: 12
-                            width: parent.width - 24
-                            topPadding: 4; bottomPadding: 10
-                            spacing: 8
-                            FInput { id: pw; width: parent.width - 8 - connectBtn.width; height: 36; password: true; placeholder: Fz.tr("Mật khẩu")
-                                onAccepted: root.connect(netRow.modelData, text) }
-                            FBtn { id: connectBtn; kind: "pri"; text: Fz.tr("Kết nối"); onClicked: root.connect(netRow.modelData, pw.text) }
                         }
                     }
                 }

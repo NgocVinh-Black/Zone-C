@@ -2,6 +2,15 @@
 // English strings for the Frost UI, keyed by the Vietnamese source text (Fz.tr looks them up).
 // Regenerate the key list with the i18n scanner when new Vietnamese strings are added.
 var map = {
+"Kết nối ": "Connect to ",
+"Mạng yêu cầu mật khẩu ": "The network needs a password · ",
+"Mạng yêu cầu mật khẩu": "The network needs a password",
+"Mật khẩu WPA2 cần ít nhất 8 ký tự.": "WPA2 passwords need at least 8 characters.",
+"Sai mật khẩu hoặc không kết nối được. Thử lại.": "Wrong password or the network refused the connection. Try again.",
+"Hết thời gian chờ kết nối. Thử lại.": "The connection timed out. Try again.",
+"Tự kết nối": "Connect automatically",
+"Mạng tính phí": "Metered network",
+"Hạn chế tải nền": "Limits background downloads",
 " (Khuyên dùng)": " (Recommended)",
 " Thấp ": " Low ",
 " bash -c 'sudo pacman -S --needed cups cups-pdf && sudo systemctl enable --now cups.socket; read -n1 -p \"Xong. Nhấn phím bất kỳ…\"'": " bash -c 'sudo pacman -S --needed cups cups-pdf && sudo systemctl enable --now cups.socket; read -n1 -p \"Done. Press any key…\"'",
