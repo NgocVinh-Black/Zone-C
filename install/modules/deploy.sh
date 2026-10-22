@@ -413,14 +413,26 @@ deploy_package() {
         fi
 
         # ~/.local/bin vao PATH de goi duoc cac lenh Zone-C (chup, lam-min, usb-list...) tu terminal
-        # prompt and colours of the current Zone-C theme (scripts/term_sync.sh); after the distro's own PS1
-        if ! grep -q 'zone-c/term_theme.sh' "$bashrc" 2>/dev/null; then
-            {
-                echo ''
-                echo '# Zone-C: dau nhac lenh + mau theo theme dang dung'
-                echo '[[ $- == *i* && -f ${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh ]] && source "${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"'
-            } >> "$bashrc"
-        fi
+        # prompt and colours of the current Zone-C theme (scripts/term_sync.sh): after the distro's own PS1
+        # but before the banner and ble-attach (ble.sh keeps the PS1 it attached with), moving an older line
+        python3 - "$bashrc" <<'PYBASHRC'
+import sys
+p = sys.argv[1]
+line = '[[ $- == *i* && -f ${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh ]] && source "${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"'
+try:
+    rows = open(p).read().split("\n")
+except FileNotFoundError:
+    rows = []
+rows = [r for r in rows if "zone-c/term_theme.sh" not in r and r != "# Zone-C: dau nhac lenh + mau theo theme dang dung"]
+at = next((i for i, r in enumerate(rows) if r.strip().startswith(("zonec-banner", "fastfetch")) or "ble-attach" in r), None)
+if at is not None:
+    while at > 0 and rows[at - 1].lstrip().startswith("#"):   # keep a block's comment with it
+        at -= 1
+    rows[at:at] = ["# Zone-C: dau nhac lenh + mau theo theme dang dung", line, ""]
+else:
+    rows += ["", "# Zone-C: dau nhac lenh + mau theo theme dang dung", line]
+open(p, "w").write("\n".join(rows))
+PYBASHRC
 
         if ! grep -q 'PATH=.*\.local/bin' "$bashrc" 2>/dev/null; then
             {
