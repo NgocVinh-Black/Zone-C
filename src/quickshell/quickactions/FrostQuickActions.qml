@@ -102,6 +102,7 @@ Scope {
         color: "transparent"
         mask: Region {
             Region { item: railBox }
+            Region { item: edgeStrip }
             Region { item: timerBox.visible ? timerBox : null }
             Region { item: usageBox.visible ? usageBox : null }
         }
@@ -113,8 +114,22 @@ Scope {
         readonly property var ws: Hyprland.focusedWorkspace
         readonly property bool busy: ws !== null && ws.toplevels && (ws.toplevels.values || []).length > 0
         readonly property bool fullscreen: Hyprland.activeToplevel !== null && Hyprland.activeToplevel.lastIpcObject && Hyprland.activeToplevel.lastIpcObject.fullscreen > 0
-        readonly property bool tucked: !railHover.hovered && !qa.timerOpen && !qa.usageOpen && !qa.drawOpen
+        // Hover covers the rail *and* the strip between it and the screen edge: the pointer that slid it
+        // out sits at the edge, so without the strip the rail would tuck back under it and bounce. Leaving
+        // waits a moment so a pointer passing by doesn't flicker it.
+        property bool hovering: false
+        readonly property bool pointerIn: railHover.hovered || edgeHover.hovered
+        onPointerInChanged: { if (pointerIn) { tuckDelay.stop(); hovering = true; } else tuckDelay.restart(); }
+        Timer { id: tuckDelay; interval: 350; onTriggered: rail.hovering = false }
+        readonly property bool tucked: !hovering && !qa.timerOpen && !qa.usageOpen && !qa.drawOpen
         visible: !fullscreen
+        // the gap between the slid-out rail and the screen edge
+        Item {
+            id: edgeStrip
+            x: railBox.x + railBox.width; y: railBox.y
+            width: Math.max(0, rail.width - x); height: railBox.height
+            HoverHandler { id: edgeHover }
+        }
         Glass {
             id: railBox
             x: rail.tucked ? rail.width - 10 : rail.width - 18 - width
