@@ -460,27 +460,70 @@ Variants {
             }
 
             // ---------- "Thêm tiện ích" panel ----------
-            // opaque, so the widgets it covers don't show through
+            // opaque, so the widgets it covers don't show through. Dragged by its header to uncover what is
+            // under it, collapsed to the header, and sent back to the right edge with a double click.
             Glass {
                 id: aside
                 visible: win.editing
                 z: 20
-                anchors.right: parent.right; anchors.rightMargin: 16
                 Rectangle { anchors.fill: parent; radius: aside.radius; color: Fz.mantle; opacity: 0.94 }
-                anchors.top: parent.top; anchors.topMargin: 80
-                anchors.bottom: parent.bottom; anchors.bottomMargin: 16
+                property bool collapsed: false
+                property bool moved: false
+                readonly property real fullH: win.height - 96
                 width: 360
+                height: collapsed ? 22 + 32 : fullH
+                Behavior on height { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                function clampPos() {
+                    x = Math.max(16, Math.min(x, win.width - width - 16));
+                    y = Math.max(16, Math.min(y, win.height - (collapsed ? 22 + 32 : fullH) - 16));
+                }
+                function home() { moved = false; x = win.width - width - 16; y = 80; }
+                Component.onCompleted: home()
+                Connections { target: win; function onWidthChanged() { if (aside.moved) aside.clampPos(); else aside.home(); } }
+                onCollapsedChanged: clampPos()
+                Behavior on x { enabled: !asideDrag.drag.active; NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+                Behavior on y { enabled: !asideDrag.drag.active; NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
                 Column {
                     x: 16; y: 16
                     width: parent.width - 32
                     spacing: 12
+                    // header: the drag handle
                     Item {
                         width: parent.width; height: 22
-                        FText { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Thêm tiện ích"); px: 16; weight: Font.DemiBold }
-                        FChip { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("kéo thả vào màn hình") }
+                        MouseArea {
+                            id: asideDrag
+                            anchors.fill: parent; anchors.margins: -8
+                            cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                            drag.target: aside
+                            drag.minimumX: 16; drag.maximumX: win.width - aside.width - 16
+                            drag.minimumY: 16; drag.maximumY: win.height - aside.height - 16
+                            drag.threshold: 2
+                            onReleased: if (drag.active) aside.moved = true
+                            onDoubleClicked: aside.home()
+                        }
+                        Row {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 6
+                            FIcon { name: "a-grip"; size: 16; color: Fz.dim; anchors.verticalCenter: parent.verticalCenter }
+                            FText { text: Fz.tr("Thêm tiện ích"); px: 16; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+                        }
+                        Row {
+                            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+                            spacing: 6
+                            FChip { visible: !aside.collapsed; text: Fz.tr("kéo thả vào màn hình"); anchors.verticalCenter: parent.verticalCenter }
+                            FIconBtn {
+                                width: 26; height: 26; ghost: true; icon: "p-up"; iconSize: 14
+                                rotation: aside.collapsed ? 180 : 0
+                                Behavior on rotation { NumberAnimation { duration: 200 } }
+                                label: aside.collapsed ? Fz.tr("Mở rộng") : Fz.tr("Thu gọn")
+                                anchors.verticalCenter: parent.verticalCenter
+                                onClicked: aside.collapsed = !aside.collapsed
+                            }
+                        }
                     }
                     Grid {
+                        visible: !aside.collapsed
                         columns: 2
                         columnSpacing: 8; rowSpacing: 8
                         Repeater {
@@ -528,7 +571,7 @@ Variants {
 
                 // inspector of the selected widget
                 Card {
-                    visible: win.selectedId !== ""
+                    visible: win.selectedId !== "" && !aside.collapsed
                     anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
                     anchors.margins: 16
                     height: insp.implicitHeight + 24
