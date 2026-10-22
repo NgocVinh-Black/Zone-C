@@ -57,12 +57,10 @@ Column {
         }
         SRow { title: Fz.tr("Mã hóa ổ đĩa"); sub: Number(page.d.crypt) > 0 ? "LUKS" : Fz.tr("Ổ hệ thống không dùng LUKS"); FChip { kind: Number(page.d.crypt) > 0 ? "ok" : ""; text: Number(page.d.crypt) > 0 ? Fz.tr("Đang bật") : Fz.tr("Không mã hóa"); anchors.verticalCenter: parent.verticalCenter } }
         SRow { title: Fz.tr("Tác nhân Polkit"); sub: Fz.tr("Hộp thoại xác thực của Zone-C"); FBtn { text: Fz.tr("Xem thử"); onClicked: Quickshell.execDetached(["pkexec", "true"]) } }
+        // telemetry is cut out of Zone-C (install/modules/telemetry.sh has no endpoint): say so instead of a dead toggle
         SRow {
-            title: Fz.tr("Gửi thống kê cài đặt ẩn danh"); sub: "install/telemetry.sh"
-            FToggle {
-                on: page.d.telemetry !== "false"
-                onToggled: (v) => { run.command = ["bash", "-c", "f=\"$1\"; mkdir -p \"$(dirname \"$f\")\"; touch \"$f\"; sed -i '/^ENABLE_TELEMETRY=/d' \"$f\"; echo \"ENABLE_TELEMETRY=$2\" >> \"$f\"", "_", Caching.stateDir + "/version", v ? "true" : "false"]; run.running = true; }
-            }
+            title: Fz.tr("Thống kê cài đặt ẩn danh"); sub: Fz.tr("Zone-C không gửi dữ liệu nào")
+            FChip { text: Fz.tr("Đã tắt"); anchors.verticalCenter: parent.verticalCenter }
         }
     }
 }

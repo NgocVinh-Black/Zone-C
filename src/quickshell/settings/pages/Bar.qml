@@ -11,7 +11,7 @@ Column {
     width: parent ? parent.width : 0
 
     readonly property var names: ({ left: Fz.tr("Cài đặt"), workspaces: "Workspace", media: Fz.tr("Phương tiện"), info: Fz.tr("Ghi hình/Hẹn giờ"), timedate: Fz.tr("Thời gian"), weather: Fz.tr("Thời tiết"),
-        tray: "Khay", sysmon: "Sysmon", kb: Fz.tr("Bàn phím"), wifi: Fz.tr("Mạng"), bt: "BT", vol: Fz.tr("Âm lượng"), bat: "Pin", focus: Fz.tr("Tiêu điểm"), cava: "Visualizer (cava)", actions: Fz.tr("Thao tác") })
+        tray: Fz.tr("Khay"), sysmon: "Sysmon", kb: Fz.tr("Bàn phím"), wifi: Fz.tr("Mạng"), bt: "BT", vol: Fz.tr("Âm lượng"), bat: Fz.tr("Pin"), focus: Fz.tr("Tiêu điểm"), cava: "Visualizer (cava)", actions: Fz.tr("Thao tác") })
     readonly property var all: ["left", "workspaces", "media", "info", "timedate", "weather", "tray", "sysmon", "kb", "wifi", "bt", "vol", "bat", "focus", "cava", "actions"]
     readonly property var mods: Config.getSetting("bar.modules", { left: ["left", "workspaces", "media"], center: ["info", "timedate", "weather"], right: ["tray", "sysmon", "kb", "wifi", "bt", "vol", "bat"] })
     function flat(col) { let out = []; (mods[col] || []).forEach(x => out = out.concat(Array.isArray(x) ? x : [x])); return out; }

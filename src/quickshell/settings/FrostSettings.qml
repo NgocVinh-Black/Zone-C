@@ -138,6 +138,15 @@ Scope {
                                         id: nv
                                         required property var modelData
                                         readonly property bool on: app.page === modelData[0]
+                                        // the selected page stays in view, e.g. when opened from the bar or by IPC
+                                        function reveal() {
+                                            let y = nv.mapToItem(navList, 0, 0).y;
+                                            if (y < navFlick.contentY) navFlick.contentY = Math.max(0, y - 8);
+                                            else if (y + height > navFlick.contentY + navFlick.height)
+                                                navFlick.contentY = Math.min(navFlick.contentHeight - navFlick.height, y + height + 8 - navFlick.height);
+                                        }
+                                        onOnChanged: if (on) Qt.callLater(reveal)
+                                        Component.onCompleted: if (on) Qt.callLater(reveal)
                                         readonly property string badge: modelData[0] === "updates" && app.updates > 0 ? String(app.updates) : ""
                                         width: navList.width; height: 32; radius: 10
                                         color: on ? Fz.acc : (nvMouse.containsMouse ? Fz.fg(0.06) : "transparent")

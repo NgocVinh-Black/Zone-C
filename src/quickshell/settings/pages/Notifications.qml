@@ -50,7 +50,7 @@ Column {
             }
             FIconBtn { icon: "s-play"; iconSize: 14; label: Fz.tr("Nghe thử"); onClicked: Quickshell.execDetached(["pw-play", page.soundDir + page.sounds[page.soundIdx]]) }
         }
-        SRow { title: Fz.tr("Hoạt ảnh khi trống"); sub: Fz.tr("Hiện mèo ngủ khi không có thông báo"); CfgToggle { key: "notifications.showEmptyGraphic"; def: true } }
+        SRow { title: Fz.tr("Hoạt ảnh khi trống"); sub: Fz.tr("Hình minh họa khi không có thông báo nào"); CfgToggle { key: "notifications.showEmptyGraphic"; def: true } }
     }
 
     H3 { text: Fz.tr("Ứng dụng") }

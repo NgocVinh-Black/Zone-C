@@ -16,7 +16,7 @@ Column {
         running: true
         command: ["bash", "-c", "echo \"host=$(cat /sys/class/dmi/id/product_name 2>/dev/null || hostname)\"; echo \"hostname=$(hostname)\"; echo \"cpu=$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2 | xargs)\";"
             + "echo \"gpu=$(lspci 2>/dev/null | grep -iE 'vga|3d|display' | head -1 | cut -d: -f3 | sed 's/ (rev .*)//' | xargs)\"; echo \"ram=$(awk '/MemTotal/{printf \"%.0f\", $2/1048576}' /proc/meminfo)\";"
-            + "echo \"disk=$(lsblk -dbno SIZE,TYPE | awk '$2==\"disk\"{s+=$1} END{printf \"%.0f\", s/1e9}')\"; . /etc/os-release; echo \"os=$PRETTY_NAME\"; echo \"kernel=$(uname -r)\";"
+            + "echo \"disk=$(lsblk -dbno NAME,SIZE,TYPE | awk '$3==\"disk\" && $1 !~ /^zram/ {s+=$2} END{printf \"%.0f\", s/1e9}')\"; . /etc/os-release; echo \"os=$PRETTY_NAME\"; echo \"kernel=$(uname -r)\";"
             + "echo \"hypr=$(hyprctl version -j 2>/dev/null | grep -m1 '\"tag\"' | cut -d'\"' -f4)\"; echo \"up=$(cut -d. -f1 /proc/uptime)\""]
         stdout: StdioCollector { onStreamFinished: { let o = {}; this.text.split("\n").forEach(l => { let i = l.indexOf("="); if (i > 0) o[l.slice(0, i)] = l.slice(i + 1); }); page.d = o; } }
     }

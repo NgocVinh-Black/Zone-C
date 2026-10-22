@@ -55,7 +55,7 @@ Variants {
                 musicFull:      { comp: mFullC,    tag: Fz.tr("Nhạc · đầy đủ") },
                 musicRound:     { comp: mRoundC,   tag: Fz.tr("Nhạc · tròn") },
                 viz:            { comp: vizC,      tag: "Visualizer · cava" },
-                battery:        { comp: batC,      tag: "Pin" },
+                battery:        { comp: batC,      tag: Fz.tr("Pin") },
                 resources:      { comp: resC,      tag: Fz.tr("Tài nguyên") },
                 user:           { comp: userC,     tag: Fz.tr("Người dùng") },
                 image:          { comp: imageC,    tag: Fz.tr("Khung ảnh") },
@@ -327,7 +327,7 @@ Variants {
                                 { t: "material", l: Fz.tr("Đồng hồ số"), pv: "digital" }, { t: "analog", l: Fz.tr("Đồng hồ kim"), pv: "analog" },
                                 { t: "lumen", l: "Material Lumen", pv: "lumen" }, { t: "weatherFull", l: Fz.tr("Thời tiết đầy đủ"), pv: "w-cloud" },
                                 { t: "musicFull", l: Fz.tr("Nhạc"), pv: "w-music" }, { t: "viz", l: "Visualizer", pv: "w-wave" },
-                                { t: "battery", l: "Pin", pv: "w-bat" }, { t: "resources", l: Fz.tr("Tài nguyên"), pv: "w-cpu" },
+                                { t: "battery", l: Fz.tr("Pin"), pv: "w-bat" }, { t: "resources", l: Fz.tr("Tài nguyên"), pv: "w-cpu" },
                                 { t: "user", l: Fz.tr("Người dùng"), pv: "w-user" }, { t: "image", l: Fz.tr("Khung ảnh"), pv: "w-image" }
                             ]
                             delegate: Rectangle {

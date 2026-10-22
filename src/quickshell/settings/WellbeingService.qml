@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import "../"
+import "../frost"
 
 // Background half of Settings → Sức khỏe số: the 20-20-20 eye-break reminder and focus mode
 // (focus mode turns on Không làm phiền and restores the previous state when it ends).
