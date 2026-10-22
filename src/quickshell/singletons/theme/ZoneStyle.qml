@@ -163,6 +163,11 @@ Item {
         target: Wallpaper
         function onWallpaperChanged(screenName, path, transition) { root.syncSddm(); }
     }
+    // the login screen also shows the avatar and speaks the shell's language
+    readonly property string _sddmLang: Config.getSetting("general.language", "vi")
+    readonly property string _sddmAvatar: Config.getSetting("general.avatarPath", "")
+    on_SddmLangChanged: syncSddm()
+    on_SddmAvatarChanged: syncSddm()
     Connections {
         target: ThemeBackend
         function onBaseChanged() { root.syncSddm(); }

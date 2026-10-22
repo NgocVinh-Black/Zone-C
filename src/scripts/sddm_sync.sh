@@ -27,9 +27,11 @@ if wall.startswith("file://"):
     wall = wall[7:]
 
 try:
-    colors = json.load(open(settings_path)).get("theme", {}).get("colors", {}) or {}
+    settings = json.load(open(settings_path))
 except Exception:
-    colors = {}
+    settings = {}
+colors = (settings.get("theme", {}) or {}).get("colors", {}) or {}
+general = settings.get("general", {}) or {}
 
 conf_path = os.path.join(cur, "theme.conf")
 old = {}
@@ -83,6 +85,14 @@ else:
     for k in ("background", "video"):
         if k in old:
             conf[k] = old[k]
+
+# the greeter runs as the sddm user and cannot read the home folder: hand it the avatar and the UI language
+conf["lang"] = "vi" if general.get("language", "vi") == "vi" else "en"
+avatar = os.path.expanduser(general.get("avatarPath") or "~/.face")
+if os.path.isfile(avatar):
+    conf["avatar"] = publish(avatar, "avatar")
+elif "avatar" in old:
+    conf["avatar"] = old["avatar"]
 
 if conf == old:
     sys.exit(0)

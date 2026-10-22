@@ -37,7 +37,12 @@ Rectangle {
     property string error: ""
     property var now: new Date()
     Timer { interval: 1000; running: true; repeat: true; onTriggered: root.now = new Date() }
-    readonly property var weekdays: ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
+    // UI language of the shell (current/theme.conf lang=vi|en, synced by scripts/sddm_sync.sh), as on the lock screen
+    readonly property bool en: pick("lang", "vi") !== "vi"
+    readonly property var weekdays: en ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                                       : ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"]
+    readonly property var months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    function dateLine(d) { return en ? weekdays[d.getDay()] + " · " + months[d.getMonth()] + " " + d.getDate() : weekdays[d.getDay()] + " · " + d.getDate() + " tháng " + (d.getMonth() + 1); }
 
     // models read through hidden views (SDDM models are not JS arrays)
     ListView { id: users; model: typeof userModel !== "undefined" ? userModel : null; visible: false; width: 1; height: 1
@@ -58,7 +63,7 @@ Rectangle {
     }
     Connections {
         target: root.preview ? null : sddm
-        function onLoginFailed() { root.error = "Sai mật khẩu"; pw.text = ""; shake.restart(); pw.forceActiveFocus(); }
+        function onLoginFailed() { root.error = root.en ? "Wrong password, try again" : "Sai mật khẩu, thử lại"; pw.text = ""; shake.restart(); pw.forceActiveFocus(); }
     }
     Component.onCompleted: { if (typeof keyboard !== "undefined") keyboard.numLock = true; pw.forceActiveFocus(); }
 
@@ -75,8 +80,14 @@ Rectangle {
     Row {
         anchors.top: parent.top; anchors.right: parent.right; anchors.topMargin: 20; anchors.rightMargin: 24
         spacing: 8
-        Pill { label: typeof keyboard !== "undefined" && keyboard.layouts.length ? String(keyboard.layouts[keyboard.currentLayout].shortName).toUpperCase() : "US"; bold: true }
-        Pill { visible: label !== ""; label: root.preview ? "zone-c" : (sddm.hostName || "") }
+        // same chip as the lock screen: the input language, not the XKB layout name
+        Pill {
+            bold: true
+            label: {
+                let s = typeof keyboard !== "undefined" && keyboard.layouts.length ? String(keyboard.layouts[keyboard.currentLayout].shortName).toLowerCase() : "us";
+                return s === "us" || s === "gb" ? "EN" : s === "vn" ? "VI" : s.toUpperCase();
+            }
+        }
     }
 
     // ---------- clock ----------
@@ -84,7 +95,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         y: 110 * root.height / 900
         spacing: 6
-        T { anchors.horizontalCenter: parent.horizontalCenter; text: (root.weekdays[root.now.getDay()] + " · " + root.now.getDate() + " tháng " + (root.now.getMonth() + 1)).toUpperCase()
+        T { anchors.horizontalCenter: parent.horizontalCenter; text: root.dateLine(root.now).toUpperCase()
             px: 16; weight: 600; color: root.sub2; font.letterSpacing: 16 * 0.2 }
         T { anchors.horizontalCenter: parent.horizontalCenter; text: Qt.formatTime(root.now, "HH:mm"); px: 200; weight: 200; font.letterSpacing: -10; lineHeight: 0.95 }
     }
@@ -107,7 +118,8 @@ Rectangle {
                 Image {
                     id: avatar
                     anchors.fill: parent; fillMode: Image.PreserveAspectCrop
-                    source: root.cur && root.cur.icon ? root.cur.icon : ""
+                    // SDDM's own face icon when it has one, else the avatar the shell synced (~/.face is not readable here)
+                    source: root.pick("avatar", "") !== "" ? Qt.resolvedUrl("current/" + root.pick("avatar", "")) : (root.cur && root.cur.icon ? root.cur.icon : "")
                     visible: false
                 }
                 MultiEffect { anchors.fill: parent; source: avatar; visible: avatar.status === Image.Ready; maskEnabled: true; maskSource: mask }
@@ -161,7 +173,7 @@ Rectangle {
                 clip: true; focus: true
                 onAccepted: root.login()
                 Keys.onEscapePressed: text = ""
-                T { anchors.verticalCenter: parent.verticalCenter; visible: pw.text === ""; text: root.error || "Nhập mật khẩu"; px: 15; color: root.error ? root.red : Qt.rgba(125 / 255, 144 / 255, 154 / 255, 1) }
+                T { anchors.verticalCenter: parent.verticalCenter; visible: pw.text === ""; text: root.error || (root.en ? "Enter password" : "Nhập mật khẩu"); px: 15; color: root.error ? root.red : Qt.rgba(125 / 255, 144 / 255, 154 / 255, 1) }
             }
             Row {
                 anchors.right: parent.right; anchors.rightMargin: 7; anchors.verticalCenter: parent.verticalCenter
