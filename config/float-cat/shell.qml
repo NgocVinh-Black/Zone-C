@@ -1,6 +1,6 @@
 // Zone-C AI bot: a click-through overlay pinned on every workspace, shown while Claude Code runs.
-// Drawn after the "Icon bot" Lottie: a round helmet with an antenna and ear pods, a visor ring around
-// a dark face with two pill eyes, and a collar arc that lights up. Coloured with the Frost palette.
+// A boxy 2.5D robot: chamfered head with a dark screen (square eyes, a line mouth), a gem antenna,
+// an ear ring and ice-cyan seams on graphite faces, a two-block body on a base plate. Frost palette.
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -100,6 +100,17 @@ ShellRoot {
         property string accentHex: ""
         // navy helmet and face, ice visor, ice-cyan glow (navy / white / cyan in the Lottie)
         readonly property color cBody: light ? "#213845" : "#1d2b36"
+        // the boxy robot: graphite faces lit from the top-left, a near-black screen, ice-cyan seams
+        readonly property color cHead: light ? "#5b676e" : "#3d464c"
+        readonly property color cHeadTop: light ? "#6f7c83" : "#4c565d"
+        readonly property color cHeadSide: light ? "#465157" : "#2b3237"
+        readonly property color cBody2: light ? "#545f66" : "#363e44"
+        readonly property color cBodySide: light ? "#414b51" : "#262c31"
+        readonly property color cBaseTop: light ? "#3c464c" : "#20272b"
+        readonly property color cBaseSide: light ? "#2f383d" : "#171c1f"
+        readonly property color cScreen: light ? "#1a2226" : "#12181b"
+        readonly property color cScreenRim: light ? "#2a3338" : "#1f262a"
+        readonly property color cGap: light ? "#2d363b" : "#1b2125"
         readonly property color cRim: light ? Qt.rgba(1, 1, 1, 0.3) : Qt.rgba(237 / 255, 243 / 255, 246 / 255, 0.22)
         readonly property color cVisor: accentHex && !light ? accentHex : (light ? "#eef4f7" : "#d6e6ec")
         readonly property color cGlow: light ? "#7fdcef" : "#8fe3f2"
@@ -217,7 +228,7 @@ ShellRoot {
                 opacity: 0.7 - 0.25 * win.lift - 0.3 * win.hop
             }
 
-            // ---------- the bot, drawn in the Lottie's 32-unit grid scaled by u ----------
+            // ---------- the bot: a boxy 2.5D robot (front, top and right faces) in a 32-unit grid scaled by u ----------
             Item {
                 id: bot
                 readonly property real u: 4
@@ -226,144 +237,169 @@ ShellRoot {
                 y: 134 - 8 * win.lift - 40 * win.hop
                 transform: Rotation { origin.x: bot.width / 2; origin.y: bot.height; angle: win.tilt }
 
+                // the screen in the head's front face, where the eyes / equalizer live (units)
+                readonly property real scrX: 5.2
+                readonly property real scrY: 10.2
+                readonly property real scrW: 17.6
+                readonly property real scrH: 11
+                readonly property real midX: scrX + scrW / 2
+
                 RectangularShadow {
-                    x: 2 * bot.u; y: 6 * bot.u; width: 28 * bot.u; height: 26 * bot.u
-                    radius: width / 2; blur: 16; offset.y: 5
+                    x: 3 * bot.u; y: 9 * bot.u; width: 26 * bot.u; height: 25 * bot.u
+                    radius: 2 * bot.u; blur: 18; offset.y: 6
                     color: win.cShadow
                 }
 
-                // antenna: stem + ball
-                Rectangle { x: 15.25 * bot.u; y: 2.4 * bot.u; width: 1.5 * bot.u; height: 3.2 * bot.u; color: win.cBody }
-                Rectangle { x: 14 * bot.u; y: 4.6 * bot.u; width: 4 * bot.u; height: 1.6 * bot.u; radius: 0.6 * bot.u; color: win.cBody }
-                Rectangle {
-                    id: ball
-                    width: 3.4 * bot.u; height: width; radius: width / 2
-                    x: 16 * bot.u - width / 2; y: 1.6 * bot.u - height / 2
-                    color: win.led
-                    border.width: 1; border.color: win.cRim
-                }
+                // body, head and base: flat faces with chamfered corners; the glowing seams follow the state
+                Canvas {
+                    id: shell
+                    anchors.fill: parent
+                    readonly property real glow: win.mode === "thinking" ? 0.55 + 0.45 * Math.abs(Math.sin(win.sweep * Math.PI))
+                                                                        : 0.5 + 0.5 * win.collarLit
+                    onGlowChanged: requestPaint()
+                    Connections { target: win; function onCHeadChanged() { shell.requestPaint() } function onLedChanged() { shell.requestPaint() } }
+                    onPaint: {
+                        const c = getContext("2d"); c.reset()
+                        const u = bot.u, d = 4.4, dy = 1.8
+                        function poly(pts, fill, stroke, lw) {
+                            c.beginPath(); c.moveTo(pts[0][0] * u, pts[0][1] * u)
+                            for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0] * u, pts[i][1] * u)
+                            c.closePath()
+                            if (fill) { c.fillStyle = fill; c.fill() }
+                            if (stroke) { c.strokeStyle = stroke; c.lineWidth = (lw || 0.35) * u; c.stroke() }
+                        }
+                        function cham(x0, y0, x1, y1, k) {
+                            return [[x0 + k, y0], [x1 - k, y0], [x1, y0 + k], [x1, y1 - k], [x1 - k, y1], [x0 + k, y1], [x0, y1 - k], [x0, y0 + k]]
+                        }
+                        function shift(pts) { return pts.map(p => [p[0] + d, p[1] - dy]) }
+                        // a chamfered box: back silhouette (side colour), top band, front face
+                        function box(x0, y0, x1, y1, k, top, side, front, rim) {
+                            const f = cham(x0, y0, x1, y1, k)
+                            poly(shift(f), side, rim, 0.3)
+                            poly([[x1, y0 + k], [x1 + d, y0 + k - dy], [x1 + d, y1 - k - dy], [x1, y1 - k]], side)
+                            poly([[x0 + k, y0], [x1 - k, y0], [x1 - k + d, y0 - dy], [x0 + k + d, y0 - dy]], top)
+                            poly([[x1 - k, y0], [x1, y0 + k], [x1 + d, y0 + k - dy], [x1 - k + d, y0 - dy]], top)
+                            poly(f, front, rim, 0.3)
+                        }
+                        function line(x0, y0, x1, y1, col, w) {
+                            c.beginPath(); c.moveTo(x0 * u, y0 * u); c.lineTo(x1 * u, y1 * u)
+                            c.strokeStyle = col; c.lineWidth = w * u; c.lineCap = "round"; c.stroke()
+                        }
+                        const seam = Qt.rgba(win.cGlow.r, win.cGlow.g, win.cGlow.b, shell.glow)
 
-                // ear pods
-                Rectangle { x: 0; y: 15.1 * bot.u; width: 7 * bot.u; height: 6.7 * bot.u; radius: 3.35 * bot.u; color: win.cBody; border.width: 1; border.color: win.cRim }
-                Rectangle { x: 25 * bot.u; y: 15.1 * bot.u; width: 7 * bot.u; height: 6.7 * bot.u; radius: 3.35 * bot.u; color: win.cBody; border.width: 1; border.color: win.cRim }
+                        // base plate
+                        poly([[1.5, 33.4], [27.5, 33.4], [31, 31.9], [5, 31.9]], win.cBaseTop, win.cRim, 0.3)
+                        poly([[1.5, 33.4], [27.5, 33.4], [27.5, 34.6], [1.5, 34.6]], win.cBaseSide)
+                        poly([[27.5, 33.4], [31, 31.9], [31, 33.1], [27.5, 34.6]], win.cBaseSide)
 
-                // helmet: a disc cut flat at y = 24
-                Item {
-                    x: 0; y: 0; width: bot.width; height: 24 * bot.u
-                    clip: true
-                    Rectangle {
-                        width: 28.44 * bot.u; height: width; radius: width / 2
-                        x: 16 * bot.u - width / 2; y: 18.44 * bot.u - height / 2 + 0.3 * bot.u
-                        color: win.cBody; border.width: 1; border.color: win.cRim
+                        // body: two blocks with a seam between them
+                        box(5, 23.4, 23, 32.8, 1.3, win.cHeadTop, win.cBodySide, win.cBody2, win.cRim)
+                        line(14, 23.9, 14, 32.4, win.cGap, 0.5)
+                        line(14, 24.4, 14, 31.9, seam, 0.28)
+                        line(23 + d * 0.45, 24 - dy * 0.45, 23 + d * 0.45, 32 - dy * 0.45, seam, 0.24)
+
+                        // head
+                        box(3, 8, 25, 23, 1.8, win.cHeadTop, win.cHeadSide, win.cHead, win.cRim)
+                        // seams on the side face: a vertical one near the front edge, a horizontal one through the ear
+                        line(25 + 0.9, 8.6, 25 + 0.9, 22.4, seam, 0.26)
+                        line(25 + 0.9, 15.5 - dy * 0.9 / d, 25 + d * 0.62 - 1.7, 15.5 - dy * (0.62 - 1.7 / d), seam, 0.26)
+                        // ear: a ring on the side face
+                        const ex = 25 + d * 0.62, ey = 15.5 - dy * 0.62
+                        c.beginPath(); c.ellipse((ex - 1.7) * u, (ey - 3.1) * u, 3.4 * u, 6.2 * u)
+                        c.fillStyle = win.cHeadSide; c.fill(); c.strokeStyle = win.cRim; c.lineWidth = 0.35 * u; c.stroke()
+                        c.beginPath(); c.ellipse((ex - 1) * u, (ey - 1.9) * u, 2 * u, 3.8 * u)
+                        c.strokeStyle = seam; c.lineWidth = 0.3 * u; c.stroke()
+
+                        // screen
+                        poly(cham(bot.scrX, bot.scrY, bot.scrX + bot.scrW, bot.scrY + bot.scrH, 1.1), win.cScreen, win.cScreenRim, 0.4)
+
+                        // antenna: plate, stem and a faceted gem lit by the state colour
+                        const ax = 14 + d / 2, ay = 8 - dy / 2
+                        poly([[ax - 2.2, ay - 0.2], [ax + 2.2, ay - 0.2], [ax + 2.2, ay + 0.5], [ax - 2.2, ay + 0.5]], win.cHeadSide, win.cRim, 0.2)
+                        line(ax, ay - 0.2, ax, ay - 3.4, win.cHeadSide, 0.8)
+                        const gy = ay - 5
+                        poly([[ax, gy - 1.9], [ax + 1.7, gy], [ax, gy + 1.9], [ax - 1.7, gy]], win.led, win.cRim, 0.2)
+                        poly([[ax, gy - 1.9], [ax + 1.7, gy], [ax, gy]], Qt.lighter(win.led, 1.25))
+                        poly([[ax, gy], [ax + 1.7, gy], [ax, gy + 1.9]], Qt.darker(win.led, 1.35))
                     }
                 }
-                // visor ring, then the face inside it
-                Rectangle {
-                    width: 24.9 * bot.u; height: 20.7 * bot.u; radius: height / 2
-                    x: 16 * bot.u - width / 2; y: 19.67 * bot.u - height / 2
-                    color: win.cVisor
-                }
-                Rectangle {
-                    id: face
-                    width: 21.33 * bot.u; height: 17.33 * bot.u; radius: height / 2
-                    x: 16 * bot.u - width / 2; y: 20.1 * bot.u - height / 2
-                    color: win.cBody
-                }
 
-                // eyes: pills (3.56 x 5.33) that squint to slits (3 x 2), blink, glance and grow
+                // eyes: square, they blink, glance, squint and grow; hidden while working (the equalizer shows)
                 Repeater {
-                    model: [11.56, 20.44]
+                    model: [-3.4, 3.4]
                     delegate: Item {
                         id: eye
                         required property real modelData
-                        readonly property real cx: (modelData + win.lookX) * bot.u
-                        readonly property real cy: (20 + win.lookY) * bot.u
+                        readonly property real cx: (bot.midX + modelData + win.lookX * 0.8) * bot.u
+                        readonly property real cy: (bot.scrY + 4.3 + win.lookY * 0.6) * bot.u
                         readonly property bool happy: win.mode === "done"
                         readonly property bool shut: win.sleepy
                         Rectangle {
                             visible: !eye.happy && !eye.shut && !win.working
-                            readonly property real w: (3.56 - 0.56 * win.squint) * bot.u * win.eyeScale
-                            readonly property real h: Math.max(0.5, (5.33 - 3.33 * win.squint) * (1 - 0.88 * win.blink)) * bot.u * win.eyeScale
-                            width: w; height: h; radius: Math.min(w, h) / 2
+                            readonly property real w: 2.9 * bot.u * win.eyeScale
+                            readonly property real h: Math.max(0.4 * bot.u, 2.9 * (1 - 0.6 * win.squint) * (1 - 0.88 * win.blink) * bot.u * win.eyeScale)
+                            width: w; height: h; radius: 0.5 * bot.u
                             x: eye.cx - w / 2; y: eye.cy - h / 2
                             color: win.cGlow
                         }
                         // happy ^ and sleeping _ eyes
                         Canvas {
                             visible: eye.happy || eye.shut
-                            width: 5 * bot.u; height: 4 * bot.u
+                            width: 4 * bot.u; height: 3 * bot.u
                             x: eye.cx - width / 2; y: eye.cy - height / 2
                             onVisibleChanged: requestPaint()
                             onPaint: {
                                 const c = getContext("2d"); c.reset()
-                                c.strokeStyle = win.cGlow; c.lineWidth = 1.1 * bot.u; c.lineCap = "round"
+                                const u = bot.u
+                                c.strokeStyle = win.cGlow; c.lineWidth = 0.8 * u; c.lineCap = "square"; c.lineJoin = "miter"
                                 c.beginPath()
-                                if (eye.happy) { c.moveTo(0.6 * bot.u, 3.2 * bot.u); c.quadraticCurveTo(2.5 * bot.u, -0.6 * bot.u, 4.4 * bot.u, 3.2 * bot.u) }
-                                else { c.moveTo(0.6 * bot.u, 2 * bot.u); c.quadraticCurveTo(2.5 * bot.u, 3.2 * bot.u, 4.4 * bot.u, 2 * bot.u) }
+                                if (eye.happy) { c.moveTo(0.5 * u, 2.4 * u); c.lineTo(2 * u, 0.8 * u); c.lineTo(3.5 * u, 2.4 * u) }
+                                else { c.moveTo(0.5 * u, 1.8 * u); c.lineTo(3.5 * u, 1.8 * u) }
                                 c.stroke()
                             }
                         }
                     }
                 }
+                // mouth: a short line; a wider one when done, an "o" when it needs you
+                Rectangle {
+                    visible: !win.working && !win.sleepy
+                    readonly property bool ask: win.mode === "ask"
+                    width: (ask ? 1.8 : win.mode === "done" ? 5.4 : 4.2) * bot.u
+                    height: (ask ? 1.8 : 0.55) * bot.u
+                    radius: ask ? width / 2 : 0.2 * bot.u
+                    color: ask ? "transparent" : win.cGlow
+                    border.width: ask ? 0.45 * bot.u : 0; border.color: win.cGlow
+                    x: (bot.midX + win.lookX * 0.5) * bot.u - width / 2
+                    y: (bot.scrY + 8.2) * bot.u - height / 2
+                    Behavior on width { NumberAnimation { duration: 160 } }
+                }
 
-                // working: the eyes give way to an equalizer, five glowing bars dancing like a music visualiser
+                // working: the face becomes an equalizer, glowing bars dancing like a music visualiser
                 Item {
                     id: eq
                     visible: opacity > 0
                     opacity: win.working ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 180 } }
-                    readonly property real bw: 1.7 * bot.u
-                    readonly property real gap: 1.05 * bot.u
-                    width: 5 * bw + 4 * gap; height: 8 * bot.u
-                    x: 16 * bot.u - width / 2; y: 20 * bot.u - height / 2
+                    readonly property real bw: 1.45 * bot.u
+                    readonly property real gap: 0.85 * bot.u
+                    width: 6 * bw + 5 * gap; height: 8.4 * bot.u
+                    x: bot.midX * bot.u - width / 2; y: (bot.scrY + bot.scrH / 2) * bot.u - height / 2
                     Repeater {
-                        model: 5
+                        model: 6
                         delegate: Rectangle {
                             id: bar
                             required property int index
-                            property real level: 0.3        // 0..1, re-rolled on every beat
-                            width: eq.bw; radius: width / 2
-                            height: Math.max(width, eq.height * (0.18 + 0.82 * level))
+                            property real level: 0.3
+                            width: eq.bw; radius: 0.3 * bot.u
+                            height: Math.max(width, eq.height * (0.16 + 0.84 * level))
                             x: index * (eq.bw + eq.gap); y: (eq.height - height) / 2
                             color: win.cGlow
-                            opacity: 0.75 + 0.25 * level
+                            opacity: 0.7 + 0.3 * level
                             Behavior on level { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
                             Connections {
                                 target: win
-                                // the middle bars reach higher, like a voice / music spectrum
-                                function onBeatChanged() { bar.level = win.working ? win.rnd(0.15, [0.7, 0.9, 1, 0.9, 0.7][bar.index]) : 0.3 }
+                                function onBeatChanged() { bar.level = win.working ? win.rnd(0.15, [0.6, 0.85, 1, 1, 0.85, 0.6][bar.index]) : 0.3 }
                             }
-                        }
-                    }
-                }
-
-                // collar arc under the face (layer "Subtract" 2 in the Lottie), lit and swept by a light
-                Canvas {
-                    id: collar
-                    x: 4 * bot.u; y: 28.6 * bot.u; width: 24 * bot.u; height: 7 * bot.u
-                    readonly property color base: Qt.tint(win.cCollar, Qt.rgba(win.cGlow.r, win.cGlow.g, win.cGlow.b, win.collarLit))
-                    readonly property color tip: win.mode === "done" ? win.cGreen : win.mode === "ask" ? win.cYellow : win.cGlow
-                    onBaseChanged: requestPaint()
-                    onTipChanged: requestPaint()
-                    Connections { target: win; function onSweepChanged() { if (win.mode === "thinking") collar.requestPaint() } }
-                    onPaint: {
-                        const c = getContext("2d"); c.reset()
-                        const u = bot.u, w = width
-                        // crescent: outer arc down to y 6.22, inner arc to y 4.44 (in units, from the top of this box)
-                        c.beginPath()
-                        c.moveTo(0, 0.3 * u); c.quadraticCurveTo(w / 2, 12.4 * u, w, 0.3 * u)
-                        c.lineTo(w - 1.66 * u, 0.3 * u); c.quadraticCurveTo(w / 2, 8.8 * u, 1.66 * u, 0.3 * u)
-                        c.closePath()
-                        c.fillStyle = (win.mode === "done" || win.mode === "ask") ? tip : base
-                        c.fill()
-                        if (win.mode === "thinking") {
-                            // a bright segment runs along the arc
-                            c.save(); c.clip()
-                            const t = win.sweep, px = w * t, py = (0.3 + 2 * t * (1 - t) * 11.4) * u
-                            const g = c.createRadialGradient(px, py, 0, px, py, 5 * u)
-                            g.addColorStop(0, win.cGlow); g.addColorStop(1, "transparent")
-                            c.fillStyle = g; c.fillRect(0, 0, w, height)
-                            c.restore()
                         }
                     }
                 }
@@ -385,22 +421,32 @@ ShellRoot {
 
                 RectangularShadow {
                     anchors.fill: bubbleBox
-                    radius: bubbleBox.radius; blur: 12; offset.y: 4
+                    radius: 2; blur: 12; offset.y: 4
                     color: win.cShadow
                 }
-                // tail toward the bot
-                Rectangle {
-                    x: bubbleBox.x + bubbleBox.width - 22; y: 30
-                    width: 14; height: 14; rotation: 45
-                    color: bubbleBox.color; border.color: bubbleBox.border.color; border.width: 1
+                // a slanted, sharp-cornered box with a tail dropping toward the bot
+                Canvas {
+                    id: bubbleShape
+                    x: bubbleBox.x - 10; y: bubbleBox.y; width: bubbleBox.width + 20; height: bubbleBox.height + 16
+                    onWidthChanged: requestPaint()
+                    Connections { target: win; function onCBubbleChanged() { bubbleShape.requestPaint() } }
+                    onPaint: {
+                        const c = getContext("2d"); c.reset()
+                        const w = width, h = bubbleBox.height, sk = 10
+                        c.beginPath()
+                        c.moveTo(sk + 0.5, 0.5); c.lineTo(w - 0.5, 0.5); c.lineTo(w - sk - 0.5, h)
+                        c.lineTo(w - 22, h); c.lineTo(w - 20, h + 14); c.lineTo(w - 36, h)
+                        c.lineTo(0.5, h); c.closePath()
+                        c.fillStyle = win.cBubble; c.fill()
+                        c.strokeStyle = win.cRim; c.lineWidth = 1; c.stroke()
+                    }
                 }
                 Rectangle {
                     id: bubbleBox
                     width: speech.isDone ? 64 : Math.max(96, label.implicitWidth + 32)
                     x: speech.width - width
-                    height: 42; radius: 21
-                    color: win.cBubble
-                    border.color: win.cRim; border.width: 1
+                    height: 42; radius: 0
+                    color: "transparent"
                     Behavior on width { NumberAnimation { duration: 200 } }
 
                     Text {
