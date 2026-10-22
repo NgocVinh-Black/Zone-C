@@ -149,7 +149,8 @@ ShellRoot {
         property real eyeScale: 1
         property real collarLit: 0     // collar arc: dark .. glowing, follows the squint like the Lottie
         property real sweep: 0         // light running along the collar while working, 0..1
-        property real runPhase: 0      // working: the eyes' loader beat, 0..1 looping
+        readonly property bool working: mode === "thinking" && !sleepy
+        property int beat: 0           // working: ticks the equalizer bars
         readonly property color led: mode === "done" ? cGreen : mode === "ask" ? cYellow : sleepy ? cCollar : cGlow   // antenna ball
 
         // `qs ipc -p <this file> call cat state thinking|done|ask|idle`
@@ -275,18 +276,14 @@ ShellRoot {
                     delegate: Item {
                         id: eye
                         required property real modelData
-                        // working: both eyes scan left-right with the collar light while bobbing out of step,
-                        // like a loader (run 0..1 = short..tall); -1 when not working
-                        readonly property bool working: win.mode === "thinking" && !happy && !shut
-                        readonly property real run: working ? 0.5 + 0.5 * Math.sin(2 * Math.PI * (win.runPhase - (modelData > 16 ? 0.5 : 0))) : -1
-                        readonly property real cx: (modelData + win.lookX + (working ? (win.sweep - 0.5) * 2.6 : 0)) * bot.u
-                        readonly property real cy: (20 + win.lookY - (working ? 0.9 * run : 0)) * bot.u
+                        readonly property real cx: (modelData + win.lookX) * bot.u
+                        readonly property real cy: (20 + win.lookY) * bot.u
                         readonly property bool happy: win.mode === "done"
                         readonly property bool shut: win.sleepy
                         Rectangle {
-                            visible: !eye.happy && !eye.shut
-                            readonly property real w: (eye.working ? 3.3 : 3.56 - 0.56 * win.squint) * bot.u * win.eyeScale
-                            readonly property real h: Math.max(0.5, (eye.working ? 1.8 + 3.5 * eye.run : 5.33 - 3.33 * win.squint) * (1 - 0.88 * win.blink)) * bot.u * win.eyeScale
+                            visible: !eye.happy && !eye.shut && !win.working
+                            readonly property real w: (3.56 - 0.56 * win.squint) * bot.u * win.eyeScale
+                            readonly property real h: Math.max(0.5, (5.33 - 3.33 * win.squint) * (1 - 0.88 * win.blink)) * bot.u * win.eyeScale
                             width: w; height: h; radius: Math.min(w, h) / 2
                             x: eye.cx - w / 2; y: eye.cy - h / 2
                             color: win.cGlow
@@ -304,6 +301,37 @@ ShellRoot {
                                 if (eye.happy) { c.moveTo(0.6 * bot.u, 3.2 * bot.u); c.quadraticCurveTo(2.5 * bot.u, -0.6 * bot.u, 4.4 * bot.u, 3.2 * bot.u) }
                                 else { c.moveTo(0.6 * bot.u, 2 * bot.u); c.quadraticCurveTo(2.5 * bot.u, 3.2 * bot.u, 4.4 * bot.u, 2 * bot.u) }
                                 c.stroke()
+                            }
+                        }
+                    }
+                }
+
+                // working: the eyes give way to an equalizer, five glowing bars dancing like a music visualiser
+                Item {
+                    id: eq
+                    visible: opacity > 0
+                    opacity: win.working ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 180 } }
+                    readonly property real bw: 1.7 * bot.u
+                    readonly property real gap: 1.05 * bot.u
+                    width: 5 * bw + 4 * gap; height: 8 * bot.u
+                    x: 16 * bot.u - width / 2; y: 20 * bot.u - height / 2
+                    Repeater {
+                        model: 5
+                        delegate: Rectangle {
+                            id: bar
+                            required property int index
+                            property real level: 0.3        // 0..1, re-rolled on every beat
+                            width: eq.bw; radius: width / 2
+                            height: Math.max(width, eq.height * (0.18 + 0.82 * level))
+                            x: index * (eq.bw + eq.gap); y: (eq.height - height) / 2
+                            color: win.cGlow
+                            opacity: 0.75 + 0.25 * level
+                            Behavior on level { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+                            Connections {
+                                target: win
+                                // the middle bars reach higher, like a voice / music spectrum
+                                function onBeatChanged() { bar.level = win.working ? win.rnd(0.15, [0.7, 0.9, 1, 0.9, 0.7][bar.index]) : 0.3 }
                             }
                         }
                     }
@@ -427,7 +455,7 @@ ShellRoot {
 
         // ---------- antenna light: colour and pulse by state ----------
 
-        // ---------- working: the eyes run a loader (out-of-step bob) while scanning with the collar light ----------
+        // ---------- working: an equalizer in place of the eyes, the collar light runs back and forth ----------
         SequentialAnimation {
             running: win.mode === "thinking"
             loops: Animation.Infinite
@@ -436,10 +464,7 @@ ShellRoot {
             NumberAnimation { target: win; property: "sweep"; from: 1; to: 0; duration: 900; easing.type: Easing.InOutSine }
             NumberAnimation { target: win; property: "sweep"; from: 0; to: 0.5; duration: 450; easing.type: Easing.InSine }
         }
-        NumberAnimation {
-            target: win; property: "runPhase"; from: 0; to: 1; duration: 620
-            loops: Animation.Infinite; running: win.mode === "thinking"
-        }
+        Timer { interval: 140; repeat: true; running: win.working; triggeredOnStart: true; onTriggered: win.beat++ }
 
         // ---------- Claude Code reactions ----------
         // done: happy eyes, collar green, one small hop
