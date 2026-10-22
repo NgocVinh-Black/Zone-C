@@ -199,7 +199,7 @@ Item {
                     Row {
                         anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                         spacing: 8
-                        FBtn { height: 30; padX: 10; fontSize: 12; text: Fz.tr("Xóa hết"); onClicked: NotificationManager.clearNotifications() }
+                        FBtn { height: 30; padX: 10; fontSize: 12; text: Fz.tr("Xóa hết"); onClicked: nlist.clearAnimated() }
                         FBtn { height: 30; padX: 10; fontSize: 12; iconSize: 13; icon: "q-bell"; kind: root.dnd ? "pri" : ""
                             text: root.dnd ? Fz.tr("Đã tắt tiếng") : Fz.tr("Tắt tiếng"); onClicked: root.setCfg("notifications", "dnd", !root.dnd) }
                     }
@@ -214,10 +214,41 @@ Item {
                     clip: true
                     model: root.history
                     boundsBehavior: Flickable.StopAtBounds
+                    // "Xóa hết": the cards sweep out to the right one after another, then the history is cleared
+                    signal sweep()
+                    property bool clearing: false
+                    function clearAnimated() {
+                        if (clearing || count === 0) return;
+                        clearing = true;
+                        sweep();
+                        clearTimer.interval = Math.min(count, 8) * 40 + 260;
+                        clearTimer.restart();
+                    }
+                    Timer { id: clearTimer; onTriggered: { NotificationManager.clearNotifications(); nlist.clearing = false; } }
+                    add: Transition {
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 220; easing.type: Easing.OutCubic }
+                        NumberAnimation { property: "outX"; from: 40; to: 0; duration: 260; easing.type: Easing.OutCubic }
+                    }
+                    remove: Transition {
+                        NumberAnimation { property: "opacity"; to: 0; duration: 180; easing.type: Easing.InCubic }
+                        NumberAnimation { property: "outX"; to: 120; duration: 180; easing.type: Easing.InCubic }
+                    }
+                    displaced: Transition { NumberAnimation { property: "y"; duration: 240; easing.type: Easing.OutCubic } }
                     delegate: Rectangle {
                         id: nt
                         required property var model
                         required property int index
+                        property real outX: 0
+                        transform: Translate { x: nt.outX }
+                        Connections { target: nlist; function onSweep() { sweepAnim.start(); } }
+                        SequentialAnimation {
+                            id: sweepAnim
+                            PauseAnimation { duration: Math.min(nt.index, 8) * 40 }
+                            ParallelAnimation {
+                                NumberAnimation { target: nt; property: "outX"; to: nlist.width; duration: 240; easing.type: Easing.InCubic }
+                                NumberAnimation { target: nt; property: "opacity"; to: 0; duration: 220; easing.type: Easing.InCubic }
+                            }
+                        }
                         width: nlist.width
                         height: ntRow.implicitHeight + 24
                         radius: 18
@@ -274,7 +305,12 @@ Item {
 
                 Column {
                     anchors.centerIn: nlist
-                    visible: !root.history || root.history.count === 0
+                    readonly property bool empty: !root.history || root.history.count === 0
+                    visible: opacity > 0
+                    opacity: empty ? 1 : 0
+                    scale: empty ? 1 : 0.92
+                    Behavior on opacity { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                    Behavior on scale { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                     spacing: 10
                     Rectangle {
                         anchors.horizontalCenter: parent.horizontalCenter
