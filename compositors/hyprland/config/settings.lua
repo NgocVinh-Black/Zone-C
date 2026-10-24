@@ -148,3 +148,13 @@ hl.layer_rule({
   blur         = true,
   ignore_alpha = 0.5,
 })
+
+-- Desktop cards: their drop shadow (rgba 0,0,0,0.38) already crossed 0.5 here and got frosted into a
+-- hard-edged slab under each card; 0.65 still blurs the 0.74 glass but leaves the shadow alone.
+hl.layer_rule({
+  name  = "zone-c-desktop-glass",
+  match = { namespace = "^qs-desktop$" },
+
+  blur         = true,
+  ignore_alpha = 0.65,
+})
