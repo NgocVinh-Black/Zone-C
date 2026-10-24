@@ -315,6 +315,17 @@ deploy_float_cat() {
         cp "$REPO_ROOT/config/local-bin/float-cat" "$BIN_DIR/float-cat"
         chmod +x "$BIN_DIR/float-cat"
     fi
+
+    # Claude Code status line (context, 5-hour and weekly usage); set only when none is configured
+    local claude_cfg="$HOME/.claude/settings.json"
+    if [ -f "$REPO_ROOT/config/local-bin/claude-statusline" ] && [ -f "$claude_cfg" ] \
+        && ! jq -e '.statusLine' "$claude_cfg" >/dev/null 2>&1; then
+        cp "$REPO_ROOT/config/local-bin/claude-statusline" "$BIN_DIR/claude-statusline"
+        chmod +x "$BIN_DIR/claude-statusline"
+        local tmp
+        tmp=$(jq --arg c "$BIN_DIR/claude-statusline" '. + {statusLine: {type: "command", command: $c, padding: 0}}' "$claude_cfg") \
+            && echo "$tmp" > "$claude_cfg"
+    fi
 }
 
 # profile/: the owner's own setup (settings without IP or location, desktop widget layout, saved
