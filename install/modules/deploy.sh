@@ -317,6 +317,45 @@ deploy_float_cat() {
     fi
 }
 
+# profile/: the owner's own setup (settings without IP or location, desktop widget layout, saved
+# theme presets, avatar, active wallpaper) so a fresh install looks like the original machine.
+# Only on a fresh install or reinstall; a normal update keeps whatever the user has changed since.
+# Runs before init_zone_c_config, which merges the template in and detects the location anew.
+apply_profile() {
+    local REPO_ROOT="$1"
+    local install_state="$2"
+    local is_reinstall="$3"
+    local wallpaper_dir="$4"
+    local src="$REPO_ROOT/profile"
+
+    [ -d "$src" ] || return 0
+    [[ "$install_state" == "current" && "$is_reinstall" != "true" ]] && return 0
+
+    local config_dir="$HOME/.config/zone-c"
+    local state_dir="$HOME/.local/state/zone-c"
+    local wp_cache="${XDG_CACHE_HOME:-"$HOME/.cache"}/zone-c/wallpaper"
+    mkdir -p "$config_dir" "$state_dir"
+
+    if [ -f "$src/settings.json" ]; then
+        local merged
+        merged=$(sed "s|@HOME@|$HOME|g" "$src/settings.json" | jq -s '(.[1] // {}) * .[0]' - "$config_dir/settings.json" 2>/dev/null) \
+            || merged=$(sed "s|@HOME@|$HOME|g" "$src/settings.json")
+        echo "$merged" > "$config_dir/settings.json"
+    fi
+    [ -d "$src/state" ] && cp -r "$src/state/." "$state_dir/"
+    [ -f "$src/face.png" ] && cp -f "$src/face.png" "$HOME/.face"
+
+    # the wallpaper comes from the downloaded pack; the shell restores it from current_<monitor>,
+    # and the profile (like the widget layout in state/desktop) is for the laptop panel eDP-1
+    local wp_name
+    wp_name=$(head -n 1 "$src/wallpaper.txt" 2>/dev/null)
+    if [ -n "$wp_name" ] && [ -f "$wallpaper_dir/$wp_name" ]; then
+        mkdir -p "$wp_cache"
+        printf '%s\n' "$wallpaper_dir/$wp_name" > "$wp_cache/current_eDP-1"
+        printf '%s\n' "$wp_name" > "$wp_cache/current_eDP-1_name"
+    fi
+}
+
 deploy_package() {
     local REPO_ROOT="$1"
     local OLD_COMMIT="$2"

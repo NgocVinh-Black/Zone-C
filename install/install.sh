@@ -83,6 +83,7 @@ setup_sddm "$PROJECT_ROOT" "$INSTALL_STATE" "$IS_REINSTALL"
 install_wallpapers "$INSTALL_FULL_WALLPAPERS"
 
 WALLPAPER_DIR=$(get_wallpaper_dir)
+apply_profile "$PROJECT_ROOT" "$INSTALL_STATE" "$IS_REINSTALL" "$WALLPAPER_DIR"
 init_zone_c_config "$PROJECT_ROOT" "$WALLPAPER_DIR" "$INSTALL_STATE" "$IS_REINSTALL"
 
 setup_services
