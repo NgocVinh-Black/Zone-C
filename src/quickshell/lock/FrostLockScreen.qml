@@ -20,9 +20,53 @@ FocusScope {
     focus: true
 
     readonly property bool unlocking: lockRoot ? lockRoot.isUnlocking : false
-    onUnlockingChanged: if (unlocking) fadeOut.start()
+    // Settings → Trợ năng → "Giảm chuyển động" (Hyprland animations off, probed by Lock.qml): plain fade, no gate
+    readonly property bool calmMotion: lockRoot ? lockRoot.calmMotion : false
+    onUnlockingChanged: if (unlocking) {
+        lockAnim.stop();
+        (calmMotion ? fadeOut : unlockAnim).start();
+    }
     NumberAnimation { id: fadeOut; target: root; property: "opacity"; to: 0; duration: 260; easing.type: Easing.InQuad; onFinished: root.lockRoot.completeUnlock() }
-    Component.onCompleted: { opacity = 1; field.forceActiveFocus(); }
+
+    // ---------- vault gate (drawn by UnlockFx.qml) ----------
+    // Unlock: the logo flies from the avatar to the middle and grows, turns like a vault wheel while the
+    // HUD fills, then the screen splits down the middle and both halves slide out sideways.
+    // Lock: the same thing backwards - the halves slide in from both sides and meet, the wheel turns
+    // back to lock, and the logo returns to the avatar slot.
+    // The lock surface is transparent while either runs (Lock.qml) and Hyprland draws the desktop
+    // below it (misc:session_lock_xray).
+    property real fly: 0                    // 0..1 logo avatar -> centre, small -> big
+    property real turn: 0                   // 0..1 vault wheel turn + HUD fill
+    property real open: 0                   // 0..1 gate halves apart
+    readonly property bool gateActive: fly > 0
+    property point avatarCenter: Qt.point(width / 2, height / 2)
+    function measureAvatar() { avatarCenter = avatarBox.mapToItem(root, avatarBox.width / 2, avatarBox.height / 2); }
+    SequentialAnimation {
+        id: unlockAnim
+        ScriptAction { script: root.measureAvatar() }
+        NumberAnimation { target: root; property: "fly"; from: 0; to: 1; duration: 520; easing.type: Easing.OutCubic }
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "turn"; from: 0; to: 1; duration: 700; easing.type: Easing.InOutCubic }
+            SequentialAnimation {
+                PauseAnimation { duration: 560 }
+                NumberAnimation { target: root; property: "open"; from: 0; to: 1; duration: 700; easing.type: Easing.InOutCubic }
+            }
+        }
+        ScriptAction { script: root.lockRoot.completeUnlock() }
+    }
+    SequentialAnimation {
+        id: lockAnim
+        NumberAnimation { target: root; property: "open"; from: 1; to: 0; duration: 620; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "turn"; from: 1; to: 0; duration: 620; easing.type: Easing.InOutCubic }
+        ScriptAction { script: root.measureAvatar() }
+        NumberAnimation { target: root; property: "fly"; from: 1; to: 0; duration: 480; easing.type: Easing.InOutCubic }
+    }
+    Component.onCompleted: {
+        opacity = 1;
+        field.forceActiveFocus();
+        // start with the gate open on the desktop, then close it
+        if (!calmMotion) { fly = 1; turn = 1; open = 1; lockAnim.start(); }
+    }
 
     function submit() {
         let t = field.text;
@@ -58,10 +102,9 @@ FocusScope {
     readonly property int notifCount: NotificationManager.globalNotificationHistory ? NotificationManager.globalNotificationHistory.count : 0
     readonly property string city: (Weather.activeLocation && Weather.activeLocation.city) ? Weather.activeLocation.city : ""
     readonly property string avatar: ZoneStyle.avatarSource(SystemInfo.avatarPath)   // the default logo follows the preset
-    property bool hasFingerprint: false
+    readonly property bool hasFingerprint: lockRoot ? lockRoot.hasFingerprint : false   // Lock.qml runs the fingerprint PAM
+    readonly property bool fpFailed: lockUI ? lockUI.fpFailed : false
     property bool showPw: false
-    Process { running: true; command: ["bash", "-c", "command -v fprintd-list >/dev/null && fprintd-list \"$USER\" 2>/dev/null | grep -q 'finger' && echo yes"]
-              stdout: StdioCollector { onStreamFinished: root.hasFingerprint = this.text.trim() === "yes" } }
     function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
 
     // ---------- backdrop ----------
@@ -105,8 +148,10 @@ FocusScope {
         y: 520 * root.height / 900
         spacing: 14
         Item {
+            id: avatarBox
             anchors.horizontalCenter: parent.horizontalCenter
             width: 88; height: 88
+            opacity: root.fly > 0 ? 0 : 1      // UnlockFx flies its own copy to the centre
             RectangularShadow { anchors.fill: ring; radius: 47; blur: 15; color: Fz.glowA(0.4) }
             Rectangle { id: ring; anchors.fill: parent; anchors.margins: -3; radius: 47; color: Fz.acc }
             RoundImage { anchors.fill: parent; radius: 44; source: root.avatar; visible: ready }
@@ -174,8 +219,8 @@ FocusScope {
             visible: root.hasFingerprint
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 8
-            FIcon { name: "k-finger"; size: 15; color: Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
-            FText { text: Fz.tr("Hoặc chạm cảm biến vân tay"); px: 13; color: Fz.sub2 }
+            FIcon { name: "k-finger"; size: 15; color: root.fpFailed ? Fz.redTx : Fz.sub2; anchors.verticalCenter: parent.verticalCenter }
+            FText { text: root.fpFailed ? Fz.tr("Vân tay không khớp, thử lại") : Fz.tr("Hoặc chạm cảm biến vân tay"); px: 13; color: root.fpFailed ? Fz.redTx : Fz.sub2 }
         }
     }
 

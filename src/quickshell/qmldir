@@ -10,6 +10,7 @@ WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
 FrostLockScreen 1.0 lock/FrostLockScreen.qml
+UnlockFx 1.0 lock/UnlockFx.qml
 
 Start 1.0 serp/Start.qml
 ZoneC 1.0 serp/ZoneC.qml

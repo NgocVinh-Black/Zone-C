@@ -68,6 +68,8 @@ hl.config({
     font_family = "JetBrains Mono",
     disable_hyprland_logo = true,
     disable_splash_rendering = true,
+    -- keep drawing the desktop under the lock screen: the unlock iris (lock/FrostLockScreen.qml) opens onto it
+    session_lock_xray = true,
   },
 })
 

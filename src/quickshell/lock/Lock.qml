@@ -165,8 +165,20 @@ Scope {
         }
     }
 
+    // Settings → Trợ năng → "Giảm chuyển động" turns Hyprland animations off: the lock screen then skips
+    // the vault gate. Probed at start and on each lock, before the surface appears.
+    property bool calmMotion: false
+    Process {
+        id: motionProbe
+        running: true
+        command: ["hyprctl", "getoption", "animations:enabled", "-j"]
+        stdout: StdioCollector { onStreamFinished: { try { root.calmMotion = JSON.parse(this.text).bool === false; } catch (e) {} } }
+    }
+
     function lock() {
         if (rootLock.locked) return;
+        motionProbe.running = false;
+        motionProbe.running = true;
         let ts = Date.now().toString();
         let mons = [];
         if (Quickshell.screens) {
@@ -191,16 +203,23 @@ Scope {
         root.isUnlocking = false;
         lockUI.failed = false;
         lockUI.authenticating = false;
+        lockUI.fpFailed = false;
         lockUI.statusText = I18n.t("lock.status.locked");
         rootLock.locked = true;
         Wallpaper.setPlayback("all", "pause");
         pamActionTimer.start();
+        fpProbe.running = false;
+        fpProbe.running = true;
         kbPollerRestartTimer.restart();
     }
 
     function finishUnlock() {
         if (root.isUnlocking) return;
         root.isUnlocking = true;
+        // whichever of password / fingerprint won, stop the other one
+        fpRetryTimer.stop();
+        if (fpPam.active) fpPam.abort();
+        if (pam.active) pam.abort();
     }
 
     function completeUnlock() {
@@ -210,6 +229,8 @@ Scope {
         root.isUnlocking = false;
         kbWaiter.running = false;
         kbPoller.running = false;
+        fpRetryTimer.stop();
+        if (fpPam.active) fpPam.abort();
         if (root.freezeTimestamp !== "") {
             Quickshell.execDetached(["bash", "-c", "rm -f " + Caching.getRunDir("screenshot") + "/lock_freeze_*_" + root.freezeTimestamp + ".png"]);
             root.freezeTimestamp = "";
@@ -234,6 +255,7 @@ Scope {
         id: lockUI
         property bool failed: false
         property bool authenticating: false
+        property bool fpFailed: false
         property string statusText: I18n.t("lock.status.locked")
     }
 
@@ -255,6 +277,7 @@ Scope {
 
         onCompleted: (result) => {
             lockUI.authenticating = false;
+            if (root.isUnlocking) return;   // aborted after a fingerprint unlock
             if (result === PamResult.Success) {
                 root.finishUnlock();
             } else {
@@ -262,6 +285,65 @@ Scope {
                 lockUI.statusText = I18n.t("lock.status.access_denied");
                 pamActionTimer.start();
             }
+        }
+    }
+
+    // Fingerprint: its own PAM session (lock/pam/fingerprint, pam_fprintd only) running next to the
+    // password one, so typing a password never waits for the reader to time out. No /etc/pam.d change needed.
+    property bool hasFingerprint: false
+
+    Process {
+        id: fpProbe
+        command: ["bash", "-c", "command -v fprintd-list >/dev/null && fprintd-list \"$USER\" 2>/dev/null | grep -q ' - #' && echo yes"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.hasFingerprint = this.text.trim() === "yes";
+                root.startFingerprint();
+            }
+        }
+    }
+
+    function startFingerprint() {
+        if (rootLock.locked && root.hasFingerprint && !root.isUnlocking && !fpPam.active) fpPam.start();
+    }
+
+    Timer {
+        id: fpRetryTimer
+        interval: 1500
+        onTriggered: root.startFingerprint()
+    }
+
+    Timer {
+        id: fpFailedReset
+        interval: 2500
+        onTriggered: lockUI.fpFailed = false
+    }
+
+    PamContext {
+        id: fpPam
+        configDirectory: Caching.qsDir + "/lock/pam"
+        config: "fingerprint"
+
+        // pam_fprintd reports a wrong finger as an error message and keeps listening
+        onPamMessage: {
+            if (messageIsError) {
+                lockUI.fpFailed = true;
+                fpFailedReset.restart();
+            }
+        }
+        onCompleted: (result) => {
+            if (root.isUnlocking) return;
+            if (result === PamResult.Success) {
+                root.finishUnlock();
+            } else {
+                fpRetryTimer.interval = 1500;
+                fpRetryTimer.restart();
+            }
+        }
+        // reader busy or fprintd gone: back off instead of spinning
+        onError: (error) => {
+            fpRetryTimer.interval = 5000;
+            fpRetryTimer.restart();
         }
     }
 
@@ -276,6 +358,10 @@ Scope {
             if (rootLock.locked) {
                 pam.start();
             }
+            // the reader resets across suspend: start a fresh fingerprint session
+            if (fpPam.active) fpPam.abort();
+            fpRetryTimer.interval = 1500;
+            fpRetryTimer.restart();
         }
     }
 
@@ -296,9 +382,13 @@ Scope {
         surface: Component {
             WlSessionLockSurface {
                 id: surface
+                // transparent only while the vault gate runs, so the desktop shows around the
+                // moving halves (Hyprland misc:session_lock_xray); opaque otherwise
+                color: root.isUnlocking || frostLock.gateActive ? "transparent" : "black"
 
                 // Frost design surface (FrostLockScreen.qml); this file keeps the lock and PAM.
                 FrostLockScreen {
+                    id: frostLock
                     anchors.fill: parent
                     focus: true
                     lockRoot: root
@@ -307,6 +397,10 @@ Scope {
                     lockUI: root.lockState
                     screen: surface.screen
                     powerActions: ({ sleep: () => suspendProcess.running = true, reboot: () => reloadProcess.running = true, poweroff: () => poweroffProcess.running = true })
+                }
+                UnlockFx {
+                    anchors.fill: parent
+                    lock: frostLock
                 }
             }
         }
