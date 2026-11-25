@@ -62,6 +62,17 @@ Item {
         let rel = dir.indexOf(home) === 0 ? user + dir.slice(home.length) : dir;
         return rel.split("/").filter(s => s !== "");
     }
+    // folder each crumb opens: crumbs under ~ start at home, others at /
+    function crumbPath(i) {
+        if (dir === "recent:") return dir;
+        let underHome = dir.indexOf(home) === 0;
+        let rest = (underHome ? dir.slice(home.length) : dir).split("/").filter(s => s !== "");
+        if (underHome) {
+            let parts = rest.slice(0, i);
+            return parts.length ? home + "/" + parts.join("/") : home;
+        }
+        return "/" + rest.slice(0, i + 1).join("/");
+    }
     readonly property var shown: entries.filter(e => query === "" || e.name.toLowerCase().indexOf(query.toLowerCase()) !== -1)
     function pick(e) {
         if (e.dir) { go(dir.replace(/\/$/, "") + "/" + e.name); return; }
@@ -249,7 +260,20 @@ Item {
                                 readonly property bool last: index === root.crumbs.length - 1
                                 spacing: 6
                                 FText { visible: index > 0; text: "/"; color: Fz.dim; px: 13 }
-                                FText { text: modelData; px: 13; color: last ? Fz.tx : Fz.sub; weight: last ? Font.DemiBold : Font.Normal }
+                                FText {
+                                    text: modelData; px: 13
+                                    color: last || crumbMouse.containsMouse ? Fz.tx : Fz.sub
+                                    weight: last ? Font.DemiBold : Font.Normal
+                                    font.underline: !last && crumbMouse.containsMouse
+                                    MouseArea {
+                                        id: crumbMouse
+                                        anchors.fill: parent; anchors.margins: -4
+                                        enabled: !last
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.go(root.crumbPath(index))
+                                    }
+                                }
                             }
                         }
                     }
