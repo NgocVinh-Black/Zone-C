@@ -70,6 +70,9 @@ hl.config({
     disable_splash_rendering = true,
     -- keep drawing the desktop under the lock screen: the unlock iris (lock/FrostLockScreen.qml) opens onto it
     session_lock_xray = true,
+    -- wake the screen in the compositor itself: after a suspend the shell's idle resume may never turn DPMS back on
+    key_press_enables_dpms = true,
+    mouse_move_enables_dpms = true,
   },
 })
 

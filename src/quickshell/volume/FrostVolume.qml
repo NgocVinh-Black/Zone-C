@@ -79,7 +79,7 @@ Item {
                 width: parent.width
                 from: 0; to: 150
                 value: root.master
-                onMoved: (v) => { if (root.sink) { if (root.muted) Audio.toggleMute(root.sink); Audio.setVolume(root.sink, v / 100); } }
+                onMoved: (v) => { if (root.sink) { if (root.muted) Audio.toggleMute(root.sink); Audio.setVolume(root.sink, v); } }
             }
 
             Caps { px: 11; text: Fz.tr("Đầu ra") }
@@ -130,7 +130,7 @@ Item {
                                 FText { anchors.right: parent.right; mono: true; text: arow.v + "%"; color: Fz.sub; px: 13 }
                             }
                             FSlider { width: parent.width; from: 0; to: 100; value: arow.v
-                                      onMoved: (val) => { for (const n of arow.modelData.nodes) Audio.setVolume(n, val / 100); } }
+                                      onMoved: (val) => { for (const n of arow.modelData.nodes) Audio.setVolume(n, val); } }
                         }
                     }
                 }

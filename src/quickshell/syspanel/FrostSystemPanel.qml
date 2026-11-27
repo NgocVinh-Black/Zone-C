@@ -144,7 +144,7 @@ Item {
                     spacing: 8
                     BigSlider {
                         width: parent.width; icon: "q-vol"; value: root.vol; label: Fz.tr("Âm lượng")
-                        onMoved: (v) => { if (Audio.defaultSink) { if (Audio.defaultSink.audio.muted) Audio.toggleMute(Audio.defaultSink); Audio.setVolume(Audio.defaultSink, v / 100); } }
+                        onMoved: (v) => { if (Audio.defaultSink) { if (Audio.defaultSink.audio.muted) Audio.toggleMute(Audio.defaultSink); Audio.setVolume(Audio.defaultSink, v); } }
                     }
                     BigSlider {
                         width: parent.width; icon: "q-sun"; value: root.bri; label: Fz.tr("Độ sáng")
