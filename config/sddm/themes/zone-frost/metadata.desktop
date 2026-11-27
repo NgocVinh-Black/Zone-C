@@ -1,0 +1,10 @@
+[SddmGreeterTheme]
+Name=Zone Frost
+Description=Zone-C login screen in the Frost design: big clock, avatar, user chips, password pill, session picker and power buttons. Follows the wallpaper synced by the shell.
+Author=zone-c
+License=MIT
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=current/theme.conf
+QtVersion=6

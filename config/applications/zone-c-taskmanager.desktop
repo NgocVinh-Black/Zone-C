@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Giám sát hệ thống
+Comment=Tiến trình, hiệu năng, dịch vụ
+Exec=zone-c ipc call taskmanager toggle
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Monitor;
+

@@ -1,49 +1,37 @@
+// Zone-C Frost: the terminal of the "Cửa sổ · tiling" artboard (Workspace.dc.html) — Arch logo and keys
+// in glow (#9fd3e0), values in text, a dim rule under the title and the Frost palette as colour blocks.
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
   "logo": {
-    "type": "none"
+    "type": "builtin",
+    "source": "arch_small",
+    "color": { "1": "#9fd3e0", "2": "#9fd3e0" },
+    "padding": { "top": 1, "left": 2, "right": 4 }
   },
   "display": {
     "separator": "  ",
-    "color": {
-      "separator": "#e6efff"
-    }
+    "color": { "keys": "#9fd3e0", "title": "#9fd3e0", "output": "#edf3f6", "separator": "#7d909a" },
+    "key": { "width": 11 },
+    "bar": { "char": { "elapsed": "#", "total": "-" } }
   },
   "modules": [
+    { "type": "title", "color": { "user": "#9fd3e0", "at": "#edf3f6", "host": "#9fd3e0" } },
+    { "type": "separator", "string": "─", "outputColor": "#7d909a" },
+    { "type": "os", "key": "OS" },
+    { "type": "kernel", "key": "Kernel" },
+    { "type": "uptime", "key": "Uptime" },
+    { "type": "packages", "key": "Packages" },
+    { "type": "shell", "key": "Shell" },
+    { "type": "wm", "key": "WM" },
+    { "type": "custom", "key": "Shell UI", "format": "Zone-C · Frost" },
+    { "type": "terminal", "key": "Terminal" },
+    { "type": "cpu", "key": "CPU" },
+    { "type": "memory", "key": "Memory" },
+    { "type": "disk", "key": "Disk (/)", "folders": "/" },
     "break",
     {
-      "type": "title",
-      "format": "{1}",
-      "color": {
-        "user": "#3d9bff"
-      }
-    },
-    "break",
-    {
-      "type": "os",
-      "key": "󱄅 os ",
-      "keyColor": "#3d9bff"
-    },
-    {
-      "type": "cpu",
-      "format": "{1}",
-      "key": " cpu",
-      "keyColor": "#ffa66e"
-    },
-    {
-      "type": "memory",
-      "key": "󰘚 ram",
-      "keyColor": "#42e8b4"
-    },
-    {
-      "type": "shell",
-      "key": " sh ",
-      "keyColor": "#86b4ff"
-    },
-    "break",
-    {
-      "type": "colors",
-      "symbol": "circle"
+      "type": "custom",
+      "format": "\u001b[48;2;28;36;40m   \u001b[48;2;52;66;74m   \u001b[48;2;83;100;109m   \u001b[48;2;159;211;224m   \u001b[48;2;214;230;236m   \u001b[48;2;166;220;188m   \u001b[48;2;236;220;170m   \u001b[48;2;255;123;123m   \u001b[0m"
     }
   ]
 }

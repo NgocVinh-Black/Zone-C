@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# Zone-C: dong bo man dang nhap SDDM (theme zone-thunder) voi theme dang dung cua shell.
+# Zone-C: dong bo man dang nhap SDDM (theme zone-frost / zone-thunder) voi theme dang dung cua shell.
 # Ghi bang mau + hinh nen hien tai vao <theme>/current/ (thu muc nay thuoc user, tao luc cai dat).
 # Dung: sddm_sync.sh [duong-dan-hinh-nen]
 #   Khong co tham so -> giu hinh nen da dong bo truoc do, chi cap nhat mau.
 
-THEME_DIR="${ZONE_C_SDDM_THEME:-/usr/share/sddm/themes/zone-thunder}"
+# every Zone-C login theme that has a user-owned current/ (zone-frost, zone-thunder)
+if [ -z "$ZONE_C_SDDM_THEME" ] && [ -z "$ZONE_C_SDDM_ONE" ]; then
+    for t in /usr/share/sddm/themes/zone-frost /usr/share/sddm/themes/zone-thunder; do
+        [ -d "$t/current" ] && ZONE_C_SDDM_ONE=1 ZONE_C_SDDM_THEME="$t" bash "$0" "$@"
+    done
+    exit 0
+fi
+THEME_DIR="$ZONE_C_SDDM_THEME"
 CUR="$THEME_DIR/current"
 SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/zone-c/settings.json"
 
@@ -12,17 +19,22 @@ SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/zone-c/settings.json"
 [ -d "$CUR" ] && [ -w "$CUR" ] || exit 0
 [ -f "$SETTINGS" ] || exit 0
 
-exec python3 - "$CUR" "$SETTINGS" "${1:-}" <<'PY'
-import json, os, shutil, subprocess, sys
+# Zone-C assets (logo per preset), next to this script
+ASSETS="$(cd "$(dirname "$0")/.." && pwd)/assets"
 
-cur, settings_path, wall = sys.argv[1], sys.argv[2], sys.argv[3]
+exec python3 - "$CUR" "$SETTINGS" "${1:-}" "$ASSETS" <<'PY'
+import filecmp, json, os, shutil, subprocess, sys
+
+cur, settings_path, wall, assets = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 if wall.startswith("file://"):
     wall = wall[7:]
 
 try:
-    colors = json.load(open(settings_path)).get("theme", {}).get("colors", {}) or {}
+    settings = json.load(open(settings_path))
 except Exception:
-    colors = {}
+    settings = {}
+colors = (settings.get("theme", {}) or {}).get("colors", {}) or {}
+general = settings.get("general", {}) or {}
 
 conf_path = os.path.join(cur, "theme.conf")
 old = {}
@@ -76,6 +88,31 @@ else:
     for k in ("background", "video"):
         if k in old:
             conf[k] = old[k]
+
+# the greeter runs as the sddm user and cannot read the home folder: hand it the avatar and the UI language
+conf["lang"] = "vi" if general.get("language", "vi") == "vi" else "en"
+# logical height of the main monitor, so the greeter draws at the lock screen's size (Main.qml `k`)
+try:
+    mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True, timeout=3).stdout or "[]")
+    m = next((m for m in mons if m.get("focused")), mons[0] if mons else None)
+    if m and m.get("scale"):
+        h = m["height"] if int(m.get("transform", 0)) % 2 == 0 else m["width"]
+        conf["uiHeight"] = str(round(h / m["scale"]))
+    elif "uiHeight" in old:
+        conf["uiHeight"] = old["uiHeight"]
+except Exception:
+    if "uiHeight" in old:
+        conf["uiHeight"] = old["uiHeight"]
+avatar = os.path.expanduser(general.get("avatarPath") or "~/.face")
+# still the default Zone-C logo: show the preset's variant, as the shell does (ZoneStyle.avatarSource)
+logo = os.path.join(assets, "logo.png")
+if (settings.get("theme") or {}).get("activePreset") == "Zone Frost" and os.path.isfile(avatar) and os.path.isfile(logo) \
+        and filecmp.cmp(avatar, logo, shallow=False) and os.path.isfile(os.path.join(assets, "avatar-frost.png")):
+    avatar = os.path.join(assets, "avatar-frost.png")
+if os.path.isfile(avatar):
+    conf["avatar"] = publish(avatar, "avatar")
+elif "avatar" in old:
+    conf["avatar"] = old["avatar"]
 
 if conf == old:
     sys.exit(0)

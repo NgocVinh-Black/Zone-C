@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Status line: context % of this session, 5h limit, weekly limit
+in=$(cat)
+
+j() { jq -r "$1 // empty" <<<"$in" 2>/dev/null; }
+
+R=$'\e[0m'; DIM=$'\e[2m'
+color() { # pct -> color
+  local p=${1%.*}; p=${p:-0}
+  if   (( p >= 85 )); then printf '\e[31m'
+  elif (( p >= 60 )); then printf '\e[33m'
+  else printf '\e[32m'; fi
+}
+bar() { # pct width
+  local p=${1%.*} w=${2:-10}; p=${p:-0}; (( p>100 )) && p=100; (( p<0 )) && p=0
+  local f=$(( (p*w + 50) / 100 )) s="" i
+  for ((i=0;i<w;i++)); do (( i<f )) && s+="█" || s+="░"; done
+  printf '%s%s%s' "$(color "$p")" "$s" "$R"
+}
+until_reset() { # epoch or ISO -> "2h13m"
+  local t=$1 now e d; [[ -z $t ]] && return
+  [[ $t =~ ^[0-9]+$ ]] && e=$t || e=$(date -d "$t" +%s 2>/dev/null) || return
+  (( e > 10000000000 )) && e=$((e/1000))
+  now=$(date +%s); d=$((e-now)); (( d<0 )) && d=0
+  if (( d >= 86400 )); then printf '%dd%dh' $((d/86400)) $((d%86400/3600))
+  else printf '%dh%02dm' $((d/3600)) $((d%3600/60)); fi
+}
+seg() { # label pct reset
+  local p=$2; [[ -z $p ]] && { printf '%s %s--%s' "$1" "$DIM" "$R"; return; }
+  local pi=$(printf '%.0f' "$p")
+  printf '%s %s %s%d%% used%s' "$1" "$(bar "$pi" 10)" "$(color "$pi")" "$pi" "$R"
+  [[ -n $3 ]] && printf ' %s· resets in %s%s' "$DIM" "$3" "$R"
+}
+
+model=$(j '.model.display_name')
+ctx=$(j '.context_window.used_percentage')
+size=$(j '.context_window.context_window_size')
+used_tok=$(j '(.context_window.current_usage | if . then (.input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens) else empty end)')
+h5=$(j '.rate_limits.five_hour.used_percentage')
+h5r=$(until_reset "$(j '.rate_limits.five_hour.resets_at')")
+wk=$(j '.rate_limits.seven_day.used_percentage')
+wkr=$(until_reset "$(j '.rate_limits.seven_day.resets_at')")
+
+k() { awk -v n="$1" 'BEGIN{ if(n>=1000000) printf "%.1fM", n/1e6; else printf "%dk", n/1000 }'; }
+
+out=""
+[[ -n $model ]] && out+="${DIM}${model}${R} │ "
+out+="$(seg "Context" "$ctx")"
+[[ -n $used_tok && -n $size ]] && out+=" ${DIM}($(k "$used_tok") of $(k "$size") tokens)${R}"
+out+=" │ $(seg "5-hour limit" "$h5" "$h5r")"
+out+=" │ $(seg "Weekly limit" "$wk" "$wkr")"
+printf '%s\n' "$out"

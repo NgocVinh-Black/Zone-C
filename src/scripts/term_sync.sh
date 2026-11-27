@@ -3,6 +3,7 @@
 # Ghi ~/.local/state/zone-c/term_theme.sh, duoc doc boi:
 #   - ~/.blerc       : mau to cu phap dong lenh (ble.sh)
 #   - zonec-banner   : dai mau logo ZONE-C
+# va ~/.config/fastfetch/config.jsonc (bo cuc terminal cua artboard "Cua so · tiling", mau theo theme).
 # Terminal mo sau khi doi theme se nhan mau moi.
 
 SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/zone-c/settings.json"
@@ -50,6 +51,19 @@ blue, sapphire, teal, mauve = hx("blue", "#3d9bff"), hx("sapphire", "#5cc0ff"), 
 green, peach, yellow, red = hx("green", "#a6e3a1"), hx("peach", "#fab387"), hx("yellow", "#f9e2af"), hx("red", "#ff5a74")
 text, sub1, ov0, ov1 = hx("text", "#e6efff"), hx("subtext1", "#b7c9ee"), hx("overlay0", "#6c7086"), hx("overlay1", "#7f849c")
 
+# Banner + dau nhac lenh (Frost: glow cho logo va thu muc, xanh la cho dau ❯, nhan theme mo)
+if preset in ("Zone Thunder", "Zone Crystal"):
+    glow = "#50c3ff"
+elif preset == "Zone Frost":
+    glow = "#2f5d72" if mode == "light" else "#9fd3e0"
+else:
+    glow = hx("blue", "#9fd3e0")
+dim = "#4a5d67" if mode == "light" else hx("overlay0", "#7d909a")
+prompt_green = green
+if preset == "Zone Frost" and mode != "light":
+    dim, prompt_green = "#7d909a", "#a6dcbc"   # --dim / --green of zone.css
+label = (preset or "frost").lower().replace("zone ", "")
+
 # Mau to cu phap: lenh = accent, tham so = chu phu, duong dan = accent phu (khong gach chan)
 faces = {
     "command_builtin": f"fg={blue},bold", "command_builtin_dot": f"fg={blue},bold",
@@ -84,6 +98,11 @@ faces = {
 
 lines = ["# Ghi tu dong boi Zone-C (scripts/term_sync.sh) theo theme: %s (%s) - dung sua tay" % (preset or "?", mode)]
 lines.append("ZONEC_BANNER_COLORS=(" + " ".join('"%d;%d;%d"' % rgb(h) for h in banner) + ")")
+lines.append('ZONEC_GLOW="%d;%d;%d"' % rgb(glow))
+lines.append('ZONEC_DIM="%d;%d;%d"' % rgb(dim))
+lines.append('ZONEC_LABEL="%s"' % label.replace('"', ''))
+# prompt of the artboard: green ❯, current folder in glow
+lines.append('[[ $- == *i* ]] && PS1="\\[\\e[38;2;%d;%d;%dm\\]❯\\[\\e[0m\\] \\[\\e[38;2;%sm\\]\\W\\[\\e[0m\\] "' % (rgb(prompt_green) + ('%d;%d;%d' % rgb(glow),)))
 lines.append("if [[ ${BLE_VERSION-} ]]; then")
 lines.append("    bleopt term_true_colors=semicolon")
 for k, v in faces.items():
@@ -91,9 +110,42 @@ for k, v in faces.items():
 lines.append("fi")
 content = "\n".join(lines) + "\n"
 
-if os.path.exists(out) and open(out).read() == content:
-    sys.exit(0)
-tmp = out + ".tmp"
-open(tmp, "w").write(content)
-os.replace(tmp, out)
+def write(path, text):
+    if os.path.exists(path) and open(path).read() == text:
+        return
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    open(tmp, "w").write(text)
+    os.replace(tmp, path)
+
+write(out, content)
+
+# ---------- fastfetch: the terminal of the "Cua so · tiling" artboard (Workspace.dc.html) ----------
+# Arch logo and keys in glow, values in text, a dim rule under the title, the palette as colour blocks.
+frost_dark = preset == "Zone Frost" and mode != "light"
+ff_text = "#edf3f6" if frost_dark else text
+blocks = (["#1c2428", "#34424a", "#53646d", "#9fd3e0", "#d6e6ec", "#a6dcbc", "#ecdcaa", "#ff7b7b"] if frost_dark else
+          [hx("crust", "#1c2428"), hx("surface0", "#34424a"), hx("surface2", "#53646d"), glow, blue, green, yellow, red])
+swatch = "".join("\u001b[48;2;%d;%d;%dm   " % rgb(h) for h in blocks) + "\u001b[0m"
+ui = "Zone-C \u00b7 " + (preset or "Zone Frost").replace("Zone ", "") + (" Light" if mode == "light" else " Dark")
+ff = {
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+    "logo": {"type": "builtin", "source": "arch_small", "color": {"1": glow, "2": glow},
+             "padding": {"top": 1, "left": 2, "right": 4}},
+    "display": {"separator": "  ", "color": {"keys": glow, "title": glow, "output": ff_text, "separator": dim},
+                "key": {"width": 11}, "bar": {"char": {"elapsed": "#", "total": "-"}}},
+    "modules": [
+        {"type": "title", "color": {"user": glow, "at": ff_text, "host": glow}},
+        {"type": "separator", "string": "\u2500", "outputColor": dim},
+        {"type": "os", "key": "OS"}, {"type": "kernel", "key": "Kernel"}, {"type": "uptime", "key": "Uptime"},
+        {"type": "packages", "key": "Packages"}, {"type": "shell", "key": "Shell"}, {"type": "wm", "key": "WM"},
+        {"type": "custom", "key": "Shell UI", "format": ui},
+        {"type": "terminal", "key": "Terminal"}, {"type": "cpu", "key": "CPU"}, {"type": "memory", "key": "Memory"},
+        {"type": "disk", "key": "Disk (/)", "folders": "/"},
+        "break",
+        {"type": "custom", "format": swatch},
+    ],
+}
+write(os.path.expanduser("~/.config/fastfetch/config.jsonc"),
+      "// Ghi tu dong boi Zone-C (scripts/term_sync.sh) theo theme - dung sua tay\n" + json.dumps(ff, indent=2, ensure_ascii=False) + "\n")
 PY

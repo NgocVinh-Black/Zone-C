@@ -2,85 +2,91 @@
 
 ![Zone-C V2](docs/assets/banner-v2.png)
 
-Desktop shell cho Hyprland, viết bằng Quickshell — của **NgocVinh-Black**.
+Desktop shell cho Hyprland, viết bằng Quickshell, của **NgocVinh-Black**.
 
-**V2** là bản thiết kế lại theo chủ đề **Frost Dark**: nền tuyết, kính mờ tối, màu nhấn xanh băng,
-logo mới *Ice Bolt*. Bản V1 (chủ đề sấm sét xanh) vẫn nằm ở nhánh [`main`](https://github.com/NgocVinh-Black/Zone-C/tree/main).
+**V2 (Frost)** là bản làm lại toàn bộ giao diện theo phong cách **Frost**: kính mờ, xanh băng, bo tròn, có cả nền tối và nền sáng.
+Phím tắt và cách dùng quen thuộc của bản cũ được giữ nguyên; V2 đổi giao diện và thêm ứng dụng riêng.
 
 ## Có gì mới trong V2
 
-- **Bảng màu Frost Dark mới** cho preset *Zone Frost*, là preset mặc định khi cài.
-  Nền xám xanh đậm, chữ trắng băng, màu nhấn `#d6e6ec` với chữ tối trên nền nhấn.
-  Tương phản chữ phụ được nâng lên để dễ đọc trên nền kính.
-- **Bar dạng đảo nổi**: các mô-đun tách thành từng viên, gom thành 3 cụm
-  - Trái: nút Zone-C · workspace dạng viên · nhạc
-  - Giữa: ghi hình / hẹn giờ · đồng hồ · thời tiết
-  - Phải: khay hệ thống · cụm bộ gõ, Wi-Fi, Bluetooth, âm lượng, pin
-- **Bỏ dock mặc định**: mở ứng dụng bằng launcher (`Super`), giống cách dùng Hyprland thuần.
-  Vẫn bật lại được trong Cài đặt → Dock.
-- **Bo góc 14px** cho panel, popup và nút.
-- **Logo mới Ice Bolt**: khung tinh thể băng lục giác, chữ C là vòng cung hở, chữ Z là tia sét cắt qua,
-  tia lấp lánh băng ở góc. File gốc vector nằm trong [`src/assets/logo`](src/assets/logo)
-  (`zone-c-ice-bolt.svg` bản màu, `zone-c-ice-bolt-mono.svg` bản đơn sắc dùng `currentColor`).
-- **Chế độ sáng Frost Light** giữ nguyên, chuyển nhanh bằng nút trong bảng hệ thống hoặc lệnh
-  `quickshell ipc call zonetheme mode toggle`.
-- **Cài một nhánh bất kỳ bằng lệnh một dòng** qua biến `ZONE_C_BRANCH` (xem phần cài đặt).
+- **Giao diện Frost** cho mọi thành phần: bar, launcher, thông báo, lịch, nhạc, mạng, âm lượng, màn hình khóa, OSD, menu nguồn.
+- **Nền tối / sáng** và **6 màu nhấn** (Băng giá, Bầu trời, Bạc hà, Cát, Oải hương, Hồng phấn), đổi tức thì.
+  Vẫn chọn được các bộ màu có sẵn (Zone Frost, Zone Thunder, Zone Crystal, Nord, Tokyo Storm, Mocha, Rose Pine, Gruvbox…)
+  hoặc lấy màu từ hình nền (Matugen).
+- **Tiếng Việt / tiếng Anh**: toàn bộ giao diện shell đổi ngôn ngữ trong Cài đặt → Ngôn ngữ.
+- **Ứng dụng Cài đặt** mới với 27 trang: Wi-Fi, Bluetooth, màn hình, âm thanh, pin & nguồn, chuột & touchpad, bàn phím,
+  bar, launcher, widget, thông báo, OSD, giao diện, ngôn ngữ, ngày giờ, người dùng, máy in, bộ nhớ, cập nhật,
+  quyền riêng tư, trợ năng, sức khỏe số…
+- **Ba ứng dụng riêng** viết bằng Quickshell, cùng giao diện Frost:
+  - **Tệp**: trình quản lý file, kiêm hộp chọn file cho các ứng dụng khác (qua xdg-desktop-portal).
+  - **Giám sát hệ thống**: tiến trình, CPU, RAM, ổ đĩa, mạng theo từng tiến trình.
+  - **Cửa hàng ứng dụng**: tìm và cài từ pacman, AUR (yay / paru) và Flathub, có đánh giá sao, cập nhật một chỗ.
+- **Tổng quan cửa sổ** (`Super + Tab`), **bảng emoji & ký tự** (`Super + .`), **quick actions** thu gọn ở cạnh màn hình.
+- **Widget desktop** kéo thả được: đồng hồ (nhiều kiểu), thời tiết, nhạc, lịch hôm nay, pin, tài nguyên máy, khung ảnh,
+  visualizer. Bấm chế độ sửa để thêm, xoá, đổi chỗ.
+- **Bar** ngang (trên / dưới) hoặc dọc (trái / phải), chọn mô-đun hiển thị: workspace, nhạc, đồng hồ, thời tiết,
+  CPU / RAM / nhiệt độ, mạng, Bluetooth, âm lượng, pin (có báo đang sạc), khay hệ thống, hẹn giờ, tiêu đề cửa sổ.
+- **Viền cửa sổ đang dùng**: tĩnh, tia điện chạy quanh viền, hoặc tắt.
+- **Chụp màn hình** kiểu Frost (`Super + Shift + Alt + S`), **bộ chọn chia sẻ màn hình** riêng khi gọi video / quay màn hình.
+- **Màn hình khóa** và **màn đăng nhập SDDM** (`zone-frost`) cùng phong cách. Vẫn chọn lại được `zone-thunder`
+  trong Cài đặt → Người dùng.
+- **Trợ năng**: tương phản cao, cỡ chữ, phóng to màn hình (`Super + Alt + =` / `Super + Alt + −`).
+- **Terminal foot** đổi sang bảng màu Frost.
+- **Màn chào** lần đầu chạy để chọn ngôn ngữ, theme, chế độ tối / sáng và kiểu bar.
+- Bỏ **Dock** và trang **Guide** cũ; `Super + H` giờ mở Cài đặt.
 
-### Bảng màu Frost Dark
-
-| Token | Màu | Dùng cho |
-|---|---|---|
-| `crust` | `#1c2428` | Nền sâu nhất, thanh bên |
-| `mantle` | `#232d32` | Nền cửa sổ |
-| `base` | `#2a353b` | Nền panel, viên bar |
-| `surface0` / `surface1` / `surface2` | `#34424a` / `#415058` / `#53646d` | Ô, nút, đường kẻ |
-| `text` | `#edf3f6` | Chữ chính |
-| `subtext1` / `subtext0` | `#c6d3d9` / `#a7b8c1` | Chữ phụ |
-| `blue` (màu nhấn) | `#d6e6ec` | Mục đang chọn, công tắc bật, nút chính |
-| `sapphire` / `teal` | `#9fd3e0` | Ánh sáng băng, viền focus |
-| `green` / `yellow` / `red` | `#a6dcbc` / `#ecdcaa` / `#ff7b7b` | Trạng thái tốt / cảnh báo / lỗi |
-
-## Giao diện
-
-- **Bar** ở cạnh trên (đổi được sang trái / phải / dưới): workspace, nhạc, đồng hồ, thời tiết, mạng,
-  Bluetooth, âm lượng, pin và nút chuyển gõ tiếng Việt (`VI` / `US`).
-- **Launcher** tìm ứng dụng, gõ `>` để chạy lệnh. Tự tắt Unikey khi mở để gõ tìm kiếm.
-- **Bảng hệ thống**: âm lượng, độ sáng, nút bật nhanh, thông báo, nút nguồn, pin và chế độ nguồn.
-- **Trình phát nhạc** kèm equalizer, cột cava nhảy theo nhạc.
-- **Lịch và thời tiết**, **chọn hình nền**, **clipboard**, **chụp / quay màn hình**, **quick actions**, **polkit**.
-- **Màn hình khóa** và **SDDM** dùng chung hình nền và màu của theme đang chọn.
-- **Theme** có sẵn: *Zone Frost* (mặc định V2), *Zone Thunder*, *Zone Crystal* và hơn 90 bảng màu khác.
-- **Terminal foot** đổi màu theo theme, banner Zone-C + fastfetch khi mở.
-- **Gõ tiếng Việt** bằng fcitx5 + Unikey, icon Papirus-Dark.
+Vẫn giữ từ bản trước: gõ tiếng Việt bằng fcitx5 + Unikey, clipboard, lịch & thời tiết, trình phát nhạc có cava,
+hình nền video, polkit, hộp xác nhận khi đóng cửa sổ, banner Zone-C + fastfetch khi mở terminal, gợi ý lệnh bằng ble.sh.
 
 ## Phím tắt chính
 
+Xem đầy đủ bằng `Super + /`.
+
 | Phím | Chức năng |
 |---|---|
-| `Super` | Mở launcher |
-| `Super + /` | Xem bảng phím tắt |
-| `Super + T` | Terminal |
+| `Super` (nhấn rồi thả) / `Super + D` | Launcher tìm ứng dụng, gõ `>` để chạy lệnh |
+| `Super + /` | Bảng phím tắt |
+| `Super + T` | Terminal (foot) |
 | `Super + W` | Trình duyệt |
-| `Super + Q` | Đóng panel / đóng cửa sổ (có hỏi xác nhận) |
+| `Super + E` | Trình quản lý file |
+| `Super + I` / `Super + H` | Cài đặt |
+| `Super + Tab` | Tổng quan cửa sổ |
+| `Alt + Tab` | Chuyển sang cửa sổ kế tiếp |
+| `Super + .` | Emoji & ký tự |
+| `Super + V` | Lịch sử clipboard |
+| `Super + M` / `Super + B` | Nhạc / bảng hệ thống |
+| `Super + S` / `Super + N` | Lịch / mạng |
+| `Super + Shift + W` | Chọn hình nền |
+| `Super + Q` | Đóng cửa sổ (có hỏi xác nhận) |
 | `Super + Shift + Q` | Đóng cửa sổ ngay |
-| `Super + Shift + S` | Chụp vùng màn hình |
-| `Super + Alt + R` | Quay màn hình |
 | `Super + F` | Toàn màn hình |
 | `Super + ←/→/↑/↓` | Chuyển cửa sổ |
-| `Super + Page Up/Down` | Chuyển workspace |
-| `Super + Shift + K` / phím Copilot | Bật / tắt con mèo float-cat |
-| `Super + K` | Rồi kéo con mèo bằng chuột để dời chỗ |
+| `Super + 1…0` | Sang workspace 1–10 |
+| `Super + Page Up/Down` | Workspace trước / sau |
+| `Super + L` | Khoá màn hình |
+| `Print` | Chụp màn hình |
+| `Super + Shift + S` | Chụp vùng (Flameshot) |
+| `Super + Shift + Alt + S` | Chụp vùng (Zone-C) |
+| `Super + Alt + R` | Quay màn hình |
+| `Super + Alt + =` / `Super + Alt + −` | Phóng to / thu nhỏ màn hình |
+| `Super + Shift + K` / phím Copilot | Bật / tắt bot AI float-cat |
+| `Super + K` | Rồi kéo bot bằng chuột để dời chỗ |
 
-## Con mèo float-cat (Claude Code)
+Vuốt 3 ngón sang ngang trên touchpad để chuyển workspace. Vuốt 3 ngón lên để mở launcher hoặc tổng quan
+thì bật trong Cài đặt → Chuột & touchpad.
 
-Con mèo nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột. Màu tự đổi theo theme đang dùng
-(bản băng khi dùng Zone Frost).
+## Bot AI float-cat (Claude Code)
 
-Khi dùng [Claude Code](https://claude.com/claude-code), con mèo cho biết Claude đang làm gì:
-khung suy nghĩ `• • •` khi đang chạy, dấu ✓ kèm nhảy lên khi xong, "Cần bạn nè!" khi chờ bạn duyệt.
+Bot AI nổi ở góc màn hình, hiện trên mọi workspace, không chặn chuột: đầu tròn kiểu mũ phi hành gia có ăng-ten,
+kính che mặt, hai mắt sáng và vòng cằm phát sáng. Nó lơ lửng, nheo mắt, chớp mắt, liếc nhìn, rảnh lâu thì nhắm mắt.
+Màu lấy theo theme Frost (sáng / tối, màu nhấn) đang dùng.
 
-Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
-Để con mèo đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
+Khi dùng [Claude Code](https://claude.com/claude-code), bot cho biết Claude đang làm gì:
+mắt đảo đọc và ánh sáng chạy dọc vòng cằm khi đang chạy; mắt cười, vòng cằm xanh lá và dấu ✓ khi xong;
+mắt mở to, vòng cằm vàng và "Cần bạn nè!" khi chờ bạn duyệt.
+
+Script cài đặt chép bot vào `~/.local/share/float-cat` và lệnh `float-cat` vào `~/.local/bin`.
+Để bot đi theo Claude Code, thêm các hook sau vào `~/.claude/settings.json` (gộp với `hooks` đang có):
 
 ```json
 {
@@ -96,29 +102,25 @@ Script cài đặt chép con mèo vào `~/.local/share/float-cat` và lệnh `fl
 ```
 
 Không dùng Claude Code thì vẫn bật / tắt tay được: `float-cat toggle` hoặc `Super + Shift + K`.
-Xoá `~/.local/state/float-cat/pos.json` để đưa con mèo về góc phải dưới.
+Xoá `~/.local/state/float-cat/pos.json` để đưa bot về góc phải dưới.
 
-## Cài đặt V2 (Arch Linux và các bản dựa trên Arch)
+## Cài đặt (Arch Linux và các bản dựa trên Arch)
 
-Lệnh một dòng, cài nhánh V2:
+Lệnh một dòng:
 
 ```bash
-ZONE_C_BRANCH=Zone-c-V2 bash -c "$(curl -fsSL https://raw.githubusercontent.com/NgocVinh-Black/Zone-C/Zone-c-V2/install/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/NgocVinh-Black/Zone-C/main/install/install.sh)"
 ```
 
-Hoặc clone nhánh V2 về rồi chạy:
+Hoặc clone về rồi chạy:
 
 ```bash
-git clone -b Zone-c-V2 https://github.com/NgocVinh-Black/Zone-C.git
+git clone https://github.com/NgocVinh-Black/Zone-C.git
 cd Zone-C
 ./install/install.sh
 ```
 
-Đang dùng V1 và muốn lên V2: chạy một trong hai lệnh trên rồi chọn "update".
-Cài đặt của bạn trong `~/.config/zone-c/settings.json` được giữ nguyên; để nhận bảng màu V2,
-vào Cài đặt → Giao diện và chọn lại preset **Zone Frost**.
-
-Muốn quay về V1: cài lại từ nhánh `main` (bỏ biến `ZONE_C_BRANCH`).
+Để cập nhật, chạy lại script và chọn "update". Cài đặt riêng của bạn trong `~/.config/zone-c/settings.json` được giữ lại.
 
 Cấu hình mẫu cho các compositor khác (niri, sway) nằm trong thư mục [compositors](compositors).
 

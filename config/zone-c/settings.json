@@ -18,7 +18,7 @@
     "position": "top",
     "width": 100,
     "opacity": 100,
-    "style": "modular",
+    "style": "solid",
     "time": {
       "format": "HH:mm:ss"
     },
@@ -26,60 +26,59 @@
     "autohideTimeout": 1000,
     "modules": {
       "left": [
-        "left",
-        "workspaces",
-        "media"
+        "timedate",
+        "weather",
+        "sysmon"
       ],
       "center": [
         "info",
-        "timedate",
-        "weather"
+        "workspaces",
+        "media"
       ],
       "right": [
         "tray",
-        [
-          "kb",
-          "wifi",
-          "bt",
-          "vol",
-          "bat"
-        ]
+        "kb",
+        "wifi",
+        "bt",
+        "vol",
+        "left",
+        "bat"
       ]
     },
-    "distinctPills": true,
+    "distinctPills": false,
     "groupColors": {},
-    "workspacesStyle": "pills",
+    "workspacesStyle": "numbers",
     "timeStyle": "classic",
     "workspaceCount": 8
   },
   "theme": {
     "fontFamily": "Google Sans",
-    "borderRadius": 14,
+    "borderRadius": 8,
     "activePreset": "Zone Frost",
     "matugen": false,
     "colors": {
-      "base": "#2a353b",
-      "mantle": "#232d32",
-      "crust": "#1c2428",
-      "text": "#edf3f6",
-      "subtext0": "#a7b8c1",
-      "subtext1": "#c6d3d9",
-      "surface0": "#34424a",
-      "surface1": "#415058",
-      "surface2": "#53646d",
-      "overlay0": "#7d909a",
-      "overlay1": "#8fa2ab",
-      "overlay2": "#a7b8c1",
+      "base": "#333f45",
+      "mantle": "#2c373c",
+      "crust": "#252f34",
+      "text": "#e9f1f4",
+      "subtext0": "#93a7b1",
+      "subtext1": "#b7c7cf",
+      "surface0": "#3e4b52",
+      "surface1": "#4a5960",
+      "surface2": "#58686f",
+      "overlay0": "#6d7f87",
+      "overlay1": "#8597a0",
+      "overlay2": "#9daeb6",
       "blue": "#d6e6ec",
-      "sapphire": "#9fd3e0",
-      "peach": "#e9c9a8",
-      "green": "#a6dcbc",
-      "red": "#ff7b7b",
+      "sapphire": "#cfe1e8",
+      "peach": "#e3dccf",
+      "green": "#cfe4d8",
+      "red": "#ff6b6b",
       "mauve": "#d6e6ec",
       "pink": "#d6e6ec",
-      "yellow": "#ecdcaa",
-      "maroon": "#c6d3d9",
-      "teal": "#9fd3e0"
+      "yellow": "#ece0b0",
+      "maroon": "#c9d9df",
+      "teal": "#cfe6e6"
     },
     "mode": "dark"
   },
@@ -147,25 +146,6 @@
       }
     }
   },
-  "dock": {
-    "enabled": false,
-    "position": "bottom",
-    "onTop": true,
-    "elementSize": 44,
-    "floating": true,
-    "opacity": 100,
-    "exclusive": false,
-    "autohide": false,
-    "smartAutohide": true,
-    "autohideTimeout": 1000,
-    "editing": false,
-    "apps": [],
-    "overrideBoundsCorrection": false,
-    "enableScrolling": false,
-    "visibleElements": 7,
-    "hoverScale": 120,
-    "cascadeScale": false
-  },
   "widgets": {
     "hideBarInRedactor": true
   },
@@ -180,7 +160,6 @@
   "zoneStyle": {
     "savedLayout": {
       "bar.style": "solid",
-      "dock.floating": false,
       "bar.modules": {
         "left": [
           "left",

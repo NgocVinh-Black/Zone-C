@@ -1,0 +1,7 @@
+SRow 1.0 SRow.qml
+H3 1.0 H3.qml
+CfgToggle 1.0 CfgToggle.qml
+CfgSeg 1.0 CfgSeg.qml
+CfgSelect 1.0 CfgSelect.qml
+CfgRange 1.0 CfgRange.qml
+singleton HyprConf 1.0 HyprConf.qml

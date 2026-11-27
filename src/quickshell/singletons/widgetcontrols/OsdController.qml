@@ -46,7 +46,7 @@ Item {
 
     Timer {
         id: hideTimer
-        interval: 1800
+        interval: controller.showMs
         repeat: false
         onTriggered: {
             if (!controller.isHovered) {
@@ -118,6 +118,28 @@ Item {
             controller.show("brightness");
         }
     }
+
+    // Input method switches (fcitx5: unikey <-> keyboard-us) show the "Tiếng Việt · Unikey" OSD.
+    property string lastIme: ""
+    // switches the shell makes itself (the launcher turning Unikey off and back on) stay silent
+    property real imeQuietUntil: 0
+    function quietIme(ms) { imeQuietUntil = Date.now() + (ms || 2000); }
+    // `fcitx5-remote` state, not `-n`: the name reads "keyboard-us" whenever a shell panel holds the
+    // keyboard (no input context), which flashed the OSD on every panel open/close. 2 = Unikey, 1 = EN.
+    Process {
+        id: imePoll
+        command: ["fcitx5-remote"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let st = this.text.trim();
+                if (st !== "1" && st !== "2") return;
+                let im = st === "2" ? "unikey" : "keyboard-us";
+                if (controller.lastIme !== "" && im !== controller.lastIme && Date.now() > controller.imeQuietUntil) controller.show("ime", im);
+                controller.lastIme = im;
+            }
+        }
+    }
+    Timer { interval: 700; running: true; repeat: true; onTriggered: imePoll.running = true }
 
     Process {
         id: kbWatcher
@@ -206,7 +228,21 @@ Item {
         }
     }
 
+    // quickshell ipc call osd trigger <volume|brightness|mic|capslock|numlock|airplane|ime> [value]
+    IpcHandler {
+        target: "osd"
+        function trigger(kind: string, value: string): void { controller.show(kind, value === "" ? undefined : value); }
+    }
+
+    // Settings → OSD: which kinds pop up and for how long
+    readonly property int showMs: Math.max(500, Number(Config.getSetting("osd.duration", 1500)) || 1500)
+    function enabledFor(k) {
+        let key = (k === "volume" || k === "mic") ? "volume" : k === "brightness" ? "brightness" : k === "ime" ? "kb" : (k === "capslock" || k === "numlock") ? "caps" : "";
+        return key === "" || Config.getSetting("osd." + key, true) !== false;
+    }
+
     function show(k, v, scr) {
+        if (!enabledFor(k || "volume")) return;
         controller.kind = k || "volume";
         if (controller.kind === "brightness" && v !== undefined) {
             controller.briVal = parseInt(v) || 0;

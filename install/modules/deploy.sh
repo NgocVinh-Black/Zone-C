@@ -12,6 +12,44 @@ EXTRA_CONFIGS=(
     "code-flags.conf"
 )
 
+# mimeapps.list is shared with other programs (Claude Code, browsers add their own handlers):
+# take the repo's entries, but keep every entry the user has that the repo does not set.
+merge_mimeapps() {
+    local src="$1" dest="$2"
+    if [ ! -f "$dest" ] || ! command -v python3 >/dev/null 2>&1; then
+        cp "$src" "$dest"
+        return
+    fi
+    python3 - "$src" "$dest" <<'PY' || cp "$src" "$dest"
+import configparser, sys
+def load(p):
+    c = configparser.ConfigParser(interpolation=None, strict=False)
+    c.optionxform = str
+    c.read(p, encoding="utf-8")
+    return c
+repo, mine = load(sys.argv[1]), load(sys.argv[2])
+for sec in mine.sections():
+    if not repo.has_section(sec):
+        repo.add_section(sec)
+    for key, val in mine.items(sec):
+        if not repo.has_option(sec, key):
+            repo.set(sec, key, val)
+with open(sys.argv[2], "w", encoding="utf-8") as f:
+    repo.write(f, space_around_delimiters=False)
+PY
+}
+
+# copies one shipped config file into ~/.config, merging the ones that are shared
+install_config_file() {
+    local src="$1" dest="$2"
+    mkdir -p "$(dirname "$dest")"
+    if [ "$(basename "$dest")" = "mimeapps.list" ]; then
+        merge_mimeapps "$src" "$dest"
+    else
+        cp "$src" "$dest"
+    fi
+}
+
 render_wallpaper_progress() {
     local current="$1"
     local total="$2"
@@ -175,49 +213,54 @@ setup_sddm() {
     sudo rm -rf /usr/share/sddm/themes/material-you
     sudo rm -f /etc/sddm.conf.d/*matugen*.conf
     sudo rm -f /etc/sddm.conf.d/*material-you*.conf
+    # older installs pinned zone-thunder in a later-sorting file, which overrides the default below
+    sudo rm -f /etc/sddm.conf.d/20-zone-thunder.conf
 
     if [ "$is_update" != true ] && [ -f /etc/sddm.conf ]; then
         sudo cp -a /etc/sddm.conf "/etc/sddm.conf.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
         sudo rm -f /etc/sddm.conf
     fi
 
-    local sddm_theme_src="$project_root/config/sddm/themes/zone-thunder"
-    local sddm_theme_dest="/usr/share/sddm/themes/zone-thunder"
-
-    if [ -d "$sddm_theme_src" ]; then
+    # zone-frost (the Frost design, default) and zone-thunder; current/ belongs to the user so the
+    # shell can sync the active wallpaper and colours into it (scripts/sddm_sync.sh). QML stays root's.
+    local theme_name
+    for theme_name in zone-frost zone-thunder; do
+        local sddm_theme_src="$project_root/config/sddm/themes/$theme_name"
+        local sddm_theme_dest="/usr/share/sddm/themes/$theme_name"
+        [ -d "$sddm_theme_src" ] || continue
         sudo mkdir -p "$sddm_theme_dest"
         sudo cp -r "$sddm_theme_src/." "$sddm_theme_dest/"
         sudo chmod -R 755 "$sddm_theme_dest"
-        # Thu muc current/ thuoc user: shell ghi bang mau + hinh nen cua theme dang dung vao day
-        # (scripts/sddm_sync.sh) de man dang nhap doi theo theme. Code QML van thuoc root.
         sudo install -d -o "$USER" -g "$(id -gn)" -m 755 "$sddm_theme_dest/current"
         if [ -d "$sddm_theme_src/font" ]; then
             sudo mkdir -p /usr/share/fonts/TTF
             sudo cp -r "$sddm_theme_src/font/"*.ttf /usr/share/fonts/TTF/ 2>/dev/null || true
-            fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
         fi
-    fi
+    done
+    fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
 
     sudo mkdir -p /etc/sddm.conf.d
 
+    # QML_XHR_ALLOW_FILE_READ lets zone-frost read the battery level from /sys
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=zone-thunder
+Current=zone-frost
 ThemeDir=/usr/share/sddm/themes
 
 [General]
 DisplayServer=wayland
-GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1,QML_XHR_ALLOW_FILE_READ=1
 InputMethod=
 EOF
     else
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
-Current=zone-thunder
+Current=zone-frost
 ThemeDir=/usr/share/sddm/themes
 
 [General]
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
 InputMethod=
 EOF
     fi
@@ -253,9 +296,9 @@ EOF
     echo -e "  \e[32m$(t "installer.deploy.sddm_success")\e[0m"
 }
 
-# float-cat: con meo noi tren man hinh khi Claude Code chay (config/float-cat -> ~/.local/share/float-cat).
-# Chay ca khi cai day du lan cap nhat. Thu muc themed/ (to mau theo theme) tu sinh lai khi chay;
-# vi tri con meo (~/.local/state/float-cat) giu nguyen.
+# float-cat: bot AI noi tren man hinh khi Claude Code chay (config/float-cat -> ~/.local/share/float-cat).
+# Chay ca khi cai day du lan cap nhat. Mau lay truc tiep tu theme Frost;
+# vi tri bot (~/.local/state/float-cat) giu nguyen.
 deploy_float_cat() {
     local REPO_ROOT="$1"
     local BIN_DIR="$2"
@@ -265,11 +308,62 @@ deploy_float_cat() {
     [ -d "$src" ] || return 0
     mkdir -p "$dest" "$HOME/.local/state/float-cat" "$BIN_DIR"
     cp -r "$src/." "$dest/"
-    chmod +x "$dest/src/build-layers.sh" "$dest/src/tint.py" 2>/dev/null || true
+    # the cat's picture layers and tinting are gone: the bot is drawn in QML
+    rm -rf "$dest/gray" "$dest/src" "$dest/themed" "$dest/cat.svg"
 
     if [ -f "$REPO_ROOT/config/local-bin/float-cat" ]; then
         cp "$REPO_ROOT/config/local-bin/float-cat" "$BIN_DIR/float-cat"
         chmod +x "$BIN_DIR/float-cat"
+    fi
+
+    # Claude Code status line (context, 5-hour and weekly usage); set only when none is configured
+    local claude_cfg="$HOME/.claude/settings.json"
+    if [ -f "$REPO_ROOT/config/local-bin/claude-statusline" ] && [ -f "$claude_cfg" ] \
+        && ! jq -e '.statusLine' "$claude_cfg" >/dev/null 2>&1; then
+        cp "$REPO_ROOT/config/local-bin/claude-statusline" "$BIN_DIR/claude-statusline"
+        chmod +x "$BIN_DIR/claude-statusline"
+        local tmp
+        tmp=$(jq --arg c "$BIN_DIR/claude-statusline" '. + {statusLine: {type: "command", command: $c, padding: 0}}' "$claude_cfg") \
+            && echo "$tmp" > "$claude_cfg"
+    fi
+}
+
+# profile/: the owner's own setup (settings without IP or location, desktop widget layout, saved
+# theme presets, avatar, active wallpaper) so a fresh install looks like the original machine.
+# Only on a fresh install or reinstall; a normal update keeps whatever the user has changed since.
+# Runs before init_zone_c_config, which merges the template in and detects the location anew.
+apply_profile() {
+    local REPO_ROOT="$1"
+    local install_state="$2"
+    local is_reinstall="$3"
+    local wallpaper_dir="$4"
+    local src="$REPO_ROOT/profile"
+
+    [ -d "$src" ] || return 0
+    [[ "$install_state" == "current" && "$is_reinstall" != "true" ]] && return 0
+
+    local config_dir="$HOME/.config/zone-c"
+    local state_dir="$HOME/.local/state/zone-c"
+    local wp_cache="${XDG_CACHE_HOME:-"$HOME/.cache"}/zone-c/wallpaper"
+    mkdir -p "$config_dir" "$state_dir"
+
+    if [ -f "$src/settings.json" ]; then
+        local merged
+        merged=$(sed "s|@HOME@|$HOME|g" "$src/settings.json" | jq -s '(.[1] // {}) * .[0]' - "$config_dir/settings.json" 2>/dev/null) \
+            || merged=$(sed "s|@HOME@|$HOME|g" "$src/settings.json")
+        echo "$merged" > "$config_dir/settings.json"
+    fi
+    [ -d "$src/state" ] && cp -r "$src/state/." "$state_dir/"
+    [ -f "$src/face.png" ] && cp -f "$src/face.png" "$HOME/.face"
+
+    # the wallpaper comes from the downloaded pack; the shell restores it from current_<monitor>,
+    # and the profile (like the widget layout in state/desktop) is for the laptop panel eDP-1
+    local wp_name
+    wp_name=$(head -n 1 "$src/wallpaper.txt" 2>/dev/null)
+    if [ -n "$wp_name" ] && [ -f "$wallpaper_dir/$wp_name" ]; then
+        mkdir -p "$wp_cache"
+        printf '%s\n' "$wallpaper_dir/$wp_name" > "$wp_cache/current_eDP-1"
+        printf '%s\n' "$wp_name" > "$wp_cache/current_eDP-1_name"
     fi
 }
 
@@ -320,8 +414,7 @@ deploy_package() {
                     mkdir -p "$dest_cfg"
                     cp -r "$src_cfg/." "$dest_cfg/"
                 elif [ -f "$src_cfg" ]; then
-                    mkdir -p "$(dirname "$dest_cfg")"
-                    cp "$src_cfg" "$dest_cfg"
+                    install_config_file "$src_cfg" "$dest_cfg"
                 fi
             done
         fi
@@ -336,6 +429,19 @@ deploy_package() {
         if [ -d "$REPO_ROOT/config/icons" ]; then
             mkdir -p "$HOME/.local/share/icons/hicolor/scalable/apps"
             cp -r "$REPO_ROOT/config/icons/." "$HOME/.local/share/icons/hicolor/scalable/apps/"
+        fi
+
+        # Zone-C file chooser for xdg-desktop-portal (the .portal file lives in the system data dir)
+        if [ -d "$REPO_ROOT/config/portal" ]; then
+            local zsrc="$HOME/.local/share/zone-c/src"
+            mkdir -p "$HOME/.local/share/dbus-1/services" "$HOME/.config/xdg-desktop-portal"
+            sed "s|@ZONEC_SRC@|$zsrc|" "$REPO_ROOT/config/portal/org.freedesktop.impl.portal.desktop.zonec.service" \
+                > "$HOME/.local/share/dbus-1/services/org.freedesktop.impl.portal.desktop.zonec.service"
+            cp "$REPO_ROOT/config/portal/hyprland-portals.conf" "$HOME/.config/xdg-desktop-portal/hyprland-portals.conf"
+            sudo install -Dm644 "$REPO_ROOT/config/portal/zonec.portal" /usr/share/xdg-desktop-portal/portals/zonec.portal 2>/dev/null || true
+            # screen-share picker of xdg-desktop-portal-hyprland
+            mkdir -p "$HOME/.config/hypr"
+            sed "s|@BIN_DIR@|$BIN_DIR|" "$REPO_ROOT/config/portal/xdph.conf" > "$HOME/.config/hypr/xdph.conf"
         fi
 
         if [ -d "$REPO_ROOT/config/applications" ]; then
@@ -357,6 +463,27 @@ deploy_package() {
         fi
 
         # ~/.local/bin vao PATH de goi duoc cac lenh Zone-C (chup, lam-min, usb-list...) tu terminal
+        # prompt and colours of the current Zone-C theme (scripts/term_sync.sh): after the distro's own PS1
+        # but before the banner and ble-attach (ble.sh keeps the PS1 it attached with), moving an older line
+        python3 - "$bashrc" <<'PYBASHRC'
+import sys
+p = sys.argv[1]
+line = '[[ $- == *i* && -f ${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh ]] && source "${XDG_STATE_HOME:-$HOME/.local/state}/zone-c/term_theme.sh"'
+try:
+    rows = open(p).read().split("\n")
+except FileNotFoundError:
+    rows = []
+rows = [r for r in rows if "zone-c/term_theme.sh" not in r and r != "# Zone-C: dau nhac lenh + mau theo theme dang dung"]
+at = next((i for i, r in enumerate(rows) if r.strip().startswith(("zonec-banner", "fastfetch")) or "ble-attach" in r), None)
+if at is not None:
+    while at > 0 and rows[at - 1].lstrip().startswith("#"):   # keep a block's comment with it
+        at -= 1
+    rows[at:at] = ["# Zone-C: dau nhac lenh + mau theo theme dang dung", line, ""]
+else:
+    rows += ["", "# Zone-C: dau nhac lenh + mau theo theme dang dung", line]
+open(p, "w").write("\n".join(rows))
+PYBASHRC
+
         if ! grep -q 'PATH=.*\.local/bin' "$bashrc" 2>/dev/null; then
             {
                 echo ''
@@ -516,8 +643,7 @@ deploy_package() {
                         local cfg_name="${rel_cfg%%/*}"
                         for cfg in "${EXTRA_CONFIGS[@]}"; do
                             if [[ "$cfg" == "$cfg_name" ]]; then
-                                mkdir -p "$(dirname "$HOME/.config/$rel_cfg")"
-                                cp "$REPO_ROOT/$file" "$HOME/.config/$rel_cfg"
+                                install_config_file "$REPO_ROOT/$file" "$HOME/.config/$rel_cfg"
                             fi
                         done
                     fi

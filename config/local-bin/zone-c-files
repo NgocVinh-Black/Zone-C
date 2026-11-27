@@ -1,0 +1,3 @@
+#!/bin/sh
+# Open the Zone-C Files app, optionally at a folder (used by zone-c-files.desktop)
+exec zone-c ipc call files open "${1:-}"

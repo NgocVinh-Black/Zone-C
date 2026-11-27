@@ -9,6 +9,7 @@ import Quickshell.Bluetooth
 import Quickshell.Networking
 import "WindowRegistry.js" as Registry
 import "notifications" as Notifs
+import "frost"
 
 PanelWindow {
     id: masterWindow
@@ -76,13 +77,7 @@ PanelWindow {
         }
     }
 
-    // Co yeu cau ghep doi Bluetooth -> mo panel mang de xac nhan
-    Connections {
-        target: BtAgent
-        function onRequestStarted() {
-            if (masterWindow.targetActive !== "network") switchWidget("network", "bt");
-        }
-    }
+    // Bluetooth pairing requests are answered in network/PairDialog.qml
 
     IpcHandler {
         target: "main"
@@ -99,6 +94,16 @@ PanelWindow {
             cmd = cmd || "";
             targetWidget = targetWidget || "";
             arg = arg || "";
+
+            // the notification centre lives in the Frost system panel
+            if (targetWidget === "notifications") targetWidget = "system";
+            if (cmd === "notifications") cmd = "system";
+
+            // the old guide popup became the Frost settings window
+            if (targetWidget === "guide" || targetWidget === "settings" || cmd === "guide" || cmd === "settings") {
+                Fz.openRequest("settings", (targetWidget === "guide" || targetWidget === "settings") ? arg : targetWidget);
+                return;
+            }
 
             if (cmd === "clearNotifications" || cmd === "clear_notifications" || cmd === "clearNotifs") {
                 NotificationManager.clearNotifications();
@@ -327,7 +332,7 @@ PanelWindow {
     // Bang nang, it dung (trang cai dat, bo chon hinh nen) chi nap khi mo va duoc giai phong
     // sau khi dong mot luc (_lazyWidgets) de quickshell khong giu chung trong RAM.
     property var _allWidgetNames: ["battery", "network", "volume", "calendar", "music", "notifications", "system"]
-    property var _lazyWidgets: ["guide", "wallpaper"]
+    property var _lazyWidgets: ["wallpaper"]
     property int _preloadIndex: 0
 
     function widgetNameForItem(item) {
@@ -400,6 +405,12 @@ PanelWindow {
         reportWidgetState();
         lazyEvictTimer.restart();
     }
+    // the bar popups take part in "one panel at a time" (frost/SurfaceGuard.qml)
+    SurfaceGuard {
+        name: "popup"
+        shown: masterWindow.currentActive !== "hidden" && masterWindow.currentActive !== ""
+        onCloseRequested: masterWindow.switchWidget("hidden", "")
+    }
 
     Timer {
         id: lazyEvictTimer
@@ -451,7 +462,7 @@ PanelWindow {
 
     property real globalUiScale: 1.0
 
-    Notifs.NotificationPopups {
+    Notifs.FrostToasts {
         id: osdPopups
     }
 
@@ -528,7 +539,7 @@ PanelWindow {
         let isFixed = (name === "guide" || name === "wallpaper" || name === "notifications" || name === "system" || name === "hidden");
 
         // Zone Frost: panel cao full man hinh nam duoi bar (khong de len bar), cach mep nhu cac vien noi
-        if (ZoneStyle.flatBar && (name === "notifications" || name === "system") && bp === "top" && !effHidden) {
+        if (ZoneStyle.flatBar && name === "notifications" && bp === "top" && !effHidden) {
             let gapEdge = Math.round(6 * scale);
             let topOffset = Math.round(52 * scale);
             return {
@@ -596,6 +607,10 @@ PanelWindow {
             }
         }
 
+        // Frost panels size themselves to their content (fitWidth / fitHeight), keeping the layout's anchor edge.
+        if (item && typeof item.fitHeight === "number" && item.fitHeight >= 50) th = item.fitHeight;
+        if (item && typeof item.fitWidth === "number" && item.fitWidth >= 50) tw = item.fitWidth;
+
         let x = (tw !== t.w) ? recenterX(t, tw) : t.rx;
         return { x: x, y: t.ry, w: tw, h: th };
     }
@@ -622,7 +637,8 @@ PanelWindow {
         y: masterWindow._animY
         width: masterWindow._animW
         height: masterWindow._animH
-        clip: true
+        // Frost panels draw their own soft shadow outside their box.
+        clip: false
 
         DragHandler {
             id: windowDragHandler
@@ -660,21 +676,8 @@ PanelWindow {
             y: (animContainer.height - height) / 2
             transformOrigin: Item.Center
 
-            scale: masterWindow.isVisible ? 1.0 : 0.96
-            Behavior on scale {
-                NumberAnimation {
-                    duration: masterWindow.isVisible ? 280 : 160
-                    easing.type: masterWindow.isVisible ? Easing.OutCubic : Easing.InCubic
-                }
-            }
-
-            opacity: masterWindow.isVisible ? 1.0 : 0.0
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: masterWindow.isVisible ? 200 : 140
-                    easing.type: Easing.OutCubic
-                }
-            }
+            // open / close motion comes from Hyprland's layer animation (layersIn/Out in settings.lua):
+            // a QML fade here would cross the blur's ignore_alpha threshold and snap the glass on and off
 
             MouseArea { anchors.fill: parent }
 
@@ -791,6 +794,8 @@ PanelWindow {
 
         let finalW = (typeof cachedItem.targetMasterWidth === "number" && cachedItem.targetMasterWidth >= 50) ? cachedItem.targetMasterWidth : t.w;
         let finalH = (typeof cachedItem.targetMasterHeight === "number" && cachedItem.targetMasterHeight >= 50) ? cachedItem.targetMasterHeight : t.h;
+        if (typeof cachedItem.fitWidth === "number" && cachedItem.fitWidth >= 50) finalW = cachedItem.fitWidth;
+        if (typeof cachedItem.fitHeight === "number" && cachedItem.fitHeight >= 50) finalH = cachedItem.fitHeight;
         let finalX = (finalW !== t.w) ? recenterX(t, finalW) : t.rx;
         let finalY = t.ry;
 

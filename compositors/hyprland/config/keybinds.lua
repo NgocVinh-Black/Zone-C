@@ -5,7 +5,16 @@ local editor = "code"
 local fileExplorer = "nautilus"
 local fn = require("config/functions")
 
-hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+-- three-finger swipes: sideways switches workspace (as before) unless turned off in Zone-C Settings,
+-- swipe up is opt-in (Settings → Mouse & touchpad)
+local zg = _G.zonec_gestures or {}
+if zg.horizontal ~= false then
+  hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+end
+if zg.up == "launcher" or zg.up == "overview" then
+  local cmd = zg.up == "overview" and "zone-c ipc call overview toggle" or "zone-c msg toggle launcher"
+  hl.gesture({ fingers = 3, direction = "up", action = function() hl.exec_cmd(cmd) end })
+end
 
 ------------------------------------------------------------------
 -- Phim tat cu (tu repo arch-linux-setup), chuyen sang zone-c
@@ -56,7 +65,10 @@ hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:special" })
 
 -- Window groups
 hl.bind("ALT + TAB", hl.dsp.window.cycle_next(), { repeating = true })
+-- Super+Tab: tong quan cua so cua Zone-C (Overview artboard)
 hl.bind("SHIFT + ALT + TAB", hl.dsp.window.cycle_next({ next = false }), { repeating = true })
+hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("zone-c ipc call overview toggle"))
+hl.bind(mainMod .. " + PERIOD", hl.dsp.exec_cmd("zone-c ipc call emoji toggle"))
 hl.bind("CTRL + ALT + Tab", hl.dsp.group.next(), { repeating = true })
 hl.bind("CTRL + SHIFT + ALT + Tab", hl.dsp.group.prev(), { repeating = true })
 hl.bind("SUPER + Comma", hl.dsp.group.toggle())
@@ -170,10 +182,14 @@ hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("zone-c msg toggle launcher"))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("zone-c msg toggle music"))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("zone-c msg toggle system"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("zone-c msg toggle wallpaper"))
+hl.bind("SUPER + ALT + W", hl.dsp.exec_cmd("zone-c ipc call desktop edit"))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("zone-c msg toggle calendar"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("zone-c msg toggle network"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("zone-c msg toggle volume"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("zone-c msg toggle guide"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("zone-c ipc call settings toggle"))
+hl.bind("SUPER + ALT + equal", hl.dsp.exec_cmd("zone-c ipc call access zoom in"), { repeating = true })
+hl.bind("SUPER + ALT + minus", hl.dsp.exec_cmd("zone-c ipc call access zoom out"), { repeating = true })
 hl.bind(mainMod .. " + slash", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/keybinds-help"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("zone-c msg toggle autohide"))
 

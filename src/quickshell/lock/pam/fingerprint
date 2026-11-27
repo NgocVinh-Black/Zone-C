@@ -1,0 +1,5 @@
+#%PAM-1.0
+# Fingerprint-only stack for the lock screen (Lock.qml fpPam, via PamContext.configDirectory).
+# Runs next to the password session, so a long timeout keeps the reader listening while locked.
+auth       required    pam_fprintd.so    max-tries=3 timeout=600
+account    include     /etc/pam.d/system-auth

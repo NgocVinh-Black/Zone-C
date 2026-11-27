@@ -1,0 +1,659 @@
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import Quickshell.Wayland
+import Quickshell.Hyprland
+import "../"
+import "../frost"
+import "faces"
+
+// Desktop widgets of the Frost design: the Dashboard layout of the Desktop artboard by default,
+// two more presets (Media station, Minimal) and the editor drawn in the Widgets artboard.
+Variants {
+    model: Quickshell.screens
+
+    delegate: Component {
+        PanelWindow {
+            id: win
+            required property var modelData
+            screen: modelData
+            readonly property string monitor: modelData.name || "screen"
+
+            WlrLayershell.namespace: "qs-desktop"
+            WlrLayershell.layer: editing ? WlrLayer.Overlay : WlrLayer.Bottom
+            WlrLayershell.keyboardFocus: editing ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            exclusionMode: ExclusionMode.Ignore
+            anchors { top: true; bottom: true; left: true; right: true }
+            color: "transparent"
+
+            // Outside the editor only the widgets take clicks; the rest of the desktop stays reachable.
+            // The desktop layer sits under every window, so it can take the whole screen:
+            // widgets get their clicks and the empty desktop gets the right-click menu.
+            mask: Region { item: fullMask; intersection: Intersection.Combine }
+            Item { id: fullMask; anchors.fill: parent }
+            Item { id: widgetMask; x: 0; y: 0; width: 0; height: 0 }
+
+            property bool editing: false
+            onEditingChanged: {
+                Desk.editingScreen = editing ? monitor : (Desk.editingScreen === monitor ? "" : Desk.editingScreen);
+                if (!editing) { selectedId = ""; save(); }
+                else {
+                    // what "Hủy" / Esc goes back to, and a fresh undo history
+                    entry = snapshot(); committed = entry; undoStack = []; redoStack = [];
+                    if (widgets.length) selectedId = widgets[0].id;
+                }
+            }
+
+            // ---------- undo / redo / cancel while editing ----------
+            // Every change to the layout lands here; changes closer than 350 ms apart (a drag, a resize)
+            // settle into one undo step.
+            property var entry: null
+            property var committed: null
+            property var undoStack: []
+            property var redoStack: []
+            property bool restoring: false
+            function snapshot() { return JSON.stringify({ preset: preset, widgets: widgets, custom: customPresets }); }
+            function restore(s) {
+                let v = JSON.parse(s);
+                restoring = true;
+                preset = v.preset; customPresets = v.custom; widgets = v.widgets;
+                restoring = false;
+                if (!widgets.find(w => w.id === selectedId)) selectedId = "";
+                committed = s;
+            }
+            function noteChange() {
+                if (!editing || restoring || committed === null) return;
+                if (!settle.running) { undoStack = undoStack.concat([committed]).slice(-100); redoStack = []; }
+                settle.restart();
+            }
+            Timer { id: settle; interval: 350; onTriggered: win.committed = win.snapshot() }
+            onCustomPresetsChanged: noteChange()
+            function undo() {
+                if (settle.running) { settle.stop(); committed = snapshot(); }
+                if (!undoStack.length) return;
+                let prev = undoStack[undoStack.length - 1];
+                undoStack = undoStack.slice(0, -1);
+                redoStack = redoStack.concat([snapshot()]);
+                restore(prev);
+            }
+            function redo() {
+                if (settle.running) { settle.stop(); committed = snapshot(); }
+                if (!redoStack.length) return;
+                let next = redoStack[redoStack.length - 1];
+                redoStack = redoStack.slice(0, -1);
+                undoStack = undoStack.concat([snapshot()]);
+                restore(next);
+            }
+            // ---------- alignment while dragging ----------
+            // The bar's box on this screen (Settings → Thanh bar position): drawn as a ghost in the editor and
+            // used as a snap edge so widgets keep clear of it.
+            readonly property string barPos: Config.getSetting("bar.position", "top") || "top"
+            readonly property rect barBox: barPos === "bottom" ? Qt.rect(8, height - 46, width - 16, 40)
+                                         : barPos === "left" ? Qt.rect(6, 8, 48, height - 16)
+                                         : barPos === "right" ? Qt.rect(width - 54, 8, 48, height - 16)
+                                         : Qt.rect(8, 6, width - 16, 40)
+            readonly property real snapDist: 8
+            readonly property real barGap: 24     // a widget snapped to the bar sits this far from it
+            property real guideX: -1              // vertical guide line while dragging (-1 none)
+            property real guideY: -1
+            property var guideBoxX: null          // the box the vertical guide lines up with (for its extent)
+            property var guideBoxY: null
+            // Move `it` (a widget being dragged) onto the nearest alignment within snapDist: the left / centre /
+            // right (top / middle / bottom) of the other widgets, the screen centre, and the edges along the bar.
+            function snap(it) {
+                let xs = [{ v: width / 2, box: null }], ys = [{ v: height / 2, box: null }];
+                let b = barBox;
+                if (barPos === "top") ys.push({ v: b.y + b.height + barGap, box: b, edge: "top" });
+                else if (barPos === "bottom") ys.push({ v: b.y - barGap, box: b, edge: "bottom" });
+                else if (barPos === "left") xs.push({ v: b.x + b.width + barGap, box: b, edge: "left" });
+                else xs.push({ v: b.x - barGap, box: b, edge: "right" });
+                // flush with the ends of the bar: a widget's left / right (top / bottom) edge on the bar's
+                if (barPos === "top" || barPos === "bottom")
+                    xs.push({ v: b.x, box: b, edge: "left" }, { v: b.x + b.width, box: b, edge: "right" });
+                else
+                    ys.push({ v: b.y, box: b, edge: "top" }, { v: b.y + b.height, box: b, edge: "bottom" });
+                for (let i = 0; i < rep.count; i++) {
+                    let o = rep.itemAt(i);
+                    if (!o || o === it || o.width === 0) continue;
+                    let box = Qt.rect(o.x, o.y, o.width, o.height);
+                    xs.push({ v: o.x, box: box }, { v: o.x + o.width / 2, box: box }, { v: o.x + o.width, box: box });
+                    ys.push({ v: o.y, box: box }, { v: o.y + o.height / 2, box: box }, { v: o.y + o.height, box: box });
+                }
+                function best(pos, size, list, startOnly, endOnly) {
+                    let r = null;
+                    for (const t of list) {
+                        // a bar edge only lines up with the side of the widget that faces the bar
+                        let pts = t.edge === "top" || t.edge === "left" ? [0] : t.edge ? [size] : [0, size / 2, size];
+                        for (const k of pts) {
+                            let d = t.v - (pos + k);
+                            if (Math.abs(d) <= snapDist && (!r || Math.abs(d) < Math.abs(r.d))) r = { d: d, v: t.v, box: t.box };
+                        }
+                    }
+                    return r;
+                }
+                let bx = best(it.x, it.width, xs), by = best(it.y, it.height, ys);
+                if (bx) it.x += bx.d;
+                if (by) it.y += by.d;
+                guideX = bx ? bx.v : -1; guideBoxX = bx ? bx.box : null;
+                guideY = by ? by.v : -1; guideBoxY = by ? by.box : null;
+            }
+            function clearGuides() { guideX = -1; guideY = -1; guideBoxX = null; guideBoxY = null; }
+
+            // leave the editor without keeping anything done since it opened
+            function cancel() {
+                settle.stop();
+                if (entry !== null) restore(entry);
+                editing = false;
+            }
+            property string selectedId: ""
+            property string preset: "dash"
+            property var widgets: []
+            property var customPresets: ({})
+
+            // ---------- types and presets ----------
+            readonly property var types: ({
+                hero:           { comp: heroC,     tag: Fz.tr("Đồng hồ · Dashboard") },
+                material:       { comp: materialC, tag: Fz.tr("Đồng hồ · Material") },
+                analog:         { comp: analogC,   tag: Fz.tr("Đồng hồ · kim") },
+                lumen:          { comp: lumenC,    tag: Fz.tr("Đồng hồ · Lumen") },
+                weatherFull:    { comp: wFullC,    tag: Fz.tr("Thời tiết · đầy đủ") },
+                weatherCompact: { comp: wCompC,    tag: Fz.tr("Thời tiết · gọn") },
+                musicFull:      { comp: mFullC,    tag: Fz.tr("Nhạc · đầy đủ") },
+                musicRound:     { comp: mRoundC,   tag: Fz.tr("Nhạc · tròn") },
+                viz:            { comp: vizC,      tag: "Visualizer · cava" },
+                battery:        { comp: batC,      tag: Fz.tr("Pin") },
+                resources:      { comp: resC,      tag: Fz.tr("Tài nguyên") },
+                user:           { comp: userC,     tag: Fz.tr("Người dùng") },
+                image:          { comp: imageC,    tag: Fz.tr("Khung ảnh") },
+                today:          { comp: todayC,    tag: Fz.tr("Hôm nay") }
+            })
+            // Positions in design pixels; ax "r" measures x from the right edge (the Desktop artboard's right column).
+            readonly property var builtinPresets: ({
+                dash: [
+                    { type: "hero", ax: "l", x: 60, y: 96 },
+                    { type: "musicFull", ax: "l", x: 60, y: 424 },
+                    { type: "weatherFull", ax: "r", x: 32, y: 76 },
+                    { type: "resources", ax: "r", x: 32, y: 362 },
+                    { type: "today", ax: "r", x: 32, y: 498 }
+                ],
+                media: [
+                    { type: "material", ax: "l", x: 70, y: 120 },
+                    { type: "weatherCompact", ax: "l", x: 70, y: 420 },
+                    { type: "musicRound", ax: "l", x: 410, y: 420 },
+                    { type: "viz", ax: "l", x: 70, y: 650 }
+                ],
+                min: [ { type: "material", ax: "l", x: 70, y: 120 } ]
+            })
+            readonly property var presetNames: [["dash", "Dashboard"], ["media", "Media station"], ["min", "Minimal"]]
+
+            function withIds(list) {
+                return list.map((w, i) => Object.assign({ id: String(Date.now()) + "-" + i, scale: 1 }, w));
+            }
+            function applyPreset(name) {
+                preset = name;
+                widgets = withIds(customPresets[name] || builtinPresets[name] || []);
+                selectedId = "";
+                save();
+            }
+            function update(id, patch) {
+                widgets = widgets.map(w => w.id === id ? Object.assign({}, w, patch) : w);
+            }
+            function selected() { return widgets.find(w => w.id === selectedId) || null; }
+            function addWidget(type) {
+                let n = widgets.length;
+                let w = { id: String(Date.now()), type: type, ax: "l", x: 120 + (n % 5) * 32, y: 140 + (n % 5) * 32, scale: 1 };
+                widgets = widgets.concat([w]);
+                selectedId = w.id;
+                if (type === "image") picker.open(w.id);
+            }
+
+            // ---------- persistence: <state>/desktop/<monitor>.json ----------
+            readonly property string stateFile: Caching.stateDir ? Caching.stateDir + "/desktop/" + monitor + ".json" : ""
+            FileView {
+                id: store
+                path: win.stateFile
+                onLoaded: {
+                    try {
+                        let v = JSON.parse(text());
+                        win.customPresets = v.custom || {};
+                        win.preset = v.preset || "dash";
+                        win.widgets = Array.isArray(v.widgets) ? v.widgets : win.withIds(win.builtinPresets[win.preset]);
+                    } catch (e) { win.applyPreset("dash"); }
+                }
+                onLoadFailed: win.applyPreset("dash")
+            }
+            function save() {
+                if (!stateFile) return;
+                let data = JSON.stringify({ preset: preset, widgets: widgets, custom: customPresets });
+                Quickshell.execDetached(["bash", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1\"", "_", stateFile, data]);
+            }
+
+            IpcHandler {
+                target: "widgets-" + win.monitor.replace(/[^A-Za-z0-9_-]/g, "_")
+                function setRedactMode(active: string): string { win.editing = (active === "true" || active === "1"); return "ok"; }
+                function save(): string { win.save(); return "ok"; }
+                function preset(name: string): string { win.applyPreset(name); return "ok"; }
+            }
+            Connections {
+                target: Desk
+                function onEditRequested(monitor) { if (monitor === win.monitor) win.editing = true; }
+                function onPresetRequested(monitor, name) { if (monitor === win.monitor || monitor === "") win.applyPreset(name); }
+            }
+            onPresetChanged: { Desk.report(monitor, preset, widgets.length); noteChange(); }
+            IpcHandler {
+                target: "desktop"
+                function edit(): void { if (Hyprland.focusedMonitor && Hyprland.focusedMonitor.name !== win.monitor) return; win.editing = !win.editing; }
+            }
+
+            // `.scrim` over the wallpaper, as on every desktop artboard
+            Rectangle { anchors.fill: parent; color: Fz.scrim; visible: !win.editing }
+
+            // ---------- desktop right-click menu (TrayMenu artboard) ----------
+            MouseArea {
+                anchors.fill: parent
+                enabled: !win.editing
+                acceptedButtons: Qt.RightButton | Qt.LeftButton
+                onClicked: (e) => {
+                    if (e.button !== Qt.RightButton) { deskMenu.visible = false; return; }
+                    deskMenu.x = Math.min(e.x, win.width - deskMenu.width - 8);
+                    deskMenu.y = Math.min(e.y, win.height - deskMenu.height - 8);
+                    deskMenu.visible = true;
+                }
+            }
+
+            // ---------- editor backdrop: grid (Widgets artboard) ----------
+            Rectangle {
+                anchors.fill: parent
+                visible: win.editing
+                // the edit layer sits above the windows: near-opaque so they don't show through the widgets
+                color: Qt.rgba(Fz.bg0.r, Fz.bg0.g, Fz.bg0.b, 0.9)
+                MouseArea { anchors.fill: parent; onClicked: win.selectedId = "" }
+                Canvas {
+                    id: editGrid
+                    anchors.fill: parent
+                    onPaint: {
+                        let c = getContext("2d"); c.reset();
+                        c.strokeStyle = Fz.fg(0.06); c.lineWidth = 1;
+                        c.beginPath();
+                        for (let x = 0.5; x < width; x += 40) { c.moveTo(x, 0); c.lineTo(x, height); }
+                        for (let y = 0.5; y < height; y += 40) { c.moveTo(0, y); c.lineTo(width, y); }
+                        c.stroke();
+                    }
+                    Connections { target: Fz; function onLightChanged() { editGrid.requestPaint(); } }
+                }
+            }
+
+            // ---------- ghost bar: where the bar sits, so widgets can be placed clear of it ----------
+            Rectangle {
+                visible: win.editing
+                x: win.barBox.x; y: win.barBox.y; width: win.barBox.width; height: win.barBox.height
+                radius: 14
+                color: Fz.fg(0.05)
+                border.width: 1; border.color: Fz.accA(0.35)
+                FText {
+                    anchors.centerIn: parent
+                    rotation: win.barPos === "left" || win.barPos === "right" ? -90 : 0
+                    text: Fz.tr("Thanh bar"); px: 12; weight: Font.DemiBold; color: Fz.dim
+                }
+            }
+
+            // ---------- alignment guides while dragging ----------
+            Rectangle {
+                visible: win.editing && win.guideX >= 0
+                z: 15
+                x: Math.round(win.guideX) - 0.5; width: 1
+                y: 0; height: win.height
+                color: Fz.glow
+                opacity: 0.9
+            }
+            Rectangle {
+                visible: win.editing && win.guideY >= 0
+                z: 15
+                y: Math.round(win.guideY) - 0.5; height: 1
+                x: 0; width: win.width
+                color: Fz.glow
+                opacity: 0.9
+            }
+            // the widget it lines up with lights up
+            Rectangle {
+                readonly property var b: win.guideBoxX
+                visible: win.editing && b !== null
+                z: 15
+                x: b ? b.x - 4 : 0; y: b ? b.y - 4 : 0; width: b ? b.width + 8 : 0; height: b ? b.height + 8 : 0
+                radius: 14; color: "transparent"; border.width: 1.5; border.color: Fz.glow
+            }
+            Rectangle {
+                readonly property var b: win.guideBoxY
+                visible: win.editing && b !== null && b !== win.guideBoxX
+                z: 15
+                x: b ? b.x - 4 : 0; y: b ? b.y - 4 : 0; width: b ? b.width + 8 : 0; height: b ? b.height + 8 : 0
+                radius: 14; color: "transparent"; border.width: 1.5; border.color: Fz.glow
+            }
+
+            // ---------- widgets ----------
+            Repeater {
+                id: rep
+                model: win.widgets
+                delegate: Item {
+                    id: slot
+                    required property var modelData
+                    readonly property var info: win.types[modelData.type] || null
+                    readonly property bool sel: win.editing && win.selectedId === modelData.id
+                    readonly property real sc: modelData.scale || 1
+                    width: face.item ? face.item.implicitWidth * sc : 0
+                    height: face.item ? face.item.implicitHeight * sc : 0
+                    x: modelData.ax === "r" ? win.width - Fz.px(modelData.x) - width : Fz.px(modelData.x)
+                    y: Fz.px(modelData.y)
+                    z: sel ? 10 : 1
+
+                    // `.wd` outline (dashed) and `.wd.sel` (solid, with the .sel box the canvas draws behind it)
+                    Rectangle {
+                        visible: slot.sel
+                        anchors.fill: parent
+                        radius: 11; color: Fz.base; border.width: 1; border.color: Fz.line2
+                    }
+                    Canvas {
+                        visible: win.editing
+                        anchors.fill: parent; anchors.margins: -7.5
+                        property bool s: slot.sel
+                        onSChanged: requestPaint()
+                        onWidthChanged: requestPaint(); onHeightChanged: requestPaint()
+                        onPaint: {
+                            let c = getContext("2d"); c.reset();
+                            let r = slot.modelData.type === "musicRound" || slot.modelData.type === "analog" ? width / 2 : 28;
+                            c.lineWidth = s ? 2 : 1.5;
+                            c.strokeStyle = s ? Fz.acc : Fz.accA(0.55);
+                            c.setLineDash(s ? [] : [4, 3]);
+                            c.beginPath(); c.roundedRect(1, 1, width - 2, height - 2, r, r); c.stroke();
+                        }
+                    }
+                    Loader {
+                        id: face
+                        sourceComponent: slot.info ? slot.info.comp : null
+                        scale: slot.sc
+                        transformOrigin: Item.TopLeft
+                        onLoaded: if (slot.modelData.type === "image") item.path = Qt.binding(() => slot.modelData.path || "")
+                    }
+                    // `.wd .tag`
+                    Rectangle {
+                        visible: win.editing
+                        y: -34
+                        x: slot.modelData.type === "musicRound" ? 40 : 0
+                        width: tagT.implicitWidth + 16; height: tagT.implicitHeight + 8; radius: 7
+                        color: Fz.acc
+                        FText { id: tagT; anchors.centerIn: parent; text: slot.info ? slot.info.tag : ""; color: Fz.ink; px: 11.5; weight: Font.DemiBold }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        enabled: win.editing
+                        cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                        drag.target: slot
+                        drag.threshold: 2
+                        onPressed: win.selectedId = slot.modelData.id
+                        // Shift held: move freely, no snapping
+                        onPositionChanged: (m) => { if (drag.active) { if (m.modifiers & Qt.ShiftModifier) win.clearGuides(); else win.snap(slot); } }
+                        onReleased: {
+                            win.clearGuides();
+                            if (!drag.active) return;
+                            let nx = slot.modelData.ax === "r" ? win.width - slot.x - slot.width : slot.x;
+                            win.update(slot.modelData.id, { x: Math.round(nx / Fz.px(1)), y: Math.round(slot.y / Fz.px(1)) });
+                        }
+                    }
+                }
+            }
+
+            // Input region outside the editor: the union of the widgets' boxes.
+            onWidgetsChanged: { maskTimer.restart(); Desk.report(monitor, preset, widgets.length); noteChange(); }
+            Timer {
+                id: maskTimer
+                interval: 50
+                onTriggered: {
+                    let x0 = 1e9, y0 = 1e9, x1 = 0, y1 = 0;
+                    for (let i = 0; i < rep.count; i++) {
+                        let it = rep.itemAt(i);
+                        if (!it || it.width === 0) continue;
+                        x0 = Math.min(x0, it.x); y0 = Math.min(y0, it.y);
+                        x1 = Math.max(x1, it.x + it.width); y1 = Math.max(y1, it.y + it.height);
+                    }
+                    if (x1 === 0) { widgetMask.width = 0; widgetMask.height = 0; return; }
+                    widgetMask.x = x0; widgetMask.y = y0; widgetMask.width = x1 - x0; widgetMask.height = y1 - y0;
+                }
+            }
+
+            // ---------- editor toolbar ----------
+            Glass {
+                visible: win.editing
+                z: 20
+                radius: 18
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: win.barPos === "top" ? win.barBox.y + win.barBox.height + 10 : 14   // under the ghost bar
+                width: toolbar.implicitWidth + 16
+                height: toolbar.implicitHeight + 16
+                Row {
+                    id: toolbar
+                    x: 8; y: 8
+                    spacing: 8
+                    FText { anchors.verticalCenter: parent.verticalCenter; leftPadding: 10; rightPadding: 10; text: Fz.tr("Chỉnh widget · ") + win.monitor; px: 13.5; weight: Font.DemiBold }
+                    FSeg {
+                        anchors.verticalCenter: parent.verticalCenter
+                        options: win.presetNames.map(p => p[1])
+                        current: win.presetNames.findIndex(p => p[0] === win.preset)
+                        onPicked: (i) => win.applyPreset(win.presetNames[i][0])
+                    }
+                    FBtn {
+                        anchors.verticalCenter: parent.verticalCenter
+                        icon: "w-save"; text: Fz.tr("Lưu preset")
+                        onClicked: {
+                            let c = Object.assign({}, win.customPresets);
+                            c[win.preset] = win.widgets.map(w => { let o = Object.assign({}, w); delete o.id; return o; });
+                            win.customPresets = c;
+                            win.save();
+                        }
+                    }
+                    FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "e-undo"; label: Fz.tr("Hoàn tác · Ctrl+Z")
+                               opacity: win.undoStack.length || settle.running ? 1 : 0.4; onClicked: win.undo() }
+                    FIconBtn { anchors.verticalCenter: parent.verticalCenter; icon: "e-redo"; label: Fz.tr("Làm lại · Ctrl+Shift+Z")
+                               opacity: win.redoStack.length ? 1 : 0.4; onClicked: win.redo() }
+                    FBtn { anchors.verticalCenter: parent.verticalCenter; text: Fz.tr("Hủy"); onClicked: win.cancel() }
+                    FBtn { anchors.verticalCenter: parent.verticalCenter; kind: "pri"; text: Fz.tr("Xong"); onClicked: win.editing = false }
+                }
+            }
+
+            // ---------- "Thêm tiện ích" panel ----------
+            // opaque, so the widgets it covers don't show through. Dragged by its header to uncover what is
+            // under it, collapsed to the header, and sent back to the right edge with a double click.
+            Glass {
+                id: aside
+                visible: win.editing
+                z: 20
+                Rectangle { anchors.fill: parent; radius: aside.radius; color: Fz.mantle; opacity: 0.94 }
+                property bool collapsed: false
+                property bool moved: false
+                readonly property real fullH: win.height - 96
+                width: 360
+                height: collapsed ? 22 + 32 : fullH
+                Behavior on height { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                function clampPos() {
+                    x = Math.max(16, Math.min(x, win.width - width - 16));
+                    y = Math.max(16, Math.min(y, win.height - (collapsed ? 22 + 32 : fullH) - 16));
+                }
+                function home() { moved = false; x = win.width - width - 16; y = 80; }
+                Component.onCompleted: home()
+                Connections { target: win; function onWidthChanged() { if (aside.moved) aside.clampPos(); else aside.home(); } }
+                onCollapsedChanged: clampPos()
+                Behavior on x { enabled: !asideDrag.drag.active; NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+                Behavior on y { enabled: !asideDrag.drag.active; NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+
+                Column {
+                    x: 16; y: 16
+                    width: parent.width - 32
+                    spacing: 12
+                    // header: the drag handle
+                    Item {
+                        width: parent.width; height: 22
+                        MouseArea {
+                            id: asideDrag
+                            anchors.fill: parent; anchors.margins: -8
+                            cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                            drag.target: aside
+                            drag.minimumX: 16; drag.maximumX: win.width - aside.width - 16
+                            drag.minimumY: 16; drag.maximumY: win.height - aside.height - 16
+                            drag.threshold: 2
+                            onReleased: if (drag.active) aside.moved = true
+                            onDoubleClicked: aside.home()
+                        }
+                        Row {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 6
+                            FIcon { name: "a-grip"; size: 16; color: Fz.dim; anchors.verticalCenter: parent.verticalCenter }
+                            FText { text: Fz.tr("Thêm tiện ích"); px: 16; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
+                        }
+                        Row {
+                            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+                            spacing: 6
+                            FChip { visible: !aside.collapsed; text: Fz.tr("kéo thả vào màn hình"); anchors.verticalCenter: parent.verticalCenter }
+                            FIconBtn {
+                                width: 26; height: 26; ghost: true; icon: "p-up"; iconSize: 14
+                                rotation: aside.collapsed ? 180 : 0
+                                Behavior on rotation { NumberAnimation { duration: 200 } }
+                                label: aside.collapsed ? Fz.tr("Mở rộng") : Fz.tr("Thu gọn")
+                                anchors.verticalCenter: parent.verticalCenter
+                                onClicked: aside.collapsed = !aside.collapsed
+                            }
+                        }
+                    }
+                    Grid {
+                        visible: !aside.collapsed
+                        columns: 2
+                        columnSpacing: 8; rowSpacing: 8
+                        Repeater {
+                            model: [
+                                { t: "material", l: Fz.tr("Đồng hồ số"), pv: "digital" }, { t: "analog", l: Fz.tr("Đồng hồ kim"), pv: "analog" },
+                                { t: "lumen", l: "Material Lumen", pv: "lumen" }, { t: "weatherFull", l: Fz.tr("Thời tiết đầy đủ"), pv: "w-cloud" },
+                                { t: "musicFull", l: Fz.tr("Nhạc"), pv: "w-music" }, { t: "viz", l: "Visualizer", pv: "w-wave" },
+                                { t: "battery", l: Fz.tr("Pin"), pv: "w-bat" }, { t: "resources", l: Fz.tr("Tài nguyên"), pv: "w-cpu" },
+                                { t: "user", l: Fz.tr("Người dùng"), pv: "w-user" }, { t: "image", l: Fz.tr("Khung ảnh"), pv: "w-image" }
+                            ]
+                            delegate: Rectangle {
+                                required property var modelData
+                                width: (aside.width - 32 - 8) / 2
+                                height: 64 + 20 + 8 + 16
+                                radius: 16
+                                color: Fz.fg(giMouse.containsMouse ? 0.08 : 0.04)
+                                border.width: 1; border.color: Fz.fg(0.08)
+                                Column {
+                                    x: 10; y: 10
+                                    width: parent.width - 20
+                                    spacing: 8
+                                    Rectangle {
+                                        width: parent.width; height: 64; radius: 11
+                                        color: Fz.crust
+                                        FText { visible: modelData.pv === "digital"; anchors.centerIn: parent; text: "09:41"; color: Fz.acc; px: 26; weight: Font.Light }
+                                        Row { visible: modelData.pv === "lumen"; anchors.centerIn: parent
+                                            FText { text: "09"; color: Fz.acc; px: 20; weight: Font.DemiBold; font.letterSpacing: -1 }
+                                            FText { text: ":"; color: Fz.acc; opacity: 0.5; px: 20; weight: Font.DemiBold }
+                                            FText { text: "41"; color: Fz.acc; px: 20; weight: Font.DemiBold; font.letterSpacing: -1 } }
+                                        Item {
+                                            visible: modelData.pv === "analog"; anchors.centerIn: parent; width: 46; height: 46
+                                            Rectangle { anchors.fill: parent; anchors.margins: 46 * 3 / 40; radius: width / 2; color: "transparent"; border.width: 1.5 * 46 / 40; border.color: Fz.acc }
+                                            Rectangle { x: 23 - 1.15; y: 23 - 12.65; width: 2.3; height: 12.65 + 1.15; radius: 1.15; color: Fz.acc }
+                                            Rectangle { x: 23 - 1.15; y: 23 - 1.15; width: 2.3; height: 9.3 + 1.15; radius: 1.15; color: Fz.acc; transform: Rotation { origin.x: 1.15; origin.y: 1.15; angle: -60.3 } }
+                                        }
+                                        FIcon { visible: modelData.pv.indexOf("w-") === 0; anchors.centerIn: parent; name: modelData.pv; size: 28; color: Fz.acc }
+                                    }
+                                    FText { text: modelData.l; px: 12.5 }
+                                }
+                                MouseArea { id: giMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: win.addWidget(modelData.t) }
+                            }
+                        }
+                    }
+                }
+
+                // inspector of the selected widget
+                Card {
+                    visible: win.selectedId !== "" && !aside.collapsed
+                    anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
+                    anchors.margins: 16
+                    height: insp.implicitHeight + 24
+                    readonly property var w: win.selected()
+                    Column {
+                        id: insp
+                        x: 12; y: 12
+                        width: parent.width - 24
+                        spacing: 10
+                        FText { text: parent.parent.w && win.types[parent.parent.w.type] ? win.types[parent.parent.w.type].tag : ""; px: 13; weight: Font.DemiBold }
+                        Row {
+                            width: parent.width
+                            spacing: 10
+                            FText { width: parent.width - 150 - 10 - 44 - 10; text: Fz.tr("Kích thước"); color: Fz.sub; px: 12.5; anchors.verticalCenter: parent.verticalCenter }
+                            FSlider {
+                                width: 150; anchors.verticalCenter: parent.verticalCenter
+                                from: 50; to: 200
+                                value: insp.parent.w ? Math.round((insp.parent.w.scale || 1) * 100) : 100
+                                onMoved: (v) => win.update(win.selectedId, { scale: v / 100 })
+                            }
+                            FText { width: 44; mono: true; text: (insp.parent.w ? Math.round((insp.parent.w.scale || 1) * 100) : 100) + "%"; color: Fz.sub; px: 12.5; anchors.verticalCenter: parent.verticalCenter; horizontalAlignment: Text.AlignRight }
+                        }
+                        FBtn {
+                            visible: insp.parent.w !== null && insp.parent.w.type === "image"
+                            width: parent.width; icon: "w-image"; text: Fz.tr("Chọn ảnh"); iconSize: 14
+                            onClicked: picker.open(win.selectedId)
+                        }
+                        Row {
+                            width: parent.width
+                            spacing: 6
+                            FBtn { width: (parent.width - 6) / 2; icon: "w-move"; iconSize: 14; text: Fz.tr("Căn lưới")
+                                onClicked: { let w = win.selected(); if (w) win.update(w.id, { x: Math.round(w.x / 40) * 40, y: Math.round(w.y / 40) * 40 }); } }
+                            FBtn { width: (parent.width - 6) / 2; kind: "danger"; icon: "w-x"; iconSize: 14; text: Fz.tr("Gỡ")
+                                onClicked: { win.widgets = win.widgets.filter(x => x.id !== win.selectedId); win.selectedId = ""; } }
+                        }
+                    }
+                }
+            }
+
+            FMenu {
+                id: deskMenu
+                visible: false
+                z: 50
+                FMenuItem { icon: "t-image"; text: Fz.tr("Đổi hình nền"); hint: "Super Shift W"; onTriggered: { deskMenu.visible = false; Fz.open("wallpaper"); } }
+                FMenuItem { icon: "t-widgets"; text: Fz.tr("Chỉnh widget"); onTriggered: { deskMenu.visible = false; win.editing = true; } }
+                FMenuItem { icon: "t-display"; text: Fz.tr("Cài đặt màn hình"); onTriggered: { deskMenu.visible = false; Fz.open("guide", "display"); } }
+                FMenuSep {}
+                FMenuItem { icon: "t-terminal"; text: Fz.tr("Mở terminal"); hint: "Super T"; onTriggered: { deskMenu.visible = false; Quickshell.execDetached(["bash", "-c", "kitty || foot"]); } }
+                FMenuItem { icon: "t-moon"; text: Fz.light ? Fz.tr("Chuyển sang chế độ tối") : Fz.tr("Chuyển sang chế độ sáng"); chevron: true; onTriggered: { deskMenu.visible = false; ZoneStyle.setMode("toggle"); } }
+                FMenuSep {}
+                FMenuItem { icon: "t-gear"; text: Fz.tr("Cài đặt Zone-C"); hint: "Super I"; onTriggered: { deskMenu.visible = false; Fz.open("guide"); } }
+            }
+
+            FFilePicker {
+                id: picker
+                z: 30
+                property string targetId: ""
+                function open(id) { targetId = id; show(Fz.tr("Chọn ảnh cho khung ảnh"), ["png", "jpg", "jpeg", "webp", "gif"], Quickshell.env("HOME") + "/Pictures"); }
+                onAccepted: (path) => win.update(targetId, { path: path })
+            }
+
+            // Esc leaves without saving (like "Hủy"), Enter keeps the changes (like "Xong")
+            Shortcut { sequence: "Escape"; enabled: win.editing; onActivated: win.cancel() }
+            Shortcut { sequences: ["Return", "Enter"]; enabled: win.editing; onActivated: win.editing = false }
+            Shortcut { sequence: StandardKey.Undo; enabled: win.editing; onActivated: win.undo() }
+            Shortcut { sequences: [StandardKey.Redo, "Ctrl+Shift+Z", "Ctrl+Y"]; enabled: win.editing; onActivated: win.redo() }
+            Shortcut { sequence: "Delete"; enabled: win.editing && win.selectedId !== ""; onActivated: { win.widgets = win.widgets.filter(x => x.id !== win.selectedId); win.selectedId = ""; } }
+
+            Component { id: heroC; HeroClock {} }
+            Component { id: materialC; MaterialClock {} }
+            Component { id: analogC; AnalogClock {} }
+            Component { id: lumenC; LumenClock {} }
+            Component { id: wFullC; WeatherFull {} }
+            Component { id: wCompC; WeatherCompact {} }
+            Component { id: mFullC; MusicFull {} }
+            Component { id: mRoundC; MusicRound {} }
+            Component { id: vizC; Visualizer {} }
+            Component { id: batC; Battery {} }
+            Component { id: resC; Resources {} }
+            Component { id: userC; User {} }
+            Component { id: imageC; ImageFrame {} }
+            Component { id: todayC; Today {} }
+        }
+    }
+}

@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import "../reusables"
 import "../"
+import "../frost"
 
 Variants {
     model: Quickshell.screens
@@ -31,7 +32,7 @@ Variants {
                 return true;
             }
 
-            property bool shouldHideForRedact: isRedacting && hideBarInRedactor
+            property bool shouldHideForRedact: (isRedacting || Desk.editingScreen === (modelData ? modelData.name : "")) && hideBarInRedactor
 
             property var activeToplevel: ToplevelManager.activeToplevel
             property bool isFullscreenActive: {
@@ -240,7 +241,7 @@ Variants {
                 return Math.round(Scaler.s(val));
             }
 
-            property int barHeight: s(40)
+            property int barHeight: isVertical ? 52 : s(40)
             property real cornerRadius: s(12)
 
             property real baseOffsetY: {
@@ -258,12 +259,15 @@ Variants {
                 right: barPosition === "right" || !barWindow.isVertical
             }
 
-            implicitHeight: barWindow.isVertical ? 0 : (barHeight + (isFill ? cornerRadius : edgePadding))
-            implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding)) : 0
+            // transparent room past the bar for the pills' drop shadow (outside the input mask and the
+            // reserved zone, so it neither takes clicks nor pushes windows)
+            readonly property int shadowPad: isFill ? 0 : 36
+            implicitHeight: barWindow.isVertical ? 0 : (barHeight + (isFill ? cornerRadius : edgePadding) + shadowPad)
+            implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding) + shadowPad) : 0
 
             margins {
-                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(4)))
-                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(4)))
+                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(6)))
+                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(6)))
                 left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : s(4)))
                 right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(4)))
             }
@@ -352,7 +356,7 @@ Variants {
             property bool isDataReady: fastPollerLoaded
             Timer { interval: 400; running: true; onTriggered: barWindow.isDataReady = true }
 
-            SideBar {
+            FrostSideBar {
                 id: verticalWrapper
                 barWindow: barWindow
                 property real hideOffsetX: {
@@ -366,9 +370,14 @@ Variants {
                 }
             }
 
-            TopBar {
+            FrostTopBar {
                 id: contentWrapper
                 barWindow: barWindow
+                visible: !barWindow.isVertical
+                transform: Translate {
+                    y: barWindow.isRevealed ? 0 : (barWindow.barPosition === "bottom" ? 1 : -1) * (barWindow.barHeight + barWindow.s(10))
+                    Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+                }
             }
         }
     }

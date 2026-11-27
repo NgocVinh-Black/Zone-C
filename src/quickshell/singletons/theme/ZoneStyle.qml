@@ -7,8 +7,8 @@ import "../../"
 // Zone-C: kieu hieu ung di kem preset mau.
 //   Zone Thunder -> hinh nen video + vien dien chay (dong)
 //   Zone Crystal -> hinh nen anh tinh + vien dung yen (tinh)
-//   Zone Frost   -> hinh nen tuyet + dock kinh mo
-// Doi preset chi doi mau / hinh nen / hieu ung; bo cuc bar, dock, launcher giu nguyen nhu ban dat.
+//   Zone Frost   -> hinh nen tuyet + kinh mo
+// Doi preset chi doi mau / hinh nen / hieu ung; bo cuc bar, launcher giu nguyen nhu ban dat.
 // Man hinh khoa dung chinh hinh nen hien tai nen tu dong/tinh theo.
 // Preset khac: giu nguyen hinh nen, vien chay nhu Thunder.
 Item {
@@ -30,14 +30,13 @@ Item {
             animated: false,
             wallpaper: "zone-c-frost.jpg",
             glow: "#9fd3e0", bolt: "#cfeaf2", core: "#ffffff", amp: 2.5,
-            dockGlass: true, dockTint: "#1c2428", dockAlpha: 0.62,
             plainBorder: true, flatBar: true, artSuffix: "-frost",
             // Hai che do: dark (mac dinh) va light. Doi bang setMode() / zone-c ipc call zonetheme mode toggle
             palettes: {
                 "dark": {"base": "#2a353b", "mantle": "#232d32", "crust": "#1c2428", "text": "#edf3f6", "subtext0": "#a7b8c1", "subtext1": "#c6d3d9", "surface0": "#34424a", "surface1": "#415058", "surface2": "#53646d", "overlay0": "#7d909a", "overlay1": "#8fa2ab", "overlay2": "#a7b8c1", "blue": "#d6e6ec", "sapphire": "#9fd3e0", "peach": "#e9c9a8", "green": "#a6dcbc", "red": "#ff7b7b", "mauve": "#d6e6ec", "pink": "#d6e6ec", "yellow": "#ecdcaa", "maroon": "#c6d3d9", "teal": "#9fd3e0"},
                 "light": { "base": "#eef4f7", "mantle": "#e4ecf0", "crust": "#d6e2e8", "text": "#1f2d35", "subtext0": "#5d717b", "subtext1": "#44565f", "surface0": "#dde7ec", "surface1": "#cfdce3", "surface2": "#bccdd6", "overlay0": "#8fa3ad", "overlay1": "#768b95", "overlay2": "#5f747e", "blue": "#2f5d72", "sapphire": "#3a6c82", "peach": "#a8683a", "green": "#3f7a5c", "red": "#d64545", "mauve": "#2f5d72", "pink": "#3a6c82", "yellow": "#9a7d22", "maroon": "#4a7a8e", "teal": "#2f7277" }
             },
-            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff", dockTint: "#ffffff", dockAlpha: 0.55 }
+            lightStyle: { glow: "#2f5d72", bolt: "#2f5d72", core: "#ffffff" }
         }
     })
 
@@ -56,18 +55,18 @@ Item {
     readonly property bool isLight: mode === "light"
     readonly property var style: (isLight && baseStyle.lightStyle) ? Object.assign({}, baseStyle, baseStyle.lightStyle) : baseStyle
 
-    readonly property bool animated: style.animated
+    readonly property bool animated: focusBorder === "bolt" ? true : style.animated
     readonly property color borderGlow: style.glow
     readonly property color borderBolt: style.bolt
     readonly property color borderCore: style.core
     readonly property real borderAmplitude: style.amp
 
-    // Dock kinh mo (chi preset co dockGlass, vd Zone Frost)
-    readonly property bool dockGlass: styles[preset] ? styles[preset].dockGlass === true : false
-    readonly property color dockGlassColor: dockGlass ? Qt.alpha(style.dockTint, style.dockAlpha) : "transparent"
 
     // Vien focus la mot duong manh dung yen (khong tia dien)
-    readonly property bool plainBorder: styles[preset] ? styles[preset].plainBorder === true : false
+    // Settings → Theme "Hiệu ứng viền focus": still | bolt | off ("" = whatever the preset uses)
+    readonly property string focusBorder: { let v = Config.getSetting("theme.focusBorder", ""); return v === "still" || v === "bolt" || v === "off" ? v : ""; }
+    readonly property bool borderOff: focusBorder === "off"
+    readonly property bool plainBorder: focusBorder === "still" || (focusBorder === "" && (styles[preset] ? styles[preset].plainBorder === true : false))
     // Bar phang: moi muc la mot vien toi rieng, chu trang, khong to mau accent
     readonly property bool flatBar: styles[preset] ? styles[preset].flatBar === true : false
     readonly property color pillBorder: "transparent"
@@ -85,16 +84,22 @@ Item {
     // Avatar (~/.face) dang la logo Zone-C mac dinh -> doi theo preset; anh rieng cua ban thi giu nguyen
     property bool avatarIsLogo: false
     function avatarSource(path) {
-        if (path === "") return "";
+        if (!path) return "";
+        if (path.startsWith("file://")) path = path.substring(7);
+        // Zone Frost: the Ice Bolt avatar of Logo.dc.html ("Avatar · ~/.face")
         if (avatarIsLogo && artSuffix !== "" && Caching.zoneCDir)
-            return "file://" + Caching.zoneCDir + "/assets/" + art("logo.png");
+            return "file://" + Caching.zoneCDir + "/assets/" + art("avatar.png");
         return "file://" + path;
     }
     Process {
+        id: avatarProbe
         running: Caching.zoneCDir !== ""
         command: ["bash", "-c", "cmp -s \"$HOME/.face\" \"" + Caching.zoneCDir + "/assets/logo.png\""]
         onExited: (code) => root.avatarIsLogo = (code === 0)
     }
+    // a new avatar was picked (Settings → Chung): compare again once the copy has landed
+    function checkAvatar() { avatarRecheck.restart(); }
+    Timer { id: avatarRecheck; interval: 800; onTriggered: avatarProbe.running = true }
 
     property bool _ready: false
 
@@ -164,6 +169,11 @@ Item {
         target: Wallpaper
         function onWallpaperChanged(screenName, path, transition) { root.syncSddm(); }
     }
+    // the login screen also shows the avatar and speaks the shell's language
+    readonly property string _sddmLang: Config.getSetting("general.language", "vi")
+    readonly property string _sddmAvatar: Config.getSetting("general.avatarPath", "")
+    on_SddmLangChanged: syncSddm()
+    on_SddmAvatarChanged: syncSddm()
     Connections {
         target: ThemeBackend
         function onBaseChanged() { root.syncSddm(); }

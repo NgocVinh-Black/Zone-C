@@ -1,3 +1,9 @@
+[Hotkey]
+# Ctrl+Space bat / tat Unikey. Phim Shift khong doi kieu go nua (mac dinh cua fcitx5 la Shift trai).
+
+[Hotkey/AltTriggerKeys]
+0=
+
 [Behavior]
 # Dung chung trang thai go (VI/EN) cho moi cua so
 ShareInputState=All

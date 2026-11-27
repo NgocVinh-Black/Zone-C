@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Cửa hàng ứng dụng
+Comment=pacman · AUR · Flatpak
+Exec=zone-c ipc call appstore toggle
+Icon=system-software-install
+Terminal=false
+Categories=System;Settings;PackageManager;
+

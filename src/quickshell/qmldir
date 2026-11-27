@@ -1,15 +1,16 @@
-Dock 1.0 dock/Dock.qml
 Dim 1.0 Dim.qml
 Main 1.0 Main.qml
 
 Bar 1.0 bar/Bar.qml
-Floating 1.0 quickactions/Floating.qml
-Clipboard 1.0 clipboard/Clipboard.qml
-Launcher 1.0 launcher/Launcher.qml
+FrostQuickActions 1.0 quickactions/FrostQuickActions.qml
+Clipboard 1.0 clipboard/FrostClipboard.qml
+Launcher 1.0 launcher/FrostLauncher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
+FrostLockScreen 1.0 lock/FrostLockScreen.qml
+UnlockFx 1.0 lock/UnlockFx.qml
 
 Start 1.0 serp/Start.qml
 ZoneC 1.0 serp/ZoneC.qml
@@ -17,11 +18,30 @@ ZoneC 1.0 serp/ZoneC.qml
 ElectricBorder 1.0 focusborder/ElectricBorder.qml
 
 Osd 1.0 popouts/Osd.qml
+FrostOsd 1.0 popouts/FrostOsd.qml
 PopoutManager 1.0 popouts/PopoutManager.qml
 SideMusicPopout 1.0 popouts/SideMusicPopout.qml
 TrayBase 1.0 popouts/TrayBase.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
+FrostDesktop 1.0 desktop/FrostDesktop.qml
+PairDialog 1.0 network/PairDialog.qml
+WifiDialog 1.0 network/WifiDialog.qml
+FrostOverview 1.0 overview/FrostOverview.qml
+FrostTray 1.0 tray/FrostTray.qml
+FrostEmoji 1.0 emoji/FrostEmoji.qml
+FrostPower 1.0 power/FrostPower.qml
+FrostFiles 1.0 apps/FrostFiles.qml
+FrostTaskManager 1.0 apps/FrostTaskManager.qml
+FrostAppStore 1.0 apps/FrostAppStore.qml
+FrostSettings 1.0 settings/FrostSettings.qml
+WellbeingService 1.0 settings/WellbeingService.qml
+PowerService 1.0 settings/PowerService.qml
+AccessService 1.0 settings/AccessService.qml
+FrostWelcome 1.0 welcome/FrostWelcome.qml
+Alerts 1.0 alerts/Alerts.qml
+FrostPortal 1.0 portal/FrostPortal.qml
+FrostScreenShare 1.0 portal/FrostScreenShare.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml

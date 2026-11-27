@@ -271,7 +271,8 @@ if [[ "$1" == "launch" ]]; then
             QML_NAME="Start"
             ;;
         widgetredactor)
-            QML_NAME="WidgetRedactor"
+            # the Frost desktop edits its widgets in place
+            exec quickshell -p "$ZONE_C_DIR/quickshell/Shell.qml" ipc call desktop edit
             ;;
         *)
             echo "$(t "cli.error_unknown_target" TARGET="$2")"

@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../../"
+import "../../frost"
 
 Item {
     id: root
@@ -114,12 +115,12 @@ Item {
         ignoreUnknownSignals: true
         function onFinished() {
             startLoader.active = false;
-            Quickshell.execDetached(["bash", root.helperScript, "--open-guide"]);
+            Fz.openRequest("welcome", "");
             root.firstLaunchFinished();
         }
         function onClosed() {
             startLoader.active = false;
-            Quickshell.execDetached(["bash", root.helperScript, "--open-guide"]);
+            Fz.openRequest("welcome", "");
             root.firstLaunchFinished();
         }
     }
